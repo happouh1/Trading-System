@@ -68,17 +68,18 @@ class ContractTests(unittest.TestCase):
 
     def test_contracts_are_frozen_and_nested_mappings_are_read_only(self) -> None:
         observation = contracts()[-2]
+        assert isinstance(observation, Observation)
         with self.assertRaises(FrozenInstanceError):
             observation.observation_id = "changed"  # type: ignore[misc]
         with self.assertRaises(TypeError):
-            observation.features["future"] = True  # type: ignore[index,union-attr]
+            observation.features["future"] = True  # type: ignore[index]
 
     def test_candle_validates_ohlc_and_uses_deterministic_id(self) -> None:
         first = contracts()[0]
         second = contracts()[0]
-        self.assertIsInstance(first, Candle)
-        self.assertIsInstance(second, Candle)
-        self.assertEqual(first.candle_id, second.candle_id)  # type: ignore[union-attr]
+        assert isinstance(first, Candle)
+        assert isinstance(second, Candle)
+        self.assertEqual(first.candle_id, second.candle_id)
         with self.assertRaisesRegex(ValueError, "OHLC"):
             Candle("AAPL", Timeframe.HOUR_1, EARLIER, NOW, date(2026, 1, 5), D("100"),
                    D("99"), D("98"), D("101"), D("1"), True, D("1"), "x", "rev")

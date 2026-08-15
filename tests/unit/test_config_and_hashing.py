@@ -26,7 +26,9 @@ def test_config_rejects_unknown_keys_and_cross_field_errors() -> None:
     with pytest.raises(ConfigError, match="extra"):
         validate_config(raw)
     raw = copy.deepcopy(dict(source.values))
-    raw["acceptance"]["required_closes"] = 4
+    acceptance = raw["acceptance"]
+    assert isinstance(acceptance, dict)
+    acceptance["required_closes"] = 4
     with pytest.raises(ConfigError, match="window_bars"):
         validate_config(raw)
 
@@ -41,4 +43,3 @@ def test_semantic_version_validation() -> None:
     assert str(SemanticVersion.parse("1.2.3-alpha+build")) == "1.2.3-alpha+build"
     with pytest.raises(ValueError):
         SemanticVersion.parse("1.2")
-
