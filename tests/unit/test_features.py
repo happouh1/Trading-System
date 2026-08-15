@@ -52,7 +52,11 @@ def test_full_window_warmups_and_golden_snapshot() -> None:
     expected = json.loads((ROOT / "tests/golden/feature_snapshot_v1.json").read_text())
     actual = snapshots[20].features
     for name in ("atr20", "adr20", "rvol20", "ema10", "ema20"):
-        assert str(actual[name]) == expected[name]
+        actual_value = actual[name]
+        expected_value = expected[name]
+        assert isinstance(actual_value, Decimal)
+        assert isinstance(expected_value, str)
+        assert actual_value == D(expected_value)
     assert actual["ema50"] is expected["ema50"]
     assert actual["sma200"] is expected["sma200"]
 
