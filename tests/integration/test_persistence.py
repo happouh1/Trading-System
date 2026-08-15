@@ -5,8 +5,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
-
 from tests.unit.test_features import daily_candle
+
 from trading_system.features import CausalFeatureEngine
 from trading_system.persistence import RunRecord, SQLiteRepository
 
