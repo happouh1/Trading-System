@@ -19,7 +19,11 @@ def test_decisions_do_not_import_learning_or_outcomes() -> None:
                 names = {node.module or ""}
             else:
                 continue
-            if any(name == ban or name.startswith(f"{ban}.") for name in names for ban in forbidden):
+            forbidden_import = any(
+                name == ban or name.startswith(f"{ban}.")
+                for name in names
+                for ban in forbidden
+            )
+            if forbidden_import:
                 violations.append(f"{path}:{node.lineno}")
     assert not violations, f"forbidden dependency imports: {violations}"
-

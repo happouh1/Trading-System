@@ -7,7 +7,7 @@ import json
 import math
 from collections.abc import Mapping
 from dataclasses import fields, is_dataclass
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from decimal import Decimal
 from enum import Enum
 from typing import Any
@@ -16,7 +16,9 @@ from typing import Any
 def canonical_value(value: object) -> Any:
     """Convert supported values to a canonical JSON-compatible representation."""
     if is_dataclass(value) and not isinstance(value, type):
-        result = {field.name: canonical_value(getattr(value, field.name)) for field in fields(value)}
+        result = {
+            field.name: canonical_value(getattr(value, field.name)) for field in fields(value)
+        }
         result["__type__"] = type(value).__name__
         return result
     if isinstance(value, Enum):
@@ -28,7 +30,7 @@ def canonical_value(value: object) -> Any:
     if isinstance(value, datetime):
         if value.tzinfo is None or value.utcoffset() is None:
             raise ValueError("datetimes must be timezone-aware")
-        text = value.astimezone(timezone.utc).isoformat(timespec="microseconds")
+        text = value.astimezone(UTC).isoformat(timespec="microseconds")
         return {"__datetime__": text.replace("+00:00", "Z")}
     if isinstance(value, date):
         return {"__date__": value.isoformat()}
@@ -62,4 +64,3 @@ def deterministic_id(namespace: str, value: object) -> str:
         raise ValueError("namespace must contain only letters, numbers, and underscores")
     digest = canonical_hash({"namespace": namespace, "value": value})[7:]
     return f"{namespace}_{digest[:32]}"
-

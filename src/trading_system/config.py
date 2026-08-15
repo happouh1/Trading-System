@@ -78,10 +78,30 @@ def validate_config(raw: object) -> ThresholdConfig:
     expected = {
         "features": {"atr_period", "adr_period", "rvol_period", "pivot_left", "pivot_right"},
         "structure": {"equality_tolerance_adr"},
-        "base": {"min_bars", "max_bars", "max_width_adr", "max_net_drift_adr", "min_overlap", "max_atr_compression"},
+        "base": {
+            "min_bars",
+            "max_bars",
+            "max_width_adr",
+            "max_net_drift_adr",
+            "min_overlap",
+            "max_atr_compression",
+        },
         "break": {"buffer_adr", "min_clv_long", "max_clv_short", "min_body_fraction", "min_rvol"},
-        "acceptance": {"window_bars", "required_closes", "hold_buffer_adr", "failure_buffer_adr", "min_score"},
-        "risk": {"stop_buffer_adr", "min_stop_adr", "max_stop_adr", "min_runway_adr", "min_reward_risk", "max_hold_bars"},
+        "acceptance": {
+            "window_bars",
+            "required_closes",
+            "hold_buffer_adr",
+            "failure_buffer_adr",
+            "min_score",
+        },
+        "risk": {
+            "stop_buffer_adr",
+            "min_stop_adr",
+            "max_stop_adr",
+            "min_runway_adr",
+            "min_reward_risk",
+            "max_hold_bars",
+        },
         "decision": {"trade_confidence", "watch_confidence"},
         "execution": {"fill_model", "collision_policy", "slippage_bps", "slippage_atr_fraction"},
         "determinism": {"seed", "numeric_rounding", "price_precision"},
@@ -109,7 +129,11 @@ def validate_config(raw: object) -> ThresholdConfig:
     for key in ("trade_confidence", "watch_confidence"):
         _number(sections["decision"][key], f"decision.{key}", 0, 100)
     execution = sections["execution"]
-    if execution["fill_model"] != "next_bar_open" or execution["collision_policy"] != "adverse_first":
+    invalid_execution = (
+        execution["fill_model"] != "next_bar_open"
+        or execution["collision_policy"] != "adverse_first"
+    )
+    if invalid_execution:
         raise ConfigError("unsupported Phase 0 execution baseline")
     _number(execution["slippage_bps"], "execution.slippage_bps")
     _number(execution["slippage_atr_fraction"], "execution.slippage_atr_fraction")
@@ -142,4 +166,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

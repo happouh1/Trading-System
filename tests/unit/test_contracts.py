@@ -3,18 +3,33 @@ from __future__ import annotations
 import json
 import unittest
 from dataclasses import FrozenInstanceError
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from decimal import Decimal
 
 from trading_system.domain import (
-    Candle, Decision, DecisionAction, Direction, Level, LevelKind, Observation, Outcome,
-    PatternEvent, PatternState, RuleEvidence, Swing, SwingKind, Timeframe, TradeEvent,
-    TradeEventType, TradePlan, TradeStyle,
+    Candle,
+    Decision,
+    DecisionAction,
+    Direction,
+    Level,
+    LevelKind,
+    Observation,
+    Outcome,
+    PatternEvent,
+    PatternState,
+    RuleEvidence,
+    Swing,
+    SwingKind,
+    Timeframe,
+    TradeEvent,
+    TradeEventType,
+    TradePlan,
+    TradeStyle,
 )
 from trading_system.serialization import canonical_json
 
-NOW = datetime(2026, 1, 5, 15, 30, tzinfo=timezone.utc)
-EARLIER = datetime(2026, 1, 5, 14, 30, tzinfo=timezone.utc)
+NOW = datetime(2026, 1, 5, 15, 30, tzinfo=UTC)
+EARLIER = datetime(2026, 1, 5, 14, 30, tzinfo=UTC)
 D = Decimal
 
 
