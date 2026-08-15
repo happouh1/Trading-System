@@ -1,11 +1,11 @@
 # Trading System
 
-Phase 0 foundation for a deterministic candle-by-candle trading research system.
+Phase 1A foundation for a deterministic candle-by-candle trading research system.
 
-This repository currently contains immutable domain contracts, canonical serialization,
-deterministic identifiers, version/hash utilities, and validated versioned configuration.
-It intentionally contains no market logic, pattern detection, backtesting, learning, brokerage,
-or live-trading implementation.
+The repository contains immutable contracts, canonical serialization, strict CSV/Parquet OHLCV
+ingestion, XNYS session validation, deterministic 1H/4H/Daily/Weekly aggregation, causal streaming
+features, and idempotent SQLite persistence. It intentionally contains no pivots, patterns, decisions,
+backtesting, learning models, brokerage connectivity, or live trading.
 
 ## Development
 
@@ -24,4 +24,3 @@ Configuration validation:
 ```text
 python -m trading_system.config config/thresholds.v1.yaml
 ```
-

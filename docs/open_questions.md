@@ -24,3 +24,15 @@ They must be answered or made explicitly configurable before the phase that uses
 10. How are data revisions, calendar versions, and code versions formatted beyond being nonempty
     version-addressed strings?
 
+## Added in Phase 1A
+
+11. Which vendor-specific split-adjustment convention and rounding tolerance should be accepted? The
+    v1 loader requires exact `adjusted = raw * factor`; vendor adapters may need an explicit tolerance.
+12. Should pre/post-market files be rejected or ingested into a separate session namespace? Phase 1A
+    rejects bars outside regular XNYS bounds.
+13. What is the canonical policy for half-day 1H partitions? Phase 1A accepts source intervals within
+    the authoritative session but never synthesizes a partial bar.
+14. Should weekly partial histories be persisted as incomplete candles? Phase 1A emits only weeks with
+    every scheduled XNYS session present.
+15. Should zero historical same-slot median volume produce `null`, zero, or a capped RVOL? Phase 1A
+    returns `null` and records it as warm-up/missing evidence.

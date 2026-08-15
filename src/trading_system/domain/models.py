@@ -130,6 +130,11 @@ class Candle(DomainModel):
     source: str
     source_revision: str
     candle_id: str = ""
+    raw_open: Decimal | None = None
+    raw_high: Decimal | None = None
+    raw_low: Decimal | None = None
+    raw_close: Decimal | None = None
+    raw_volume: Decimal | None = None
 
     def __post_init__(self) -> None:
         if not self.symbol or self.symbol != self.symbol.upper():
@@ -148,6 +153,36 @@ class Candle(DomainModel):
             raise ValueError("high must be at least low")
         if not self.source or not self.source_revision:
             raise ValueError("source and source_revision are required")
+        raw_prices = (self.raw_open, self.raw_high, self.raw_low, self.raw_close)
+        if any(value is not None for value in raw_prices):
+            if any(value is None for value in raw_prices):
+                raise ValueError("raw OHLC fields must be provided together")
+            for name in ("raw_open", "raw_high", "raw_low", "raw_close"):
+                value = getattr(self, name)
+                if value is not None:
+                    _positive(value, name)
+            assert self.raw_high is not None
+            assert self.raw_low is not None
+            assert self.raw_open is not None
+            assert self.raw_close is not None
+            if self.raw_high < max(self.raw_open, self.raw_close):
+                raise ValueError("raw OHLC invariants violated")
+            if self.raw_low > min(self.raw_open, self.raw_close):
+                raise ValueError("raw OHLC invariants violated")
+            adjusted_pairs = (
+                (self.open, self.raw_open),
+                (self.high, self.raw_high),
+                (self.low, self.raw_low),
+                (self.close, self.raw_close),
+            )
+            if any(adjusted != raw * self.adjustment_factor for adjusted, raw in adjusted_pairs):
+                raise ValueError("adjusted OHLC must equal raw OHLC times adjustment_factor")
+        if self.raw_volume is not None and (
+            self.raw_volume < 0 or not self.raw_volume.is_finite()
+        ):
+            raise ValueError("raw_volume must be finite and nonnegative")
+        if self.raw_volume is not None and self.volume != self.raw_volume:
+            raise ValueError("Phase 1A volume must equal raw_volume")
         if not self.candle_id:
             identity = (self.symbol, self.timeframe, self.open_time, self.source_revision)
             object.__setattr__(self, "candle_id", deterministic_id("candle", identity))

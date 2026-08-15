@@ -1,4 +1,4 @@
-# Phase 0 data dictionary
+# Phase 1A data dictionary
 
 The authoritative executable definitions are frozen dataclasses in
 `src/trading_system/domain/models.py`.
@@ -16,3 +16,13 @@ The authoritative executable definitions are frozen dataclasses in
 Prices and money-like values use `Decimal`. Times must be timezone-aware and serialize as UTC.
 Collections are tuples or read-only mappings.
 
+Phase 1A extends `Candle` with optional audited `raw_open`, `raw_high`, `raw_low`, `raw_close`, and
+`raw_volume`. Adjusted OHLC must equal raw OHLC multiplied by `adjustment_factor`; volume remains
+unadjusted in v1.
+
+`Observation.features` now stores candle anatomy, true range, ATR20, ADR20, same-slot RVOL20, EMA10,
+EMA20, EMA50, and SMA200. Unavailable warm-up features are `null` and named in
+`data_quality.warmup_missing`.
+
+SQLite Phase 1A tables are `runs`, `candles`, and `feature_snapshots`. Each persisted payload carries a
+canonical hash; duplicate identical inserts are idempotent and conflicting inserts fail.

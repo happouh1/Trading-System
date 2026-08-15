@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 from trading_system.serialization import canonical_hash
 
-PACKAGE_VERSION = "0.1.0"
+PACKAGE_VERSION = "0.2.0"
 SPEC_VERSION = "1.0.0"
 _SEMVER = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
                      r"(?:-([0-9A-Za-z.-]+))?(?:\+([0-9A-Za-z.-]+))?$")
@@ -38,4 +38,3 @@ class SemanticVersion:
 def versioned_hash(value: object, version: str = SPEC_VERSION) -> str:
     SemanticVersion.parse(version)
     return canonical_hash({"version": version, "payload": value})
-

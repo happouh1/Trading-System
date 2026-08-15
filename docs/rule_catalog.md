@@ -1,4 +1,4 @@
 # Rule catalog
 
-No executable trading rules exist in Phase 0. Rule identifiers are preserved through `RuleEvidence`
-and pattern reason-code fields. The catalog will be populated in Phases 1B and 1C.
+No executable trading rules exist through Phase 1A. Data-validation and causal-feature formulas are
+infrastructure contracts, not trade rules. Pattern and decision rules begin in Phases 1B and 1C.

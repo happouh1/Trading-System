@@ -1,5 +1,6 @@
 .venv/
 .verify-venv/
+.phase1a-verify/
 __pycache__/
 *.py[cod]
 .pytest_cache/
