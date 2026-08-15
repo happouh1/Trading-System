@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
 import sqlite3
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
 
+from tests.unit.test_features import daily_candle
 from trading_system.features import CausalFeatureEngine
 from trading_system.persistence import RunRecord, SQLiteRepository
-from tests.unit.test_features import daily_candle
 
 
 def test_migration_persistence_and_restart_are_idempotent(tmp_path: Path) -> None:
