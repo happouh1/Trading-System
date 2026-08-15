@@ -11,8 +11,15 @@ from typing import Any, Protocol, cast
 
 
 class SessionCalendar(Protocol):
-    name: str
-    version: str
+    @property
+    def name(self) -> str:
+        """Stable exchange-calendar name."""
+        ...
+
+    @property
+    def version(self) -> str:
+        """Stable calendar data/version identifier."""
+        ...
 
     def bounds(self, session_date: date) -> tuple[datetime, datetime] | None:
         """Return the completed regular-session UTC bounds, or None for a closed date."""
