@@ -1,4 +1,7 @@
 # Rule catalog
 
-No executable trading rules exist through Phase 1A. Data-validation and causal-feature formulas are
-infrastructure contracts, not trade rules. Pattern and decision rules begin in Phases 1B and 1C.
+No executable trade-decision rules exist through the current Phase 1B increment. Data-validation,
+causal-feature, pivot-confirmation, and structure-classification formulas are research infrastructure,
+not trade entries. Pivot rules implement specification Section 5.1; structure states and swing labels
+implement Section 5.2. Pattern triggers remain unimplemented until their isolated state machines are
+added later in Phase 1B.

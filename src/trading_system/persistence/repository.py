@@ -9,7 +9,7 @@ from decimal import Decimal
 from importlib.resources import files
 from pathlib import Path
 
-from trading_system.domain import Candle, Observation
+from trading_system.domain import Candle, Level, Observation, PatternEvent
 from trading_system.serialization import canonical_hash, canonical_json
 
 
@@ -51,8 +51,12 @@ class SQLiteRepository:
         self.close()
 
     def migrate(self) -> None:
-        migration = files("trading_system.persistence.migrations").joinpath("001_phase_1a.sql")
-        self.connection.executescript(migration.read_text(encoding="utf-8"))
+        migrations = files("trading_system.persistence.migrations")
+        for migration in sorted(
+            (item for item in migrations.iterdir() if item.name.endswith(".sql")),
+            key=lambda item: item.name,
+        ):
+            self.connection.executescript(migration.read_text(encoding="utf-8"))
         self.connection.commit()
 
     def insert_run(self, run: RunRecord) -> bool:
@@ -139,6 +143,81 @@ class SQLiteRepository:
         self.connection.commit()
         return True
 
+    def insert_level(self, level: Level) -> bool:
+        payload_hash = canonical_hash(level)
+        values = (
+            level.level_id,
+            level.run_id,
+            level.symbol,
+            level.timeframe.value,
+            _time(level.known_at),
+            _decimal(level.lower_price),
+            _decimal(level.upper_price),
+            level.kind.value,
+            _decimal(level.confluence_score),
+            canonical_json(level.evidence_candle_ids),
+            payload_hash,
+        )
+        cursor = self.connection.execute(
+            """INSERT OR IGNORE INTO levels
+               (level_id, run_id, symbol, timeframe, known_at, lower_price, upper_price,
+                kind, confluence_score, evidence_json, payload_hash)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            values,
+        )
+        if cursor.rowcount == 0:
+            stored = self.connection.execute(
+                "SELECT payload_hash FROM levels WHERE level_id = ?", (level.level_id,)
+            ).fetchone()
+            if stored != (payload_hash,):
+                raise ValueError(f"conflicting level payload: {level.level_id}")
+            return False
+        self.connection.commit()
+        return True
+
+    def insert_pattern_event(self, event: PatternEvent) -> bool:
+        payload_hash = canonical_hash(event)
+        payload = {
+            "features": event.features,
+            "evidence_candle_ids": event.evidence_candle_ids,
+            "reason_codes": event.reason_codes,
+            "config_hash": event.config_hash,
+            "code_version": event.code_version,
+        }
+        values = (
+            event.event_id,
+            event.run_id,
+            event.observation_id,
+            event.instance_id,
+            _time(event.known_at),
+            event.pattern_family,
+            event.pattern_name,
+            event.pattern_version,
+            event.prior_state.value if event.prior_state is not None else None,
+            event.new_state.value,
+            event.direction.value,
+            _decimal(event.reference_level),
+            canonical_json(payload),
+            payload_hash,
+        )
+        cursor = self.connection.execute(
+            """INSERT OR IGNORE INTO pattern_events
+               (event_id, run_id, observation_id, instance_id, known_at, pattern_family,
+                pattern_name, pattern_version, prior_state, new_state, direction,
+                reference_level, payload_json, payload_hash)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            values,
+        )
+        if cursor.rowcount == 0:
+            stored = self.connection.execute(
+                "SELECT payload_hash FROM pattern_events WHERE event_id = ?", (event.event_id,)
+            ).fetchone()
+            if stored != (payload_hash,):
+                raise ValueError(f"conflicting pattern event payload: {event.event_id}")
+            return False
+        self.connection.commit()
+        return True
+
     def counts(self) -> tuple[int, int, int]:
         counts: list[int] = []
         for table in ("runs", "candles", "feature_snapshots"):
@@ -146,4 +225,3 @@ class SQLiteRepository:
             assert row is not None
             counts.append(int(row[0]))
         return counts[0], counts[1], counts[2]
-

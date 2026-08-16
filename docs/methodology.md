@@ -21,3 +21,24 @@ The feature engine is streaming and requires strictly increasing completed candl
 symbol/timeframe. Candle anatomy is immediate. ATR initializes from 20 true ranges and then applies
 Wilder smoothing. EMA initializes with the nth-close SMA. SMA200 appears on close 200. ADR20 and
 same-slot RVOL20 use 20 strictly prior observations, so neither can include the current candle/session.
+
+## Phase 1B implementation sequence
+
+Phase 1B begins with a streaming structure engine. A pivot candidate is evaluated only when its full
+right-side window has closed. Its `pivot_time` remains the candidate candle close and its
+`confirmed_at` is the confirming candle close. Equal extrema resolve to the earliest candidate through
+the specification's strict-left/inclusive-right comparison. Structure remains `UNKNOWN` until two
+confirmed highs, two confirmed lows, and causal ADR20 are available.
+
+Phase 1B persistence migrations execute in filename order. Level and pattern-event writes are
+append-only and foreign-keyed to their originating run and observation. Restarting and replaying an
+identical payload is idempotent; the same identifier with different canonical content fails.
+
+### Approved base-quality policy
+
+The Phase 1B baseline uses these deterministic component definitions: duration is linear from 0 at
+8 bars to 100 at 40; compression is 100 at an ATR10 ratio of zero and falls linearly to zero at 0.85;
+boundary-touch score awards 50 per qualified touch at each boundary and caps at 100; drift is 100 at
+zero and falls linearly to zero at 0.50 ADR. ATR10 uses Wilder initialization from the first ten true
+ranges. Touch evidence becomes known only at the candidate window close. The unspecified `RANGE_BASE`
+compression exception is disabled until a classification rule is versioned.

@@ -36,3 +36,25 @@ They must be answered or made explicitly configurable before the phase that uses
     every scheduled XNYS session present.
 15. Should zero historical same-slot median volume produce `null`, zero, or a capped RVOL? Phase 1A
     returns `null` and records it as warm-up/missing evidence.
+
+## Added during Phase 1B
+
+16. When a zone combines sources from multiple timeframes, which timeframe should the single `Level`
+    contract carry? The current deterministic implementation retains the oldest source's timeframe and
+    uses all contributing timeframe flags for confluence; a future contract may need an explicit
+    multi-timeframe field.
+17. Does “price separation” for clustering mean pairwise distance to any member, cluster centroid, or
+    complete-link maximum distance? The current version uses nearest-member distance, processes sources
+    by `(known_at, source_id)`, and resolves eligible-cluster ties by distance then oldest cluster.
+18. The specification does not define how reaction counts are confirmed from candles. Phase 1B accepts
+    only a causal, precomputed `reaction_count` on `LevelSource`; automatic reaction detection remains
+    deferred until its confirmation rule is specified.
+19. Retest detection is described as “holds the level” without an exact penetration/close formula.
+    Break-pattern evaluation therefore accepts a causal `retest_held` input and records it in the state
+    calculation; automatic retest classification is deferred until that rule is specified.
+
+## Resolved during Phase 1B review
+
+- Base component normalization, ATR10 initialization, causal touch timing, and the conservative
+  handling of the undefined `RANGE_BASE` exception were approved for the v1 baseline and are recorded
+  normatively in `docs/methodology.md`.

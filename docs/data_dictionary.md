@@ -26,3 +26,15 @@ EMA20, EMA50, and SMA200. Unavailable warm-up features are `null` and named in
 
 SQLite Phase 1A tables are `runs`, `candles`, and `feature_snapshots`. Each persisted payload carries a
 canonical hash; duplicate identical inserts are idempotent and conflicting inserts fail.
+
+## Phase 1B additions in progress
+
+- `StructureSnapshot`: immutable as-of structure state, all causally confirmed swings, newly confirmed
+  swings, labels, and evidence candle IDs.
+- `LevelSource`: an approved causal input to zone clustering with price, timeframe, kind, evidence,
+  reaction count, and role-reversal flag.
+- `Level`: a padded structural zone whose known-at time is the latest contributing source time.
+
+SQLite Phase 1B migration `002_phase_1b.sql` adds append-only `levels` and `pattern_events` tables.
+Both store canonical payload hashes. Identical replay inserts are idempotent; conflicting identifiers
+or duplicate instance transitions at the same known-at time are rejected.
