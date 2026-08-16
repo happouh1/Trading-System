@@ -6,10 +6,10 @@ from trading_system.patterns.reclaims import ReclaimPatternMachine
 from trading_system.patterns.sweeps import SweepPatternMachine
 
 __all__ = [
-    "BreakPatternMachine",
     "BaseBar",
     "BaseCandidate",
     "BaseDetector",
+    "BreakPatternMachine",
     "PatternBar",
     "ReclaimPatternMachine",
     "SweepPatternMachine",

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from decimal import Decimal, ROUND_HALF_EVEN
+from decimal import ROUND_HALF_EVEN, Decimal
 
 from trading_system.domain import Direction, Level, LevelKind, Timeframe
 from trading_system.serialization import deterministic_id
@@ -77,7 +77,9 @@ class LevelEngine:
         threshold = adr20 * self.cluster_distance_adr
         clusters: list[_Cluster] = []
         for source in sorted(sources, key=lambda item: (item.known_at, item.source_id)):
-            eligible = [cluster for cluster in clusters if cluster.distance(source.price) <= threshold]
+            eligible = [
+                cluster for cluster in clusters if cluster.distance(source.price) <= threshold
+            ]
             if eligible:
                 selected = min(
                     eligible,

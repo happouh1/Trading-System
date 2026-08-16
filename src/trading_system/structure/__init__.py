@@ -1,4 +1,3 @@
-"""Reserved for Phase 1B."""
 """Causal confirmed pivots and market-structure classification."""
 
 from trading_system.structure.engine import StructureEngine, StructureSnapshot, StructureState

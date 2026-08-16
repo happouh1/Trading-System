@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from decimal import Decimal, ROUND_HALF_EVEN
+from decimal import ROUND_HALF_EVEN, Decimal
 
 from trading_system.domain import Direction, Level, PatternEvent, PatternState
 from trading_system.patterns.breaks import PatternBar
@@ -90,7 +90,7 @@ class ReclaimPatternMachine:
         ]
         if not loss_indexes:
             return None
-        since_loss = prior[loss_indexes[-1] :] + [bar]
+        since_loss = [*prior[loss_indexes[-1] :], bar]
         features = bar.observation.features
         clv = features.get("clv")
         body = features.get("body")

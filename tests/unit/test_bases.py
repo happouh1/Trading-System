@@ -3,7 +3,6 @@ from __future__ import annotations
 from decimal import Decimal
 
 from tests.unit.test_features import daily_candle
-
 from trading_system.patterns import BaseBar, BaseDetector
 
 D = Decimal
