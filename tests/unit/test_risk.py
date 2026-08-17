@@ -1,10 +1,18 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import UTC, datetime
 from decimal import Decimal
 
+from tests.unit.test_decisions import candidate
+
 from trading_system.domain import Direction, Timeframe
-from trading_system.risk import build_trade_plan, normalized_units
+from trading_system.risk import (
+    adr_utilization,
+    build_trade_plan,
+    normalized_units,
+    structural_anchor,
+)
 
 D = Decimal
 NOW = datetime(2026, 1, 5, 20, 0, tzinfo=UTC)
@@ -46,3 +54,15 @@ def test_invalid_stop_is_rejected_not_arbitrarily_tightened() -> None:
 
 def test_normalized_sizing_rounds_down() -> None:
     assert normalized_units(D("1000"), D("3")) == D("333")
+
+
+def test_break_anchor_uses_lower_retest_for_long() -> None:
+    event = replace(
+        candidate().event,
+        features={"retest_extreme": D("99.5"), "sequence_extreme": D("99")},
+    )
+    assert structural_anchor(event) == D("99.5")
+
+
+def test_adr_utilization_uses_confirmation_close_only() -> None:
+    assert adr_utilization(D("100"), D("103"), D("4")) == D("0.75")

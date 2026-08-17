@@ -81,3 +81,8 @@ cancellation is also Phase 1C execution behavior; Phase 1B covers only the causa
 25. The specification defines confidence weights but not deterministic source formulas for every
     component/pattern combination, nor every automatic structural stop-anchor selection. Integrated
     replay persists detected patterns but does not manufacture candidates from missing mappings.
+26. Approved trade-mapping audit identified four undefined primitives: EMA slope horizon/units,
+    sweep wick-quality normalization, trap subquality normalization, and base-quality provenance for
+    externally sourced base boundaries. Affected promotions remain gated pending an amendment.
+27. A null runway scores 100 when no causal opposing zone exists, but the mandatory runway gate does
+    not state whether null passes or fails. Automatic planning remains gated until this is explicit.

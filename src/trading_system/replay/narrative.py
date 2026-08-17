@@ -10,6 +10,7 @@ from trading_system.decisions import DecisionEngine
 from trading_system.domain import (
     Candle,
     Decision,
+    Direction,
     Level,
     LevelKind,
     Observation,
@@ -18,7 +19,7 @@ from trading_system.domain import (
     Timeframe,
 )
 from trading_system.features import CausalFeatureEngine
-from trading_system.levels import LevelEngine, LevelSource
+from trading_system.levels import LevelEngine, LevelSource, runway_adr
 from trading_system.patterns import (
     BreakPatternMachine,
     PatternBar,
@@ -92,7 +93,9 @@ class CausalNarrativePipeline:
         )
         events: tuple[PatternEvent, ...] = ()
         if adr20 is not None and candle.timeframe in self._breaks:
-            bar = PatternBar(candle, observation, adr20, None)
+            long_runway = runway_adr(candle.close, Direction.LONG, levels, adr20)
+            short_runway = runway_adr(candle.close, Direction.SHORT, levels, adr20)
+            bar = PatternBar(candle, observation, adr20, long_runway, short_runway)
             events = (
                 *self._breaks[candle.timeframe].push(bar, levels),
                 *self._sweeps[candle.timeframe].push(bar, levels),

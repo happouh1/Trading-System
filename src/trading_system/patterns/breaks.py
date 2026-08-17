@@ -21,7 +21,8 @@ class PatternBar:
     candle: Candle
     observation: Observation
     adr20: Decimal
-    runway_adr: Decimal | None
+    long_runway_adr: Decimal | None
+    short_runway_adr: Decimal | None
     retest_held: bool = False
 
     def __post_init__(self) -> None:
@@ -31,6 +32,9 @@ class PatternBar:
             raise ValueError("observation known_at must equal candle close")
         if self.adr20 <= 0 or not self.adr20.is_finite():
             raise ValueError("ADR20 must be finite and positive")
+        for value in (self.long_runway_adr, self.short_runway_adr):
+            if value is not None and (value < 0 or not value.is_finite()):
+                raise ValueError("directional runway must be finite and nonnegative")
 
 
 @dataclass(slots=True)
@@ -46,6 +50,9 @@ class _Instance:
     positive_distance_sum: Decimal = Decimal(0)
     failure_extreme: Decimal | None = None
     failure_clv_confirmed: bool = False
+    sequence_low: Decimal = Decimal("Infinity")
+    sequence_high: Decimal = Decimal(0)
+    retest_extreme: Decimal | None = None
 
 
 class BreakPatternMachine:
@@ -155,11 +162,21 @@ class BreakPatternMachine:
             maximum_excursion=excursion,
             accepted_closes=1,
             positive_distance_sum=signed_close_distance,
+            sequence_low=candle.low,
+            sequence_high=candle.high,
         )
 
     def _advance(
         self, bar: PatternBar, index: int, instance: _Instance
     ) -> PatternEvent | None:
+        instance.sequence_low = min(instance.sequence_low, bar.candle.low)
+        instance.sequence_high = max(instance.sequence_high, bar.candle.high)
+        if bar.retest_held:
+            instance.retest_extreme = (
+                bar.candle.low
+                if instance.direction is Direction.LONG
+                else bar.candle.high
+            )
         if instance.state is PatternState.FAILED:
             return self._confirm_trap(bar, instance)
         if instance.state not in (PatternState.CANDIDATE, PatternState.PENDING):
@@ -222,7 +239,12 @@ class BreakPatternMachine:
         return None
 
     def _confirm_trap(self, bar: PatternBar, instance: _Instance) -> PatternEvent | None:
-        if bar.runway_adr is None or bar.runway_adr < Decimal("0.75"):
+        runway = (
+            bar.short_runway_adr
+            if instance.direction is Direction.LONG
+            else bar.long_runway_adr
+        )
+        if runway is None or runway < Decimal("0.75"):
             return None
         if self._signed_distance(bar, instance) >= Decimal("0.05"):
             return None
@@ -280,7 +302,37 @@ class BreakPatternMachine:
         acceptance_score: Decimal | None = None,
     ) -> PatternEvent:
         family = "BREAKOUT" if instance.direction is Direction.LONG else "BREAKDOWN"
+        event_direction = instance.direction
+        if new is PatternState.TRAP_CONFIRMED:
+            event_direction = (
+                Direction.SHORT
+                if instance.direction is Direction.LONG
+                else Direction.LONG
+            )
         features: dict[str, object] = {"volume_unconfirmed": instance.candidate_rvol is None}
+        features.update(
+            {
+                "pattern_quality": None,
+                "confirmation_score": acceptance_score,
+                "trigger_extreme": (
+                    bar.candle.low
+                    if event_direction is Direction.LONG
+                    else bar.candle.high
+                ),
+                "sequence_extreme": (
+                    instance.sequence_low
+                    if event_direction is Direction.LONG
+                    else instance.sequence_high
+                ),
+                "retest_extreme": instance.retest_extreme,
+                "directional_runway_adr": (
+                    bar.long_runway_adr
+                    if event_direction is Direction.LONG
+                    else bar.short_runway_adr
+                ),
+                "reference_level_confluence": instance.level.confluence_score,
+            }
+        )
         if acceptance_score is not None:
             features["acceptance_score"] = acceptance_score
         event_id = deterministic_id(
@@ -299,7 +351,7 @@ class BreakPatternMachine:
             instance_id=instance.instance_id,
             prior_state=prior,
             new_state=new,
-            direction=instance.direction,
+            direction=event_direction,
             reference_level=(
                 instance.level.upper_price
                 if instance.direction is Direction.LONG

@@ -5,6 +5,7 @@ from decimal import Decimal
 
 from trading_system.domain import (
     Candle,
+    Direction,
     Level,
     LevelKind,
     Observation,
@@ -67,7 +68,7 @@ def pattern_bar(
         },
         data_quality={"complete": True},
     )
-    return PatternBar(candle, observation, D("2"), D("2"), retest)
+    return PatternBar(candle, observation, D("2"), D("2"), D("2"), retest)
 
 
 def resistance() -> Level:
@@ -169,6 +170,8 @@ def test_failed_breakout_confirms_bull_trap_on_lower_low() -> None:
     assert failed.new_state is PatternState.FAILED
     trap = machine.push(pattern_bar(3, "99.5", "100", "99", "99.4"), (level,))[0]
     assert trap.new_state is PatternState.TRAP_CONFIRMED
+    assert trap.direction is Direction.SHORT
+    assert trap.features["directional_runway_adr"] == D("2")
 
 
 def test_failed_breakdown_confirms_bear_trap_symmetrically() -> None:
@@ -181,6 +184,24 @@ def test_failed_breakdown_confirms_bear_trap_symmetrically() -> None:
     assert failed.new_state is PatternState.FAILED
     trap = machine.push(pattern_bar(3, "100", "101.2", "99.8", "100.4"), (level,))[0]
     assert trap.new_state is PatternState.TRAP_CONFIRMED
+    assert trap.direction is Direction.LONG
+
+
+def test_trap_uses_only_its_directional_runway() -> None:
+    machine = BreakPatternMachine("run-1", "sha256:config", "git:test")
+    level = resistance()
+    machine.push(pattern_bar(0, "99.5", "100", "99", "100"), (level,))
+    machine.push(pattern_bar(1, "99.2", "101.2", "99", "101"), (level,))
+    machine.push(pattern_bar(2, "100.4", "100.8", "99.2", "99.5"), (level,))
+    source = pattern_bar(3, "99.5", "100", "99", "99.4")
+    no_downside_runway = PatternBar(
+        source.candle,
+        source.observation,
+        source.adr20,
+        D("2"),
+        D("0.50"),
+    )
+    assert machine.push(no_downside_runway, (level,)) == ()
 
 
 def test_bearish_sweep_is_symmetric() -> None:

@@ -176,7 +176,28 @@ class SweepPatternMachine:
                 if instance.direction is Direction.LONG
                 else instance.level.upper_price
             ),
-            features={"candidate_midpoint": instance.midpoint},
+            features={
+                "candidate_midpoint": instance.midpoint,
+                "pattern_quality": None,
+                "confirmation_score": None,
+                "trigger_extreme": (
+                    bar.candle.low
+                    if instance.direction is Direction.LONG
+                    else bar.candle.high
+                ),
+                "sequence_extreme": (
+                    bar.candle.low
+                    if instance.direction is Direction.LONG
+                    else bar.candle.high
+                ),
+                "retest_extreme": None,
+                "directional_runway_adr": (
+                    bar.long_runway_adr
+                    if instance.direction is Direction.LONG
+                    else bar.short_runway_adr
+                ),
+                "reference_level_confluence": instance.level.confluence_score,
+            },
             evidence_candle_ids=(bar.candle.candle_id,),
             reason_codes=reasons[new],
             config_hash=self.config_hash,

@@ -22,6 +22,9 @@ class _Reclaim:
     distance_sum: Decimal
     reclaim_velocity: Decimal
     parent_instance_id: str | None
+    sequence_low: Decimal
+    sequence_high: Decimal
+    retest_extreme: Decimal | None = None
 
 
 class ReclaimPatternMachine:
@@ -137,11 +140,21 @@ class ReclaimPatternMachine:
             distance_sum=distance,
             reclaim_velocity=displacement / Decimal(bars_since_extreme),
             parent_instance_id=parent_instance_id,
+            sequence_low=min(item.candle.low for item in since_loss),
+            sequence_high=max(item.candle.high for item in since_loss),
         )
 
     def _advance(
         self, bar: PatternBar, index: int, instance: _Reclaim
     ) -> PatternEvent | None:
+        instance.sequence_low = min(instance.sequence_low, bar.candle.low)
+        instance.sequence_high = max(instance.sequence_high, bar.candle.high)
+        if bar.retest_held:
+            instance.retest_extreme = (
+                bar.candle.low
+                if instance.direction is Direction.LONG
+                else bar.candle.high
+            )
         if instance.state not in (PatternState.CANDIDATE, PatternState.PENDING):
             return None
         age = index - instance.candidate_index
@@ -216,9 +229,38 @@ class ReclaimPatternMachine:
         features: dict[str, object] = {
             "reclaim_velocity": instance.reclaim_velocity,
             "parent_instance_id": instance.parent_instance_id,
+            "confirmation_score": score,
+            "trigger_extreme": (
+                bar.candle.low
+                if instance.direction is Direction.LONG
+                else bar.candle.high
+            ),
+            "sequence_extreme": (
+                instance.sequence_low
+                if instance.direction is Direction.LONG
+                else instance.sequence_high
+            ),
+            "retest_extreme": instance.retest_extreme,
+            "directional_runway_adr": (
+                bar.long_runway_adr
+                if instance.direction is Direction.LONG
+                else bar.short_runway_adr
+            ),
+            "reference_level_confluence": instance.level.confluence_score,
         }
         if score is not None:
             features["acceptance_score"] = score
+            velocity_score = min(
+                max(instance.reclaim_velocity / Decimal("0.50"), Decimal(0)),
+                Decimal(1),
+            ) * Decimal(100)
+            features["pattern_quality"] = (
+                Decimal("0.50") * score
+                + Decimal("0.30") * velocity_score
+                + Decimal("0.20") * instance.level.confluence_score
+            )
+        else:
+            features["pattern_quality"] = None
         return PatternEvent(
             event_id=deterministic_id(
                 "pattern_event", (instance.instance_id, new, bar.candle.candle_id)

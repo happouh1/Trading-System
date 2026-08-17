@@ -18,6 +18,10 @@ Not approved as complete:
   rules listed in `docs/open_questions.md`;
 - automatic promotion of detected patterns still requires the approved mappings above.
 
+The approved mapping amendment implemented directional runway and required causal event evidence.
+Its post-approval audit identified the remaining primitive formulas in open question 26; affected
+patterns remain safely observational.
+
 ## Performance evidence
 
 On Windows 11 build 26200 with Python 3.12.13, `scripts/benchmark_replay.py --bars 1000000`
