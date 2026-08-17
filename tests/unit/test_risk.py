@@ -5,7 +5,6 @@ from datetime import UTC, datetime
 from decimal import Decimal
 
 from tests.unit.test_decisions import candidate
-
 from trading_system.domain import Direction, Timeframe
 from trading_system.risk import (
     adr_utilization,
