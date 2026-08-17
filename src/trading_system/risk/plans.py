@@ -16,6 +16,7 @@ class PlanResult:
     rejection_reasons: tuple[str, ...]
     stop_distance_adr: Decimal
     reward_risk: Decimal | None
+    disclosures: tuple[str, ...] = ()
 
 
 def build_trade_plan(
@@ -46,6 +47,11 @@ def build_trade_plan(
     stop_distance = risk / adr20
     reward_risk = runway_adr * adr20 / risk if runway_adr is not None and risk > 0 else None
     reasons: list[str] = []
+    disclosures = (
+        ("NO_CAUSAL_OPPOSING_ZONE", "REWARD_RISK_NOT_APPLICABLE_NO_OPPOSITION")
+        if runway_adr is None
+        else ()
+    )
     directionally_valid = (
         stop < planned_entry if direction is Direction.LONG else stop > planned_entry
     )
@@ -55,14 +61,12 @@ def build_trade_plan(
         reasons.append("STOP_TOO_TIGHT")
     if stop_distance > max_stop_adr:
         reasons.append("STOP_TOO_WIDE")
-    if runway_adr is None or runway_adr < min_runway_adr:
+    if runway_adr is not None and runway_adr < min_runway_adr:
         reasons.append("POOR_RUNWAY")
-    if reward_risk is None or reward_risk < min_reward_risk:
+    if reward_risk is not None and reward_risk < min_reward_risk:
         reasons.append("POOR_REWARD_RISK")
     if reasons:
-        return PlanResult(None, tuple(reasons), stop_distance, reward_risk)
-    assert runway_adr is not None
-    assert reward_risk is not None
+        return PlanResult(None, tuple(reasons), stop_distance, reward_risk, disclosures)
     identity = (
         symbol,
         timeframe,
@@ -85,7 +89,7 @@ def build_trade_plan(
         reward_risk=reward_risk,
         pattern_instance_id=pattern_instance_id,
     )
-    return PlanResult(plan, (), stop_distance, reward_risk)
+    return PlanResult(plan, (), stop_distance, reward_risk, disclosures)
 
 
 def normalized_units(risk_budget_currency: Decimal, risk_per_unit: Decimal) -> Decimal:

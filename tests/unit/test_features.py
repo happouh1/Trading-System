@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
 
 import pytest
 
-from trading_system.domain import Candle, Timeframe
+from trading_system.domain import Candle, Observation, Timeframe
 from trading_system.features import CausalFeatureEngine
 
 ROOT = Path(__file__).parents[2]
@@ -125,3 +126,31 @@ def test_incomplete_candle_has_no_features() -> None:
     )
     with pytest.raises(ValueError, match="completed"):
         CausalFeatureEngine("run").push(incomplete)
+
+
+def test_ema_slope_uses_five_completed_bars_and_causal_adr() -> None:
+    engine = CausalFeatureEngine("slope-run")
+    snapshots: list[Observation] = []
+    for index in range(55):
+        source = daily_candle(index)
+        close = D("100") + D(index) / D("100")
+        snapshots.append(
+            engine.push(
+                replace(
+                    source,
+                    open=close,
+                    high=close + D("1"),
+                    low=close - D("1"),
+                    close=close,
+                    raw_open=close,
+                    raw_high=close + D("1"),
+                    raw_low=close - D("1"),
+                    raw_close=close,
+                    candle_id="",
+                )
+            )
+        )
+    assert snapshots[53].features["ema50_slope_adr"] is None
+    slope = snapshots[54].features["ema50_slope_adr"]
+    assert isinstance(slope, Decimal)
+    assert slope > 0

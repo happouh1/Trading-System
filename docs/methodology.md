@@ -71,3 +71,17 @@ The narrative pipeline processes structure per symbol/timeframe, creates levels 
 confirmed swings, evaluates 1H/4H pattern machines, persists their append-only events, and includes
 causal MTF states in every decision. Pattern events without fully specified confidence-component and
 stop-anchor mappings remain explained `NO_TRADE`; outcome data never enters this path.
+
+### Approved Phase 1D primitive formulas
+
+EMA slope uses five completed bars of the evaluated timeframe and the causal ADR20 denominator from
+Specification §4.2. Sweep wick quality scales linearly from zero at the qualifying 0.40 wick fraction
+to 100 at 0.80. Trap quality combines failure-close, participation, and follow-through strength using
+the approved 40/30/30 weights and symmetric long/short formulas.
+
+A base break receives base quality only from exact, causal, versioned base provenance attached to its
+level. Missing or mismatched provenance produces a level break and never an inferred base score. When
+no causal opposing zone exists, runway and reward/risk remain null, the opposition-derived gates are
+not applicable, and the plan carries `NO_CAUSAL_OPPOSING_ZONE` disclosures. All unrelated gates remain
+mandatory. Historical `thresholds.v1.yaml` is unchanged; the new defaults live in
+`thresholds.phase1d.v1.yaml`.

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import UTC, datetime
 from decimal import Decimal
 
@@ -90,6 +91,29 @@ def test_invalid_runway_is_explained_no_trade() -> None:
     )
     assert decision.action is DecisionAction.NO_TRADE
     assert "POOR_RUNWAY" in decision.rejection_reasons
+
+
+def test_null_runway_is_not_rejected_as_poor_runway() -> None:
+    source = candidate()
+    assert source.plan is not None
+    no_opposition = replace(
+        source,
+        runway_adr=None,
+        reward_risk=None,
+        plan=replace(source.plan, runway_adr=None, reward_risk=None),
+    )
+    decision = DecisionEngine("run-1").decide("observation-1", NOW, (no_opposition,))
+    assert decision.action is DecisionAction.LONG
+    assert "POOR_RUNWAY" not in decision.rejection_reasons
+    assert "POOR_REWARD_RISK" not in decision.rejection_reasons
+
+
+def test_missing_reward_risk_with_known_runway_is_rejected() -> None:
+    source = candidate()
+    broken = replace(source, reward_risk=None)
+    decision = DecisionEngine("run-1").decide("observation-1", NOW, (broken,))
+    assert decision.action is DecisionAction.NO_TRADE
+    assert "POOR_REWARD_RISK" in decision.rejection_reasons
 
 
 def test_equal_priority_opposites_within_five_points_conflict() -> None:

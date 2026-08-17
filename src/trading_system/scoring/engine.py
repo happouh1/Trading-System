@@ -12,6 +12,21 @@ def _bounded(value: Decimal) -> Decimal:
     return min(max(value, Decimal(0)), Decimal(100))
 
 
+def ma_slope_component(
+    ema20_slope_adr: Decimal,
+    ema50_slope_adr: Decimal,
+    *,
+    full_scale: Decimal = Decimal("0.02"),
+) -> Decimal:
+    """Combine causal ADR-normalized EMA slopes onto [-1, 1]."""
+    if full_scale <= 0 or not full_scale.is_finite():
+        raise ValueError("EMA slope full scale must be finite and positive")
+    if not ema20_slope_adr.is_finite() or not ema50_slope_adr.is_finite():
+        raise ValueError("EMA slopes must be finite")
+    raw = (ema20_slope_adr + ema50_slope_adr) / full_scale
+    return min(max(raw, Decimal(-1)), Decimal(1))
+
+
 @dataclass(frozen=True, slots=True)
 class LocationComponents:
     distance_to_support_adr: Decimal

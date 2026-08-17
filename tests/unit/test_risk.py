@@ -65,3 +65,26 @@ def test_break_anchor_uses_lower_retest_for_long() -> None:
 
 def test_adr_utilization_uses_confirmation_close_only() -> None:
     assert adr_utilization(D("100"), D("103"), D("4")) == D("0.75")
+
+
+def test_null_runway_is_disclosed_not_rejected_or_invented() -> None:
+    result = build_trade_plan(
+        symbol="AAPL",
+        timeframe=Timeframe.HOUR_1,
+        direction=Direction.LONG,
+        created_at=NOW,
+        planned_entry=D("102"),
+        structural_anchor=D("100"),
+        adr20=D("4"),
+        runway_adr=None,
+        pattern_instance_id="pattern-no-opposition",
+    )
+    assert result.plan is not None
+    assert result.plan.runway_adr is None
+    assert result.plan.reward_risk is None
+    assert result.disclosures == (
+        "NO_CAUSAL_OPPOSING_ZONE",
+        "REWARD_RISK_NOT_APPLICABLE_NO_OPPOSITION",
+    )
+    assert "POOR_RUNWAY" not in result.rejection_reasons
+    assert "POOR_REWARD_RISK" not in result.rejection_reasons

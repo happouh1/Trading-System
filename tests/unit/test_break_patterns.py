@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 
@@ -172,6 +173,8 @@ def test_failed_breakout_confirms_bull_trap_on_lower_low() -> None:
     assert trap.new_state is PatternState.TRAP_CONFIRMED
     assert trap.direction is Direction.SHORT
     assert trap.features["directional_runway_adr"] == D("2")
+    assert isinstance(trap.features["pattern_quality"], Decimal)
+    assert "failure_close_quality" in trap.features
 
 
 def test_failed_breakdown_confirms_bear_trap_symmetrically() -> None:
@@ -205,6 +208,29 @@ def test_trap_uses_only_its_directional_runway() -> None:
     assert all(event.new_state is not PatternState.TRAP_CONFIRMED for event in events)
 
 
+def test_null_trap_runway_passes_with_disclosure() -> None:
+    machine = BreakPatternMachine("run-1", "sha256:config", "git:test")
+    level = resistance()
+    machine.push(pattern_bar(0, "99.5", "100", "99", "100"), (level,))
+    machine.push(pattern_bar(1, "99.2", "101.2", "99", "101"), (level,))
+    machine.push(pattern_bar(2, "100.4", "100.8", "99.2", "99.5"), (level,))
+    source = pattern_bar(3, "99.5", "100", "99", "99.4")
+    no_opposition = PatternBar(
+        source.candle,
+        source.observation,
+        source.adr20,
+        None,
+        None,
+    )
+    trap = next(
+        event
+        for event in machine.push(no_opposition, (level,))
+        if event.new_state is PatternState.TRAP_CONFIRMED
+    )
+    assert "NO_CAUSAL_OPPOSING_ZONE" in trap.reason_codes
+    assert trap.features["directional_runway_adr"] is None
+
+
 def test_bearish_sweep_is_symmetric() -> None:
     machine = SweepPatternMachine("run-1", "sha256:config", "git:test")
     level = resistance()
@@ -214,3 +240,65 @@ def test_bearish_sweep_is_symmetric() -> None:
     assert pending.new_state is PatternState.PENDING
     confirmed = machine.push(pattern_bar(2, "99.8", "100", "99.2", "99.5"), (level,))[0]
     assert confirmed.new_state is PatternState.ACCEPTED
+
+
+def test_sweep_preserves_candidate_wick_quality() -> None:
+    machine = SweepPatternMachine("run-1", "sha256:config", "git:test")
+    event = machine.push(
+        pattern_bar(0, "100", "101", "99.2", "100.8"), (resistance(),)
+    )[0]
+    assert event.features["wick_quality"] == D("11.11")
+    assert event.features["trigger_extreme"] == D("99.2")
+
+
+def test_base_break_requires_exact_causal_provenance() -> None:
+    provenance = {
+        "base_id": "base-1",
+        "base_version": "1.0.0",
+        "base_known_at": START - timedelta(hours=2),
+        "base_start_candle_id": "base-start",
+        "base_end_candle_id": "base-end",
+        "base_quality": D("82"),
+        "base_upper_price": D("100"),
+        "base_lower_price": D("100"),
+    }
+    machine = BreakPatternMachine("run-1", "sha256:config", "git:test")
+    level = replace(resistance(), provenance=provenance)
+    machine.push(pattern_bar(0, "99.5", "100", "99", "100"), (level,))
+    event = machine.push(pattern_bar(1, "99.2", "101.2", "99", "101"), (level,))[0]
+    assert event.pattern_name == "BASE_BREAKOUT"
+    assert event.features["pattern_quality"] == D("82")
+    assert event.features["base_id"] == "base-1"
+
+
+def test_missing_base_provenance_is_a_level_break() -> None:
+    machine = BreakPatternMachine("run-1", "sha256:config", "git:test")
+    level = resistance()
+    machine.push(pattern_bar(0, "99.5", "100", "99", "100"), (level,))
+    event = machine.push(pattern_bar(1, "99.2", "101.2", "99", "101"), (level,))[0]
+    assert event.pattern_name == "LEVEL_BREAKOUT"
+    assert event.features["pattern_quality"] is None
+
+
+def test_late_or_mismatched_base_provenance_is_rejected() -> None:
+    base = {
+        "base_id": "base-1",
+        "base_version": "1.0.0",
+        "base_known_at": START + timedelta(days=1),
+        "base_start_candle_id": "base-start",
+        "base_end_candle_id": "base-end",
+        "base_quality": D("82"),
+        "base_upper_price": D("101"),
+        "base_lower_price": D("100"),
+    }
+    for suffix, provenance in (
+        ("late", base),
+        ("mismatch", {**base, "base_known_at": START - timedelta(hours=2)}),
+    ):
+        machine = BreakPatternMachine("run-1", "sha256:config", f"git:{suffix}")
+        level = replace(resistance(), level_id=f"level-{suffix}", provenance=provenance)
+        machine.push(pattern_bar(0, "99.5", "100", "99", "100"), (level,))
+        event = machine.push(
+            pattern_bar(1, "99.2", "101.2", "99", "101"), (level,)
+        )[0]
+        assert event.pattern_name == "LEVEL_BREAKOUT"

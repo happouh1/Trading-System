@@ -184,18 +184,19 @@ class DecisionEngine:
         gate(
             "GATE-RUNWAY",
             runway,
-            ">=",
+            "N/A_OR_>=",
             Decimal("1.00"),
-            runway is not None and runway >= Decimal("1.00"),
+            runway is None or runway >= Decimal("1.00"),
             "POOR_RUNWAY",
         )
         reward = candidate.reward_risk
         gate(
             "GATE-RR",
             reward,
-            ">=",
+            "N/A_OR_>=",
             Decimal("1.50"),
-            reward is not None and reward >= Decimal("1.50"),
+            (runway is None and reward is None)
+            or (reward is not None and reward >= Decimal("1.50")),
             "POOR_REWARD_RISK",
         )
         utilization_cap = Decimal("1.25") if self._is_reversal(candidate) else Decimal("1.00")

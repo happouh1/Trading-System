@@ -7,6 +7,7 @@ from decimal import Decimal
 
 from trading_system.domain import Direction, Level, PatternEvent, PatternState
 from trading_system.patterns.breaks import PatternBar
+from trading_system.patterns.quality import wick_quality
 from trading_system.serialization import deterministic_id
 
 
@@ -18,11 +19,13 @@ class _Sweep:
     state: PatternState
     candidate_index: int
     midpoint: Decimal
+    wick_quality: Decimal
+    trigger_extreme: Decimal
     follow_through: bool = False
 
 
 class SweepPatternMachine:
-    pattern_version = "1.0.0"
+    pattern_version = "1.1.0"
 
     def __init__(self, run_id: str, config_hash: str, code_version: str) -> None:
         self.run_id = run_id
@@ -64,6 +67,7 @@ class SweepPatternMachine:
         clv = features.get("clv")
         lower_wick = features.get("lower_wick")
         upper_wick = features.get("upper_wick")
+        wick_fraction: Decimal | None
         if not isinstance(candle_range, Decimal) or candle_range <= 0:
             return None
         if not isinstance(clv, Decimal):
@@ -79,6 +83,7 @@ class SweepPatternMachine:
                 and lower_wick / candle_range >= Decimal("0.40")
                 and clv >= Decimal("0.60")
             )
+            wick_fraction = lower_wick / candle_range if isinstance(lower_wick, Decimal) else None
         else:
             reference = level.upper_price
             penetration = (candle.high - reference) / bar.adr20
@@ -90,8 +95,10 @@ class SweepPatternMachine:
                 and upper_wick / candle_range >= Decimal("0.40")
                 and clv <= Decimal("0.40")
             )
+            wick_fraction = upper_wick / candle_range if isinstance(upper_wick, Decimal) else None
         if not matched:
             return None
+        assert isinstance(wick_fraction, Decimal)
         identity = (self.run_id, level.level_id, direction, candle.candle_id)
         return _Sweep(
             instance_id=deterministic_id("sweep_instance", identity),
@@ -100,6 +107,8 @@ class SweepPatternMachine:
             state=PatternState.CANDIDATE,
             candidate_index=index,
             midpoint=(candle.high + candle.low) / Decimal(2),
+            wick_quality=wick_quality(wick_fraction),
+            trigger_extreme=(candle.low if direction is Direction.LONG else candle.high),
         )
 
     def _advance(
@@ -178,17 +187,14 @@ class SweepPatternMachine:
             ),
             features={
                 "candidate_midpoint": instance.midpoint,
+                "wick_quality": instance.wick_quality,
                 "pattern_quality": None,
                 "confirmation_score": None,
                 "trigger_extreme": (
-                    bar.candle.low
-                    if instance.direction is Direction.LONG
-                    else bar.candle.high
+                    instance.trigger_extreme
                 ),
                 "sequence_extreme": (
-                    bar.candle.low
-                    if instance.direction is Direction.LONG
-                    else bar.candle.high
+                    instance.trigger_extreme
                 ),
                 "retest_extreme": None,
                 "directional_runway_adr": (

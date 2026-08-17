@@ -17,6 +17,8 @@ def test_committed_config_validates_and_hash_is_stable() -> None:
     second = load_config(ROOT / "config" / "thresholds.v1.yaml")
     assert first.config_hash == second.config_hash
     assert first.config_hash.startswith("sha256:")
+    phase1d = load_config(ROOT / "config" / "thresholds.phase1d.v1.yaml")
+    assert phase1d.section("trend")["ema_slope_lookback_bars"] == 5
 
 
 def test_config_rejects_unknown_keys_and_cross_field_errors() -> None:
@@ -30,6 +32,10 @@ def test_config_rejects_unknown_keys_and_cross_field_errors() -> None:
     assert isinstance(acceptance, dict)
     acceptance["required_closes"] = 4
     with pytest.raises(ConfigError, match="window_bars"):
+        validate_config(raw)
+    raw = copy.deepcopy(dict(source.values))
+    raw["trend"] = {"ema_slope_lookback_bars": 5, "ema_slope_full_scale": 0.02}
+    with pytest.raises(ConfigError, match="supplied together"):
         validate_config(raw)
 
 

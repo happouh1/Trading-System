@@ -221,6 +221,7 @@ class Level(DomainModel):
     kind: LevelKind
     confluence_score: Decimal
     evidence_candle_ids: tuple[str, ...]
+    provenance: Mapping[str, object] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         _utc(self.known_at, "known_at")
@@ -229,6 +230,7 @@ class Level(DomainModel):
         if self.lower_price > self.upper_price:
             raise ValueError("lower_price cannot exceed upper_price")
         _score(self.confluence_score, "confluence_score")
+        object.__setattr__(self, "provenance", _mapping(self.provenance))
 
 
 @dataclass(frozen=True, slots=True)
@@ -282,8 +284,8 @@ class TradePlan(DomainModel):
     planned_entry: Decimal
     initial_stop: Decimal
     risk_per_unit: Decimal
-    runway_adr: Decimal
-    reward_risk: Decimal
+    runway_adr: Decimal | None
+    reward_risk: Decimal | None
     pattern_instance_id: str
 
     def __post_init__(self) -> None:
@@ -296,8 +298,9 @@ class TradePlan(DomainModel):
             raise ValueError("short stop must be above entry")
         if self.direction is Direction.NONE:
             raise ValueError("trade plan direction cannot be NONE")
-        if self.runway_adr < 0 or self.reward_risk < 0:
-            raise ValueError("runway and reward/risk must be nonnegative")
+        for value in (self.runway_adr, self.reward_risk):
+            if value is not None and (value < 0 or not value.is_finite()):
+                raise ValueError("runway and reward/risk must be finite and nonnegative")
 
 
 @dataclass(frozen=True, slots=True)

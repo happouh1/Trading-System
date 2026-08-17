@@ -25,6 +25,7 @@ Configuration validation:
 
 ```text
 python -m trading_system.config config/thresholds.v1.yaml
+python -m trading_system.config config/thresholds.phase1d.v1.yaml
 ```
 
 Phase 1D research commands:
@@ -37,5 +38,6 @@ trading-system explain --database research.sqlite --decision-id DECISION_ID
 ```
 
 `replay --resume` validates the stored code/config/data/calendar identity before continuing. Current
-orchestration emits causal features and an explained `NO_TRADE` when no pattern candidates are wired;
-the final Phase 1D increment will connect the complete Phase 1B/1C narrative.
+The Phase 1D configuration adds versioned EMA-slope, sweep-wick, and trap-quality defaults without
+modifying the historical Phase 0/1A configuration file. Null runway remains null, carries explicit
+disclosures, and never becomes infinity or a manufactured target.

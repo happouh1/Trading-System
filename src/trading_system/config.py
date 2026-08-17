@@ -15,9 +15,10 @@ from trading_system.versioning import SPEC_VERSION, SemanticVersion
 
 _TOP_LEVEL = {
     "spec_version", "calendar", "session", "adjustment", "timeframes", "signal_timeframes",
-    "features", "structure", "base", "break", "acceptance", "risk", "decision", "execution",
-    "determinism",
+    "features", "structure", "trend", "base", "break", "acceptance", "sweep", "trap",
+    "risk", "decision", "execution", "determinism",
 }
+_REQUIRED_TOP_LEVEL = _TOP_LEVEL - {"trend", "sweep", "trap"}
 _TIMEFRAMES = {"1h", "4h", "1d", "1w"}
 
 
@@ -58,7 +59,16 @@ class ThresholdConfig:
 
 def validate_config(raw: object) -> ThresholdConfig:
     root = _object(raw, "config")
-    _keys(root, "config", _TOP_LEVEL)
+    missing = _REQUIRED_TOP_LEVEL - root.keys()
+    extra = root.keys() - _TOP_LEVEL
+    if missing or extra:
+        raise ConfigError(
+            f"config keys invalid; missing={sorted(missing)}, extra={sorted(extra)}"
+        )
+    phase1d_sections = {"trend", "sweep", "trap"}
+    present_phase1d = phase1d_sections & root.keys()
+    if present_phase1d and present_phase1d != phase1d_sections:
+        raise ConfigError("trend, sweep, and trap sections must be supplied together")
     if root["spec_version"] != SPEC_VERSION:
         raise ConfigError(f"spec_version must be {SPEC_VERSION}")
     SemanticVersion.parse(str(root["spec_version"]))
@@ -78,6 +88,7 @@ def validate_config(raw: object) -> ThresholdConfig:
     expected = {
         "features": {"atr_period", "adr_period", "rvol_period", "pivot_left", "pivot_right"},
         "structure": {"equality_tolerance_adr"},
+        "trend": {"ema_slope_lookback_bars", "ema_slope_full_scale"},
         "base": {
             "min_bars",
             "max_bars",
@@ -94,6 +105,13 @@ def validate_config(raw: object) -> ThresholdConfig:
             "failure_buffer_adr",
             "min_score",
         },
+        "sweep": {"min_wick_fraction", "full_quality_wick_fraction"},
+        "trap": {
+            "full_failure_distance_adr",
+            "full_participation_rvol",
+            "full_participation_excursion_adr",
+            "full_follow_through_adr",
+        },
         "risk": {
             "stop_buffer_adr",
             "min_stop_adr",
@@ -106,8 +124,14 @@ def validate_config(raw: object) -> ThresholdConfig:
         "execution": {"fill_model", "collision_policy", "slippage_bps", "slippage_atr_fraction"},
         "determinism": {"seed", "numeric_rounding", "price_precision"},
     }
-    sections = {name: _object(root[name], name) for name in expected}
+    sections = {
+        name: _object(root[name], name)
+        for name in expected
+        if name in root
+    }
     for name, keys in expected.items():
+        if name not in sections:
+            continue
         _keys(sections[name], name, keys)
 
     for key in expected["features"]:
@@ -115,6 +139,14 @@ def validate_config(raw: object) -> ThresholdConfig:
     for name in ("structure", "base", "break", "acceptance", "risk", "decision"):
         for key, value in sections[name].items():
             _number(value, f"{name}.{key}")
+    for name in ("trend", "sweep", "trap"):
+        for key, value in sections.get(name, {}).items():
+            _number(value, f"{name}.{key}")
+    if "trend" in sections and (
+        isinstance(sections["trend"]["ema_slope_lookback_bars"], bool)
+        or not isinstance(sections["trend"]["ema_slope_lookback_bars"], int)
+    ):
+        raise ConfigError("trend.ema_slope_lookback_bars must be an integer")
     for path in (("base", "min_overlap"), ("break", "min_clv_long"),
                  ("break", "max_clv_short"), ("break", "min_body_fraction")):
         _number(sections[path[0]][path[1]], ".".join(path), 0, 1)
@@ -122,6 +154,11 @@ def validate_config(raw: object) -> ThresholdConfig:
         raise ConfigError("base.min_bars cannot exceed base.max_bars")
     if sections["acceptance"]["required_closes"] > sections["acceptance"]["window_bars"]:
         raise ConfigError("acceptance.required_closes cannot exceed window_bars")
+    if "sweep" in sections and (
+        sections["sweep"]["min_wick_fraction"]
+        >= sections["sweep"]["full_quality_wick_fraction"]
+    ):
+        raise ConfigError("sweep minimum wick must be below full-quality wick")
     if sections["risk"]["min_stop_adr"] > sections["risk"]["max_stop_adr"]:
         raise ConfigError("risk.min_stop_adr cannot exceed max_stop_adr")
     if sections["decision"]["watch_confidence"] > sections["decision"]["trade_confidence"]:

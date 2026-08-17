@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:trading-system:thresholds:phase1d:1.0.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["spec_version", "calendar", "session", "adjustment", "timeframes", "signal_timeframes", "features", "structure", "trend", "base", "break", "acceptance", "sweep", "trap", "risk", "decision", "execution", "determinism"],
+  "properties": {
+    "spec_version": {"const": "1.0.0"},
+    "calendar": {"const": "XNYS"},
+    "session": {"const": "regular"},
+    "adjustment": {"const": "split_adjusted"},
+    "timeframes": {"type": "array", "items": {"enum": ["1h", "4h", "1d", "1w"]}, "uniqueItems": true},
+    "signal_timeframes": {"type": "array", "items": {"enum": ["1h", "4h"]}, "uniqueItems": true},
+    "features": {"type": "object"},
+    "structure": {"type": "object"},
+    "trend": {"type": "object"},
+    "base": {"type": "object"},
+    "break": {"type": "object"},
+    "acceptance": {"type": "object"},
+    "sweep": {"type": "object"},
+    "trap": {"type": "object"},
+    "risk": {"type": "object"},
+    "decision": {"type": "object"},
+    "execution": {"type": "object"},
+    "determinism": {"type": "object"}
+  },
+  "description": "Phase 1D structural schema; Python validation remains normative."
+}

@@ -19,8 +19,9 @@ Not approved as complete:
 - automatic promotion of detected patterns still requires the approved mappings above.
 
 The approved mapping amendment implemented directional runway and required causal event evidence.
-Its post-approval audit identified the remaining primitive formulas in open question 26; affected
-patterns remain safely observational.
+Its post-approval audit identified the remaining primitive formulas in open questions 26–27. The
+approved primitive amendment now defines and implements those formulas, provenance rules, and null
+semantics. Final full-suite and end-to-end exit validation remain required before tagging.
 
 ## Performance evidence
 

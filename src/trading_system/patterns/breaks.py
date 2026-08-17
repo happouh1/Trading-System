@@ -3,16 +3,19 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime
 from decimal import ROUND_HALF_EVEN, Decimal
 
 from trading_system.domain import (
     Candle,
     Direction,
     Level,
+    LevelKind,
     Observation,
     PatternEvent,
     PatternState,
 )
+from trading_system.patterns.quality import trap_quality
 from trading_system.serialization import deterministic_id
 
 
@@ -50,6 +53,10 @@ class _Instance:
     positive_distance_sum: Decimal = Decimal(0)
     failure_extreme: Decimal | None = None
     failure_clv_confirmed: bool = False
+    failure_clv: Decimal | None = None
+    failure_distance_adr: Decimal | None = None
+    failure_low: Decimal | None = None
+    failure_high: Decimal | None = None
     sequence_low: Decimal = Decimal("Infinity")
     sequence_high: Decimal = Decimal(0)
     retest_extreme: Decimal | None = None
@@ -58,7 +65,7 @@ class _Instance:
 class BreakPatternMachine:
     """One transition per instance per completed bar, with causal evidence only."""
 
-    pattern_version = "1.0.0"
+    pattern_version = "1.1.0"
 
     def __init__(self, run_id: str, config_hash: str, code_version: str) -> None:
         self.run_id = run_id
@@ -194,6 +201,10 @@ class BreakPatternMachine:
                 bar.candle.low if instance.direction is Direction.LONG else bar.candle.high
             )
             clv = bar.observation.features.get("clv")
+            instance.failure_clv = clv if isinstance(clv, Decimal) else None
+            instance.failure_distance_adr = -signed
+            instance.failure_low = bar.candle.low
+            instance.failure_high = bar.candle.high
             instance.failure_clv_confirmed = isinstance(clv, Decimal) and (
                 clv <= Decimal("0.35")
                 if instance.direction is Direction.LONG
@@ -244,7 +255,7 @@ class BreakPatternMachine:
             if instance.direction is Direction.LONG
             else bar.long_runway_adr
         )
-        if runway is None or runway < Decimal("0.75"):
+        if runway is not None and runway < Decimal("0.75"):
             return None
         if self._signed_distance(bar, instance) >= Decimal("0.05"):
             return None
@@ -262,8 +273,13 @@ class BreakPatternMachine:
         if not attracted or not (instance.failure_clv_confirmed or follow_through):
             return None
         instance.state = PatternState.TRAP_CONFIRMED
+        reasons = (
+            ("TRAP_CONFIRMED", "NO_CAUSAL_OPPOSING_ZONE")
+            if runway is None
+            else ("TRAP_CONFIRMED",)
+        )
         return self._event(
-            bar, instance, PatternState.FAILED, PatternState.TRAP_CONFIRMED, ("TRAP_CONFIRMED",)
+            bar, instance, PatternState.FAILED, PatternState.TRAP_CONFIRMED, reasons
         )
 
     @staticmethod
@@ -333,6 +349,45 @@ class BreakPatternMachine:
                 "reference_level_confluence": instance.level.confluence_score,
             }
         )
+        if new is PatternState.TRAP_CONFIRMED:
+            failure_clv = instance.failure_clv
+            failure_distance = instance.failure_distance_adr
+            if failure_clv is not None and failure_distance is not None:
+                follow_distance = Decimal(0)
+                if event_direction is Direction.SHORT and instance.failure_low is not None:
+                    follow_distance = (
+                        max(instance.failure_low - bar.candle.low, Decimal(0)) / bar.adr20
+                    )
+                elif event_direction is Direction.LONG and instance.failure_high is not None:
+                    follow_distance = (
+                        max(bar.candle.high - instance.failure_high, Decimal(0)) / bar.adr20
+                    )
+                quality, failure, participation, follow = trap_quality(
+                    direction=event_direction,
+                    failure_distance_adr=failure_distance,
+                    failure_clv=failure_clv,
+                    candidate_rvol=instance.candidate_rvol,
+                    maximum_excursion_adr=instance.maximum_excursion,
+                    follow_through_distance_adr=follow_distance,
+                )
+                features.update(
+                    {
+                        "pattern_quality": quality,
+                        "failure_close_quality": failure,
+                        "participation_quality": participation,
+                        "follow_through_quality": follow,
+                    }
+                )
+        base_quality = self._base_quality(instance.level, instance.direction, bar)
+        if base_quality is not None and new is not PatternState.TRAP_CONFIRMED:
+            features["pattern_quality"] = base_quality
+            features["base_id"] = instance.level.provenance["base_id"]
+            features["base_version"] = instance.level.provenance["base_version"]
+            features["base_known_at"] = instance.level.provenance["base_known_at"]
+            features["base_start_candle_id"] = instance.level.provenance[
+                "base_start_candle_id"
+            ]
+            features["base_end_candle_id"] = instance.level.provenance["base_end_candle_id"]
         if acceptance_score is not None:
             features["acceptance_score"] = acceptance_score
         event_id = deterministic_id(
@@ -346,7 +401,7 @@ class BreakPatternMachine:
             timeframe=bar.candle.timeframe,
             known_at=bar.candle.close_time,
             pattern_family=family,
-            pattern_name=f"BASE_{family}",
+            pattern_name=(f"BASE_{family}" if base_quality is not None else f"LEVEL_{family}"),
             pattern_version=self.pattern_version,
             instance_id=instance.instance_id,
             prior_state=prior,
@@ -358,8 +413,37 @@ class BreakPatternMachine:
                 else instance.level.lower_price
             ),
             features=features,
-            evidence_candle_ids=(bar.candle.candle_id,),
+            evidence_candle_ids=tuple(
+                sorted({bar.candle.candle_id, *instance.level.evidence_candle_ids})
+            ),
             reason_codes=reasons,
             config_hash=self.config_hash,
             code_version=self.code_version,
         )
+
+    @staticmethod
+    def _base_quality(level: Level, direction: Direction, bar: PatternBar) -> Decimal | None:
+        provenance = level.provenance
+        required = {
+            "base_id",
+            "base_version",
+            "base_known_at",
+            "base_start_candle_id",
+            "base_end_candle_id",
+            "base_quality",
+            "base_upper_price",
+            "base_lower_price",
+        }
+        if level.kind is not LevelKind.BASE_BOUNDARY or not required <= provenance.keys():
+            return None
+        known_at = provenance["base_known_at"]
+        quality = provenance["base_quality"]
+        upper = provenance["base_upper_price"]
+        lower = provenance["base_lower_price"]
+        if not isinstance(known_at, datetime) or known_at > bar.candle.close_time:
+            return None
+        if not isinstance(quality, Decimal) or not Decimal(0) <= quality <= Decimal(100):
+            return None
+        reference = level.upper_price if direction is Direction.LONG else level.lower_price
+        boundary = upper if direction is Direction.LONG else lower
+        return quality if isinstance(boundary, Decimal) and boundary == reference else None

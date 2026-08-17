@@ -5,10 +5,12 @@ The authoritative executable definitions are frozen dataclasses in
 
 - `Candle`: completed or incomplete source OHLCV observation with adjustment and revision provenance.
 - `Swing`: causally confirmed high/low with separate pivot and confirmation timestamps.
-- `Level`: structural price zone, evidence, known-at time, and confluence score.
+- `Level`: structural price zone, evidence, known-at time, confluence score, and immutable causal
+  provenance when the level is derived from a validated base.
 - `PatternEvent`: append-only transition of a versioned pattern instance.
 - `Decision`: explained LONG, SHORT, WATCH, or NO_TRADE result with separate setup/entry quality.
-- `TradePlan`: proposed entry, structural stop, unit risk, runway, and reward/risk.
+- `TradePlan`: proposed entry, structural stop, unit risk, and nullable runway/reward-risk. Null means
+  no causal opposing zone was found; it never means infinity.
 - `TradeEvent`: append-only simulated trade lifecycle event.
 - `Observation`: immutable as-of feature/data-quality snapshot and input fingerprint.
 - `Outcome`: future-derived label kept separate from observations and decisions.
@@ -61,3 +63,9 @@ Migration `004_phase_1d.sql` adds replay checkpoints and immutable versioned out
 Migration `005_phase_1d_completed_trades.sql` adds normalized completed trades with direction,
 entry/exit timestamps and prices, initial risk, gross/net R, excursions, costs, and holding duration.
 Reports calculate metrics only from these auditable completed records.
+
+The Phase 1D primitive amendment adds `ema10_slope_adr`, `ema20_slope_adr`, and
+`ema50_slope_adr` after a five-completed-bar slope warm-up. Pattern evidence may include
+`wick_quality`, trap subquality scores, and validated base provenance identifiers. `PlanResult`
+separates nonblocking disclosures from rejection reasons. Feature snapshots and changed break/sweep
+events use schema/pattern version `1.1.0`; existing version `1.0.0` records are not rewritten.

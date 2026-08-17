@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from collections.abc import Mapping
+from dataclasses import dataclass, field
 from datetime import datetime
 from decimal import ROUND_HALF_EVEN, Decimal
+from types import MappingProxyType
 
 from trading_system.domain import Direction, Level, LevelKind, Timeframe
 from trading_system.serialization import deterministic_id
@@ -21,6 +23,7 @@ class LevelSource:
     evidence_candle_ids: tuple[str, ...]
     reaction_count: int = 0
     role_reversal: bool = False
+    provenance: Mapping[str, object] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if not self.source_id:
@@ -33,6 +36,7 @@ class LevelSource:
             raise ValueError("source evidence is required")
         if self.reaction_count < 0:
             raise ValueError("reaction_count must be nonnegative")
+        object.__setattr__(self, "provenance", MappingProxyType(dict(self.provenance)))
 
 
 @dataclass(slots=True)
@@ -126,6 +130,14 @@ class LevelEngine:
             Decimal("1"), rounding=ROUND_HALF_EVEN
         )
         prices = [source.price for source in cluster.sources]
+        base_sources = [
+            source
+            for source in cluster.sources
+            if source.kind is LevelKind.BASE_BOUNDARY and source.provenance
+        ]
+        provenance: Mapping[str, object] = (
+            base_sources[0].provenance if len(base_sources) == 1 else {}
+        )
         identity = (
             run_id,
             oldest.symbol,
@@ -143,6 +155,7 @@ class LevelEngine:
             kind=oldest.kind,
             confluence_score=score,
             evidence_candle_ids=evidence,
+            provenance=provenance,
         )
 
 

@@ -1,0 +1,43 @@
+{
+  "spec_version": "1.0.0",
+  "calendar": "XNYS",
+  "session": "regular",
+  "adjustment": "split_adjusted",
+  "timeframes": ["1h", "4h", "1d", "1w"],
+  "signal_timeframes": ["1h", "4h"],
+  "features": {
+    "atr_period": 20, "adr_period": 20, "rvol_period": 20,
+    "pivot_left": 3, "pivot_right": 3
+  },
+  "structure": {"equality_tolerance_adr": 0.10},
+  "trend": {"ema_slope_lookback_bars": 5, "ema_slope_full_scale": 0.02},
+  "base": {
+    "min_bars": 8, "max_bars": 40, "max_width_adr": 1.50,
+    "max_net_drift_adr": 0.50, "min_overlap": 0.55, "max_atr_compression": 0.85
+  },
+  "break": {
+    "buffer_adr": 0.10, "min_clv_long": 0.70, "max_clv_short": 0.30,
+    "min_body_fraction": 0.55, "min_rvol": 1.20
+  },
+  "acceptance": {
+    "window_bars": 3, "required_closes": 2, "hold_buffer_adr": 0.05,
+    "failure_buffer_adr": 0.10, "min_score": 65
+  },
+  "sweep": {"min_wick_fraction": 0.40, "full_quality_wick_fraction": 0.80},
+  "trap": {
+    "full_failure_distance_adr": 0.30, "full_participation_rvol": 2.00,
+    "full_participation_excursion_adr": 0.75, "full_follow_through_adr": 0.25
+  },
+  "risk": {
+    "stop_buffer_adr": 0.10, "min_stop_adr": 0.20, "max_stop_adr": 1.25,
+    "min_runway_adr": 1.00, "min_reward_risk": 1.50, "max_hold_bars": 40
+  },
+  "decision": {"trade_confidence": 75, "watch_confidence": 60},
+  "execution": {
+    "fill_model": "next_bar_open", "collision_policy": "adverse_first",
+    "slippage_bps": 1, "slippage_atr_fraction": 0.02
+  },
+  "determinism": {
+    "seed": 20260101, "numeric_rounding": "half_even", "price_precision": 8
+  }
+}

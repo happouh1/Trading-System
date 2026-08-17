@@ -86,3 +86,10 @@ cancellation is also Phase 1C execution behavior; Phase 1B covers only the causa
     externally sourced base boundaries. Affected promotions remain gated pending an amendment.
 27. A null runway scores 100 when no causal opposing zone exists, but the mandatory runway gate does
     not state whether null passes or fails. Automatic planning remains gated until this is explicit.
+
+## Resolved by approved Phase 1D primitive amendment
+
+Open questions 26–27 are resolved by `docs/proposals/phase_1d_primitives_v1.md`: five-bar
+ADR-normalized EMA slopes, sweep wick normalization, symmetric trap subquality, strict causal base
+provenance, and disclosed null-runway gate behavior. The implementation does not retroactively alter
+persisted events or the historical `thresholds.v1.yaml` configuration.

@@ -25,6 +25,7 @@ class _SeriesState:
     true_ranges: list[Decimal] = field(default_factory=list)
     atr: Decimal | None = None
     ema: dict[int, Decimal] = field(default_factory=dict)
+    ema_history: dict[int, list[Decimal]] = field(default_factory=lambda: defaultdict(list))
     slot_volumes: dict[str, list[Decimal]] = field(default_factory=lambda: defaultdict(list))
 
 
@@ -59,9 +60,17 @@ class CausalFeatureEngine:
         rvol_period: int = 20,
         ema_periods: tuple[int, ...] = (10, 20, 50),
         sma_period: int = 200,
-        schema_version: str = "1.0.0",
+        ema_slope_lookback: int = 5,
+        schema_version: str = "1.1.0",
     ) -> None:
-        periods = (atr_period, adr_period, rvol_period, sma_period, *ema_periods)
+        periods = (
+            atr_period,
+            adr_period,
+            rvol_period,
+            sma_period,
+            ema_slope_lookback,
+            *ema_periods,
+        )
         if any(period <= 0 for period in periods):
             raise ValueError("feature periods must be positive")
         self.run_id = run_id
@@ -70,6 +79,7 @@ class CausalFeatureEngine:
         self.rvol_period = rvol_period
         self.ema_periods = ema_periods
         self.sma_period = sma_period
+        self.ema_slope_lookback = ema_slope_lookback
         self.schema_version = schema_version
         self._states: dict[tuple[str, Timeframe], _SeriesState] = {}
         self._daily_ranges: dict[str, list[tuple[date, Decimal, str]]] = defaultdict(list)
@@ -140,6 +150,18 @@ class CausalFeatureEngine:
                 else None
             )
             adr = self._adr(candle)
+            slope_values: dict[str, Decimal | None] = {}
+            for period in self.ema_periods:
+                value = ema_values[f"ema{period}"]
+                history = state.ema_history[period]
+                slope: Decimal | None = None
+                if value is not None:
+                    if adr is not None and len(history) >= self.ema_slope_lookback:
+                        slope = (value - history[-self.ema_slope_lookback]) / (
+                            Decimal(self.ema_slope_lookback) * adr
+                        )
+                    history.append(value)
+                slope_values[f"ema{period}_slope_adr"] = slope
             slot = _slot(candle)
             prior_volumes = state.slot_volumes[slot]
             rvol = None
@@ -161,6 +183,7 @@ class CausalFeatureEngine:
                 "sma200": sma,
                 "volume_slot": slot,
                 **ema_values,
+                **slope_values,
             }
             missing = tuple(sorted(name for name, value in features.items() if value is None))
             fingerprint = canonical_hash(
@@ -179,6 +202,7 @@ class CausalFeatureEngine:
                         "rvol": self.rvol_period,
                         "ema": self.ema_periods,
                         "sma": self.sma_period,
+                        "ema_slope_lookback": self.ema_slope_lookback,
                     },
                 }
             )
