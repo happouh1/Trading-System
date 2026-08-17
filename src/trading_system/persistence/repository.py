@@ -96,6 +96,16 @@ class SQLiteRepository:
         self.connection.commit()
         return True
 
+    def run_metadata(self, run_id: str) -> tuple[str, str, str, str, int] | None:
+        row = self.connection.execute(
+            """SELECT code_version, config_hash, data_revision, calendar_version, random_seed
+               FROM runs WHERE run_id = ?""",
+            (run_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        return str(row[0]), str(row[1]), str(row[2]), str(row[3]), int(row[4])
+
     def insert_candle(self, candle: Candle) -> bool:
         payload_hash = canonical_hash(candle)
         values = (
@@ -358,6 +368,63 @@ class SQLiteRepository:
         if row is None:
             return None
         return datetime.fromisoformat(str(row[0]).replace("Z", "+00:00")), int(row[1]), str(row[2])
+
+    def observation_export_rows(self, run_id: str) -> tuple[dict[str, object], ...]:
+        rows = self.connection.execute(
+            """SELECT f.observation_id, f.run_id, f.candle_id, f.known_at,
+                      f.schema_version, f.input_fingerprint, f.features_json,
+                      f.data_quality_json, f.payload_hash, r.config_hash,
+                      r.code_version, r.data_revision, r.calendar_version
+               FROM feature_snapshots f JOIN runs r ON r.run_id = f.run_id
+               WHERE f.run_id = ? ORDER BY f.known_at, f.observation_id""",
+            (run_id,),
+        ).fetchall()
+        columns = (
+            "observation_id",
+            "run_id",
+            "candle_id",
+            "known_at",
+            "schema_version",
+            "input_fingerprint",
+            "features_json",
+            "data_quality_json",
+            "payload_hash",
+            "config_hash",
+            "code_version",
+            "data_revision",
+            "calendar_version",
+        )
+        return tuple(dict(zip(columns, row, strict=True)) for row in rows)
+
+    def decision_payload(self, decision_id: str) -> str | None:
+        row = self.connection.execute(
+            "SELECT payload_json FROM decisions WHERE decision_id = ?",
+            (decision_id,),
+        ).fetchone()
+        return None if row is None else str(row[0])
+
+    def run_counts(self, run_id: str) -> dict[str, int]:
+        result: dict[str, int] = {}
+        tables = (
+            "candles",
+            "feature_snapshots",
+            "pattern_events",
+            "decisions",
+            "trade_events",
+            "outcomes",
+        )
+        for table in tables:
+            column = "run_id" if table != "candles" else None
+            if column is None:
+                row = self.connection.execute("SELECT COUNT(*) FROM candles").fetchone()
+            else:
+                row = self.connection.execute(
+                    f"SELECT COUNT(*) FROM {table} WHERE run_id = ?",
+                    (run_id,),
+                ).fetchone()
+            assert row is not None
+            result[table] = int(row[0])
+        return result
 
     def counts(self) -> tuple[int, int, int]:
         counts: list[int] = []

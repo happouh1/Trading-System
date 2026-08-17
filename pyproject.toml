@@ -15,6 +15,9 @@ dependencies = [
   "pyarrow>=17,<22",
 ]
 
+[project.scripts]
+trading-system = "trading_system.cli:main"
+
 [project.optional-dependencies]
 dev = [
   "mypy>=1.11,<2",

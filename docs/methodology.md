@@ -61,3 +61,8 @@ candles at or before the stored checkpoint close.
 Outcome labeling uses only supplied chronological future candles. Generic success requires 2R before
 1R adverse excursion. Labels are versioned, append-only, and available only at the final horizon close.
 Reports disclose survivorship, corporate-action revision, OHLC collision, and profitability limits.
+
+Observation exports are ordered by known-at time and ID and retain config hash, code version, data
+revision, calendar version, input fingerprint, payload hash, features, and data-quality evidence.
+CSV uses canonical JSON cells; Parquet uses Zstandard compression. Replay restart first rebuilds causal
+feature warm-up from earlier candles, then emits records strictly after the completed checkpoint group.

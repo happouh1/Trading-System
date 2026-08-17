@@ -63,6 +63,7 @@ class ReplayEngine:
         *,
         resume_after: datetime | None = None,
         processed_before: int = 0,
+        prior_state_hash: str = "GENESIS",
     ) -> tuple[tuple[ReplayRecord, ...], ReplayCheckpoint | None]:
         ordered = self.normalize(candles)
         selected = tuple(
@@ -74,15 +75,18 @@ class ReplayEngine:
         if not records:
             return records, None
         count = processed_before + len(records)
+        state_hash = prior_state_hash
+        for record in records:
+            state_hash = canonical_hash(
+                {
+                    "prior_state_hash": state_hash,
+                    "candle_id": record.candle.candle_id,
+                    "output": record.output,
+                }
+            )
         checkpoint = ReplayCheckpoint(
             last_close_time=records[-1].candle.close_time,
             processed_candles=count,
-            state_hash=canonical_hash(
-                {
-                    "processed_candles": count,
-                    "candle_ids": tuple(record.candle.candle_id for record in records),
-                    "outputs": tuple(record.output for record in records),
-                }
-            ),
+            state_hash=state_hash,
         )
         return records, checkpoint

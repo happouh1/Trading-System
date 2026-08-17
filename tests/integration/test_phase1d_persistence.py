@@ -9,6 +9,7 @@ from tests.unit.test_features import daily_candle
 from trading_system.domain import Direction, Observation
 from trading_system.learning import label_outcome
 from trading_system.persistence import RunRecord, SQLiteRepository
+from trading_system.replay import ReplayOrchestrator
 
 
 def test_checkpoint_restart_and_outcome_idempotence(tmp_path: Path) -> None:
@@ -47,3 +48,55 @@ def test_checkpoint_restart_and_outcome_idempotence(tmp_path: Path) -> None:
         repository.migrate()
         checkpoint = repository.load_checkpoint(run.run_id)
         assert checkpoint == (candle.close_time, 1, "sha256:state")
+
+
+def test_replay_orchestrator_persists_one_decision_per_candle(tmp_path: Path) -> None:
+    path = tmp_path / "replay.sqlite"
+    run = RunRecord("run-2", datetime(2026, 1, 1, tzinfo=UTC), "code", "cfg", "data", "cal", 1)
+    candles = tuple(daily_candle(index) for index in range(3))
+    with SQLiteRepository(path) as repository:
+        repository.migrate()
+        repository.insert_run(run)
+        summary = ReplayOrchestrator(run.run_id, repository).run(candles)
+        assert summary.processed_candles == 3
+        assert repository.run_counts(run.run_id)["decisions"] == 3
+        rows = repository.observation_export_rows(run.run_id)
+        assert len(rows) == 3
+        assert all(row["config_hash"] == "cfg" for row in rows)
+
+
+def test_replay_resume_rebuilds_causal_feature_warmup(tmp_path: Path) -> None:
+    path = tmp_path / "resume.sqlite"
+    run = RunRecord("run-3", datetime(2026, 1, 1, tzinfo=UTC), "code", "cfg", "data", "cal", 1)
+    candles = tuple(daily_candle(index) for index in range(3))
+    with SQLiteRepository(path) as repository:
+        repository.migrate()
+        repository.insert_run(run)
+        first = ReplayOrchestrator(run.run_id, repository).run(candles[:2])
+        assert first.checkpoint is not None
+        resumed = ReplayOrchestrator(run.run_id, repository).run(
+            candles,
+            resume_after=first.checkpoint.last_close_time,
+            processed_before=first.checkpoint.processed_candles,
+            prior_state_hash=first.checkpoint.state_hash,
+        )
+        assert resumed.processed_candles == 1
+        assert resumed.checkpoint is not None
+        assert resumed.checkpoint.processed_candles == 3
+
+    full_path = tmp_path / "full.sqlite"
+    full_run = RunRecord(
+        "run-3",
+        datetime(2026, 1, 1, tzinfo=UTC),
+        "code",
+        "cfg",
+        "data",
+        "cal",
+        1,
+    )
+    with SQLiteRepository(full_path) as repository:
+        repository.migrate()
+        repository.insert_run(full_run)
+        full = ReplayOrchestrator(full_run.run_id, repository).run(candles)
+        assert full.checkpoint is not None
+        assert resumed.checkpoint.state_hash == full.checkpoint.state_hash

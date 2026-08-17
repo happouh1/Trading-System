@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
+from pathlib import Path
 
 import pytest
 
@@ -10,6 +11,7 @@ from tests.unit.test_features import daily_candle
 from trading_system.backtest import TradeResult, summarize
 from trading_system.domain import Direction, Timeframe
 from trading_system.learning import label_outcome
+from trading_system.learning.exports import write_observations
 from trading_system.replay import ReplayEngine
 from trading_system.reporting import export_jsonl, markdown_report
 
@@ -111,3 +113,13 @@ def test_empty_metrics_are_defined() -> None:
 
 def test_fixture_clock_is_utc() -> None:
     assert datetime(2026, 1, 1, tzinfo=UTC).utcoffset() == timedelta(0)
+
+
+def test_csv_observation_export_is_deterministic(tmp_path: Path) -> None:
+    target = tmp_path / "observations.csv"
+    rows = ({"known_at": "2026-01-01T00:00:00Z", "config_hash": "sha256:cfg"},)
+    write_observations(rows, target, "csv")
+    first = target.read_bytes()
+    write_observations(rows, target, "csv")
+    assert target.read_bytes() == first
+    assert b"config_hash" in first

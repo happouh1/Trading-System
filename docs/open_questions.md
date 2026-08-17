@@ -72,3 +72,5 @@ cancellation is also Phase 1C execution behavior; Phase 1B covers only the causa
     `GENERIC_SUCCESS` or `GENERIC_FAILURE` until a catalog is approved.
 21. Checkpoints are valid only after a full close-time group; partial-group recovery is prohibited.
 22. Portfolio exposure, CAGR, and Sharpe need capital-allocation rules not specified in Phase 1.
+23. Phase 1C trade events do not persist direction and initial unit risk in a normalized trade table.
+    The CLI does not infer net-R metrics from incomplete payloads or report unavailable metrics as zero.

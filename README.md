@@ -26,3 +26,16 @@ Configuration validation:
 ```text
 python -m trading_system.config config/thresholds.v1.yaml
 ```
+
+Phase 1D research commands:
+
+```text
+trading-system replay --input DATA.csv --database research.sqlite --run-id RUN --config config/thresholds.v1.yaml
+trading-system export-observations --database research.sqlite --run-id RUN --format parquet --output observations.parquet
+trading-system report --database research.sqlite --run-id RUN --output report.md
+trading-system explain --database research.sqlite --decision-id DECISION_ID
+```
+
+`replay --resume` validates the stored code/config/data/calendar identity before continuing. Current
+orchestration emits causal features and an explained `NO_TRADE` when no pattern candidates are wired;
+the final Phase 1D increment will connect the complete Phase 1B/1C narrative.
