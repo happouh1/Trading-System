@@ -5,6 +5,7 @@ from decimal import Decimal
 from pathlib import Path
 
 from tests.unit.test_features import daily_candle
+
 from trading_system.domain import Direction, Observation
 from trading_system.learning import label_outcome
 from trading_system.persistence import RunRecord, SQLiteRepository
