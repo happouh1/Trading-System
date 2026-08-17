@@ -47,7 +47,14 @@ def test_entry_fills_only_at_later_bar_open_with_adverse_slippage() -> None:
 
 
 def test_excessive_directional_gap_cancels_entry() -> None:
-    candle = replace(daily_candle(5), open=D("102"), high=D("103"), candle_id="")
+    candle = replace(
+        daily_candle(5),
+        open=D("102"),
+        high=D("103"),
+        raw_open=D("102"),
+        raw_high=D("103"),
+        candle_id="",
+    )
     result = execute_next_open(
         run_id="run-1",
         trade_id="trade-1",

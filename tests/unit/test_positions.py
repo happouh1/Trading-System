@@ -24,7 +24,7 @@ def test_long_trail_never_decreases() -> None:
     state = position()
     first = update_trail(
         state,
-        candle=replace(daily_candle(0), high=D("103"), candle_id=""),
+        candle=replace(daily_candle(0), high=D("103"), raw_high=D("103"), candle_id=""),
         adr20=D("4"),
         ema20=D("100"),
         confirmed_swing=D("99"),
@@ -33,7 +33,7 @@ def test_long_trail_never_decreases() -> None:
     )
     second = update_trail(
         first,
-        candle=replace(daily_candle(1), high=D("105"), candle_id=""),
+        candle=replace(daily_candle(1), high=D("105"), raw_high=D("105"), candle_id=""),
         adr20=D("4"),
         ema20=D("101"),
         confirmed_swing=D("100"),
@@ -60,7 +60,14 @@ def test_damage_score_queues_exit_at_seventy() -> None:
 
 
 def test_stop_wins_ambiguous_stop_target_bar() -> None:
-    candle = replace(daily_candle(0), high=D("104"), low=D("97"), candle_id="")
+    candle = replace(
+        daily_candle(0),
+        high=D("104"),
+        low=D("97"),
+        raw_high=D("104"),
+        raw_low=D("97"),
+        candle_id="",
+    )
     result = resolve_bar_exit(position(), candle, target_price=D("104"))
     assert result.should_exit
     assert result.reason == "STOP_HIT_ADVERSE_FIRST"

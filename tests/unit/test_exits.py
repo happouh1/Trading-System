@@ -11,7 +11,18 @@ D = Decimal
 
 
 def test_gap_through_long_stop_uses_open_and_adverse_slippage() -> None:
-    candle = replace(daily_candle(2), open=D("97"), high=D("99"), low=D("96"), candle_id="")
+    candle = replace(
+        daily_candle(2),
+        open=D("97"),
+        high=D("99"),
+        low=D("96"),
+        close=D("97.5"),
+        raw_open=D("97"),
+        raw_high=D("99"),
+        raw_low=D("96"),
+        raw_close=D("97.5"),
+        candle_id="",
+    )
     result = execute_stop_exit(
         run_id="run-1",
         trade_id="trade-1",
