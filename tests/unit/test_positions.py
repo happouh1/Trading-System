@@ -4,7 +4,6 @@ from dataclasses import replace
 from decimal import Decimal
 
 from tests.unit.test_features import daily_candle
-
 from trading_system.domain import Direction
 from trading_system.risk import (
     DamageInputs,

@@ -125,7 +125,8 @@ def resolve_bar_exit(
         else candle.low <= target_price
     )
     if stop_hit:
-        return BarExit(True, "STOP_HIT_ADVERSE_FIRST" if target_hit else "STOP_HIT", state.current_stop)
+        reason = "STOP_HIT_ADVERSE_FIRST" if target_hit else "STOP_HIT"
+        return BarExit(True, reason, state.current_stop)
     if target_hit:
         return BarExit(True, "TARGET_HIT", target_price)
     if state.bars_held >= max_hold_bars:

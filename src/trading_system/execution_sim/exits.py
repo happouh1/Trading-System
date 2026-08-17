@@ -87,7 +87,11 @@ def execute_queued_next_open_exit(
         raise ValueError("unsupported queued exit reason")
     if next_candle.open_time < signal_candle.close_time:
         raise ValueError("queued exit cannot fill before the signal candle closes")
-    if next_candle.symbol != signal_candle.symbol or next_candle.timeframe is not signal_candle.timeframe:
+    series_mismatch = (
+        next_candle.symbol != signal_candle.symbol
+        or next_candle.timeframe is not signal_candle.timeframe
+    )
+    if series_mismatch:
         raise ValueError("queued exit candle must match signal series")
     slip = _slippage(next_candle.open, atr20, slippage_bps, slippage_atr_fraction)
     fill = (

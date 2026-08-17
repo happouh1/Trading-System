@@ -21,8 +21,18 @@ NOW = datetime(2026, 1, 5, 20, 0, tzinfo=UTC)
 
 def test_asof_join_never_exposes_unclosed_higher_timeframe() -> None:
     values = [
-        TimeframeState(Timeframe.DAY_1, NOW - timedelta(hours=1), "daily-old", StructureState.UPTREND),
-        TimeframeState(Timeframe.DAY_1, NOW + timedelta(hours=1), "daily-future", StructureState.DOWNTREND),
+        TimeframeState(
+            Timeframe.DAY_1,
+            NOW - timedelta(hours=1),
+            "daily-old",
+            StructureState.UPTREND,
+        ),
+        TimeframeState(
+            Timeframe.DAY_1,
+            NOW + timedelta(hours=1),
+            "daily-future",
+            StructureState.DOWNTREND,
+        ),
         TimeframeState(Timeframe.HOUR_1, NOW, "hour-current", StructureState.UPTREND),
     ]
     snapshot = asof_join(NOW, values)

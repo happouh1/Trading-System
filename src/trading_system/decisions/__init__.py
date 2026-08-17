@@ -1,5 +1,4 @@
-"""Reserved for Phase 1C; must not import trading_system.learning."""
-"""Explained deterministic decision gates."""
+"""Explained deterministic decision gates; never imports learning outcomes."""
 
 from trading_system.decisions.engine import DecisionCandidate, DecisionEngine
 

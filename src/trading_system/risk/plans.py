@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from decimal import Decimal, ROUND_FLOOR
+from decimal import ROUND_FLOOR, Decimal
 
 from trading_system.domain import Direction, Timeframe, TradePlan
 from trading_system.serialization import deterministic_id

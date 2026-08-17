@@ -5,7 +5,6 @@ from decimal import Decimal
 
 from tests.unit.test_features import daily_candle
 from tests.unit.test_positions import position
-
 from trading_system.execution_sim import execute_queued_next_open_exit, execute_stop_exit
 
 D = Decimal

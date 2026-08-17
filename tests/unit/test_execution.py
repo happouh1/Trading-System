@@ -7,7 +7,6 @@ import pytest
 
 from tests.unit.test_features import daily_candle
 from tests.unit.test_risk import NOW
-
 from trading_system.domain import Direction, Timeframe, TradeEventType, TradePlan
 from trading_system.execution_sim import execute_next_open
 

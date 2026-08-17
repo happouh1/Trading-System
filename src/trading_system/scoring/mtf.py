@@ -66,7 +66,10 @@ def mtf_score(snapshot: MtfSnapshot, direction: Direction) -> Decimal:
     }
     sign = Decimal(1) if direction is Direction.LONG else Decimal(-1)
     raw = sum(
-        (_WEIGHTS[item.timeframe] * directional.get(item.state, Decimal(0)) for item in snapshot.states),
+        (
+            _WEIGHTS[item.timeframe] * directional.get(item.state, Decimal(0))
+            for item in snapshot.states
+        ),
         Decimal(0),
     )
     return (Decimal(50) + Decimal(50) * raw * sign).quantize(
