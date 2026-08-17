@@ -48,3 +48,12 @@ or duplicate instance transitions at the same known-at time are rejected.
 - `EntryResult` and `ExitResult`: append-only simulated fills with slippage and source candle evidence.
 
 Migration `003_phase_1c.sql` adds immutable `decisions` and `trade_events` tables.
+
+## Phase 1D additions in progress
+
+- `ReplayRecord`: one normalized completed candle paired with its causal evaluator output.
+- `ReplayCheckpoint`: last completed close, cumulative processed count, and state hash.
+- `TradeResult` and `BacktestMetrics`: portfolio-independent net-R summaries.
+- `Outcome`: appended only after its complete future horizon becomes available.
+
+Migration `004_phase_1d.sql` adds replay checkpoints and immutable versioned outcomes.

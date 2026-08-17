@@ -65,3 +65,10 @@ Section 23 combines pattern, decision, and execution golden cases. Phase 1B vali
 15 only to the extent of pattern events and parent linkage. Cases involving MTF decisions, confidence
 caps, entry quality, stop/target collisions, and trailing stops are Phase 1C exit criteria. Gap-entry
 cancellation is also Phase 1C execution behavior; Phase 1B covers only the causal break candidate.
+
+## Added during Phase 1D
+
+20. Pattern-specific success/failure label mappings are not exhaustive. The primitive emits versioned
+    `GENERIC_SUCCESS` or `GENERIC_FAILURE` until a catalog is approved.
+21. Checkpoints are valid only after a full close-time group; partial-group recovery is prohibited.
+22. Portfolio exposure, CAGR, and Sharpe need capital-allocation rules not specified in Phase 1.

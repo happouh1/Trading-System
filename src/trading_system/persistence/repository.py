@@ -9,7 +9,15 @@ from decimal import Decimal
 from importlib.resources import files
 from pathlib import Path
 
-from trading_system.domain import Candle, Decision, Level, Observation, PatternEvent, TradeEvent
+from trading_system.domain import (
+    Candle,
+    Decision,
+    Level,
+    Observation,
+    Outcome,
+    PatternEvent,
+    TradeEvent,
+)
 from trading_system.serialization import canonical_hash, canonical_json
 
 
@@ -282,6 +290,74 @@ class SQLiteRepository:
             return False
         self.connection.commit()
         return True
+
+    def insert_outcome(self, outcome: Outcome) -> bool:
+        payload_hash = canonical_hash(outcome)
+        values = (
+            outcome.outcome_id,
+            outcome.run_id,
+            outcome.observation_id,
+            outcome.label_version,
+            outcome.horizon_bars,
+            _decimal(outcome.forward_return),
+            _decimal(outcome.mfe_r),
+            _decimal(outcome.mae_r),
+            outcome.time_to_1r,
+            outcome.time_to_2r,
+            outcome.outcome_label,
+            _time(outcome.label_available_at),
+            outcome.to_json(),
+            payload_hash,
+        )
+        cursor = self.connection.execute(
+            """INSERT OR IGNORE INTO outcomes
+               (outcome_id, run_id, observation_id, label_version, horizon_bars,
+                forward_return, mfe_r, mae_r, time_to_1r, time_to_2r, outcome_label,
+                label_available_at, payload_json, payload_hash)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            values,
+        )
+        if cursor.rowcount == 0:
+            stored = self.connection.execute(
+                "SELECT payload_hash FROM outcomes WHERE outcome_id = ?",
+                (outcome.outcome_id,),
+            ).fetchone()
+            if stored != (payload_hash,):
+                raise ValueError(f"conflicting outcome payload: {outcome.outcome_id}")
+            return False
+        self.connection.commit()
+        return True
+
+    def save_checkpoint(
+        self,
+        run_id: str,
+        last_close_time: datetime,
+        processed_candles: int,
+        state_hash: str,
+    ) -> None:
+        if processed_candles < 0:
+            raise ValueError("processed_candles cannot be negative")
+        self.connection.execute(
+            """INSERT INTO replay_checkpoints
+               (run_id, last_close_time, processed_candles, state_hash)
+               VALUES (?, ?, ?, ?)
+               ON CONFLICT(run_id) DO UPDATE SET
+                 last_close_time=excluded.last_close_time,
+                 processed_candles=excluded.processed_candles,
+                 state_hash=excluded.state_hash""",
+            (run_id, _time(last_close_time), processed_candles, state_hash),
+        )
+        self.connection.commit()
+
+    def load_checkpoint(self, run_id: str) -> tuple[datetime, int, str] | None:
+        row = self.connection.execute(
+            """SELECT last_close_time, processed_candles, state_hash
+               FROM replay_checkpoints WHERE run_id = ?""",
+            (run_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        return datetime.fromisoformat(str(row[0]).replace("Z", "+00:00")), int(row[1]), str(row[2])
 
     def counts(self) -> tuple[int, int, int]:
         counts: list[int] = []

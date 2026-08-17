@@ -51,3 +51,13 @@ boundary-touch score awards 50 per qualified touch at each boundary and caps at 
 zero and falls linearly to zero at 0.50 ADR. ATR10 uses Wilder initialization from the first ten true
 ranges. Touch evidence becomes known only at the candidate window close. The unspecified `RANGE_BASE`
 compression exception is disabled until a classification rule is versioned.
+
+## Phase 1D methodology
+
+Replay normalizes completed candles by close time, then fixed `1w`, `1d`, `4h`, `1h` availability
+order, symbol, open time, and candle ID. Duplicate source keys fail deterministically. Resume excludes
+candles at or before the stored checkpoint close.
+
+Outcome labeling uses only supplied chronological future candles. Generic success requires 2R before
+1R adverse excursion. Labels are versioned, append-only, and available only at the final horizon close.
+Reports disclose survivorship, corporate-action revision, OHLC collision, and profitability limits.
