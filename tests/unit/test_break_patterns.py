@@ -150,3 +150,45 @@ def test_reclaim_failure_is_known_only_on_failure_close() -> None:
     failed = machine.push(pattern_bar(2, "99.8", "100", "99", "99.5"), (level,))[0]
     assert failed.new_state is PatternState.FAILED
     assert failed.known_at > candidate.known_at
+
+
+def test_wick_beyond_level_is_not_a_breakout_candidate() -> None:
+    machine = BreakPatternMachine("run-1", "sha256:config", "git:test")
+    level = resistance()
+    machine.push(pattern_bar(0, "99.5", "100", "99", "100"), (level,))
+    events = machine.push(pattern_bar(1, "99.5", "101", "99", "100"), (level,))
+    assert events == ()
+
+
+def test_failed_breakout_confirms_bull_trap_on_lower_low() -> None:
+    machine = BreakPatternMachine("run-1", "sha256:config", "git:test")
+    level = resistance()
+    machine.push(pattern_bar(0, "99.5", "100", "99", "100"), (level,))
+    machine.push(pattern_bar(1, "99.2", "101.2", "99", "101"), (level,))
+    failed = machine.push(pattern_bar(2, "100.4", "100.8", "99.2", "99.5"), (level,))[0]
+    assert failed.new_state is PatternState.FAILED
+    trap = machine.push(pattern_bar(3, "99.5", "100", "99", "99.4"), (level,))[0]
+    assert trap.new_state is PatternState.TRAP_CONFIRMED
+
+
+def test_failed_breakdown_confirms_bear_trap_symmetrically() -> None:
+    machine = BreakPatternMachine("run-1", "sha256:config", "git:test")
+    level = resistance()
+    machine.push(pattern_bar(0, "100.5", "101", "100", "100"), (level,))
+    candidate = machine.push(pattern_bar(1, "100.8", "101", "98.8", "99"), (level,))[0]
+    assert candidate.pattern_family == "BREAKDOWN"
+    failed = machine.push(pattern_bar(2, "99.8", "101", "99.5", "100.5"), (level,))[0]
+    assert failed.new_state is PatternState.FAILED
+    trap = machine.push(pattern_bar(3, "100", "101.2", "99.8", "100.4"), (level,))[0]
+    assert trap.new_state is PatternState.TRAP_CONFIRMED
+
+
+def test_bearish_sweep_is_symmetric() -> None:
+    machine = SweepPatternMachine("run-1", "sha256:config", "git:test")
+    level = resistance()
+    candidate = machine.push(pattern_bar(0, "100", "100.8", "99", "99.2"), (level,))[0]
+    assert candidate.pattern_name == "BEARISH_LIQUIDITY_SWEEP"
+    pending = machine.push(pattern_bar(1, "99.8", "100", "99", "99.3"), (level,))[0]
+    assert pending.new_state is PatternState.PENDING
+    confirmed = machine.push(pattern_bar(2, "99.8", "100", "99.2", "99.5"), (level,))[0]
+    assert confirmed.new_state is PatternState.ACCEPTED

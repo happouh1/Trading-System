@@ -38,3 +38,11 @@ def test_future_bars_do_not_change_prior_base_result() -> None:
     extended = [*bars, BaseBar(daily_candle(48), D("10"), D("1"))]
     assert BaseDetector().detect(bars) == before
     assert BaseDetector().detect(extended) is not None
+
+
+def test_multiple_valid_windows_select_highest_quality_then_longest() -> None:
+    bars = fixture_bars(49)
+    detected = BaseDetector().detect(bars)
+    assert detected is not None
+    assert detected.bars == 9
+    assert detected.start_candle_id == bars[40].candle.candle_id

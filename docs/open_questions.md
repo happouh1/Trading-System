@@ -58,3 +58,10 @@ They must be answered or made explicitly configurable before the phase that uses
 - Base component normalization, ATR10 initialization, causal touch timing, and the conservative
   handling of the undefined `RANGE_BASE` exception were approved for the v1 baseline and are recorded
   normatively in `docs/methodology.md`.
+
+## Phase boundary clarification
+
+Section 23 combines pattern, decision, and execution golden cases. Phase 1B validates cases 1–7 and
+15 only to the extent of pattern events and parent linkage. Cases involving MTF decisions, confidence
+caps, entry quality, stop/target collisions, and trailing stops are Phase 1C exit criteria. Gap-entry
+cancellation is also Phase 1C execution behavior; Phase 1B covers only the causal break candidate.
