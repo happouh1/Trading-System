@@ -19,6 +19,9 @@ def test_committed_config_validates_and_hash_is_stable() -> None:
     assert first.config_hash.startswith("sha256:")
     phase1d = load_config(ROOT / "config" / "thresholds.phase1d.v1.yaml")
     assert phase1d.section("trend")["ema_slope_lookback_bars"] == 5
+    phase1e = load_config(ROOT / "config" / "thresholds.phase1e.v1.yaml")
+    assert phase1e.section("risk")["normalized_risk_budget_currency"] == 1000
+    assert phase1e.config_hash != phase1d.config_hash
 
 
 def test_config_rejects_unknown_keys_and_cross_field_errors() -> None:

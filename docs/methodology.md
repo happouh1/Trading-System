@@ -85,3 +85,13 @@ no causal opposing zone exists, runway and reward/risk remain null, the oppositi
 not applicable, and the plan carries `NO_CAUSAL_OPPOSING_ZONE` disclosures. All unrelated gates remain
 mandatory. Historical `thresholds.v1.yaml` is unchanged; the new defaults live in
 `thresholds.phase1d.v1.yaml`.
+## Phase 1E deterministic integration
+
+Promotable `ACCEPTED` and `TRAP_CONFIRMED` events map to decision candidates using
+only evidence known at the completed signal candle. A directional decision queues
+one plan per symbol and timeframe and fills only at the next eligible bar open.
+Missing critical evidence invalidates the candidate rather than supplying an estimate.
+
+Outcome labels are deferred to completed future bars: 1, 3, 6, 12, 24, and 48 for
+1H; 1, 3, 6, 12, and 24 for 4H. Replay recovery deterministically warms lifecycle
+and pending outcome state through the checkpoint before processing new candles.

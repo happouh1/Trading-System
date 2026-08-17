@@ -31,6 +31,16 @@ tunable target of under 600 seconds and under 4 GiB. Correctness remains the con
 
 Phase 1D must not be tagged until these items are resolved or explicitly approved as deferred scope.
 
+## Phase 1E remediation status (2026-08-17)
+
+The approved Phase 1E amendment now supplies the missing deterministic formulas and connects
+promotable pattern events to decision candidates, normalized next-open execution, the existing
+position exit rules, completed trades, and deferred causal outcomes. Resume rehydrates lifecycle
+state from the immutable input prefix and checkpoint hashes now include lifecycle output IDs.
+
+Phase 1D/1E remains **untagged** until the complete Ruff, strict mypy, pytest, golden narrative,
+resume-equivalence, CLI persistence, future-truncation, and performance checks pass in CI.
+
 ## Exit audit result (2026-08-17)
 
 The source-level exit audit in `docs/phase_1d_exit_audit.md` found that the real replay path always

@@ -21,11 +21,13 @@ class _Sweep:
     midpoint: Decimal
     wick_quality: Decimal
     trigger_extreme: Decimal
+    confirmation_bars: int = 0
+    max_midpoint_displacement_adr: Decimal = Decimal(0)
     follow_through: bool = False
 
 
 class SweepPatternMachine:
-    pattern_version = "1.1.0"
+    pattern_version = "1.2.0"
 
     def __init__(self, run_id: str, config_hash: str, code_version: str) -> None:
         self.run_id = run_id
@@ -136,6 +138,17 @@ class SweepPatternMachine:
             if instance.direction is Direction.LONG
             else bar.candle.close < instance.midpoint
         )
+        instance.confirmation_bars += 1
+        signed_displacement = (
+            bar.candle.close - instance.midpoint
+            if instance.direction is Direction.LONG
+            else instance.midpoint - bar.candle.close
+        ) / bar.adr20
+        instance.max_midpoint_displacement_adr = max(
+            instance.max_midpoint_displacement_adr,
+            signed_displacement,
+            Decimal(0),
+        )
         instance.follow_through = instance.follow_through or followed
         if age >= 2:
             prior = instance.state
@@ -160,6 +173,20 @@ class SweepPatternMachine:
             PatternState.ACCEPTED: ("SWEEP_REVERSAL_CONFIRMED",),
             PatternState.INVALIDATED: ("SWEEP_INVALIDATED",),
         }
+        confirmation_score = None
+        pattern_quality = None
+        if new is PatternState.ACCEPTED:
+            persistence = Decimal(50) * Decimal(instance.confirmation_bars)
+            midpoint = Decimal(100) * min(
+                max(instance.max_midpoint_displacement_adr / Decimal("0.25"), Decimal(0)),
+                Decimal(1),
+            )
+            confirmation_score = Decimal("0.60") * persistence + Decimal("0.40") * midpoint
+            pattern_quality = (
+                Decimal("0.50") * confirmation_score
+                + Decimal("0.25") * instance.wick_quality
+                + Decimal("0.25") * instance.level.confluence_score
+            )
         return PatternEvent(
             event_id=deterministic_id(
                 "pattern_event", (instance.instance_id, new, bar.candle.candle_id)
@@ -188,8 +215,9 @@ class SweepPatternMachine:
             features={
                 "candidate_midpoint": instance.midpoint,
                 "wick_quality": instance.wick_quality,
-                "pattern_quality": None,
-                "confirmation_score": None,
+                "pattern_quality": pattern_quality,
+                "confirmation_score": confirmation_score,
+                "reversal_confirmation_score": confirmation_score,
                 "trigger_extreme": (
                     instance.trigger_extreme
                 ),

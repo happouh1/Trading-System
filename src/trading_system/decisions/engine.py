@@ -36,6 +36,9 @@ class DecisionCandidate:
     contradictory_higher_priority: bool = False
     position_already_open: bool = False
     timeframe_states: tuple[tuple[str, str], ...] = ()
+    atr20: Decimal | None = None
+    adr20: Decimal | None = None
+    disclosures: tuple[str, ...] = ()
 
 
 class DecisionEngine:
@@ -199,7 +202,34 @@ class DecisionEngine:
             or (reward is not None and reward >= Decimal("1.50")),
             "POOR_REWARD_RISK",
         )
-        utilization_cap = Decimal("1.25") if self._is_reversal(candidate) else Decimal("1.00")
+        reversal = self._is_reversal(candidate)
+        minimum_mtf = Decimal(35) if reversal else Decimal(60)
+        gate(
+            "GATE-MTF",
+            candidate.mtf_score,
+            ">=",
+            minimum_mtf,
+            candidate.mtf_score >= minimum_mtf,
+            "MTF_CONFLICT",
+        )
+        if reversal:
+            gate(
+                "GATE-COUNTERTREND-CONFIDENCE",
+                candidate.confidence,
+                ">=",
+                Decimal(80),
+                candidate.confidence >= Decimal(80),
+                "LOW_CONFIDENCE",
+            )
+            gate(
+                "GATE-COUNTERTREND-RUNWAY",
+                runway,
+                "N/A_OR_>=",
+                Decimal("1.50"),
+                runway is None or runway >= Decimal("1.50"),
+                "POOR_RUNWAY",
+            )
+        utilization_cap = Decimal("1.25") if reversal else Decimal("1.00")
         gate(
             "GATE-EXTENSION",
             candidate.adr_utilization,
@@ -252,6 +282,10 @@ class DecisionEngine:
     ) -> Decision:
         missing = reasons if action is DecisionAction.WATCH else ()
         rejected = reasons if action is DecisionAction.NO_TRADE else ()
+        disclosure_evidence = tuple(
+            RuleEvidence("DISCLOSURE", item, "DISCLOSE", True, True)
+            for item in candidate.disclosures
+        )
         return self._result(
             observation_id,
             known_at,
@@ -265,7 +299,7 @@ class DecisionEngine:
             missing,
             rejected,
             dict(candidate.timeframe_states),
-            evidence,
+            (*evidence, *disclosure_evidence),
         )
 
     def _result(

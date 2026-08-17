@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import dataclass
+from datetime import date
 from decimal import Decimal
 
-from trading_system.decisions import DecisionEngine
+from trading_system.decisions import DecisionCandidate, DecisionEngine, map_pattern_candidate
 from trading_system.domain import (
     Candle,
     Decision,
@@ -27,7 +28,7 @@ from trading_system.patterns import (
     SweepPatternMachine,
 )
 from trading_system.scoring import TimeframeState, asof_join
-from trading_system.structure import StructureEngine
+from trading_system.structure import StructureEngine, StructureSnapshot
 
 
 @dataclass(frozen=True, slots=True)
@@ -35,7 +36,9 @@ class NarrativeResult:
     observation: Observation
     levels: tuple[Level, ...]
     pattern_events: tuple[PatternEvent, ...]
+    candidates: tuple[DecisionCandidate, ...]
     decision: Decision
+    structure: StructureSnapshot
 
 
 class CausalNarrativePipeline:
@@ -49,6 +52,7 @@ class CausalNarrativePipeline:
         self.decisions = DecisionEngine(run_id)
         self._sources: dict[str, list[LevelSource]] = defaultdict(list)
         self._states: dict[str, list[TimeframeState]] = defaultdict(list)
+        self._session_opens: dict[tuple[str, date], Decimal] = {}
         self._breaks = {
             timeframe: BreakPatternMachine(run_id, config_hash, code_version)
             for timeframe in (Timeframe.HOUR_1, Timeframe.HOUR_4)
@@ -62,7 +66,9 @@ class CausalNarrativePipeline:
             for timeframe in (Timeframe.HOUR_1, Timeframe.HOUR_4)
         }
 
-    def push(self, candle: Candle) -> NarrativeResult:
+    def push(self, candle: Candle, *, position_already_open: bool = False) -> NarrativeResult:
+        session_key = (candle.symbol, candle.session_date)
+        self._session_opens.setdefault(session_key, candle.open)
         observation = self.features.push(candle)
         adr_value = observation.features.get("adr20")
         adr20 = adr_value if isinstance(adr_value, Decimal) else None
@@ -101,16 +107,31 @@ class CausalNarrativePipeline:
                 *self._sweeps[candle.timeframe].push(bar, levels),
                 *self._reclaims[candle.timeframe].push(bar, levels),
             )
+        mtf = asof_join(observation.known_at, self._states[candle.symbol])
+        candidates = tuple(
+            candidate
+            for event in events
+            if (
+                candidate := map_pattern_candidate(
+                    event=event,
+                    candle=candle,
+                    observation=observation,
+                    structure=snapshot.state,
+                    mtf=mtf,
+                    levels=levels,
+                    session_open=self._session_opens[session_key],
+                    position_already_open=position_already_open,
+                )
+            )
+            is not None
+        )
         decision = self.decisions.decide(
             observation.observation_id,
             observation.known_at,
-            (),
+            candidates,
             tuple(
                 (state.timeframe.value, state.state.value)
-                for state in asof_join(
-                    observation.known_at,
-                    self._states[candle.symbol],
-                ).states
+                for state in mtf.states
             ),
         )
-        return NarrativeResult(observation, levels, events, decision)
+        return NarrativeResult(observation, levels, events, candidates, decision, snapshot)

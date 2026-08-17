@@ -65,7 +65,7 @@ class _Instance:
 class BreakPatternMachine:
     """One transition per instance per completed bar, with causal evidence only."""
 
-    pattern_version = "1.1.0"
+    pattern_version = "1.2.0"
 
     def __init__(self, run_id: str, config_hash: str, code_version: str) -> None:
         self.run_id = run_id
@@ -378,6 +378,9 @@ class BreakPatternMachine:
                         "follow_through_quality": follow,
                     }
                 )
+                features["confirmation_score"] = (
+                    Decimal("0.50") * failure + Decimal("0.50") * follow
+                )
         base_quality = self._base_quality(instance.level, instance.direction, bar)
         if base_quality is not None and new is not PatternState.TRAP_CONFIRMED:
             features["pattern_quality"] = base_quality
@@ -388,6 +391,11 @@ class BreakPatternMachine:
                 "base_start_candle_id"
             ]
             features["base_end_candle_id"] = instance.level.provenance["base_end_candle_id"]
+        elif new is PatternState.ACCEPTED and acceptance_score is not None:
+            features["pattern_quality"] = (
+                Decimal("0.60") * acceptance_score
+                + Decimal("0.40") * instance.level.confluence_score
+            )
         if acceptance_score is not None:
             features["acceptance_score"] = acceptance_score
         event_id = deterministic_id(

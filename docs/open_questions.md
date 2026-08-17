@@ -93,3 +93,20 @@ Open questions 26–27 are resolved by `docs/proposals/phase_1d_primitives_v1.md
 ADR-normalized EMA slopes, sweep wick normalization, symmetric trap subquality, strict causal base
 provenance, and disclosed null-runway gate behavior. The implementation does not retroactively alter
 persisted events or the historical `thresholds.v1.yaml` configuration.
+
+## Added by Phase 1E integration audit
+
+28. The specification supplies sweep/trap eligibility and confidence weights but not the numeric
+    `reversal_confirmation_score` formulas required by automatic candidate mapping.
+29. Breaks of causal non-base structural levels have no `pattern_quality` formula; base quality cannot
+    be borrowed without validated base provenance.
+30. Location scoring does not define same-side proximity when no causal support/resistance exists.
+31. Execution quantity requires the Phase 1 normalized research risk-budget fixture, but no default is
+    present in the committed configuration.
+
+## Resolved by approved Phase 1E integration amendment
+
+Open questions 28–31 are resolved by `docs/proposals/phase_1e_integration_v1.md`: versioned
+reversal-confirmation formulas, non-base break quality, disclosed zero same-side proximity when no
+causal zone exists, and a normalized research risk budget of 1000. These rules apply only to the
+Phase 1E configuration and do not rewrite historical records.

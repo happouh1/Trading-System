@@ -41,3 +41,8 @@ trading-system explain --database research.sqlite --decision-id DECISION_ID
 The Phase 1D configuration adds versioned EMA-slope, sweep-wick, and trap-quality defaults without
 modifying the historical Phase 0/1A configuration file. Null runway remains null, carries explicit
 disclosures, and never becomes infinity or a manufactured target.
+Phase 1E integration is in progress under
+`docs/proposals/phase_1e_integration_v1.md`. It connects causal pattern evidence to
+explained decisions, next-open replay execution, completed trades, and deferred
+outcome labels. It does not add brokerage connectivity, live trading, options,
+machine learning, or new trading rules.

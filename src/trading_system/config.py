@@ -132,7 +132,13 @@ def validate_config(raw: object) -> ThresholdConfig:
     for name, keys in expected.items():
         if name not in sections:
             continue
-        _keys(sections[name], name, keys)
+        allowed = keys | ({"normalized_risk_budget_currency"} if name == "risk" else set())
+        missing = keys - sections[name].keys()
+        extra = sections[name].keys() - allowed
+        if missing or extra:
+            raise ConfigError(
+                f"{name} keys invalid; missing={sorted(missing)}, extra={sorted(extra)}"
+            )
 
     for key in expected["features"]:
         _number(sections["features"][key], f"features.{key}", 1)

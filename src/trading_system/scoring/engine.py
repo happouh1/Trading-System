@@ -88,6 +88,7 @@ def confidence_score(
     opposing_zone_close: bool = False,
     data_quality_warning: bool = False,
     invalid_stop_or_runway: bool = False,
+    directly_opposed_higher_timeframes: bool = False,
 ) -> ConfidenceResult:
     values = tuple(_bounded(getattr(components, item.name)) for item in fields(components))
     weights = tuple(
@@ -104,6 +105,7 @@ def confidence_score(
         (opposing_zone_close, "OPPOSING_ZONE_TOO_CLOSE", Decimal(64)),
         (data_quality_warning, "DATA_QUALITY_WARNING", Decimal(49)),
         (invalid_stop_or_runway, "INVALID_STOP_OR_RUNWAY", Decimal(0)),
+        (directly_opposed_higher_timeframes, "HTF_DIRECTLY_OPPOSED", Decimal(69)),
     ):
         if active:
             caps.append((name, cap))

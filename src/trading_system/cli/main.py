@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import sys
 from datetime import UTC, datetime
+from decimal import Decimal
 from pathlib import Path
 
 from trading_system import PACKAGE_VERSION
@@ -78,7 +79,16 @@ def _replay(args: argparse.Namespace) -> int:
             raise ValueError(
                 "run ID exists with different code, config, data, or calendar metadata"
             )
-        summary = ReplayOrchestrator(args.run_id, repository).run(
+        risk_budget = config.section("risk").get("normalized_risk_budget_currency")
+        if isinstance(risk_budget, bool) or not isinstance(risk_budget, (int, float)):
+            raise ValueError(
+                "Phase 1E replay requires risk.normalized_risk_budget_currency"
+            )
+        summary = ReplayOrchestrator(
+            args.run_id,
+            repository,
+            normalized_risk_budget=Decimal(str(risk_budget)),
+        ).run(
             candles,
             resume_after=checkpoint[0] if checkpoint is not None else None,
             processed_before=checkpoint[1] if checkpoint is not None else 0,
