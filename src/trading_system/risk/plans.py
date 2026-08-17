@@ -61,6 +61,8 @@ def build_trade_plan(
         reasons.append("POOR_REWARD_RISK")
     if reasons:
         return PlanResult(None, tuple(reasons), stop_distance, reward_risk)
+    assert runway_adr is not None
+    assert reward_risk is not None
     identity = (
         symbol,
         timeframe,
