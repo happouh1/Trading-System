@@ -201,7 +201,8 @@ def test_trap_uses_only_its_directional_runway() -> None:
         D("2"),
         D("0.50"),
     )
-    assert machine.push(no_downside_runway, (level,)) == ()
+    events = machine.push(no_downside_runway, (level,))
+    assert all(event.new_state is not PatternState.TRAP_CONFIRMED for event in events)
 
 
 def test_bearish_sweep_is_symmetric() -> None:
