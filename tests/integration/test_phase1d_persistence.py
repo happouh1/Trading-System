@@ -6,6 +6,7 @@ from pathlib import Path
 
 from tests.unit.test_features import daily_candle
 
+from trading_system.backtest import complete_trade
 from trading_system.domain import Direction, Observation
 from trading_system.learning import label_outcome
 from trading_system.persistence import RunRecord, SQLiteRepository
@@ -100,3 +101,32 @@ def test_replay_resume_rebuilds_causal_feature_warmup(tmp_path: Path) -> None:
         full = ReplayOrchestrator(full_run.run_id, repository).run(candles)
         assert full.checkpoint is not None
         assert resumed.checkpoint.state_hash == full.checkpoint.state_hash
+
+
+def test_completed_trade_metrics_round_trip(tmp_path: Path) -> None:
+    path = tmp_path / "trades.sqlite"
+    run = RunRecord("run-4", datetime(2026, 1, 1, tzinfo=UTC), "code", "cfg", "data", "cal", 1)
+    trade = complete_trade(
+        trade_id="trade-1",
+        run_id=run.run_id,
+        symbol="AAPL",
+        timeframe=daily_candle(0).timeframe,
+        direction=Direction.LONG,
+        entry_time=daily_candle(0).open_time,
+        exit_time=daily_candle(1).close_time,
+        entry_price=Decimal("100"),
+        exit_price=Decimal("104"),
+        initial_risk=Decimal("2"),
+        favorable_extreme=Decimal("105"),
+        adverse_extreme=Decimal("99"),
+        hold_bars=2,
+        total_cost=Decimal("0.20"),
+    )
+    with SQLiteRepository(path) as repository:
+        repository.migrate()
+        repository.insert_run(run)
+        assert repository.insert_completed_trade(trade)
+        assert not repository.insert_completed_trade(trade)
+        results = repository.trade_results(run.run_id)
+        assert len(results) == 1
+        assert results[0].net_r == Decimal("1.9")

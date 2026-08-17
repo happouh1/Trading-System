@@ -8,11 +8,13 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from trading_system import PACKAGE_VERSION
+from trading_system.backtest import summarize
 from trading_system.config import load_config
 from trading_system.learning import write_observations
 from trading_system.market_data import XNYSCalendar, read_ohlcv
 from trading_system.persistence import RunRecord, SQLiteRepository
 from trading_system.replay import ReplayOrchestrator
+from trading_system.reporting import markdown_report
 from trading_system.serialization import canonical_hash, canonical_json
 
 
@@ -99,17 +101,11 @@ def _report(args: argparse.Namespace) -> int:
     with SQLiteRepository(args.database) as repository:
         repository.migrate()
         counts = repository.run_counts(args.run_id)
-    body = f"# Research report: {args.run_id}\n\n## Persisted records\n\n"
+        metrics = summarize(repository.trade_results(args.run_id))
+    body = markdown_report(args.run_id, metrics)
+    body += "\n## Persisted records\n\n"
     body += "\n".join(f"- {name}: `{counts[name]}`" for name in sorted(counts))
-    body += (
-        "\n\n## Bias disclosures\n\n"
-        "- File universes may have survivorship bias without point-in-time membership.\n"
-        "- Corporate actions are limited to the recorded revision and adjustment policy.\n"
-        "- OHLC cannot reconstruct intrabar order; collisions resolve adverse-first.\n"
-        "- Trade metrics require completed entry/exit risk records; unavailable values "
-        "are not zero.\n"
-        "- Results are research outputs, not evidence of future profitability.\n"
-    )
+    body += "\n"
     Path(args.output).write_text(body, encoding="utf-8", newline="\n")
     print(canonical_json({"run_id": args.run_id, "output": args.output}))
     return 0

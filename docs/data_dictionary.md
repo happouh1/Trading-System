@@ -57,3 +57,7 @@ Migration `003_phase_1c.sql` adds immutable `decisions` and `trade_events` table
 - `Outcome`: appended only after its complete future horizon becomes available.
 
 Migration `004_phase_1d.sql` adds replay checkpoints and immutable versioned outcomes.
+
+Migration `005_phase_1d_completed_trades.sql` adds normalized completed trades with direction,
+entry/exit timestamps and prices, initial risk, gross/net R, excursions, costs, and holding duration.
+Reports calculate metrics only from these auditable completed records.

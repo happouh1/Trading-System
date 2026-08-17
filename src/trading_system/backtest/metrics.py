@@ -13,6 +13,7 @@ class TradeResult:
     mfe_r: Decimal
     mae_r: Decimal
     hold_bars: int
+    gross_r: Decimal | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -20,6 +21,7 @@ class BacktestMetrics:
     trade_count: int
     win_rate: Decimal
     expectancy_r: Decimal
+    gross_expectancy_r: Decimal
     profit_factor: Decimal | None
     median_mfe_r: Decimal
     median_mae_r: Decimal
@@ -39,6 +41,7 @@ def summarize(trades: tuple[TradeResult, ...]) -> BacktestMetrics:
     if not trades:
         return BacktestMetrics(
             0,
+            Decimal(0),
             Decimal(0),
             Decimal(0),
             None,
@@ -61,6 +64,11 @@ def summarize(trades: tuple[TradeResult, ...]) -> BacktestMetrics:
         len(trades),
         Decimal(len(wins)) / count,
         sum((trade.net_r for trade in trades), Decimal(0)) / count,
+        sum(
+            (trade.gross_r if trade.gross_r is not None else trade.net_r for trade in trades),
+            Decimal(0),
+        )
+        / count,
         gross_profit / gross_loss if gross_loss else None,
         _median(tuple(trade.mfe_r for trade in trades)),
         _median(tuple(trade.mae_r for trade in trades)),

@@ -57,6 +57,7 @@ class DecisionEngine:
         observation_id: str,
         known_at: datetime,
         candidates: tuple[DecisionCandidate, ...],
+        timeframe_states: tuple[tuple[str, str], ...] = (),
     ) -> Decision:
         if not candidates:
             return self._result(
@@ -71,7 +72,7 @@ class DecisionEngine:
                 None,
                 (),
                 ("NO_VALID_SETUP",),
-                {},
+                dict(timeframe_states),
                 (),
             )
         ranked = sorted(candidates, key=lambda item: (-self._priority(item), -item.confidence))

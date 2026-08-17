@@ -74,3 +74,10 @@ cancellation is also Phase 1C execution behavior; Phase 1B covers only the causa
 22. Portfolio exposure, CAGR, and Sharpe need capital-allocation rules not specified in Phase 1.
 23. Phase 1C trade events do not persist direction and initial unit risk in a normalized trade table.
     The CLI does not infer net-R metrics from incomplete payloads or report unavailable metrics as zero.
+    Migration 005 resolves this for newly completed normalized trades; legacy events remain untouched.
+24. `PatternBar` carries one runway value while trap confirmation needs direction-specific runway.
+    Integrated replay passes no trap runway rather than using the wrong side; the contract needs a
+    long/short runway pair or direction-specific evaluation before traps can trigger automatically.
+25. The specification defines confidence weights but not deterministic source formulas for every
+    component/pattern combination, nor every automatic structural stop-anchor selection. Integrated
+    replay persists detected patterns but does not manufacture candidates from missing mappings.

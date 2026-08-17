@@ -66,3 +66,8 @@ Observation exports are ordered by known-at time and ID and retain config hash, 
 revision, calendar version, input fingerprint, payload hash, features, and data-quality evidence.
 CSV uses canonical JSON cells; Parquet uses Zstandard compression. Replay restart first rebuilds causal
 feature warm-up from earlier candles, then emits records strictly after the completed checkpoint group.
+
+The narrative pipeline processes structure per symbol/timeframe, creates levels only from causally
+confirmed swings, evaluates 1H/4H pattern machines, persists their append-only events, and includes
+causal MTF states in every decision. Pattern events without fully specified confidence-component and
+stop-anchor mappings remain explained `NO_TRADE`; outcome data never enters this path.

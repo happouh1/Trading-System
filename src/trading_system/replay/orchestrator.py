@@ -5,11 +5,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 
-from trading_system.decisions import DecisionEngine
 from trading_system.domain import Candle
-from trading_system.features import CausalFeatureEngine
 from trading_system.persistence import SQLiteRepository
 from trading_system.replay.engine import ReplayCheckpoint, ReplayEngine
+from trading_system.replay.narrative import CausalNarrativePipeline
 
 
 @dataclass(frozen=True, slots=True)
@@ -26,8 +25,11 @@ class ReplayOrchestrator:
     def __init__(self, run_id: str, repository: SQLiteRepository) -> None:
         self.run_id = run_id
         self.repository = repository
-        self.features = CausalFeatureEngine(run_id)
-        self.decisions = DecisionEngine(run_id)
+        metadata = repository.run_metadata(run_id)
+        if metadata is None:
+            raise ValueError("run must be persisted before replay")
+        code_version, config_hash, _data, _calendar, _seed = metadata
+        self.pipeline = CausalNarrativePipeline(run_id, config_hash, code_version)
 
     def run(
         self,
@@ -43,24 +45,26 @@ class ReplayOrchestrator:
         if resume_after is not None:
             for candle in ReplayEngine.normalize(candles):
                 if candle.close_time <= resume_after:
-                    self.features.push(candle)
+                    self.pipeline.push(candle)
 
         def evaluate(candle: Candle) -> object:
             nonlocal observations, decisions
-            observation = self.features.push(candle)
-            decision = self.decisions.decide(
-                observation.observation_id,
-                observation.known_at,
-                (),
-            )
+            narrative = self.pipeline.push(candle)
             self.repository.insert_candle(candle)
-            self.repository.insert_snapshot(observation)
-            self.repository.insert_decision(decision)
+            self.repository.insert_snapshot(narrative.observation)
+            for level in narrative.levels:
+                self.repository.insert_level(level)
+            for event in narrative.pattern_events:
+                self.repository.insert_pattern_event(event)
+            self.repository.insert_decision(narrative.decision)
             observations += 1
             decisions += 1
             return {
-                "observation_id": observation.observation_id,
-                "decision_id": decision.decision_id,
+                "observation_id": narrative.observation.observation_id,
+                "pattern_event_ids": tuple(
+                    event.event_id for event in narrative.pattern_events
+                ),
+                "decision_id": narrative.decision.decision_id,
             }
 
         records, checkpoint = ReplayEngine(evaluate).run(

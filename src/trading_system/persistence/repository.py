@@ -9,6 +9,7 @@ from decimal import Decimal
 from importlib.resources import files
 from pathlib import Path
 
+from trading_system.backtest import CompletedTrade, TradeResult
 from trading_system.domain import (
     Candle,
     Decision,
@@ -338,6 +339,64 @@ class SQLiteRepository:
         self.connection.commit()
         return True
 
+    def insert_completed_trade(self, trade: CompletedTrade) -> bool:
+        payload_hash = canonical_hash(trade)
+        values = (
+            trade.trade_id,
+            trade.run_id,
+            trade.symbol,
+            trade.timeframe.value,
+            trade.direction.value,
+            _time(trade.entry_time),
+            _time(trade.exit_time),
+            _decimal(trade.entry_price),
+            _decimal(trade.exit_price),
+            _decimal(trade.initial_risk),
+            _decimal(trade.gross_r),
+            _decimal(trade.net_r),
+            _decimal(trade.mfe_r),
+            _decimal(trade.mae_r),
+            trade.hold_bars,
+            canonical_json(trade),
+            payload_hash,
+        )
+        cursor = self.connection.execute(
+            """INSERT OR IGNORE INTO completed_trades
+               (trade_id, run_id, symbol, timeframe, direction, entry_time, exit_time,
+                entry_price, exit_price, initial_risk, gross_r, net_r, mfe_r, mae_r,
+                hold_bars, payload_json, payload_hash)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            values,
+        )
+        if cursor.rowcount == 0:
+            stored = self.connection.execute(
+                "SELECT payload_hash FROM completed_trades WHERE trade_id = ?",
+                (trade.trade_id,),
+            ).fetchone()
+            if stored != (payload_hash,):
+                raise ValueError(f"conflicting completed trade payload: {trade.trade_id}")
+            return False
+        self.connection.commit()
+        return True
+
+    def trade_results(self, run_id: str) -> tuple[TradeResult, ...]:
+        rows = self.connection.execute(
+            """SELECT trade_id, net_r, mfe_r, mae_r, hold_bars, gross_r
+               FROM completed_trades WHERE run_id = ? ORDER BY exit_time, trade_id""",
+            (run_id,),
+        ).fetchall()
+        return tuple(
+            TradeResult(
+                str(row[0]),
+                Decimal(row[1]),
+                Decimal(row[2]),
+                Decimal(row[3]),
+                int(row[4]),
+                Decimal(row[5]),
+            )
+            for row in rows
+        )
+
     def save_checkpoint(
         self,
         run_id: str,
@@ -412,6 +471,7 @@ class SQLiteRepository:
             "decisions",
             "trade_events",
             "outcomes",
+            "completed_trades",
         )
         for table in tables:
             column = "run_id" if table != "candles" else None
