@@ -38,3 +38,13 @@ canonical hash; duplicate identical inserts are idempotent and conflicting inser
 SQLite Phase 1B migration `002_phase_1b.sql` adds append-only `levels` and `pattern_events` tables.
 Both store canonical payload hashes. Identical replay inserts are idempotent; conflicting identifiers
 or duplicate instance transitions at the same known-at time are rejected.
+
+## Phase 1C additions in progress
+
+- `TimeframeState` and `MtfSnapshot`: causal as-of structure context and source candle provenance.
+- `DecisionCandidate`: complete score, pattern, gate, risk, and timeframe evidence for one direction.
+- `PlanResult`: either an immutable structural `TradePlan` or explicit rejection reasons.
+- `PositionState`: immutable entry, risk, favorable extreme, monotonic stop, hold count, and exit queue.
+- `EntryResult` and `ExitResult`: append-only simulated fills with slippage and source candle evidence.
+
+Migration `003_phase_1c.sql` adds immutable `decisions` and `trade_events` tables.

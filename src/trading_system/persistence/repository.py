@@ -9,7 +9,7 @@ from decimal import Decimal
 from importlib.resources import files
 from pathlib import Path
 
-from trading_system.domain import Candle, Level, Observation, PatternEvent
+from trading_system.domain import Candle, Decision, Level, Observation, PatternEvent, TradeEvent
 from trading_system.serialization import canonical_hash, canonical_json
 
 
@@ -214,6 +214,71 @@ class SQLiteRepository:
             ).fetchone()
             if stored != (payload_hash,):
                 raise ValueError(f"conflicting pattern event payload: {event.event_id}")
+            return False
+        self.connection.commit()
+        return True
+
+    def insert_decision(self, decision: Decision) -> bool:
+        payload_hash = canonical_hash(decision)
+        reasons = (*decision.missing_conditions, *decision.rejection_reasons)
+        values = (
+            decision.decision_id,
+            decision.run_id,
+            decision.observation_id,
+            _time(decision.known_at),
+            decision.action.value,
+            _decimal(decision.confidence),
+            _decimal(decision.setup_quality),
+            _decimal(decision.entry_quality),
+            canonical_json(reasons),
+            decision.to_json(),
+            payload_hash,
+        )
+        cursor = self.connection.execute(
+            """INSERT OR IGNORE INTO decisions
+               (decision_id, run_id, observation_id, known_at, action, confidence,
+                setup_quality, entry_quality, reason_codes_json, payload_json, payload_hash)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            values,
+        )
+        if cursor.rowcount == 0:
+            stored = self.connection.execute(
+                "SELECT payload_hash FROM decisions WHERE decision_id = ?",
+                (decision.decision_id,),
+            ).fetchone()
+            if stored != (payload_hash,):
+                raise ValueError(f"conflicting decision payload: {decision.decision_id}")
+            return False
+        self.connection.commit()
+        return True
+
+    def insert_trade_event(self, event: TradeEvent) -> bool:
+        payload_hash = canonical_hash(event)
+        values = (
+            event.trade_event_id,
+            event.run_id,
+            event.trade_id,
+            _time(event.event_time),
+            event.event_type.value,
+            _decimal(event.price),
+            _decimal(event.quantity),
+            canonical_json(event.payload),
+            payload_hash,
+        )
+        cursor = self.connection.execute(
+            """INSERT OR IGNORE INTO trade_events
+               (trade_event_id, run_id, trade_id, event_time, event_type, price,
+                quantity, payload_json, payload_hash)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            values,
+        )
+        if cursor.rowcount == 0:
+            stored = self.connection.execute(
+                "SELECT payload_hash FROM trade_events WHERE trade_event_id = ?",
+                (event.trade_event_id,),
+            ).fetchone()
+            if stored != (payload_hash,):
+                raise ValueError(f"conflicting trade event payload: {event.trade_event_id}")
             return False
         self.connection.commit()
         return True

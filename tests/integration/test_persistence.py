@@ -9,11 +9,15 @@ import pytest
 from tests.unit.test_features import daily_candle
 
 from trading_system.domain import (
+    Decision,
+    DecisionAction,
     Direction,
     Level,
     LevelKind,
     PatternEvent,
     PatternState,
+    TradeEvent,
+    TradeEventType,
 )
 from trading_system.features import CausalFeatureEngine
 from trading_system.persistence import RunRecord, SQLiteRepository
@@ -107,5 +111,55 @@ def test_phase1b_events_are_append_only_and_restart_safe(tmp_path: Path) -> None
         assert not repository.insert_pattern_event(event)
         counts = repository.connection.execute(
             "SELECT (SELECT COUNT(*) FROM levels), (SELECT COUNT(*) FROM pattern_events)"
+        ).fetchone()
+        assert counts == (1, 1)
+
+
+def test_phase1c_decisions_and_trade_events_are_restart_safe(tmp_path: Path) -> None:
+    database = tmp_path / "phase1c.sqlite"
+    run = RunRecord(
+        run_id="run-1",
+        started_at=datetime(2026, 1, 1, tzinfo=UTC),
+        code_version="git:test",
+        config_hash="sha256:config",
+        data_revision="sha256:data",
+        calendar_version="fixture-v1",
+        random_seed=20260101,
+    )
+    candle = daily_candle(0)
+    observation = CausalFeatureEngine(run.run_id).push(candle)
+    decision = Decision(
+        decision_id="decision-1",
+        run_id=run.run_id,
+        observation_id=observation.observation_id,
+        known_at=candle.close_time,
+        action=DecisionAction.NO_TRADE,
+        direction=Direction.NONE,
+        setup_quality=Decimal("0"),
+        entry_quality=Decimal("0"),
+        confidence=Decimal("0"),
+        trade_style=None,
+        entry_plan=None,
+        rejection_reasons=("NO_VALID_SETUP",),
+    )
+    trade_event = TradeEvent(
+        trade_event_id="trade-event-1",
+        run_id=run.run_id,
+        trade_id="trade-1",
+        event_time=candle.close_time,
+        event_type=TradeEventType.HOLD,
+        payload={"source_candle_id": candle.candle_id},
+    )
+    with SQLiteRepository(database) as repository:
+        repository.migrate()
+        repository.insert_run(run)
+        repository.insert_candle(candle)
+        repository.insert_snapshot(observation)
+        assert repository.insert_decision(decision)
+        assert repository.insert_trade_event(trade_event)
+        assert not repository.insert_decision(decision)
+        assert not repository.insert_trade_event(trade_event)
+        counts = repository.connection.execute(
+            "SELECT (SELECT COUNT(*) FROM decisions), (SELECT COUNT(*) FROM trade_events)"
         ).fetchone()
         assert counts == (1, 1)

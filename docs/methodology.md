@@ -34,6 +34,15 @@ Phase 1B persistence migrations execute in filename order. Level and pattern-eve
 append-only and foreign-keyed to their originating run and observation. Restarting and replaying an
 identical payload is idempotent; the same identifier with different canonical content fails.
 
+## Phase 1C methodology
+
+Multi-timeframe joins select only candles with `close_time <= known_at` in fixed Weekly, Daily, 4H,
+1H order. Decisions apply pattern priority, mandatory risk gates, confidence caps, and explicit conflict
+reasons. Plans use structural anchors plus the configured ADR buffer and are never forced through an
+invalid stop. Entries fill only at the next eligible open with adverse slippage; oversized directional
+gaps cancel. Trails are monotonic, structural-damage exits are queued, and ambiguous stop/target bars
+resolve adverse-first. Every decision and lifecycle event is append-only and canonically hashed.
+
 ### Approved base-quality policy
 
 The Phase 1B baseline uses these deterministic component definitions: duration is linear from 0 at
