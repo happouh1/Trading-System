@@ -30,3 +30,11 @@ completed in 62.970 seconds with 532,463,099 peak bytes reported by `tracemalloc
 tunable target of under 600 seconds and under 4 GiB. Correctness remains the controlling criterion.
 
 Phase 1D must not be tagged until these items are resolved or explicitly approved as deferred scope.
+
+## Exit audit result (2026-08-17)
+
+The source-level exit audit in `docs/phase_1d_exit_audit.md` found that the real replay path always
+passes an empty candidate tuple into the decision engine. It therefore cannot produce directional
+decisions, simulated trades, completed-trade records, or scheduled outcomes. CI success validates the
+implemented components but does not satisfy the one-command completion definition. A bounded Phase 1E
+integration increment is required before tagging.
