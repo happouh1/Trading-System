@@ -101,7 +101,7 @@ class ReplayTradeLifecycle:
         opened = self._open.get(key)
         if opened is not None and opened.queued_reason is not None:
             assert opened.signal_candle is not None
-            result = execute_queued_next_open_exit(
+            queued_result = execute_queued_next_open_exit(
                 run_id=self.run_id,
                 trade_id=opened.trade_id,
                 state=opened.state,
@@ -111,20 +111,20 @@ class ReplayTradeLifecycle:
                 quantity=opened.quantity,
                 reason=opened.queued_reason,
             )
-            events.append(result.event)
+            events.append(queued_result.event)
             trades.append(
                 self._complete(
                     opened,
-                    result.event.event_time,
-                    result.fill_price,
-                    result.slippage,
+                    queued_result.event.event_time,
+                    queued_result.fill_price,
+                    queued_result.slippage,
                 )
             )
             del self._open[key]
             opened = None
         pending = self._pending.pop(key, None) if opened is None else None
         if pending is not None:
-            result = execute_next_open(
+            entry_result = execute_next_open(
                 run_id=self.run_id,
                 trade_id=pending.trade_id,
                 plan=pending.plan,
@@ -133,16 +133,16 @@ class ReplayTradeLifecycle:
                 adr20=pending.adr20,
                 quantity=pending.quantity,
             )
-            events.append(result.event)
-            if result.fill_price is not None:
-                risk = abs(result.fill_price - pending.plan.initial_stop)
+            events.append(entry_result.event)
+            if entry_result.fill_price is not None:
+                risk = abs(entry_result.fill_price - pending.plan.initial_stop)
                 state = PositionState(
                     pending.plan.direction,
-                    result.fill_price,
+                    entry_result.fill_price,
                     pending.plan.initial_stop,
                     pending.plan.initial_stop,
                     risk,
-                    result.fill_price,
+                    entry_result.fill_price,
                 )
                 self._open[key] = _Open(
                     pending.trade_id,
@@ -152,9 +152,9 @@ class ReplayTradeLifecycle:
                     pending.quantity,
                     pending.atr20,
                     pending.adr20,
-                    result.fill_price,
-                    result.fill_price,
-                    result.slippage,
+                    entry_result.fill_price,
+                    entry_result.fill_price,
+                    entry_result.slippage,
                     pending.reference_level,
                     [],
                 )
@@ -172,7 +172,7 @@ class ReplayTradeLifecycle:
             )
             exit_state = resolve_bar_exit(opened.state, candle)
             if exit_state.should_exit and exit_state.reason is not None:
-                result = execute_stop_exit(
+                stop_result = execute_stop_exit(
                     run_id=self.run_id,
                     trade_id=opened.trade_id,
                     state=opened.state,
@@ -180,13 +180,13 @@ class ReplayTradeLifecycle:
                     atr20=opened.atr20,
                     quantity=opened.quantity,
                 )
-                events.append(result.event)
+                events.append(stop_result.event)
                 trades.append(
                     self._complete(
                         opened,
-                        result.event.event_time,
-                        result.fill_price,
-                        result.slippage,
+                        stop_result.event.event_time,
+                        stop_result.fill_price,
+                        stop_result.slippage,
                     )
                 )
                 del self._open[key]
@@ -267,7 +267,15 @@ class ReplayTradeLifecycle:
             ),
             None,
         )
-        if selected is None or selected.atr20 is None or selected.adr20 is None:
+        reference_level = (
+            selected.event.reference_level if selected is not None else None
+        )
+        if (
+            selected is None
+            or selected.atr20 is None
+            or selected.adr20 is None
+            or reference_level is None
+        ):
             return (), ()
         quantity = (self.risk_budget / decision.entry_plan.risk_per_unit).to_integral_value(
             rounding=ROUND_FLOOR
@@ -283,7 +291,7 @@ class ReplayTradeLifecycle:
             selected.atr20,
             selected.adr20,
             quantity,
-            selected.event.reference_level,
+            reference_level,
         )
         event = TradeEvent(
             trade_event_id=deterministic_id(

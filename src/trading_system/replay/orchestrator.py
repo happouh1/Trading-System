@@ -83,8 +83,8 @@ class ReplayOrchestrator:
             self.repository.insert_snapshot(narrative.observation)
             for level in narrative.levels:
                 self.repository.insert_level(level)
-            for event in narrative.pattern_events:
-                self.repository.insert_pattern_event(event)
+            for pattern_event in narrative.pattern_events:
+                self.repository.insert_pattern_event(pattern_event)
             self.repository.insert_decision(narrative.decision)
             later_events, later_trades = self.lifecycle.after_bar(
                 candle,
@@ -94,8 +94,8 @@ class ReplayOrchestrator:
                 narrative.structure.confirmed_swings,
             )
             outcomes = self.outcomes.push(candle, narrative.decision)
-            for event in (*trade_events, *later_events):
-                self.repository.insert_trade_event(event)
+            for trade_event in (*trade_events, *later_events):
+                self.repository.insert_trade_event(trade_event)
             for trade in (*completed_trades, *later_trades):
                 self.repository.insert_completed_trade(trade)
             for outcome in outcomes:
