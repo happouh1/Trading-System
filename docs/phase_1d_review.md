@@ -44,7 +44,22 @@ resume-equivalence, CLI persistence, future-truncation, and performance checks p
 The 15-case executable coverage matrix is recorded in `docs/phase_1e_golden_matrix.md`. Phase 1E
 adds explicit pending-trade warm-replay equivalence, future-outcome truncation invariance,
 countertrend labeling, and CLI replay persistence tests. These additions require a green CI run.
-The one-million-bar benchmark must then be repeated before tagging.
+The one-million-bar benchmark was repeated after Phase 1E integration on Windows 11 build 26200
+with Python 3.12.13. It processed 1,000,000 bars in 78.839 seconds with 532,463,199 peak bytes
+reported by `tracemalloc`. Both the 600-second and 4-GiB operational targets passed.
+
+## Phase 1E exit decision
+
+Phase 1E exit criteria are satisfied:
+
+- commit `996a52f` passed installation, Ruff, strict mypy, and the complete pytest suite;
+- commit `0e5389e` added and passed the 15-case golden coverage matrix and exit-validation tests;
+- pending-trade warm replay, future truncation, countertrend labeling, and CLI persistence are covered;
+- the post-integration one-million-bar benchmark passed both operational targets.
+
+Phase 1E is approved for tagging. This approval establishes a deterministic research and replay
+foundation only; it does not authorize live trading, brokerage connectivity, options execution,
+parameter optimization, or machine-learning authority.
 
 ## Exit audit result (2026-08-17)
 
