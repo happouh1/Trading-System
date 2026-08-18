@@ -41,6 +41,11 @@ state from the immutable input prefix and checkpoint hashes now include lifecycl
 Phase 1D/1E remains **untagged** until the complete Ruff, strict mypy, pytest, golden narrative,
 resume-equivalence, CLI persistence, future-truncation, and performance checks pass in CI.
 
+The 15-case executable coverage matrix is recorded in `docs/phase_1e_golden_matrix.md`. Phase 1E
+adds explicit pending-trade warm-replay equivalence, future-outcome truncation invariance,
+countertrend labeling, and CLI replay persistence tests. These additions require a green CI run.
+The one-million-bar benchmark must then be repeated before tagging.
+
 ## Exit audit result (2026-08-17)
 
 The source-level exit audit in `docs/phase_1d_exit_audit.md` found that the real replay path always

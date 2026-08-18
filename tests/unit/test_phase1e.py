@@ -87,3 +87,48 @@ def test_outcome_tracker_waits_for_future_completed_bar() -> None:
 
     assert tuple(outcome.horizon_bars for outcome in outcomes) == (1,)
     assert outcomes[0].label_available_at == execution_candle(1).close_time
+
+
+def test_lifecycle_warm_replay_matches_uninterrupted_pending_trade() -> None:
+    selected = replace(candidate(Direction.LONG), atr20=D("1"), adr20=D("2"))
+    engine = DecisionEngine("run-1")
+    signal = engine.decide("observation-1", NOW, (selected,))
+    no_trade = engine.decide("observation-2", NOW + timedelta(hours=1), ())
+    candles = (
+        execution_candle(0),
+        execution_candle(1),
+        execution_candle(2, stop_hit=True),
+    )
+
+    uninterrupted = ReplayTradeLifecycle("run-1")
+    uninterrupted.after_bar(candles[0], signal, (selected,))
+    full_entry = uninterrupted.before_bar(candles[1])
+    uninterrupted.after_bar(candles[1], no_trade, ())
+    full_exit = uninterrupted.before_bar(candles[2])
+
+    resumed = ReplayTradeLifecycle("run-1")
+    resumed.after_bar(candles[0], signal, (selected,))
+    resumed_entry = resumed.before_bar(candles[1])
+    resumed.after_bar(candles[1], no_trade, ())
+    resumed_exit = resumed.before_bar(candles[2])
+
+    assert resumed_entry == full_entry
+    assert resumed_exit == full_exit
+
+
+def test_removing_later_future_bars_cannot_change_available_outcome() -> None:
+    selected = replace(candidate(Direction.LONG), atr20=D("1"), adr20=D("2"))
+    engine = DecisionEngine("run-1")
+    signal = engine.decide("observation-1", NOW, (selected,))
+    no_trade = engine.decide("observation-2", NOW + timedelta(hours=1), ())
+
+    short_tracker = ReplayOutcomeTracker("run-1")
+    full_tracker = ReplayOutcomeTracker("run-1")
+    short_tracker.push(execution_candle(0), signal)
+    full_tracker.push(execution_candle(0), signal)
+    short_result = short_tracker.push(execution_candle(1), no_trade)
+    full_result = full_tracker.push(execution_candle(1), no_trade)
+    full_tracker.push(execution_candle(2), no_trade)
+    full_tracker.push(execution_candle(3), no_trade)
+
+    assert short_result == full_result

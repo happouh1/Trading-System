@@ -12,6 +12,7 @@ from trading_system.domain import (
     PatternState,
     Timeframe,
     TradePlan,
+    TradeStyle,
 )
 
 D = Decimal
@@ -124,3 +125,27 @@ def test_equal_priority_opposites_within_five_points_conflict() -> None:
     )
     assert decision.action is DecisionAction.NO_TRADE
     assert decision.rejection_reasons == ("CONFLICTING_SIGNALS",)
+
+
+def test_confirmed_trap_is_labeled_countertrend() -> None:
+    source = candidate(confidence="85")
+    assert source.plan is not None
+    trap = replace(
+        source,
+        event=replace(
+            source.event,
+            pattern_family="BREAKOUT",
+            new_state=PatternState.TRAP_CONFIRMED,
+            direction=Direction.SHORT,
+        ),
+        mtf_score=D("40"),
+        runway_adr=D("2"),
+        plan=replace(
+            source.plan,
+            direction=Direction.SHORT,
+            initial_stop=D("101"),
+        ),
+    )
+    decision = DecisionEngine("run-1").decide("observation-1", NOW, (trap,))
+    assert decision.action is DecisionAction.SHORT
+    assert decision.trade_style is TradeStyle.COUNTERTREND
