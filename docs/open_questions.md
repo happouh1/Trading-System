@@ -110,3 +110,16 @@ Open questions 28–31 are resolved by `docs/proposals/phase_1e_integration_v1.m
 reversal-confirmation formulas, non-base break quality, disclosed zero same-side proximity when no
 causal zone exists, and a normalized research risk budget of 1000. These rules apply only to the
 Phase 1E configuration and do not rewrite historical records.
+
+## Added for Phase 2A proposal
+
+32. What are the initial walk-forward training, validation, test, step, and embargo durations?
+33. Which descriptive statistics and uncertainty intervals are mandatory for every fold?
+34. Which similarity distance, feature weights, missing-dimension threshold, and tie-break are canonical?
+35. What source supplies point-in-time universe membership, delistings, and symbol changes?
+36. What reviewer consensus policy, if any, converts multiple human reviews into a research label?
+
+Questions 32–34 are resolved by the approved tunable defaults in
+`docs/proposals/phase_2a_empirical_research_v1.md`. Question 36 is deliberately deferred: Phase 2A
+stores individual append-only reviews and excludes `UNCERTAIN`, but does not manufacture consensus.
+Question 35 remains unresolved and blocks real-universe claims, not deterministic fixture validation.

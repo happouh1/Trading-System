@@ -1,0 +1,31 @@
+{
+  "research_version": "2A.1.0",
+  "folds": {
+    "minimum_train_sessions": 504,
+    "validation_sessions": 63,
+    "test_sessions": 63,
+    "step_sessions": 63,
+    "embargo_sessions": 5
+  },
+  "statistics": {
+    "metric_version": "1.0.0",
+    "bootstrap_samples": 1000,
+    "confidence_interval": 0.95
+  },
+  "calibration": {"bin_width": 10},
+  "similarity": {
+    "distance": "weighted_manhattan_zscore",
+    "minimum_coverage": 0.60,
+    "features": {
+      "pattern_quality": 1.0,
+      "confirmation_score": 1.0,
+      "trend_context": 1.0,
+      "mtf_score": 1.0,
+      "rvol20": 0.75,
+      "location_score": 1.0,
+      "runway_adr": 1.0,
+      "stop_distance_adr": 0.75
+    }
+  },
+  "determinism": {"seed": 20260101}
+}

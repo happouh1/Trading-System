@@ -69,3 +69,17 @@ The Phase 1D primitive amendment adds `ema10_slope_adr`, `ema20_slope_adr`, and
 `wick_quality`, trap subquality scores, and validated base provenance identifiers. `PlanResult`
 separates nonblocking disclosures from rejection reasons. Feature snapshots and changed break/sweep
 events use schema/pattern version `1.1.0`; existing version `1.0.0` records are not rewritten.
+
+## Phase 2A research additions
+
+- `ExperimentSpec`: immutable provenance and version identity for one empirical experiment.
+- `WalkForwardFold`: deterministic expanding train/validation/test exchange-session boundaries.
+- `UniverseMembership`: point-in-time symbol membership with source revision and effective dates.
+- `ResearchRow`: observation/outcome join with an explicit label-availability timestamp.
+- `DescriptiveStatistics`: net-R, excursion, drawdown, profit-factor, and bootstrap summaries.
+- `CalibrationBin`: observed success rate alongside unchanged Phase 1 rule confidence.
+- `SimilarityResult`: weighted normalized distance and available-weight coverage.
+- `HumanReview`: append-only verdict; `UNCERTAIN` is excluded from training truth.
+
+Migration `006_phase_2a.sql` adds experiments, folds, memberships, conditional statistics,
+calibration results, similarity queries/results, and human reviews. Payloads are canonical and hashed.

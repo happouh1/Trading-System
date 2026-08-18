@@ -26,3 +26,13 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `INT-ENTRY-01`: plans fill only at the next eligible completed bar open.
 - `INT-SIZE-01`: units are `floor(1000 / risk_per_unit)`; zero cancels entry.
 - `INT-OUTCOME-01`: labels use completed bars strictly after the decision candle.
+
+## Phase 2A research invariants
+
+- `RES-FOLD-01`: folds expand chronologically and contain validation/test embargoes.
+- `RES-LABEL-01`: labels unavailable at the fold cutoff are excluded.
+- `RES-UNIVERSE-01`: universe membership is joined point-in-time using effective dates.
+- `RES-NORMALIZE-01`: normalization and similarity candidates use training records only.
+- `RES-SIMILARITY-01`: comparisons below 60% available weight coverage fail.
+- `RES-REVIEW-01`: individual reviews are append-only and `UNCERTAIN` is not training truth.
+- `RES-AUTHORITY-01`: empirical outputs cannot alter Phase 1 decisions or confidence.

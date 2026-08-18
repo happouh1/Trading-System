@@ -1,6 +1,6 @@
 # Trading System
 
-Phase 1D foundation for a deterministic candle-by-candle trading research system.
+Phase 2A foundation for a deterministic candle-by-candle trading research system.
 
 The repository contains immutable contracts, canonical serialization, strict CSV/Parquet OHLCV
 ingestion, XNYS session validation, deterministic 1H/4H/Daily/Weekly aggregation, causal streaming
@@ -8,6 +8,11 @@ features, confirmed structure, structural zones, pattern state machines, causal 
 scoring, explained decisions, structural plans, simulated trade lifecycle events, deterministic
 replay checkpoints, versioned outcomes, metrics, and bias-disclosed reports. It intentionally contains
 no brokerage connectivity, live trading, options, or machine-learning authority.
+
+Phase 2A adds an isolated empirical-research layer: immutable experiment registration,
+point-in-time universes, expanding walk-forward folds, descriptive statistics and bootstrap
+intervals, calibration reports, deterministic similarity search, append-only human reviews, and
+bias-disclosed exports. Research results cannot enter or alter the Phase 1 decision engine.
 
 ## Development
 

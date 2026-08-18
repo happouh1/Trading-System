@@ -95,3 +95,15 @@ Missing critical evidence invalidates the candidate rather than supplying an est
 Outcome labels are deferred to completed future bars: 1, 3, 6, 12, 24, and 48 for
 1H; 1, 3, 6, 12, and 24 for 4H. Replay recovery deterministically warms lifecycle
 and pending outcome state through the checkpoint before processing new candles.
+
+## Phase 2A empirical methodology
+
+Experiments identify all source runs, code/config/data/calendar versions, point-in-time universe
+revision, metric version, similarity configuration, and random seed. Expanding walk-forward folds use
+exchange sessions with tunable `504/63/63` train/validation/test defaults, a 63-session step, and
+five-session embargoes. Labels are eligible only when available on or before the fold cutoff.
+
+Normalization and similarity candidates come from training records only. Similarity uses weighted
+Manhattan distance over z-scaled available feature pairs, rejects comparisons below 60% configured
+weight coverage, and resolves equal distances by candidate ID. Calibration remains observational
+metadata and never rewrites Phase 1 confidence. Bootstrap intervals use the experiment seed.

@@ -8,7 +8,11 @@ ROOT = Path(__file__).parents[2]
 
 def test_decisions_do_not_import_learning_or_outcomes() -> None:
     decisions = ROOT / "src" / "trading_system" / "decisions"
-    forbidden = {"trading_system.learning", "trading_system.domain.outcomes"}
+    forbidden = {
+        "trading_system.learning",
+        "trading_system.domain.outcomes",
+        "trading_system.research",
+    }
     violations: list[str] = []
     for path in decisions.rglob("*.py"):
         tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
