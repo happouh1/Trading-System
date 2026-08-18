@@ -112,7 +112,14 @@ class ReplayTradeLifecycle:
                 reason=opened.queued_reason,
             )
             events.append(result.event)
-            trades.append(self._complete(opened, candle, result.fill_price, result.slippage))
+            trades.append(
+                self._complete(
+                    opened,
+                    result.event.event_time,
+                    result.fill_price,
+                    result.slippage,
+                )
+            )
             del self._open[key]
             opened = None
         pending = self._pending.pop(key, None) if opened is None else None
@@ -153,6 +160,16 @@ class ReplayTradeLifecycle:
                 )
         opened = self._open.get(key)
         if opened is not None:
+            opened.favorable = (
+                max(opened.favorable, candle.high)
+                if opened.plan.direction is Direction.LONG
+                else min(opened.favorable, candle.low)
+            )
+            opened.adverse = (
+                min(opened.adverse, candle.low)
+                if opened.plan.direction is Direction.LONG
+                else max(opened.adverse, candle.high)
+            )
             exit_state = resolve_bar_exit(opened.state, candle)
             if exit_state.should_exit and exit_state.reason is not None:
                 result = execute_stop_exit(
@@ -164,7 +181,14 @@ class ReplayTradeLifecycle:
                     quantity=opened.quantity,
                 )
                 events.append(result.event)
-                trades.append(self._complete(opened, candle, result.fill_price, result.slippage))
+                trades.append(
+                    self._complete(
+                        opened,
+                        result.event.event_time,
+                        result.fill_price,
+                        result.slippage,
+                    )
+                )
                 del self._open[key]
         return tuple(events), tuple(trades)
 
@@ -181,12 +205,12 @@ class ReplayTradeLifecycle:
         if opened is not None:
             opened.favorable = (
                 max(opened.favorable, candle.high)
-                if opened.plan.direction.value == "LONG"
+                if opened.plan.direction is Direction.LONG
                 else min(opened.favorable, candle.low)
             )
             opened.adverse = (
                 min(opened.adverse, candle.low)
-                if opened.plan.direction.value == "LONG"
+                if opened.plan.direction is Direction.LONG
                 else max(opened.adverse, candle.high)
             )
             damage_score = self._damage_score(
@@ -345,7 +369,7 @@ class ReplayTradeLifecycle:
     def _complete(
         self,
         opened: _Open,
-        candle: Candle,
+        exit_time: datetime,
         exit_price: Decimal,
         exit_cost: Decimal,
     ) -> CompletedTrade:
@@ -356,7 +380,7 @@ class ReplayTradeLifecycle:
             timeframe=opened.plan.timeframe,
             direction=opened.plan.direction,
             entry_time=opened.entry_time,
-            exit_time=candle.close_time,
+            exit_time=exit_time,
             entry_price=opened.state.entry,
             exit_price=exit_price,
             initial_risk=opened.state.risk,

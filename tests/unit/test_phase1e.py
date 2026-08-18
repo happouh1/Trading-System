@@ -57,6 +57,9 @@ def test_lifecycle_fills_next_open_then_completes_stop_exit() -> None:
         TradeEventType.EXIT_FILLED,
     )
     assert len(trades) == 1
+    assert trades[0].exit_time == exit_events[0].event_time
+    assert trades[0].mfe_r > 0
+    assert trades[0].mae_r > 0
     assert not lifecycle.has_exposure(signal)
 
 
