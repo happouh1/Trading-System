@@ -14,6 +14,14 @@ point-in-time universes, expanding walk-forward folds, descriptive statistics an
 intervals, calibration reports, deterministic similarity search, append-only human reviews, and
 bias-disclosed exports. Research results cannot enter or alter the Phase 1 decision engine.
 
+Phase 2B adds an append-only experiment lifecycle, declared cohorts, causal fold assignments,
+stable symbol-held-out diagnostics, freeze-before-test enforcement, and restart-safe research status
+and transition commands. It performs evaluation only and has no optimization or ML authority.
+
+Phase 2B commands use `trading-system research` with `define`, `validate`, `run`, `freeze`, `complete`,
+`status`, `report`, `explain`, `import-reviews`, and `export-reviews`. Staged runs require an immutable
+JSONL research dataset with explicit label-availability timestamps and net-R provenance.
+
 ## Development
 
 Requires Python 3.12.

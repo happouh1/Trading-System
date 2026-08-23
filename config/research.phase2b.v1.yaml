@@ -1,0 +1,14 @@
+{
+  "orchestration_version": "2B.1.0",
+  "minimum_cohort_sample": 30,
+  "symbol_holdout_buckets": 5,
+  "require_freeze_before_test": true,
+  "stages": [
+    "DEFINED",
+    "TRAIN_EVALUATED",
+    "VALIDATION_EVALUATED",
+    "FROZEN",
+    "TEST_EVALUATED",
+    "COMPLETE"
+  ]
+}

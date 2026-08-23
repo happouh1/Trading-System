@@ -36,3 +36,11 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `RES-SIMILARITY-01`: comparisons below 60% available weight coverage fail.
 - `RES-REVIEW-01`: individual reviews are append-only and `UNCERTAIN` is not training truth.
 - `RES-AUTHORITY-01`: empirical outputs cannot alter Phase 1 decisions or confidence.
+
+## Phase 2B orchestration invariants
+
+- `ORCH-LIFECYCLE-01`: lifecycle stages may advance only in the approved order.
+- `ORCH-FREEZE-01`: test evaluation requires an immutable frozen definition hash.
+- `ORCH-COHORT-01`: cohorts cannot be added or changed after freeze.
+- `ORCH-SAMPLE-01`: cohorts below 30 observations are marked insufficient and not ranked.
+- `ORCH-HOLDOUT-01`: symbol buckets are deterministic and supplemental to chronological folds.

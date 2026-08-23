@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+import json
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 from trading_system.cli import main
 from trading_system.persistence import SQLiteRepository
+from trading_system.research.contracts import ExperimentSpec, WalkForwardFold, WalkForwardSpec
+from trading_system.research.orchestration import CohortSpec
+from trading_system.research.registry import ExperimentRegistry
 
 ROOT = Path(__file__).parents[2]
 
@@ -76,3 +81,130 @@ def test_replay_cli_persists_complete_causal_run(tmp_path: Path) -> None:
     assert counts["decisions"] == 7
     assert checkpoint is not None
     assert checkpoint[1] == 7
+
+
+def test_research_cli_reports_and_advances_stage(tmp_path: Path) -> None:
+    database = tmp_path / "research.sqlite"
+    dataset = tmp_path / "research.jsonl"
+    dataset.write_text(
+        json.dumps(
+            {
+                "row_id": "row-1",
+                "observation_id": "observation-1",
+                "symbol": "AAPL",
+                "session_date": "2021-01-04",
+                "label_available_at": "2021-01-05T00:00:00Z",
+                "outcome_label": "SUCCESS",
+                "net_r": "1.0",
+                "features": {},
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    experiment = ExperimentSpec(
+        "experiment-cli",
+        datetime(2026, 1, 1, tzinfo=UTC),
+        ("run-1",),
+        "code",
+        ("config",),
+        ("data",),
+        ("calendar",),
+        "universe",
+        WalkForwardSpec(),
+        "metrics",
+        "similarity",
+        7,
+    )
+    with SQLiteRepository(database) as repository:
+        repository.migrate()
+        registry = ExperimentRegistry(repository)
+        registry.insert_experiment(experiment)
+        registry.insert_fold(
+            WalkForwardFold(
+                "fold-cli",
+                experiment.experiment_id,
+                0,
+                date(2020, 1, 1),
+                date(2021, 12, 31),
+                date(2022, 1, 10),
+                date(2022, 3, 31),
+                date(2022, 4, 10),
+                date(2022, 6, 30),
+            )
+        )
+        registry.insert_cohort(CohortSpec("all-cli", experiment.experiment_id, "all"))
+    assert main(
+        [
+            "research",
+            "status",
+            "--database",
+            str(database),
+            "--experiment-id",
+            experiment.experiment_id,
+        ]
+    ) == 0
+    assert main(
+        [
+            "research",
+            "run",
+            "--database",
+            str(database),
+            "--experiment-id",
+            experiment.experiment_id,
+            "--stage",
+            "train",
+            "--dataset",
+            str(dataset),
+        ]
+    ) == 0
+    assert main(
+        [
+            "research",
+            "run",
+            "--database",
+            str(database),
+            "--experiment-id",
+            experiment.experiment_id,
+            "--stage",
+            "validation",
+            "--dataset",
+            str(dataset),
+        ]
+    ) == 0
+    assert main(
+        [
+            "research",
+            "freeze",
+            "--database",
+            str(database),
+            "--experiment-id",
+            experiment.experiment_id,
+            "--definition-hash",
+            "sha256:frozen",
+        ]
+    ) == 0
+    assert main(
+        [
+            "research",
+            "run",
+            "--database",
+            str(database),
+            "--experiment-id",
+            experiment.experiment_id,
+            "--stage",
+            "test",
+            "--dataset",
+            str(dataset),
+        ]
+    ) == 0
+    assert main(
+        [
+            "research",
+            "complete",
+            "--database",
+            str(database),
+            "--experiment-id",
+            experiment.experiment_id,
+        ]
+    ) == 0

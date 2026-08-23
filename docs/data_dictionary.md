@@ -83,3 +83,15 @@ events use schema/pattern version `1.1.0`; existing version `1.0.0` records are 
 
 Migration `006_phase_2a.sql` adds experiments, folds, memberships, conditional statistics,
 calibration results, similarity queries/results, and human reviews. Payloads are canonical and hashed.
+
+## Phase 2B orchestration additions
+
+- `ExperimentTransition`: one valid append-only lifecycle transition with optional frozen hash.
+- `CohortSpec`: a declared filter set and tunable minimum sample threshold.
+- `FoldAssignment`: immutable row-to-fold partition or explicit exclusion reason.
+- `CohortEvaluation`: descriptive results and sufficient/insufficient sample status.
+- `experiment_lineage`: immutable parent experiment and validation-derived revision reason.
+- `experiment_checkpoints` and `experiment_reports`: restart and reporting evidence per stage.
+- `symbol_holdout_assignments`: stable supplemental symbol bucket membership.
+
+Migration `007_phase_2b.sql` adds these records without altering Phase 1 or Phase 2A payloads.

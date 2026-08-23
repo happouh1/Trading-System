@@ -123,3 +123,16 @@ Questions 32–34 are resolved by the approved tunable defaults in
 `docs/proposals/phase_2a_empirical_research_v1.md`. Question 36 is deliberately deferred: Phase 2A
 stores individual append-only reviews and excludes `UNCERTAIN`, but does not manufacture consensus.
 Question 35 remains unresolved and blocks real-universe claims, not deterministic fixture validation.
+
+## Added for Phase 2B proposal
+
+37. What immutable lifecycle must an experiment pass before its untouched test fold may be evaluated?
+38. Which conditional cohorts are declared inputs, and what count is too small for comparative claims?
+39. What deterministic symbol-held-out policy supplements chronological walk-forward evaluation?
+40. May validation-stage choices create a new frozen experiment version, and how is that lineage stored?
+41. Which research CLI actions are permitted to resume, and which changed inputs require a new ID?
+
+Questions 37–41 are resolved by the approved lifecycle, declared-cohort policy, stable symbol buckets,
+append-only parent-experiment lineage, and immutable-ID restart policy documented in
+`docs/proposals/phase_2b_evaluation_orchestration_v1.md`. Production universe sourcing (question 35),
+reviewer consensus (question 36), optimization, supervised learning, and trading changes remain open.

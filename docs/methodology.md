@@ -107,3 +107,11 @@ Normalization and similarity candidates come from training records only. Similar
 Manhattan distance over z-scaled available feature pairs, rejects comparisons below 60% configured
 weight coverage, and resolves equal distances by candidate ID. Calibration remains observational
 metadata and never rewrites Phase 1 confidence. Bootstrap intervals use the experiment seed.
+
+## Phase 2B evaluation orchestration
+
+Experiments advance append-only through `DEFINED`, training evaluation, validation evaluation,
+`FROZEN`, test evaluation, and `COMPLETE`. Test evaluation cannot occur before the definition hash is
+frozen. Cohorts are declared before freeze; results below 30 eligible observations are marked
+`INSUFFICIENT_SAMPLE` and are never ranked. Stable five-bucket symbol holdouts supplement, but never
+replace, chronological walk-forward tests.
