@@ -15,8 +15,8 @@ from trading_system.learning import write_observations
 from trading_system.market_data import XNYSCalendar, read_ohlcv
 from trading_system.persistence import RunRecord, SQLiteRepository
 from trading_system.replay import ReplayOrchestrator
-from trading_system.research.cli import configure_research_parser, handle_research
 from trading_system.reporting import markdown_report
+from trading_system.research.cli import configure_research_parser, handle_research
 from trading_system.serialization import canonical_hash, canonical_json
 
 
