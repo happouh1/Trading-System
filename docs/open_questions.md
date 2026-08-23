@@ -136,3 +136,18 @@ Questions 37–41 are resolved by the approved lifecycle, declared-cohort policy
 append-only parent-experiment lineage, and immutable-ID restart policy documented in
 `docs/proposals/phase_2b_evaluation_orchestration_v1.md`. Production universe sourcing (question 35),
 reviewer consensus (question 36), optimization, supervised learning, and trading changes remain open.
+
+## Added for Phase 3A proposal
+
+42. Which versioned outcome and horizon define the first supervised target?
+43. Which causal features are allowed, and which identifiers/future-derived fields are forbidden?
+44. Which estimator and preprocessing policy form the deterministic supervised baseline?
+45. How are class imbalance, single-class folds, missing values, and unseen categories handled?
+46. Which discrimination, probability-quality, calibration, and threshold diagnostics are mandatory?
+47. How are fitted artifacts serialized, hashed, verified, and isolated from Phase 1 authority?
+48. What evidence, if any, could authorize a later model-promotion proposal?
+
+Questions 42–47 are resolved by the approved target, feature schema, fixed baseline estimator,
+train-fold preprocessing, diagnostics, artifact verification, and authority boundary in
+`docs/proposals/phase_3a_supervised_baseline_v1.md`.
+Question 48 is deliberately deferred: Phase 3A cannot promote a model or alter trading behavior.

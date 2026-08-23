@@ -95,3 +95,14 @@ calibration results, similarity queries/results, and human reviews. Payloads are
 - `symbol_holdout_assignments`: stable supplemental symbol bucket membership.
 
 Migration `007_phase_2b.sql` adds these records without altering Phase 1 or Phase 2A payloads.
+
+## Phase 3A supervised-research additions
+
+- `ModelExperiment`: immutable data/config/feature/target/estimator hashes, versions, and seed.
+- `ModelRow`: observation, fold partition, label availability, outcome label, and causal features.
+- `ModelPrediction`: append-only probability linked to its fitted fold artifact.
+- `ModelStage`: `DEFINED`, `TRAINED`, `VALIDATION_EVALUATED`, `FROZEN`, `TEST_EVALUATED`, `COMPLETE`.
+- `model_fold_artifacts`: content hash, manifest, estimator kind, and artifact location.
+- `model_metrics`, `model_exclusions`, and `model_reports`: append-only evaluation evidence.
+
+Migration `008_phase_3a.sql` adds the model registry without changing prior schemas.

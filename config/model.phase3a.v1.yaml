@@ -1,0 +1,28 @@
+{
+  "model_version": "3A.1.0",
+  "target": {
+    "name": "GENERIC_2R_BEFORE_1R",
+    "positive_labels": ["GENERIC_SUCCESS"],
+    "negative_labels": ["GENERIC_FAILURE"]
+  },
+  "numeric_features": [
+    "pattern_quality", "confirmation_score", "acceptance_score", "trend_score",
+    "mtf_score", "rvol20", "clv", "signed_clv", "body_fraction",
+    "adr_utilization", "runway_adr", "stop_distance_adr", "location_score",
+    "confluence_score", "base_duration", "base_width_adr", "base_quality",
+    "reclaim_velocity"
+  ],
+  "categorical_features": ["pattern", "direction", "timeframe", "regime"],
+  "estimator": {
+    "kind": "L2_LOGISTIC_REGRESSION",
+    "c": 1.0,
+    "max_iter": 2000,
+    "class_weight": "balanced",
+    "solver": "liblinear"
+  },
+  "calibration": {"method": "sigmoid", "minimum_class_count": 3},
+  "diagnostic_thresholds": [0.50, 0.60, 0.70],
+  "bootstrap_samples": 1000,
+  "minimum_breakdown_sample": 30,
+  "determinism": {"seed": 20260101, "jobs": 1}
+}

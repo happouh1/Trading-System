@@ -115,3 +115,13 @@ Experiments advance append-only through `DEFINED`, training evaluation, validati
 frozen. Cohorts are declared before freeze; results below 30 eligible observations are marked
 `INSUFFICIENT_SAMPLE` and are never ranked. Stable five-bucket symbol holdouts supplement, but never
 replace, chronological walk-forward tests.
+
+## Phase 3A supervised baseline evaluation
+
+The target is the versioned generic 2R-before-1R outcome. Only causal allowlisted features are
+accepted. Labels must be available at the stage cutoff, and exclusions are persisted. Each fold fits
+preprocessing, logistic regression, and optional sigmoid calibration from training rows only.
+
+Validation precedes an immutable manifest freeze; test evaluation is prohibited before freeze.
+Reports include probability quality, calibration, thresholds, and deterministic bootstrap intervals
+alongside a prevalence dummy. Artifacts are hash verified. Probabilities remain research-only.

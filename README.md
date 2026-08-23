@@ -1,6 +1,6 @@
 # Trading System
 
-Phase 2A foundation for a deterministic candle-by-candle trading research system.
+Phase 3A foundation for a deterministic candle-by-candle trading research system.
 
 The repository contains immutable contracts, canonical serialization, strict CSV/Parquet OHLCV
 ingestion, XNYS session validation, deterministic 1H/4H/Daily/Weekly aggregation, causal streaming
@@ -21,6 +21,16 @@ and transition commands. It performs evaluation only and has no optimization or 
 Phase 2B commands use `trading-system research` with `define`, `validate`, `run`, `freeze`, `complete`,
 `status`, `report`, `explain`, `import-reviews`, and `export-reviews`. Staged runs require an immutable
 JSONL research dataset with explicit label-availability timestamps and net-R provenance.
+
+Phase 3A adds an isolated supervised-research baseline: a prevalence dummy comparator, fixed L2
+logistic regression, train-fold-only preprocessing and optional sigmoid calibration, immutable
+artifacts, append-only probabilities, and freeze-before-test evaluation. Model outputs are
+`RESEARCH_ONLY` and cannot enter decisions, risk, or execution simulation.
+
+Phase 3A commands use `trading-system model` with `define`, `train`, `evaluate`, `freeze`,
+`complete`, `status`, `verify-artifacts`, `report`, and `explain`. Configuration is in
+`config/model.phase3a.v1.yaml`; datasets are immutable JSONL rows with explicit fold partitions and
+label-availability timestamps.
 
 ## Development
 

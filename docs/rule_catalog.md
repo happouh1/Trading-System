@@ -44,3 +44,12 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `ORCH-COHORT-01`: cohorts cannot be added or changed after freeze.
 - `ORCH-SAMPLE-01`: cohorts below 30 observations are marked insufficient and not ranked.
 - `ORCH-HOLDOUT-01`: symbol buckets are deterministic and supplemental to chronological folds.
+
+## Phase 3A supervised-research invariants
+
+- `MODEL-AUTHORITY-01`: model code cannot enter decisions, risk, or execution simulation.
+- `MODEL-CAUSAL-01`: only causal features and cutoff-available labels are eligible.
+- `MODEL-FOLD-01`: preprocessing, fitting, and calibration use training-fold rows only.
+- `MODEL-FREEZE-01`: test evaluation requires the exact frozen experiment-manifest hash.
+- `MODEL-ARTIFACT-01`: artifact bytes and manifests must pass hash verification.
+- `MODEL-PREDICTION-01`: probabilities are append-only and observation-time attributable.

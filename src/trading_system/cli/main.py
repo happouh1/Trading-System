@@ -13,6 +13,7 @@ from trading_system.backtest import summarize
 from trading_system.config import load_config
 from trading_system.learning import write_observations
 from trading_system.market_data import XNYSCalendar, read_ohlcv
+from trading_system.modeling.cli import configure_model_parser, handle_model
 from trading_system.persistence import RunRecord, SQLiteRepository
 from trading_system.replay import ReplayOrchestrator
 from trading_system.reporting import markdown_report
@@ -42,6 +43,7 @@ def _parser() -> argparse.ArgumentParser:
     explain.add_argument("--database", required=True)
     explain.add_argument("--decision-id", required=True)
     configure_research_parser(commands)
+    configure_model_parser(commands)
     return parser
 
 
@@ -142,6 +144,7 @@ def main(argv: list[str] | None = None) -> int:
         "report": _report,
         "explain": _explain,
         "research": handle_research,
+        "model": handle_model,
     }
     return handlers[args.command](args)
 
