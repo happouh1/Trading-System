@@ -1,0 +1,12 @@
+{
+  "paper_version": "3B.1.0",
+  "default_mode": "SHADOW",
+  "adapter": "INTERNAL_SIMULATOR",
+  "heartbeat_interval_seconds": 30,
+  "heartbeat_stale_seconds": 120,
+  "completed_bar_lateness_seconds": 120,
+  "acknowledgement_timeout_seconds": 5,
+  "unambiguously_unsubmitted_retries": 2,
+  "reconciliation_interval_seconds": 60,
+  "maximum_consecutive_data_failures": 1
+}

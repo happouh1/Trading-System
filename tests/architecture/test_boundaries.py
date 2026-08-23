@@ -52,3 +52,21 @@ def test_phase1_authority_does_not_import_modeling() -> None:
                 ):
                     violations.append(f"{path}:{node.lineno}")
     assert not violations, f"modeling imported by Phase 1 authority: {violations}"
+
+
+def test_phase1_authority_does_not_import_paper_runtime() -> None:
+    violations: list[str] = []
+    for package in ("decisions", "risk", "execution_sim"):
+        for path in (ROOT / "src" / "trading_system" / package).rglob("*.py"):
+            tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Import):
+                    names = {alias.name for alias in node.names}
+                elif isinstance(node, ast.ImportFrom):
+                    names = {node.module or ""}
+                else:
+                    continue
+                if any(name == "trading_system.paper" or name.startswith("trading_system.paper.")
+                       for name in names):
+                    violations.append(f"{path}:{node.lineno}")
+    assert not violations, f"paper runtime imported by Phase 1 authority: {violations}"

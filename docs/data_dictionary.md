@@ -106,3 +106,15 @@ Migration `007_phase_2b.sql` adds these records without altering Phase 1 or Phas
 - `model_metrics`, `model_exclusions`, and `model_reports`: append-only evaluation evidence.
 
 Migration `008_phase_3a.sql` adds the model registry without changing prior schemas.
+
+## Phase 3B operational additions
+
+- `PaperSession`: immutable runtime identity and shadow or simulated mode.
+- `CompletedBarEnvelope`: finalized candle, receipt time, and matching source revision.
+- `OrderIntent`: deterministic persist-before-submit representation of an existing plan.
+- `AdapterResult`: acknowledged, rejected, or ambiguous internal-adapter result.
+- `ReconciliationResult`: exact internal/adapter comparison and differences.
+- `RuntimeState`: created, starting, active, draining, stopped, or halted state.
+
+Migration `009_phase_3b.sql` adds append-only sessions, transitions, intents, adapter events, paper
+orders/fills, reconciliations, checkpoints, heartbeats, incidents, and reports.

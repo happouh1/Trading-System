@@ -125,3 +125,13 @@ preprocessing, logistic regression, and optional sigmoid calibration from traini
 Validation precedes an immutable manifest freeze; test evaluation is prohibited before freeze.
 Reports include probability quality, calibration, thresholds, and deterministic bootstrap intervals
 alongside a prevalence dummy. Artifacts are hash verified. Probabilities remain research-only.
+
+## Phase 3B paper-trading readiness
+
+The runtime consumes only finalized causal candles and existing Phase 1 plans. It durably records a
+deterministic intent before internal simulated submission; shadow mode never calls the adapter.
+Recovery requires exact code, configuration, data-revision, and calendar identity.
+
+Completed-bar checkpoints preserve Weekly, Daily, 4H, then 1H ordering at shared close times. Stale,
+duplicate, and out-of-order data are rejected. Ambiguity and reconciliation mismatch halt submission.
+Phase 3A probabilities cannot enter plans, quantities, intents, execution, or safety controls.

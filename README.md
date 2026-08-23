@@ -32,6 +32,13 @@ Phase 3A commands use `trading-system model` with `define`, `train`, `evaluate`,
 `config/model.phase3a.v1.yaml`; datasets are immutable JSONL rows with explicit fold partitions and
 label-availability timestamps.
 
+Phase 3B adds provider-neutral paper readiness with shadow mode by default, an internal simulated
+adapter, persist-before-submit intents, restart checks, checkpoints, reconciliation, heartbeats, and
+fail-closed controls. It has no external broker or live-money path and changes no Phase 1 behavior.
+
+Phase 3B commands use `trading-system paper` with `start`, `resume`, `status`, `reconcile`, `halt`,
+`drain`, and `report`. Submission requires the explicit `--enable-simulated-paper` flag.
+
 ## Development
 
 Requires Python 3.12.

@@ -53,3 +53,13 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `MODEL-FREEZE-01`: test evaluation requires the exact frozen experiment-manifest hash.
 - `MODEL-ARTIFACT-01`: artifact bytes and manifests must pass hash verification.
 - `MODEL-PREDICTION-01`: probabilities are append-only and observation-time attributable.
+
+## Phase 3B operational invariants
+
+- `PAPER-SHADOW-01`: shadow mode cannot submit to an adapter.
+- `PAPER-INTENT-01`: intents are committed before submission and are idempotent.
+- `PAPER-CAUSAL-01`: only finalized, ordered, non-stale candles advance checkpoints.
+- `PAPER-IDENTITY-01`: restart requires exact code/config/data/calendar identity.
+- `PAPER-AMBIGUOUS-01`: ambiguous state halts and is never blindly retried.
+- `PAPER-RECONCILE-01`: any order mismatch records an incident and halts.
+- `PAPER-AUTHORITY-01`: the runtime consumes Phase 1 plans without altering behavior.

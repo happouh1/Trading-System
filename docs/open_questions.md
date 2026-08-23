@@ -151,3 +151,20 @@ Questions 42–47 are resolved by the approved target, feature schema, fixed bas
 train-fold preprocessing, diagnostics, artifact verification, and authority boundary in
 `docs/proposals/phase_3a_supervised_baseline_v1.md`.
 Question 48 is deliberately deferred: Phase 3A cannot promote a model or alter trading behavior.
+
+## Added for Phase 3B proposal
+
+49. Does the first operational runtime use only the internal simulator or an external paper broker?
+50. Which runtime modes and explicit controls govern whether intents may reach a paper adapter?
+51. What durable idempotency and acknowledgement policy prevents duplicate paper orders on restart?
+52. Which stale-data, reconciliation, storage, and internal failures must halt submissions?
+53. What heartbeat, lateness, acknowledgement, retry, and reconciliation thresholds are initial defaults?
+54. How are existing decisions, plans, sizing, and execution behavior preserved without reinterpretation?
+55. Which runtime records and commands are required for recovery, reconciliation, and audit?
+56. Can Phase 3A probabilities appear in runtime reports without acquiring trading authority?
+
+Questions 49–56 are resolved for the internal readiness layer by the approved shadow-first runtime,
+internal simulator, durable intent identity, fail-closed policy, operational defaults, exact Phase 1
+reuse, audit records, and model-authority boundary in
+`docs/proposals/phase_3b_paper_trading_readiness_v1.md`. External broker selection and connectivity
+remain deliberately deferred.
