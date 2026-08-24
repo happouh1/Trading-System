@@ -107,7 +107,7 @@ def test_read_only_verification_preview_and_submission_gates(tmp_path: Path) -> 
         verification = service.verify_account(NOW)
         assert verification.account_count == 1
         assert service.discover_accounts(NOW) == ({
-            "account_label": "UNKNOWN", "account_class": "UNKNOWN",
+            "account_label": "UNKNOWN", "account_class": "INDIVIDUAL_MARGIN",
             "account_type": "UNKNOWN", "account_number_masked": "****ount",
         },)
         assert transport.preview_calls == transport.place_calls == 0
