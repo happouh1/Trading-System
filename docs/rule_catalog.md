@@ -63,3 +63,12 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `PAPER-AMBIGUOUS-01`: ambiguous state halts and is never blindly retried.
 - `PAPER-RECONCILE-01`: any order mismatch records an incident and halts.
 - `PAPER-AUTHORITY-01`: the runtime consumes Phase 1 plans without altering behavior.
+## Phase 3C-2 streaming rules
+
+- `WEBULL_STREAM_PERSIST_FIRST`: append every callback before semantic processing.
+- `WEBULL_STREAM_RTH_SNAPSHOT_ONLY`: reject non-snapshot and non-RTH messages.
+- `WEBULL_STREAM_CAUSAL_ORDER`: exact duplicates are idempotent; older/equal conflicting messages halt.
+- `WEBULL_STREAM_STALE_120`: provider age greater than 120 seconds halts.
+- `WEBULL_STREAM_RECONNECT_1_2_4`: deterministic bounded reconnect delays; exhaustion halts.
+- `WEBULL_STREAM_REST_GATE`: a successful REST comparison is required after disconnect.
+- `WEBULL_STREAM_SOCKET_DISABLED`: no SDK socket opens without an exact verified sandbox MQTT host.

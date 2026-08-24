@@ -198,3 +198,11 @@ so raw and adjusted values match with factor one. Unknown schema variants still 
 bar construction, and authoritative completion semantics are not specified. Stage 3C-2 accepts
 strict completed streaming-bar envelopes through the same normalizer; opening a long-running SDK
 stream remains deferred until those operational rules are approved.
+
+The provider-neutral portion of question 67 is now resolved by the approved Phase 3C-2 streaming
+controls: callbacks are stored before validation, only RTH `snapshot` messages are accepted, stale
+or out-of-order data halts the paper runtime, restart restores the last per-symbol cursor, reconnect
+delays are exactly 1, 2, and 4 seconds, and every reconnect requires a matching REST reconciliation.
+The official SDK socket remains structurally disabled because no independently verified sandbox
+MQTT hostname is specified. Callback threading, heartbeat ownership, and snapshot-to-completed-bar
+construction remain open and no production-host auto-discovery is authorized.

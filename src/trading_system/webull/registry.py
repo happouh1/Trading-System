@@ -9,6 +9,7 @@ from trading_system.serialization import canonical_hash, canonical_json, determi
 from trading_system.webull.contracts import AccountVerification, WebullResponse, WebullStockOrder
 from trading_system.webull.market_data import ShadowBar
 from trading_system.webull.security import redact
+from trading_system.webull.streaming import StreamNotification
 
 
 def _time(value: datetime) -> str:
@@ -82,6 +83,56 @@ class WebullRegistry:
         if row is None or row[0] is None:
             return None
         return datetime.fromisoformat(str(row[0]).replace("Z", "+00:00")).astimezone(UTC)
+
+    def insert_stream_notification(self, item: StreamNotification) -> bool:
+        return self._insert(
+            "webull_stream_notifications", "notification_id", item.notification_id,
+            ("notification_id", "session_id", "topic", "symbol",
+             "provider_timestamp", "received_at", "raw_payload_hash"),
+            (item.notification_id, item.session_id, item.topic, item.symbol,
+             None if item.provider_timestamp is None else _time(item.provider_timestamp),
+             _time(item.received_at), canonical_hash(item.payload)),
+            item,
+        )
+
+    def insert_stream_event(
+        self, session_id: str, occurred_at: datetime, event_type: str,
+        attempt: int, delay_seconds: int | None, payload: object,
+    ) -> bool:
+        event_id = deterministic_id(
+            "webull_stream_event",
+            (session_id, occurred_at, event_type, attempt, delay_seconds, payload),
+        )
+        body = {
+            "stream_event_id": event_id, "session_id": session_id,
+            "occurred_at": occurred_at, "event_type": event_type,
+            "attempt": attempt, "delay_seconds": delay_seconds, "detail": payload,
+        }
+        return self._insert(
+            "webull_stream_events", "stream_event_id", event_id,
+            ("stream_event_id", "session_id", "occurred_at", "event_type",
+             "attempt", "delay_seconds"),
+            (event_id, session_id, _time(occurred_at), event_type, attempt, delay_seconds),
+            body,
+        )
+
+    def stream_cursor(self, session_id: str) -> dict[str, tuple[datetime, str]]:
+        rows = self.repository.connection.execute(
+            """SELECT symbol, provider_timestamp, raw_payload_hash
+               FROM webull_stream_notifications
+               WHERE session_id = ? AND symbol IS NOT NULL
+                 AND provider_timestamp IS NOT NULL
+               ORDER BY provider_timestamp, notification_id""",
+            (session_id,),
+        ).fetchall()
+        cursor: dict[str, tuple[datetime, str]] = {}
+        for symbol, provider_timestamp, payload_hash in rows:
+            cursor[str(symbol)] = (
+                datetime.fromisoformat(str(provider_timestamp).replace("Z", "+00:00"))
+                .astimezone(UTC),
+                str(payload_hash),
+            )
+        return cursor
 
     def insert_envelope(self, session_id: str, operation: str, occurred_at: datetime,
                         response: WebullResponse, request: object | None = None) -> bool:

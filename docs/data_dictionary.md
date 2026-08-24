@@ -125,3 +125,14 @@ the session, historical/stream kind, provider timestamp, local receipt timestamp
 raw payload hash, and immutable source revision. `payload_json` is canonical audit evidence and
 contains no credentials. Historical rows do not advance paper checkpoints; completed streaming rows
 may do so only after all causal and session checks pass.
+## Webull read-only stream evidence (Phase 3C-2)
+
+`webull_stream_notifications` is append-only callback evidence. `notification_id` identifies the
+specific receipt; `session_id` references the paper session; `topic`, nullable `symbol`, nullable
+`provider_timestamp`, and `received_at` preserve causal envelope metadata; `raw_payload_hash` hashes
+the provider payload; and canonical `payload_json`/`payload_hash` preserve the immutable contract.
+Nullable fields allow malformed evidence to be persisted before it is rejected.
+
+`webull_stream_events` is the append-only connection state journal. It records `event_type`, UTC
+`occurred_at`, one-based reconnect `attempt`, optional `delay_seconds`, and canonical detail evidence.
+It contains no credentials and grants no order authority.

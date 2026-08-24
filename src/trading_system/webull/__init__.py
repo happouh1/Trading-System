@@ -21,6 +21,11 @@ from trading_system.webull.market_data import (
 from trading_system.webull.registry import WebullRegistry
 from trading_system.webull.security import load_credentials, redact
 from trading_system.webull.service import WebullSandboxService
+from trading_system.webull.streaming import (
+    StreamNotification,
+    StreamState,
+    WebullStreamCoordinator,
+)
 from trading_system.webull.transport import (
     FakeWebullTransport,
     OfficialSdkWebullMarketDataSource,
@@ -34,6 +39,8 @@ __all__ = [
     "OfficialSdkWebullMarketDataSource",
     "OfficialSdkWebullTransport",
     "ShadowBar",
+    "StreamNotification",
+    "StreamState",
     "WebullConfig",
     "WebullCredentials",
     "WebullMarketDataError",
@@ -45,6 +52,7 @@ __all__ = [
     "WebullShadowDataService",
     "WebullSide",
     "WebullStockOrder",
+    "WebullStreamCoordinator",
     "client_order_id",
     "decode_sdk_history",
     "load_credentials",

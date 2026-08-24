@@ -40,8 +40,12 @@ Phase 3B commands use `trading-system paper` with `start`, `resume`, `status`, `
 `drain`, and `report`. Submission requires the explicit `--enable-simulated-paper` flag.
 
 Phase 3C begins a sandbox-only Webull adapter using the pinned official SDK. Configuration validation
-is offline; `webull verify-account` permits only explicit read-only account, balance, position, and
-open-order requests. Production Webull hosts are rejected and sandbox order submission is unavailable
+is offline; `webull verify-account` permits only explicit read-only account, balance, position,
+and open-order requests. Phase 3C also includes a provider-neutral, read-only streaming coordinator with
+append-only callback evidence, restart cursors, fixed `1,2,4` reconnect delays, mandatory REST
+reconciliation, and fail-closed stale/order checks. The official SDK streaming socket remains
+disabled until a Webull sandbox MQTT hostname is independently verified; no production hostname
+may be auto-resolved. Production Webull hosts are rejected and sandbox order submission is unavailable
 from the CLI during Stage 3C-1.
 
 Stage 3C-1 has successfully verified a Webull sandbox account using only account, balance, position,

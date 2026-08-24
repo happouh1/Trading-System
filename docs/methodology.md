@@ -149,3 +149,11 @@ For the captured SDK `2.0.17` M60 schema, `time` is the bar start and responses 
 Rows are sorted causally; close is the next start in the same symbol/session or the XNYS close for
 the final row. Only already-closed sessions are decoded, derived durations must be in `(0, 1h]`, and
 the raw response hash becomes the immutable source revision.
+## Phase 3C read-only streaming controls
+
+Webull quote callbacks are evidence, not trading authority. The system persists each callback before
+validation, accepts only RTH snapshot messages, restores a per-symbol timestamp/hash cursor on
+restart, and rejects stale or non-causal ordering. Disconnect recovery uses fixed 1, 2, and 4 second
+delays and requires a matching REST reconciliation before returning to active state. Any malformed
+message, mismatch, or exhausted retry budget halts the Phase 3B runtime. The official SDK socket is
+disabled until an exact sandbox MQTT hostname is independently verified.

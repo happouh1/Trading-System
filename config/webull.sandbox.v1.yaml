@@ -20,5 +20,14 @@
     "extended_hours": false,
     "max_completed_bar_lateness_seconds": 120
   },
+  "streaming": {
+    "socket_enabled": false,
+    "subscription_type": "snapshot",
+    "trading_session": "RTH",
+    "stale_seconds": 120,
+    "reconciliation_interval_seconds": 60,
+    "reconnect_delays_seconds": [1, 2, 4],
+    "rest_reconciliation_required": true
+  },
   "stock_order": {"order_type": "MARKET", "time_in_force": "DAY"}
 }

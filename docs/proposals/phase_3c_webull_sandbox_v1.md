@@ -103,6 +103,24 @@ stream remains governed by open question 67.
 4. Unknown orders, missing orders, account mismatch, side/symbol/quantity mismatch, impossible status
    transition, unexpected fill, or position mismatch records an incident and halts submission.
 
+### Approved 3C-2 streaming control amendment
+
+The bounded streaming stage is notification-only and read-only. Every callback is written to the
+append-only registry before semantic validation. Only uppercase-symbol, regular-session `snapshot`
+notifications with an epoch-millisecond provider timestamp are accepted. Exact duplicates are
+idempotent; stale, malformed, unsupported, or out-of-order callbacks halt the Phase 3B runtime.
+
+Disconnects enter `RECONCILING` and use the fixed retry delays `1, 2, 4` seconds. Reconnection is
+not permitted to become active until a REST comparison succeeds. A mismatch or exhausted retry
+budget halts. The per-symbol provider timestamp and payload-hash cursor is restored from SQLite on
+restart.
+
+The pinned SDK may auto-resolve a production-capable MQTT hostname when none is supplied. Because
+the approved configuration does not contain an independently verified Webull sandbox MQTT hostname,
+`socket_enabled` is fixed to `false`. This amendment therefore implements and verifies the complete
+provider-neutral control boundary but does not instantiate `DataStreamingClient`, open a socket,
+construct candles from quote snapshots, or authorize any order action.
+
 ## Proposed initial stock-order mapping
 
 The existing Phase 1 next-open rule remains authoritative. Proposed sandbox representation:
