@@ -189,7 +189,7 @@ class WebullRegistry:
         value = row[0]
         if isinstance(value, bool) or not isinstance(value, int) or value not in (0, 1):
             raise ValueError("stored Webull preview status is invalid")
-        return value == 1
+        return bool(value)
 
     def insert_mapping(self, session_id: str, intent_id: str,
                        order: WebullStockOrder, response: WebullResponse) -> bool:
