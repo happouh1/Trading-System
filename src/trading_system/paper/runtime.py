@@ -36,7 +36,7 @@ class PaperRuntime:
         return target
 
     def record_plan(self, plan: TradePlan, scheduled_open: datetime,
-                    occurred_at: datetime) -> OrderIntent:
+                    occurred_at: datetime, source_decision_id: str | None = None) -> OrderIntent:
         state = self.registry.current_state(self.session_id)
         if state not in (RuntimeState.SHADOW, RuntimeState.PAPER_ENABLED):
             raise ValueError("paper session is not accepting intents")
@@ -45,9 +45,12 @@ class PaperRuntime:
         )
         initial_status = (IntentStatus.SHADOWED if state is RuntimeState.SHADOW
                           else IntentStatus.RECORDED)
+        payload: dict[str, object] = {"trade_plan": plan}
+        if source_decision_id is not None:
+            payload["source_decision_id"] = source_decision_id
         intent = OrderIntent(
             intent_id, self.session_id, plan.plan_id, scheduled_open, plan.created_at,
-            initial_status, {"trade_plan": plan},
+            initial_status, payload,
         )
         inserted = self.registry.insert_intent(intent)
         if state is RuntimeState.SHADOW or not inserted:

@@ -171,3 +171,8 @@ Candidate discovery is a separate offline step. It sorts stored Phase 3B intents
 and ID, recalculates quantity through the same normalized Phase 1 sizing function, and evaluates
 eligibility at a caller-supplied causal timestamp. It reports reasons without selecting, ranking,
 creating, rescheduling, or modifying plans.
+
+The decision bridge reconstructs the immutable plan from canonical decision evidence. It does not
+re-score or reinterpret the decision. Runtime identity and causal timing are checked before the
+intent is persisted. Scheduling scans only the authoritative exchange calendar for the first open
+after `known_at`; a stale decision is rejected instead of being moved to a later session.

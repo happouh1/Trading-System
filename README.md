@@ -79,6 +79,12 @@ UTC `--as-of` timestamp. It lists stored intents in deterministic scheduled-open
 Phase 1 quantity and request hash, and explains ineligibility such as a non-XNYS release, elapsed
 release time, or an existing preview. It never creates a plan or reads Webull credentials.
 
+`paper stage-decision` is the only decision-to-intent bridge. It accepts an already-persisted
+directional Phase 1 decision, verifies code/data/calendar identity against an active SHADOW session,
+and schedules its immutable plan for the next authoritative XNYS open. The explicit `--as-of` must
+fall between decision availability and that open. The bridge is offline, append-only, idempotent,
+and cannot submit to an adapter.
+
 ## Development
 
 Requires Python 3.12.

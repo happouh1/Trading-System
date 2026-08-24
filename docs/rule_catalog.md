@@ -85,3 +85,13 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `WEBULL_CANDIDATE_OFFLINE`: candidate discovery uses only immutable SQLite evidence.
 - `WEBULL_CANDIDATE_ASOF`: eligibility uses an explicit UTC as-of timestamp, never hidden wall time.
 - `WEBULL_CANDIDATE_NO_INVENTION`: discovery cannot create or alter a trade plan.
+
+## Phase 3B decision-to-intent bridge
+
+- `PAPER-BRIDGE-DIRECTIONAL`: only persisted Phase 1 LONG/SHORT decisions are eligible.
+- `PAPER-BRIDGE-IDENTITY`: code, data revision, and calendar version must match the session.
+- `PAPER-BRIDGE-SHADOW`: staging is permitted only in active SHADOW state.
+- `PAPER-BRIDGE-NEXT-XNYS`: release is the first authoritative XNYS open after `known_at`.
+- `PAPER-BRIDGE-CAUSAL`: as-of cannot precede `known_at` or reach the scheduled open.
+- `PAPER-BRIDGE-IDEMPOTENT`: identical decision/plan/session scheduling yields one intent.
+- `PAPER-BRIDGE-NO-SUBMIT`: staging writes evidence and never invokes an adapter.

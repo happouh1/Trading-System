@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import sqlite3
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -13,11 +14,15 @@ from trading_system.backtest import CompletedTrade, TradeResult
 from trading_system.domain import (
     Candle,
     Decision,
+    DecisionAction,
+    Direction,
     Level,
     Observation,
     Outcome,
     PatternEvent,
+    Timeframe,
     TradeEvent,
+    TradePlan,
 )
 from trading_system.serialization import canonical_hash, canonical_json
 
@@ -461,6 +466,58 @@ class SQLiteRepository:
             (decision_id,),
         ).fetchone()
         return None if row is None else str(row[0])
+
+    def load_decision_plan(
+        self, decision_id: str
+    ) -> tuple[TradePlan, datetime, DecisionAction, str]:
+        row = self.connection.execute(
+            """SELECT run_id, known_at, action, payload_json
+               FROM decisions WHERE decision_id = ?""",
+            (decision_id,),
+        ).fetchone()
+        if row is None:
+            raise ValueError(f"unknown decision: {decision_id}")
+        action = DecisionAction(str(row[2]))
+        if action not in (DecisionAction.LONG, DecisionAction.SHORT):
+            raise ValueError("paper intents require a directional Phase 1 decision")
+        payload = json.loads(str(row[3]))
+        plan_payload = payload.get("entry_plan") if isinstance(payload, dict) else None
+        if not isinstance(plan_payload, dict):
+            raise ValueError("directional decision has no immutable trade plan")
+
+        def tagged(value: object, tag: str) -> str:
+            if not isinstance(value, dict) or set(value) != {tag}:
+                raise ValueError(f"stored decision has invalid {tag} value")
+            result = value[tag]
+            if not isinstance(result, str):
+                raise ValueError(f"stored decision has invalid {tag} value")
+            return result
+
+        plan = TradePlan(
+            str(plan_payload["plan_id"]), str(plan_payload["symbol"]),
+            Timeframe(str(plan_payload["timeframe"])),
+            Direction(str(plan_payload["direction"])),
+            datetime.fromisoformat(
+                tagged(plan_payload["created_at"], "__datetime__").replace("Z", "+00:00")
+            ).astimezone(UTC),
+            Decimal(tagged(plan_payload["planned_entry"], "__decimal__")),
+            Decimal(tagged(plan_payload["initial_stop"], "__decimal__")),
+            Decimal(tagged(plan_payload["risk_per_unit"], "__decimal__")),
+            None if plan_payload["runway_adr"] is None else Decimal(
+                tagged(plan_payload["runway_adr"], "__decimal__")
+            ),
+            None if plan_payload["reward_risk"] is None else Decimal(
+                tagged(plan_payload["reward_risk"], "__decimal__")
+            ),
+            str(plan_payload["pattern_instance_id"]),
+        )
+        expected_direction = (
+            Direction.LONG if action is DecisionAction.LONG else Direction.SHORT
+        )
+        if plan.direction is not expected_direction:
+            raise ValueError("decision action and trade-plan direction disagree")
+        known_at = datetime.fromisoformat(str(row[1]).replace("Z", "+00:00")).astimezone(UTC)
+        return plan, known_at, action, str(row[0])
 
     def run_counts(self, run_id: str) -> dict[str, int]:
         result: dict[str, int] = {}

@@ -27,6 +27,11 @@ decisions, or changes to the approved strategy rules.
    revision and a new runtime session; they never rewrite prior decisions or paper events.
 4. Convert only an existing eligible Phase 1 `TradePlan` into an `OrderIntent`. Phase 3B cannot create
    a setup, alter confidence, change sizing, relax a gate, or reinterpret `NO_TRADE`.
+
+   Implementation amendment: `paper stage-decision` performs this conversion only from an immutable
+   persisted directional decision in an identity-matched SHADOW session. It uses an explicit causal
+   as-of time, schedules the first XNYS open after the decision, rejects stale decisions, records the
+   source decision ID, and never calls an adapter.
 5. Persist every intent before adapter submission. Use deterministic client intent IDs so replay,
    retries, and restart cannot duplicate an order.
 6. Add a runtime state machine:

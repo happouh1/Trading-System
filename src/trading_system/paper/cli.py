@@ -7,7 +7,9 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from trading_system import PACKAGE_VERSION
+from trading_system.market_data import XNYSCalendar
 from trading_system.paper.adapters import InternalSimulatorAdapter
+from trading_system.paper.bridge import stage_shadow_decision
 from trading_system.paper.config import load_paper_config
 from trading_system.paper.contracts import PaperMode, PaperSession, RuntimeState
 from trading_system.paper.registry import PaperRegistry
@@ -34,6 +36,11 @@ def configure_paper_parser(
     resume.add_argument("--config", required=True)
     resume.add_argument("--data-revision", required=True)
     resume.add_argument("--calendar-version", required=True)
+    stage = actions.add_parser("stage-decision")
+    stage.add_argument("--database", required=True)
+    stage.add_argument("--session-id", required=True)
+    stage.add_argument("--decision-id", required=True)
+    stage.add_argument("--as-of", required=True)
     for name in ("status", "halt", "drain", "reconcile", "report"):
         parser = actions.add_parser(name)
         parser.add_argument("--database", required=True)
@@ -75,6 +82,23 @@ def handle_paper(args: argparse.Namespace) -> int:
                 raise ValueError(f"paper session cannot resume from {state.value}")
             result = {"session_id": args.session_id, "state": state,
                       "checkpoint": registry.latest_checkpoint(args.session_id)}
+        elif command == "stage-decision":
+            occurred_at = datetime.fromisoformat(args.as_of.replace("Z", "+00:00"))
+            if occurred_at.tzinfo is None or occurred_at.utcoffset() is None:
+                raise ValueError("--as-of must be a timezone-aware timestamp")
+            intent = stage_shadow_decision(
+                repository, args.session_id, args.decision_id,
+                occurred_at.astimezone(UTC), XNYSCalendar(),
+            )
+            result = {
+                "session_id": args.session_id,
+                "decision_id": args.decision_id,
+                "intent_id": intent.intent_id,
+                "scheduled_open": intent.scheduled_open,
+                "status": intent.status,
+                "network_used": False,
+                "order_submitted": False,
+            }
         elif command == "status":
             result = {"session_id": args.session_id,
                       "state": registry.current_state(args.session_id)}
