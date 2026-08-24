@@ -72,3 +72,13 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `WEBULL_STREAM_RECONNECT_1_2_4`: deterministic bounded reconnect delays; exhaustion halts.
 - `WEBULL_STREAM_REST_GATE`: a successful REST comparison is required after disconnect.
 - `WEBULL_STREAM_SOCKET_DISABLED`: no SDK socket opens without an exact verified sandbox MQTT host.
+
+## Phase 3C-3 preview rules
+
+- `WEBULL_PREVIEW_INTENT`: the request must reconstruct an existing immutable Phase 3B intent.
+- `WEBULL_PREVIEW_QUANTITY`: quantity is `floor(normalized_risk_budget / risk_per_unit)`.
+- `WEBULL_PREVIEW_SESSION`: scheduled release must equal an authoritative XNYS session open.
+- `WEBULL_PREVIEW_PARITY`: account and all canonical MARKET/DAY stock fields must echo exactly.
+- `WEBULL_PREVIEW_PERSIST`: accepted and rejected responses retain the exact request hash.
+- `WEBULL_PREVIEW_NO_FALLBACK`: a rejection cannot change quantity, side, type, TIF, or plan.
+- `WEBULL_SUBMISSION_DISABLED_3C3`: preview evidence cannot route an order.

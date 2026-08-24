@@ -68,6 +68,12 @@ source revision from the complete raw response hash; callers no longer supply a 
 The read-only live review persisted ten distinct AAPL candles with causal timestamps, valid
 factor-one provenance, and no secret-redaction violations.
 
+Stage 3C-3 adds `webull preview-stock`. It reconstructs a stored Phase 3B intent, calculates the
+exact Phase 1 normalized integer quantity, verifies the scheduled XNYS open and sandbox account,
+and persists the redacted preview request/response hash. It supports only US equity MARKET/DAY
+BUY or SELL_SHORT previews. Rejection has no fallback, submission is structurally unavailable, and
+`--allow-network-preview` must be provided explicitly.
+
 ## Development
 
 Requires Python 3.12.

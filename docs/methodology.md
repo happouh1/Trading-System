@@ -157,3 +157,12 @@ restart, and rejects stale or non-causal ordering. Disconnect recovery uses fixe
 delays and requires a matching REST reconciliation before returning to active state. Any malformed
 message, mismatch, or exhausted retry budget halts the Phase 3B runtime. The official SDK socket is
 disabled until an exact sandbox MQTT hostname is independently verified.
+
+## Phase 3C preview-only methodology
+
+Preview requests are derived from stored paper intents rather than user-entered order fields. The
+versioned Phase 1 risk budget and immutable unit risk determine quantity. Before any preview call,
+the adapter validates intent/session identity, XNYS next-open timing, stock symbol, direction, and
+the fixed MARKET/DAY representation. The provider response is persisted before acceptance is
+reported. Acceptance requires exact account and order parity. Preview output is evidence only and
+cannot modify a plan or reach submission.

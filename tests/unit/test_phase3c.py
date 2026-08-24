@@ -19,6 +19,7 @@ from trading_system.persistence import SQLiteRepository
 from trading_system.serialization import canonical_hash
 from trading_system.webull import (
     FakeWebullTransport,
+    OfficialSdkWebullTransport,
     WebullCredentials,
     WebullRegistry,
     WebullSandboxService,
@@ -101,7 +102,12 @@ def test_client_order_mapping_is_stable_exact_and_bounded() -> None:
     assert order.sdk_payload()["quantity"] == "10"
 
 
-def test_read_only_verification_preview_and_submission_gates(tmp_path: Path) -> None:
+def test_phase3c3_has_no_order_placement_transport() -> None:
+    assert not hasattr(OfficialSdkWebullTransport, "place")
+    assert not hasattr(FakeWebullTransport, "place")
+
+
+def test_preview_is_exact_persisted_and_submission_is_unavailable(tmp_path: Path) -> None:
     repository, service, transport, intent_id = _service(tmp_path)
     try:
         verification = service.verify_account(NOW)
@@ -113,17 +119,81 @@ def test_read_only_verification_preview_and_submission_gates(tmp_path: Path) -> 
         assert transport.preview_calls == transport.place_calls == 0
         order = map_stock_order(_plan(), intent_id, 10)
         assert service.preview(intent_id, order, NOW)
-        with pytest.raises(ValueError, match="two independent"):
+        with pytest.raises(ValueError, match="not authorized"):
             service.submit(intent_id, order, NOW, environment_enabled=True, cli_enabled=False)
-        service.submit(intent_id, order, NOW, environment_enabled=True, cli_enabled=True)
-        assert transport.place_calls == 1
-        service.submit(intent_id, order, NOW, environment_enabled=True, cli_enabled=True)
-        assert transport.place_calls == 1
+        with pytest.raises(ValueError, match="not authorized"):
+            service.submit(intent_id, order, NOW, environment_enabled=True, cli_enabled=True)
+        assert transport.place_calls == 0
         rows = repository.connection.execute(
             "SELECT payload_json FROM webull_envelopes"
         ).fetchall()
         assert all("sandbox-account" not in str(row[0]) for row in rows)
         assert canonical_hash(order).startswith("sha256:")
+    finally:
+        repository.close()
+
+
+def test_preview_intent_uses_exact_phase1_normalized_quantity(tmp_path: Path) -> None:
+    repository, service, transport, intent_id = _service(tmp_path)
+    try:
+        service.verify_account(NOW)
+        order, accepted = service.preview_intent(intent_id, Decimal("1000"), NOW)
+        assert accepted
+        assert order.quantity == 500
+        assert order.sdk_payload() == {
+            "client_order_id": client_order_id(intent_id),
+            "combo_type": "NORMAL",
+            "order_type": "MARKET",
+            "quantity": "500",
+            "side": "BUY",
+            "time_in_force": "DAY",
+            "entrust_type": "QTY",
+            "instrument_type": "EQUITY",
+            "market": "US",
+            "symbol": "AAPL",
+        }
+        assert transport.preview_calls == 1
+        assert repository.connection.execute(
+            "SELECT accepted, request_hash FROM webull_order_previews"
+        ).fetchone() == (1, canonical_hash(order))
+        repeated_order, repeated_accepted = service.preview_intent(
+            intent_id, Decimal("1000"), NOW + timedelta(seconds=1)
+        )
+        assert repeated_order == order
+        assert repeated_accepted
+        assert transport.preview_calls == 1
+    finally:
+        repository.close()
+
+
+def test_preview_rejection_is_persisted_without_fallback(tmp_path: Path) -> None:
+    repository, service, transport, intent_id = _service(tmp_path)
+    try:
+        transport.reject_preview = True
+        service.verify_account(NOW)
+        order = map_stock_order(_plan(), intent_id, 10)
+        assert not service.preview(intent_id, order, NOW)
+        assert transport.preview_calls == 1
+        assert transport.place_calls == 0
+        assert repository.connection.execute(
+            "SELECT accepted FROM webull_order_previews"
+        ).fetchone() == (0,)
+    finally:
+        repository.close()
+
+
+def test_preview_rejects_request_that_does_not_match_stored_plan(tmp_path: Path) -> None:
+    repository, service, transport, intent_id = _service(tmp_path)
+    try:
+        service.verify_account(NOW)
+        wrong_plan = TradePlan(
+            "plan-webull", "MSFT", Timeframe.HOUR_1, Direction.LONG, NOW,
+            Decimal("101"), Decimal("99"), Decimal("2"), None, None,
+            "pattern-webull",
+        )
+        with pytest.raises(ValueError, match="does not match"):
+            service.preview(intent_id, map_stock_order(wrong_plan, intent_id, 10), NOW)
+        assert transport.preview_calls == 0
     finally:
         repository.close()
 

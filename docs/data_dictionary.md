@@ -136,3 +136,9 @@ Nullable fields allow malformed evidence to be persisted before it is rejected.
 `webull_stream_events` is the append-only connection state journal. It records `event_type`, UTC
 `occurred_at`, one-based reconnect `attempt`, optional `delay_seconds`, and canonical detail evidence.
 It contains no credentials and grants no order authority.
+## Webull preview evidence (Phase 3C-3)
+
+`webull_order_previews` contains one immutable preview result per paper session, intent, and canonical
+request hash. `accepted` is true only when HTTP status, explicit provider acceptance, verified
+account identity, and every echoed order field match. The redacted canonical response remains in
+`payload_json`; a repeated identical request reads this durable result without another network call.

@@ -206,3 +206,9 @@ delays are exactly 1, 2, and 4 seconds, and every reconnect requires a matching 
 The official SDK socket remains structurally disabled because no independently verified sandbox
 MQTT hostname is specified. Callback threading, heartbeat ownership, and snapshot-to-completed-bar
 construction remain open and no production-host auto-discovery is authorized.
+
+68. Webull SDK `2.0.17` does not publish a typed preview-response schema or a local short-margin
+formula. Phase 3C-3 therefore accepts only an exact account/order echo with explicit provider
+acceptance and treats that provider acceptance as the buying-power gate. A redacted sandbox capture
+must confirm this response shape before 3C-3 is marked passed. Unknown shapes are persisted and
+rejected; no aliases or margin assumptions are inferred.

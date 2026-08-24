@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import json
 from datetime import UTC, datetime
+from decimal import Decimal
 
+from trading_system.domain import Direction, Timeframe, TradePlan
 from trading_system.paper.contracts import (
     AdapterResult,
+    IntentStatus,
     OrderIntent,
     PaperSession,
     ReconciliationResult,
@@ -106,6 +109,55 @@ class PaperRegistry:
             ("intent_id", "session_id", "trade_plan_id", "scheduled_open", "status"),
             (item.intent_id, item.session_id, item.trade_plan_id,
              _time(item.scheduled_open), item.status.value), item,
+        )
+
+    def load_intent(self, intent_id: str) -> OrderIntent:
+        row = self.repository.connection.execute(
+            """SELECT session_id, trade_plan_id, scheduled_open, status, payload_json
+               FROM paper_intents WHERE intent_id = ?""",
+            (intent_id,),
+        ).fetchone()
+        if row is None:
+            raise ValueError(f"unknown paper intent: {intent_id}")
+        payload = json.loads(str(row[4]))
+        detail = payload.get("payload") if isinstance(payload, dict) else None
+        plan_payload = detail.get("trade_plan") if isinstance(detail, dict) else None
+        if not isinstance(plan_payload, dict):
+            raise ValueError("stored paper intent has no trade plan")
+
+        def tagged(value: object, tag: str) -> str:
+            if not isinstance(value, dict) or set(value) != {tag}:
+                raise ValueError(f"stored paper intent has invalid {tag} value")
+            result = value[tag]
+            if not isinstance(result, str):
+                raise ValueError(f"stored paper intent has invalid {tag} value")
+            return result
+
+        plan = TradePlan(
+            str(plan_payload["plan_id"]),
+            str(plan_payload["symbol"]),
+            Timeframe(str(plan_payload["timeframe"])),
+            Direction(str(plan_payload["direction"])),
+            datetime.fromisoformat(
+                tagged(plan_payload["created_at"], "__datetime__").replace("Z", "+00:00")
+            ).astimezone(UTC),
+            Decimal(tagged(plan_payload["planned_entry"], "__decimal__")),
+            Decimal(tagged(plan_payload["initial_stop"], "__decimal__")),
+            Decimal(tagged(plan_payload["risk_per_unit"], "__decimal__")),
+            None if plan_payload["runway_adr"] is None else Decimal(
+                tagged(plan_payload["runway_adr"], "__decimal__")
+            ),
+            None if plan_payload["reward_risk"] is None else Decimal(
+                tagged(plan_payload["reward_risk"], "__decimal__")
+            ),
+            str(plan_payload["pattern_instance_id"]),
+        )
+        if plan.plan_id != str(row[1]):
+            raise ValueError("stored paper intent plan identity mismatch")
+        scheduled_open = datetime.fromisoformat(str(row[2]).replace("Z", "+00:00")).astimezone(UTC)
+        return OrderIntent(
+            intent_id, str(row[0]), plan.plan_id, scheduled_open, plan.created_at,
+            IntentStatus(str(row[3])), {"trade_plan": plan},
         )
 
     def insert_adapter_result(self, session_id: str, item: AdapterResult) -> bool:

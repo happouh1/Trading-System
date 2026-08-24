@@ -5,10 +5,14 @@ from __future__ import annotations
 import hmac
 from collections.abc import Mapping
 from datetime import datetime
+from decimal import Decimal
 
-from trading_system.paper import PaperRegistry, RuntimeState
+from trading_system.domain import TradePlan
+from trading_system.paper import PaperRegistry
+from trading_system.risk import normalized_units
 from trading_system.serialization import canonical_hash, deterministic_id
 from trading_system.webull.contracts import AccountVerification, WebullCredentials, WebullStockOrder
+from trading_system.webull.mapping import map_stock_order
 from trading_system.webull.registry import WebullRegistry
 from trading_system.webull.transport import WebullTransport
 
@@ -117,30 +121,53 @@ class WebullSandboxService:
                 occurred_at: datetime) -> bool:
         if self._verified_account_id is None:
             raise ValueError("read-only Webull account verification is required before preview")
+        intent = self.paper_registry.load_intent(intent_id)
+        if intent.session_id != self.session_id:
+            raise ValueError("Webull preview intent belongs to another paper session")
+        plan = intent.payload.get("trade_plan")
+        if not isinstance(plan, TradePlan):
+            raise ValueError("Webull preview intent has no immutable trade plan")
+        expected = map_stock_order(plan, intent_id, order.quantity)
+        if order != expected:
+            raise ValueError("Webull preview request does not match its Phase 1 plan")
+        stored_status = self.registry.preview_status(
+            self.session_id, intent_id, canonical_hash(order)
+        )
+        if stored_status is not None:
+            return stored_status
         response = self.transport.preview(self._verified_account_id, order)
         self.registry.insert_envelope(
             self.session_id, "PREVIEW", occurred_at, response, order
         )
-        self.registry.insert_preview(self.session_id, intent_id, occurred_at, order, response)
-        return 200 <= response.status_code < 300
+        response_order = response.payload.get("order")
+        accepted = (
+            200 <= response.status_code < 300
+            and response.payload.get("accepted") is True
+            and response.payload.get("account_id") == self._verified_account_id
+            and isinstance(response_order, Mapping)
+            and canonical_hash(response_order) == canonical_hash(order.sdk_payload())
+        )
+        self.registry.insert_preview(
+            self.session_id, intent_id, occurred_at, order, response, accepted=accepted
+        )
+        return accepted
+
+    def preview_intent(
+        self, intent_id: str, normalized_risk_budget: Decimal, occurred_at: datetime
+    ) -> tuple[WebullStockOrder, bool]:
+        intent = self.paper_registry.load_intent(intent_id)
+        plan = intent.payload.get("trade_plan")
+        if not isinstance(plan, TradePlan):
+            raise ValueError("Webull preview intent has no immutable trade plan")
+        quantity_decimal = normalized_units(
+            normalized_risk_budget, plan.risk_per_unit
+        )
+        if quantity_decimal <= 0:
+            raise ValueError("Phase 1 normalized quantity is zero")
+        quantity = int(quantity_decimal)
+        order = map_stock_order(plan, intent_id, quantity)
+        return order, self.preview(intent_id, order, occurred_at)
 
     def submit(self, intent_id: str, order: WebullStockOrder, occurred_at: datetime,
                *, environment_enabled: bool, cli_enabled: bool) -> None:
-        if not environment_enabled or not cli_enabled:
-            raise ValueError("Webull sandbox submission requires two independent enablement gates")
-        if self.paper_registry.current_state(self.session_id) is not RuntimeState.PAPER_ENABLED:
-            raise ValueError("paper session is not enabled for simulated submission")
-        request_hash = canonical_hash(order)
-        if not self.registry.accepted_preview(self.session_id, intent_id, request_hash):
-            raise ValueError("identical accepted Webull preview is required before submission")
-        if self.registry.has_mapping(self.session_id, intent_id, request_hash):
-            return
-        if self._verified_account_id is None:
-            raise ValueError("read-only Webull account verification is required before submission")
-        response = self.transport.place(self._verified_account_id, order)
-        self.registry.insert_envelope(
-            self.session_id, "PLACE", occurred_at, response, order
-        )
-        if not 200 <= response.status_code < 300:
-            raise ValueError("Webull sandbox order placement failed")
-        self.registry.insert_mapping(self.session_id, intent_id, order, response)
+        raise ValueError("Webull sandbox submission is not authorized in Phase 3C-3")

@@ -16,7 +16,6 @@ class WebullTransport(Protocol):
     def open_orders(self, account_id: str) -> WebullResponse: ...
     def order_detail(self, account_id: str, client_order_id: str) -> WebullResponse: ...
     def preview(self, account_id: str, order: WebullStockOrder) -> WebullResponse: ...
-    def place(self, account_id: str, order: WebullStockOrder) -> WebullResponse: ...
 
 
 def _normalized(response: Any) -> WebullResponse:
@@ -76,11 +75,6 @@ class OfficialSdkWebullTransport:
 
     def preview(self, account_id: str, order: WebullStockOrder) -> WebullResponse:
         return _normalized(self._trade.order_v2.preview_order(account_id, [order.sdk_payload()]))
-
-    def place(self, account_id: str, order: WebullStockOrder) -> WebullResponse:
-        return _normalized(self._trade.order_v2.place_order(account_id, [order.sdk_payload()]))
-
-
 
 class OfficialSdkWebullMarketDataSource:
     """Read-only SDK client with no trade client or order methods."""
@@ -157,17 +151,6 @@ class FakeWebullTransport:
         return WebullResponse(422 if self.reject_preview else 200,
                               {"account_id": account_id, "accepted": not self.reject_preview,
                                "order": order.sdk_payload()})
-
-    def place(self, account_id: str, order: WebullStockOrder) -> WebullResponse:
-        self.place_calls += 1
-        item: dict[str, object] = {
-            "account_id": account_id,
-            "client_order_id": order.client_order_id,
-            "status": "SUBMITTED",
-            "order": order.sdk_payload(),
-        }
-        self.orders.setdefault(order.client_order_id, item)
-        return WebullResponse(200, item)
 
     def market_snapshot(self, symbols: tuple[str, ...]) -> WebullResponse:
         return self.market_responses.get(

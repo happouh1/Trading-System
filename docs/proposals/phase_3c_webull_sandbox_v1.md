@@ -1,6 +1,6 @@
 # Proposed Phase 3C Webull sandbox adapter v1
 
-Status: **APPROVED — 3C-1 PASSED; 3C-2 HISTORICAL SHADOW PASSED, STREAM PENDING**
+Status: **APPROVED — 3C-1 PASSED; 3C-2 PASSED; 3C-3 IMPLEMENTED, SANDBOX REVIEW PENDING**
 
 ## Purpose
 
@@ -77,6 +77,16 @@ stream remains governed by open question 67.
 3. Persist the exact request hash and redacted response before returning preview evidence.
 4. Validate symbol, side, quantity, account, buying power, session, and order-type parity.
 5. Preview rejection never modifies the Phase 1 plan and never falls back to another order type.
+
+Implementation status: `preview-stock` loads an immutable Phase 3B intent, reconstructs and validates
+its Phase 1 `TradePlan`, derives integer quantity from the versioned normalized risk budget, and
+requires its scheduled release to equal an authoritative XNYS regular-session open. Account identity
+is verified through the read-only workflow before preview. An accepted preview must return HTTP 2xx,
+explicit `accepted=true`, the verified account ID, and an exact echo of the canonical MARKET/DAY
+stock request. Both accepted and rejected responses are redacted and persisted with the exact request
+hash. No local short-margin formula is inferred: Webull preview acceptance is the buying-power gate.
+The sandbox submission method is explicitly fail-closed during 3C-3 and no CLI submission command
+exists.
 
 ### 3C-4 — Explicit sandbox stock submission
 

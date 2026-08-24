@@ -157,10 +157,10 @@ class WebullRegistry:
         )
 
     def insert_preview(self, session_id: str, intent_id: str, occurred_at: datetime,
-                       order: WebullStockOrder, response: WebullResponse) -> str:
+                       order: WebullStockOrder, response: WebullResponse,
+                       *, accepted: bool) -> str:
         request_hash = canonical_hash(order)
         preview_id = deterministic_id("webull_preview", (session_id, intent_id, request_hash))
-        accepted = 200 <= response.status_code < 300
         payload = {"preview_id": preview_id, "session_id": session_id, "intent_id": intent_id,
                    "occurred_at": occurred_at, "request_hash": request_hash,
                    "accepted": accepted, "response": response}
@@ -174,12 +174,19 @@ class WebullRegistry:
         return preview_id
 
     def accepted_preview(self, session_id: str, intent_id: str, request_hash: str) -> bool:
+        return self.preview_status(session_id, intent_id, request_hash) is True
+
+    def preview_status(
+        self, session_id: str, intent_id: str, request_hash: str
+    ) -> bool | None:
         row = self.repository.connection.execute(
             """SELECT accepted FROM webull_order_previews
                WHERE session_id = ? AND intent_id = ? AND request_hash = ?""",
             (session_id, intent_id, request_hash),
         ).fetchone()
-        return bool(row == (1,))
+        if row is None:
+            return None
+        return row == (1,)
 
     def insert_mapping(self, session_id: str, intent_id: str,
                        order: WebullStockOrder, response: WebullResponse) -> bool:

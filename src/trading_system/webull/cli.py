@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import argparse
 from datetime import UTC, datetime
+from decimal import Decimal
 
+from trading_system.config import load_config
 from trading_system.market_data import XNYSCalendar
 from trading_system.paper import InternalSimulatorAdapter, PaperMode, PaperRegistry, PaperRuntime
 from trading_system.persistence import SQLiteRepository
-from trading_system.serialization import canonical_json
+from trading_system.serialization import canonical_hash, canonical_json
 from trading_system.webull.config import load_webull_config
 from trading_system.webull.market_data import (
     WebullMarketDataNormalizer,
@@ -57,6 +59,16 @@ def configure_webull_parser(
     snapshot.add_argument("--config", required=True)
     snapshot.add_argument("--symbols", required=True)
     snapshot.add_argument("--allow-network-read", action="store_true")
+    preview = actions.add_parser("preview-stock")
+    preview.add_argument("--database", required=True)
+    preview.add_argument("--session-id", required=True)
+    preview.add_argument("--intent-id", required=True)
+    preview.add_argument("--config", required=True)
+    preview.add_argument("--thresholds", required=True)
+    preview.add_argument(
+        "--account-class", choices=("INDIVIDUAL_MARGIN", "INDIVIDUAL_CASH")
+    )
+    preview.add_argument("--allow-network-preview", action="store_true")
 
 
 def handle_webull(args: argparse.Namespace) -> int:
@@ -68,14 +80,55 @@ def handle_webull(args: argparse.Namespace) -> int:
             "network_used": False,
         }
     elif args.webull_command in {
-        "verify-account", "discover-accounts", "shadow-history", "market-snapshot"
+        "verify-account", "discover-accounts", "shadow-history", "market-snapshot",
+        "preview-stock",
     }:
-        if not args.allow_network_read:
+        if args.webull_command == "preview-stock":
+            if not args.allow_network_preview:
+                raise ValueError("Webull preview requires explicit preview-only permission")
+        elif not args.allow_network_read:
             raise ValueError("read-only Webull network verification requires explicit permission")
         credentials = load_credentials()
         with SQLiteRepository(args.database) as repository:
             repository.migrate()
-            if args.webull_command == "market-snapshot":
+            if args.webull_command == "preview-stock":
+                paper = PaperRegistry(repository)
+                intent = paper.load_intent(args.intent_id)
+                if intent.session_id != args.session_id:
+                    raise ValueError("Webull preview intent belongs to another paper session")
+                bounds = XNYSCalendar().bounds(intent.scheduled_open.date())
+                if bounds is None or intent.scheduled_open != bounds[0]:
+                    raise ValueError("Webull preview intent is not scheduled for an XNYS open")
+                thresholds = load_config(args.thresholds)
+                risk_budget = thresholds.section("risk").get(
+                    "normalized_risk_budget_currency"
+                )
+                if isinstance(risk_budget, bool) or not isinstance(
+                    risk_budget, (int, float)
+                ):
+                    raise ValueError("Phase 1 normalized risk budget is required")
+                service = WebullSandboxService(
+                    args.session_id, credentials,
+                    OfficialSdkWebullTransport(config, credentials),
+                    WebullRegistry(repository), paper,
+                )
+                verification = service.verify_account(
+                    datetime.now(UTC), account_class=args.account_class
+                )
+                order, accepted = service.preview_intent(
+                    args.intent_id, Decimal(str(risk_budget)), datetime.now(UTC)
+                )
+                result = {
+                    "session_id": args.session_id,
+                    "intent_id": args.intent_id,
+                    "verification_id": verification.verification_id,
+                    "client_order_id": order.client_order_id,
+                    "request_hash": canonical_hash(order),
+                    "accepted": accepted,
+                    "environment": "SANDBOX",
+                    "order_submitted": False,
+                }
+            elif args.webull_command == "market-snapshot":
                 market_source = OfficialSdkWebullMarketDataSource(config, credentials)
                 symbols = tuple(
                     item.strip().upper()
