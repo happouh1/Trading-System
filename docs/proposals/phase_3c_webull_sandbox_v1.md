@@ -88,6 +88,10 @@ hash. No local short-margin formula is inferred: Webull preview acceptance is th
 The sandbox submission method is explicitly fail-closed during 3C-3 and no CLI submission command
 exists.
 
+The offline `preview-candidates` command enumerates existing intents without credentials or network
+access. It uses an explicit as-of timestamp, reports deterministic eligibility reasons, and does not
+manufacture a sandbox plan merely to exercise the preview endpoint.
+
 ### 3C-4 — Explicit sandbox stock submission
 
 1. Submission requires all of:

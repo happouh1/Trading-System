@@ -74,6 +74,11 @@ and persists the redacted preview request/response hash. It supports only US equ
 BUY or SELL_SHORT previews. Rejection has no fallback, submission is structurally unavailable, and
 `--allow-network-preview` must be provided explicitly.
 
+Use `webull preview-candidates` before any preview call. It is fully offline and requires an explicit
+UTC `--as-of` timestamp. It lists stored intents in deterministic scheduled-open order, derives the
+Phase 1 quantity and request hash, and explains ineligibility such as a non-XNYS release, elapsed
+release time, or an existing preview. It never creates a plan or reads Webull credentials.
+
 ## Development
 
 Requires Python 3.12.

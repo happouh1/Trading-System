@@ -82,3 +82,6 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `WEBULL_PREVIEW_PERSIST`: accepted and rejected responses retain the exact request hash.
 - `WEBULL_PREVIEW_NO_FALLBACK`: a rejection cannot change quantity, side, type, TIF, or plan.
 - `WEBULL_SUBMISSION_DISABLED_3C3`: preview evidence cannot route an order.
+- `WEBULL_CANDIDATE_OFFLINE`: candidate discovery uses only immutable SQLite evidence.
+- `WEBULL_CANDIDATE_ASOF`: eligibility uses an explicit UTC as-of timestamp, never hidden wall time.
+- `WEBULL_CANDIDATE_NO_INVENTION`: discovery cannot create or alter a trade plan.

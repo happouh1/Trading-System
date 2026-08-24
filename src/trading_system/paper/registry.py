@@ -160,6 +160,15 @@ class PaperRegistry:
             IntentStatus(str(row[3])), {"trade_plan": plan},
         )
 
+    def intent_ids(self, session_id: str) -> tuple[str, ...]:
+        self.session_payload(session_id)
+        rows = self.repository.connection.execute(
+            """SELECT intent_id FROM paper_intents WHERE session_id = ?
+               ORDER BY scheduled_open, intent_id""",
+            (session_id,),
+        ).fetchall()
+        return tuple(str(row[0]) for row in rows)
+
     def insert_adapter_result(self, session_id: str, item: AdapterResult) -> bool:
         event_id = deterministic_id("paper_adapter_event", (session_id, item))
         return self._insert(

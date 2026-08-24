@@ -166,3 +166,8 @@ the adapter validates intent/session identity, XNYS next-open timing, stock symb
 the fixed MARKET/DAY representation. The provider response is persisted before acceptance is
 reported. Acceptance requires exact account and order parity. Preview output is evidence only and
 cannot modify a plan or reach submission.
+
+Candidate discovery is a separate offline step. It sorts stored Phase 3B intents by scheduled open
+and ID, recalculates quantity through the same normalized Phase 1 sizing function, and evaluates
+eligibility at a caller-supplied causal timestamp. It reports reasons without selecting, ranking,
+creating, rescheduling, or modifying plans.

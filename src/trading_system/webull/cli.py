@@ -7,11 +7,14 @@ from datetime import UTC, datetime
 from decimal import Decimal
 
 from trading_system.config import load_config
+from trading_system.domain import TradePlan
 from trading_system.market_data import XNYSCalendar
 from trading_system.paper import InternalSimulatorAdapter, PaperMode, PaperRegistry, PaperRuntime
 from trading_system.persistence import SQLiteRepository
+from trading_system.risk import normalized_units
 from trading_system.serialization import canonical_hash, canonical_json
 from trading_system.webull.config import load_webull_config
+from trading_system.webull.mapping import map_stock_order
 from trading_system.webull.market_data import (
     WebullMarketDataNormalizer,
     WebullShadowDataService,
@@ -69,6 +72,27 @@ def configure_webull_parser(
         "--account-class", choices=("INDIVIDUAL_MARGIN", "INDIVIDUAL_CASH")
     )
     preview.add_argument("--allow-network-preview", action="store_true")
+    candidates = actions.add_parser("preview-candidates")
+    candidates.add_argument("--database", required=True)
+    candidates.add_argument("--session-id", required=True)
+    candidates.add_argument("--config", required=True)
+    candidates.add_argument("--thresholds", required=True)
+    candidates.add_argument("--as-of", required=True)
+
+
+def _risk_budget(path: str) -> Decimal:
+    thresholds = load_config(path)
+    value = thresholds.section("risk").get("normalized_risk_budget_currency")
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError("Phase 1 normalized risk budget is required")
+    return Decimal(str(value))
+
+
+def _utc_timestamp(value: str) -> datetime:
+    result = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if result.tzinfo is None or result.utcoffset() is None:
+        raise ValueError("--as-of must be a timezone-aware timestamp")
+    return result.astimezone(UTC)
 
 
 def handle_webull(args: argparse.Namespace) -> int:
@@ -78,6 +102,55 @@ def handle_webull(args: argparse.Namespace) -> int:
             "config_hash": config.config_hash,
             "environment": "SANDBOX",
             "network_used": False,
+        }
+    elif args.webull_command == "preview-candidates":
+        as_of = _utc_timestamp(args.as_of)
+        risk_budget = _risk_budget(args.thresholds)
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            paper = PaperRegistry(repository)
+            webull_registry = WebullRegistry(repository)
+            calendar = XNYSCalendar()
+            candidates: list[dict[str, object]] = []
+            for intent_id in paper.intent_ids(args.session_id):
+                intent = paper.load_intent(intent_id)
+                plan = intent.payload.get("trade_plan")
+                if not isinstance(plan, TradePlan):
+                    raise ValueError("stored preview candidate has no trade plan")
+                quantity = int(normalized_units(risk_budget, plan.risk_per_unit))
+                if quantity <= 0:
+                    raise ValueError("stored preview candidate has zero quantity")
+                order = map_stock_order(plan, intent_id, quantity)
+                bounds = calendar.bounds(intent.scheduled_open.date())
+                reasons: list[str] = []
+                if bounds is None or intent.scheduled_open != bounds[0]:
+                    reasons.append("NOT_XNYS_SESSION_OPEN")
+                if intent.scheduled_open <= as_of:
+                    reasons.append("SCHEDULED_OPEN_NOT_FUTURE")
+                preview_status = webull_registry.preview_status(
+                    args.session_id, intent_id, canonical_hash(order)
+                )
+                if preview_status is not None:
+                    reasons.append("ALREADY_PREVIEWED")
+                candidates.append({
+                    "intent_id": intent_id,
+                    "plan_id": plan.plan_id,
+                    "symbol": order.symbol,
+                    "side": order.side,
+                    "quantity": order.quantity,
+                    "scheduled_open": intent.scheduled_open,
+                    "request_hash": canonical_hash(order),
+                    "preview_status": preview_status,
+                    "eligible": not reasons,
+                    "reasons": tuple(reasons),
+                })
+        result = {
+            "session_id": args.session_id,
+            "as_of": as_of,
+            "candidates": tuple(candidates),
+            "network_used": False,
+            "order_submitted": False,
+            "config_hash": config.config_hash,
         }
     elif args.webull_command in {
         "verify-account", "discover-accounts", "shadow-history", "market-snapshot",
@@ -99,14 +172,7 @@ def handle_webull(args: argparse.Namespace) -> int:
                 bounds = XNYSCalendar().bounds(intent.scheduled_open.date())
                 if bounds is None or intent.scheduled_open != bounds[0]:
                     raise ValueError("Webull preview intent is not scheduled for an XNYS open")
-                thresholds = load_config(args.thresholds)
-                risk_budget = thresholds.section("risk").get(
-                    "normalized_risk_budget_currency"
-                )
-                if isinstance(risk_budget, bool) or not isinstance(
-                    risk_budget, (int, float)
-                ):
-                    raise ValueError("Phase 1 normalized risk budget is required")
+                risk_budget = _risk_budget(args.thresholds)
                 service = WebullSandboxService(
                     args.session_id, credentials,
                     OfficialSdkWebullTransport(config, credentials),
@@ -116,7 +182,7 @@ def handle_webull(args: argparse.Namespace) -> int:
                     datetime.now(UTC), account_class=args.account_class
                 )
                 order, accepted = service.preview_intent(
-                    args.intent_id, Decimal(str(risk_budget)), datetime.now(UTC)
+                    args.intent_id, risk_budget, datetime.now(UTC)
                 )
                 result = {
                     "session_id": args.session_id,
