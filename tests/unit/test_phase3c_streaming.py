@@ -25,7 +25,10 @@ def _coordinator(
     repository = SQLiteRepository(database)
     repository.migrate()
     paper = PaperRegistry(repository)
-    if paper.current_state("stream") is None:
+    session_exists = repository.connection.execute(
+        "SELECT 1 FROM paper_sessions WHERE session_id = ?", ("stream",)
+    ).fetchone()
+    if session_exists is None:
         paper.insert_session(
             PaperSession("stream", NOW, PaperMode.SHADOW, "code", "config", "data", "XNYS")
         )
