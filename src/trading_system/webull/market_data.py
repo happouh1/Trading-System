@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal, InvalidOperation
 from enum import StrEnum
 from typing import Protocol
@@ -50,6 +50,10 @@ _FIELDS = {
     "open", "high", "low", "close", "volume", "raw_open", "raw_high",
     "raw_low", "raw_close", "raw_volume", "adjustment_factor", "is_complete",
 }
+_SDK_HISTORY_FIELDS = {
+    "close", "high", "instrument_id", "low", "open", "symbol", "tickerId",
+    "time", "trading_session", "volume",
+}
 
 
 def _time(value: object, name: str) -> datetime:
@@ -70,6 +74,54 @@ def _number(value: object, name: str) -> Decimal:
     if not result.is_finite():
         raise WebullMarketDataError(f"{name} must be finite")
     return result
+
+
+def decode_sdk_history(
+    response: WebullResponse, received_at: datetime, calendar: SessionCalendar
+) -> WebullResponse:
+    """Decode the captured SDK 2.0.17 M60 US-stock response."""
+    received = _time(received_at, "received_at")
+    values = response.payload.get("items")
+    if not isinstance(values, (tuple, list)):
+        raise WebullMarketDataError("Webull SDK history response lacks an items array")
+    rows: list[tuple[datetime, Mapping[str, object]]] = []
+    for value in values:
+        if not isinstance(value, Mapping) or set(value) != _SDK_HISTORY_FIELDS:
+            raise WebullMarketDataError("unknown Webull SDK history item schema")
+        if value["trading_session"] != "RTH":
+            raise WebullMarketDataError("Webull SDK history item is not RTH")
+        rows.append((_time(value["time"], "time"), value))
+    rows.sort(key=lambda item: (str(item[1]["symbol"]), item[0]))
+    bars: list[dict[str, object]] = []
+    for index, (open_time, value) in enumerate(rows):
+        bounds = calendar.bounds(open_time.date())
+        if bounds is None or not bounds[0] <= open_time < bounds[1]:
+            raise WebullMarketDataError("Webull SDK history time is outside XNYS RTH")
+        if bounds[1] > received:
+            raise WebullMarketDataError("Webull SDK history session is not complete")
+        next_open = None
+        if index + 1 < len(rows):
+            candidate_time, candidate = rows[index + 1]
+            if (
+                candidate["symbol"] == value["symbol"]
+                and candidate_time.date() == open_time.date()
+            ):
+                next_open = candidate_time
+        close_time = bounds[1] if next_open is None else next_open
+        duration = close_time - open_time
+        if duration <= timedelta(0) or duration > timedelta(hours=1):
+            raise WebullMarketDataError("Webull SDK M60 boundaries are invalid")
+        bars.append({
+            "symbol": value["symbol"], "timeframe": Timeframe.HOUR_1.value,
+            "open_time": open_time, "close_time": close_time,
+            "provider_timestamp": received, "open": value["open"],
+            "high": value["high"], "low": value["low"], "close": value["close"],
+            "volume": value["volume"], "raw_open": value["open"],
+            "raw_high": value["high"], "raw_low": value["low"],
+            "raw_close": value["close"], "raw_volume": value["volume"],
+            "adjustment_factor": "1", "is_complete": True,
+        })
+    return WebullResponse(response.status_code, {"bars": tuple(bars)})
 
 
 class WebullMarketDataNormalizer:
@@ -245,3 +297,18 @@ class WebullShadowDataService:
                     item.known_at,
                 )
         return normalized
+
+    def ingest_sdk_history(
+        self, response: WebullResponse, *, received_at: datetime
+    ) -> tuple[ShadowBar, ...]:
+        self.registry.insert_envelope(
+            self.session_id, "MARKET_HISTORICAL_RAW", received_at, response
+        )
+        if not 200 <= response.status_code < 300:
+            raise WebullMarketDataError("Webull market-data request failed")
+        revision = canonical_hash({"provider": "WEBULL_SANDBOX", "response": response})
+        decoded = decode_sdk_history(response, received_at, self.normalizer.calendar)
+        return self.ingest(
+            decoded, received_at=received_at, source_revision=revision,
+            kind=MarketDataKind.HISTORICAL,
+        )

@@ -144,3 +144,8 @@ It accepts completed 1H XNYS regular-session bars only; existing causal aggregat
 authoritative for 4H, Daily, and Weekly values. Historical backfills are comparison evidence.
 Streaming bars additionally pass the operational lateness gate before checkpoint progression.
 Unknown or revised data never receives permissive aliases or inferred semantics.
+
+For the captured SDK `2.0.17` M60 schema, `time` is the bar start and responses are newest-first.
+Rows are sorted causally; close is the next start in the same symbol/session or the XNYS close for
+the final row. Only already-closed sessions are decoded, derived durations must be in `(0, 1h]`, and
+the raw response hash becomes the immutable source revision.

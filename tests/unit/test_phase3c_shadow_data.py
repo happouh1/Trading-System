@@ -23,6 +23,7 @@ from trading_system.webull import (
     WebullRegistry,
     WebullResponse,
     WebullShadowDataService,
+    decode_sdk_history,
 )
 
 ROOT = Path(__file__).parents[2]
@@ -110,6 +111,31 @@ def test_input_permutations_normalize_to_causal_order() -> None:
         datetime(2026, 1, 5, 14, 30, tzinfo=UTC),
         datetime(2026, 1, 5, 15, 30, tzinfo=UTC),
     )
+
+
+def test_captured_sdk_history_schema_uses_next_start_and_session_close() -> None:
+    session_date = date(2026, 8, 21)
+    session_open = datetime(2026, 8, 21, 13, 30, tzinfo=UTC)
+    session_close = datetime(2026, 8, 21, 20, 0, tzinfo=UTC)
+    captured = WebullResponse(200, {"items": (
+        {"symbol": "AAPL", "time": "2026-08-21T19:00:00.000+0000",
+         "open": "227", "high": "228", "low": "226", "close": "227.5",
+         "volume": "100", "trading_session": "RTH", "instrument_id": "redacted",
+         "tickerId": "redacted"},
+        {"symbol": "AAPL", "time": "2026-08-21T18:30:00.000+0000",
+         "open": "226", "high": "227", "low": "225", "close": "226.5",
+         "volume": "200", "trading_session": "RTH", "instrument_id": "redacted",
+         "tickerId": "redacted"},
+    )})
+    decoded = decode_sdk_history(
+        captured, datetime(2026, 8, 24, tzinfo=UTC),
+        StaticSessionCalendar({session_date: (session_open, session_close)}),
+    )
+    bars = decoded.payload["bars"]
+    assert isinstance(bars, tuple)
+    assert bars[0]["open_time"] == datetime(2026, 8, 21, 18, 30, tzinfo=UTC)
+    assert bars[0]["close_time"] == datetime(2026, 8, 21, 19, 0, tzinfo=UTC)
+    assert bars[1]["close_time"] == session_close
 
 
 def test_shadow_pipeline_persists_candle_evidence_and_checkpoint(tmp_path: Path) -> None:

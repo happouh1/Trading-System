@@ -58,6 +58,10 @@ Historical shadow bars are stored as revisioned comparison evidence without adva
 checkpoints. Only completed streaming envelopes may advance the Phase 3B runtime and are subject to
 its configured lateness threshold.
 
+The M60 sandbox-history decoder is based on redacted captured SDK `2.0.17` responses. It derives
+bar closes from the next provider start boundary or authoritative XNYS session close and derives the
+source revision from the complete raw response hash; callers no longer supply a revision label.
+
 ## Development
 
 Requires Python 3.12.

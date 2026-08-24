@@ -11,7 +11,6 @@ from trading_system.persistence import SQLiteRepository
 from trading_system.serialization import canonical_json
 from trading_system.webull.config import load_webull_config
 from trading_system.webull.market_data import (
-    MarketDataKind,
     WebullMarketDataNormalizer,
     WebullShadowDataService,
 )
@@ -51,7 +50,6 @@ def configure_webull_parser(
     history.add_argument("--symbol", required=True)
     history.add_argument("--timespan", choices=("M60",), required=True)
     history.add_argument("--count", type=int, default=200)
-    history.add_argument("--source-revision", required=True)
     history.add_argument("--allow-network-read", action="store_true")
     snapshot = actions.add_parser("market-snapshot")
     snapshot.add_argument("--database", required=True)
@@ -112,10 +110,7 @@ def handle_webull(args: argparse.Namespace) -> int:
                     args.session_id,
                     WebullMarketDataNormalizer(XNYSCalendar(), max_lateness_seconds=lateness),
                     WebullRegistry(repository), runtime,
-                ).ingest(
-                    response, received_at=received_at,
-                    source_revision=args.source_revision, kind=MarketDataKind.HISTORICAL,
-                )
+                ).ingest_sdk_history(response, received_at=received_at)
                 result = {"session_id": args.session_id, "bars": len(bars),
                           "environment": "SANDBOX", "read_only": True}
             elif args.webull_command == "discover-accounts":

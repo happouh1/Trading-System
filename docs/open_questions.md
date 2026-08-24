@@ -189,9 +189,11 @@ market-data portion of 63 are resolved by the pinned SDK, sandbox allowlist, str
 schema, raw-response hashing, RTH-only requests, and fail-closed normalization. Submission and
 reconciliation portions of questions 60, 63, and 64 remain deferred to stages 3C-3 through 3C-5.
 
-66. Webull SDK `2.0.17` does not expose a typed historical-bar response contract. A separately
-captured, redacted sandbox response must be reviewed before adding a versioned provider decoder;
-Stage 3C-2 deliberately refuses to infer aliases, epoch units, adjustment semantics, or completion.
+66. Webull SDK `2.0.17` does not expose a typed historical-bar response contract. This was resolved
+for M60 RTH history by redacted five- and ten-bar sandbox captures: `time` is the start boundary,
+items arrive newest-first, close is the next captured start within the session, and the final bar
+closes at the authoritative XNYS close. Intraday values are unadjusted per the pinned SDK contract,
+so raw and adjusted values match with factor one. Unknown schema variants still fail closed.
 67. The SDK exposes streaming subscriptions, but reconnect cadence, callback threading, snapshot-to-
 bar construction, and authoritative completion semantics are not specified. Stage 3C-2 accepts
 strict completed streaming-bar envelopes through the same normalizer; opening a long-running SDK

@@ -53,6 +53,12 @@ inferred. The first decoder accepts completed 1H RTH bars only; the existing ses
 remains authoritative for 4H, Daily, and Weekly candles. Deterministic fake payloads validate the
 causal pipeline in ordinary CI.
 
+Redacted sandbox captures with five and ten M60 items established the v1 provider mapping. SDK items
+arrive newest-first and `time` is the bar start. The next captured start is the causal close boundary;
+the final bar closes at the authoritative XNYS session close. A session must already be complete at
+receipt, and every derived duration must be positive and no longer than one hour. Intraday SDK bars
+are unadjusted, so v1 records identical raw/adjusted OHLCV with adjustment factor one.
+
 Historical backfills are immutable revisioned comparison evidence and do not advance operational
 paper checkpoints. Only completed streaming-bar envelopes enter the Phase 3B runtime, where the
 configured lateness gate applies. Both paths preserve receipt and provider timestamps and reject

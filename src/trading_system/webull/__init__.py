@@ -16,6 +16,7 @@ from trading_system.webull.market_data import (
     WebullMarketDataNormalizer,
     WebullMarketDataSource,
     WebullShadowDataService,
+    decode_sdk_history,
 )
 from trading_system.webull.registry import WebullRegistry
 from trading_system.webull.security import load_credentials, redact
@@ -45,6 +46,7 @@ __all__ = [
     "WebullSide",
     "WebullStockOrder",
     "client_order_id",
+    "decode_sdk_history",
     "load_credentials",
     "load_webull_config",
     "map_stock_order",
