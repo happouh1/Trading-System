@@ -86,7 +86,7 @@ class OfficialSdkWebullMarketDataSource:
     """Read-only SDK client with no trade client or order methods."""
 
     def __init__(self, config: WebullConfig, credentials: WebullCredentials) -> None:
-        from webull.core.client import ApiClient  # type: ignore[import-untyped]
+        from webull.core.client import ApiClient
         from webull.data.data_client import DataClient  # type: ignore[import-untyped]
 
         values = config.values
