@@ -135,3 +135,12 @@ Recovery requires exact code, configuration, data-revision, and calendar identit
 Completed-bar checkpoints preserve Weekly, Daily, 4H, then 1H ordering at shared close times. Stale,
 duplicate, and out-of-order data are rejected. Ambiguity and reconciliation mismatch halt submission.
 Phase 3A probabilities cannot enter plans, quantities, intents, execution, or safety controls.
+# Phase 3C Webull shadow methodology
+
+Webull data is an untrusted external observation. Stage 3C-2 persists and hashes the redacted raw
+response before attempting normalization. The `shadow-v1` decoder requires explicit UTC-offset
+timestamps, raw and split-adjusted OHLCV, adjustment factor, completion, symbol, and timeframe.
+It accepts completed 1H XNYS regular-session bars only; existing causal aggregation remains
+authoritative for 4H, Daily, and Weekly values. Historical backfills are comparison evidence.
+Streaming bars additionally pass the operational lateness gate before checkpoint progression.
+Unknown or revised data never receives permissive aliases or inferred semantics.

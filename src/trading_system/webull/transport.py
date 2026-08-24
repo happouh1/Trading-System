@@ -81,6 +81,47 @@ class OfficialSdkWebullTransport:
         return _normalized(self._trade.order_v2.place_order(account_id, [order.sdk_payload()]))
 
 
+
+class OfficialSdkWebullMarketDataSource:
+    """Read-only SDK client with no trade client or order methods."""
+
+    def __init__(self, config: WebullConfig, credentials: WebullCredentials) -> None:
+        from webull.core.client import ApiClient  # type: ignore[import-untyped]
+        from webull.data.data_client import DataClient  # type: ignore[import-untyped]
+
+        values = config.values
+        client = ApiClient(
+            credentials.app_key, credentials.app_secret, str(values["region_id"]),
+            connect_timeout=_integer_config(
+                values["connect_timeout_seconds"], "connect timeout"
+            ),
+            timeout=_integer_config(values["request_timeout_seconds"], "request timeout"),
+            auto_retry=False,
+        )
+        client.add_endpoint(str(values["region_id"]), str(values["api_endpoint"]))
+        client._stream_logger_set = True
+        client._file_logger_set = True
+        self._data = DataClient(client)
+
+    def market_snapshot(self, symbols: tuple[str, ...]) -> WebullResponse:
+        return _normalized(
+            self._data.market_data.get_snapshot(
+                ",".join(symbols), "US_STOCK", extend_hour_required=False,
+                overnight_required=False,
+            )
+        )
+
+    def historical_bars(
+        self, symbol: str, timespan: str, count: int
+    ) -> WebullResponse:
+        return _normalized(
+            self._data.market_data.get_history_bar(
+                symbol, "US_STOCK", timespan, count=str(count),
+                real_time_required=False, trading_sessions="RTH",
+            )
+        )
+
+
 class FakeWebullTransport:
     def __init__(self, account_id: str, *, reject_preview: bool = False) -> None:
         self.account_id = account_id
@@ -88,6 +129,7 @@ class FakeWebullTransport:
         self.preview_calls = 0
         self.place_calls = 0
         self.orders: dict[str, dict[str, object]] = {}
+        self.market_responses: dict[str, WebullResponse] = {}
 
     def account_list(self) -> WebullResponse:
         return WebullResponse(200, {"accounts": ({
@@ -126,3 +168,16 @@ class FakeWebullTransport:
         }
         self.orders.setdefault(order.client_order_id, item)
         return WebullResponse(200, item)
+
+    def market_snapshot(self, symbols: tuple[str, ...]) -> WebullResponse:
+        return self.market_responses.get(
+            "snapshot", WebullResponse(200, {"symbols": symbols})
+        )
+
+    def historical_bars(
+        self, symbol: str, timespan: str, count: int
+    ) -> WebullResponse:
+        return self.market_responses.get(
+            "historical",
+            WebullResponse(200, {"symbol": symbol, "timespan": timespan, "count": count}),
+        )

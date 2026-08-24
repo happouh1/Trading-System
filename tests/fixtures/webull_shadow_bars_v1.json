@@ -1,0 +1,15 @@
+{
+  "bars": [
+    {
+      "symbol": "AAPL",
+      "timeframe": "1h",
+      "open_time": "2026-01-05T14:30:00Z",
+      "close_time": "2026-01-05T15:30:00Z",
+      "provider_timestamp": "2026-01-05T15:30:01Z",
+      "open": "100", "high": "102", "low": "99", "close": "101",
+      "volume": "1000", "raw_open": "100", "raw_high": "102",
+      "raw_low": "99", "raw_close": "101", "raw_volume": "1000",
+      "adjustment_factor": "1", "is_complete": true
+    }
+  ]
+}

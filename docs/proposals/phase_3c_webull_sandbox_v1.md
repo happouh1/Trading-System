@@ -1,6 +1,6 @@
 # Proposed Phase 3C Webull sandbox adapter v1
 
-Status: **APPROVED — STAGE 3C-1 READ-ONLY SANDBOX VERIFICATION PASSED**
+Status: **APPROVED — STAGE 3C-1 PASSED; STAGE 3C-2 IMPLEMENTED FOR REVIEW**
 
 ## Purpose
 
@@ -43,6 +43,20 @@ immutable internal contracts before entering the paper registry.
 4. Compare Webull bars and resulting decisions against fixed offline replay fixtures.
 5. Reject revised, incomplete, duplicate, out-of-order, stale, extended-hours, or timezone-ambiguous
    bars under the approved Phase 3B controls.
+
+Implementation note: SDK `2.0.17` exposes stock `get_snapshot` and `get_history_bar`. The adapter
+forces `US_STOCK`, `RTH`, `real_time_required=False`, and disables extended/overnight snapshots.
+Because the SDK does not publish a typed response schema, raw responses are persisted and hashed,
+then must match the repository's strict `shadow-v1` bar schema before normalization. Unknown live
+shapes fail closed; no field aliases, timestamp units, adjustment factors, or completeness flags are
+inferred. The first decoder accepts completed 1H RTH bars only; the existing session-aware aggregator
+remains authoritative for 4H, Daily, and Weekly candles. Deterministic fake payloads validate the
+causal pipeline in ordinary CI.
+
+Historical backfills are immutable revisioned comparison evidence and do not advance operational
+paper checkpoints. Only completed streaming-bar envelopes enter the Phase 3B runtime, where the
+configured lateness gate applies. Both paths preserve receipt and provider timestamps and reject
+duplicates, revisions, ordering violations, ambiguous timezones, and non-RTH bars.
 
 ### 3C-3 — Preview-only stock adapter
 

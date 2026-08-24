@@ -7,6 +7,7 @@ from datetime import UTC, datetime
 from trading_system.persistence import SQLiteRepository
 from trading_system.serialization import canonical_hash, canonical_json, deterministic_id
 from trading_system.webull.contracts import AccountVerification, WebullResponse, WebullStockOrder
+from trading_system.webull.market_data import ShadowBar
 from trading_system.webull.security import redact
 
 
@@ -46,6 +47,41 @@ class WebullRegistry:
              _time(item.occurred_at), item.account_id_hash),
             item,
         )
+
+    def insert_shadow_bar(self, session_id: str, item: ShadowBar) -> bool:
+        self.repository.insert_candle(item.candle)
+        shadow_bar_id = deterministic_id(
+            "webull_shadow_bar", (session_id, item.candle.candle_id)
+        )
+        payload = {
+            "shadow_bar_id": shadow_bar_id,
+            "session_id": session_id,
+            "candle": item.candle,
+            "kind": item.kind,
+            "provider_timestamp": item.provider_timestamp,
+            "received_at": item.received_at,
+            "known_at": item.known_at,
+            "raw_payload_hash": item.raw_payload_hash,
+        }
+        return self._insert(
+            "webull_shadow_bars", "shadow_bar_id", shadow_bar_id,
+            ("shadow_bar_id", "session_id", "candle_id", "kind",
+             "provider_timestamp", "received_at", "known_at", "raw_payload_hash",
+             "source_revision"),
+            (shadow_bar_id, session_id, item.candle.candle_id, item.kind.value,
+             _time(item.provider_timestamp), _time(item.received_at), _time(item.known_at),
+             item.raw_payload_hash, item.candle.source_revision),
+            payload,
+        )
+
+    def latest_shadow_close(self, session_id: str) -> datetime | None:
+        row = self.repository.connection.execute(
+            "SELECT MAX(known_at) FROM webull_shadow_bars WHERE session_id = ?",
+            (session_id,),
+        ).fetchone()
+        if row is None or row[0] is None:
+            return None
+        return datetime.fromisoformat(str(row[0]).replace("Z", "+00:00")).astimezone(UTC)
 
     def insert_envelope(self, session_id: str, operation: str, occurred_at: datetime,
                         response: WebullResponse, request: object | None = None) -> bool:

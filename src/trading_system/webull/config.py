@@ -25,12 +25,14 @@ def load_webull_config(path: str | Path) -> WebullConfig:
     expected = {
         "webull_version", "sdk_version", "region_id", "api_endpoint", "events_endpoint",
         "credential_environment", "submission_environment_flag", "connect_timeout_seconds",
-        "request_timeout_seconds", "automatic_sdk_retry", "stock_order",
+        "request_timeout_seconds", "automatic_sdk_retry", "market_data", "stock_order",
     }
     if not isinstance(raw, dict) or set(raw) != expected:
         raise ValueError("Phase 3C configuration keys are invalid")
     if raw["sdk_version"] != "2.0.17" or raw["region_id"] != "us":
         raise ValueError("unsupported Webull SDK version or region")
+    if raw["webull_version"] != "3C.2.0":
+        raise ValueError("unsupported Webull adapter configuration version")
     if raw["api_endpoint"] != API_SANDBOX_HOST:
         raise ValueError("only the Webull API sandbox host is allowed")
     if raw["events_endpoint"] != EVENTS_SANDBOX_HOST:
@@ -46,6 +48,22 @@ def load_webull_config(path: str | Path) -> WebullConfig:
     stock_order = raw["stock_order"]
     if stock_order != {"order_type": "MARKET", "time_in_force": "DAY"}:
         raise ValueError("unsupported Phase 3C stock-order policy")
+    market_data = raw["market_data"]
+    if not isinstance(market_data, dict) or set(market_data) != {
+        "category", "trading_sessions", "real_time_required", "extended_hours",
+        "max_completed_bar_lateness_seconds",
+    }:
+        raise ValueError("invalid Webull shadow market-data configuration")
+    if (
+        market_data["category"] != "US_STOCK"
+        or market_data["trading_sessions"] != "RTH"
+        or market_data["real_time_required"] is not False
+        or market_data["extended_hours"] is not False
+    ):
+        raise ValueError("Webull shadow data must remain completed US-stock RTH only")
+    lateness = market_data["max_completed_bar_lateness_seconds"]
+    if isinstance(lateness, bool) or not isinstance(lateness, int) or lateness < 0:
+        raise ValueError("invalid Webull completed-bar lateness")
     for key in ("connect_timeout_seconds", "request_timeout_seconds"):
         if isinstance(raw[key], bool) or not isinstance(raw[key], int) or raw[key] <= 0:
             raise ValueError("Webull timeouts must be positive integers")

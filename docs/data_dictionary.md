@@ -118,3 +118,10 @@ Migration `008_phase_3a.sql` adds the model registry without changing prior sche
 
 Migration `009_phase_3b.sql` adds append-only sessions, transitions, intents, adapter events, paper
 orders/fills, reconciliations, checkpoints, heartbeats, incidents, and reports.
+# Phase 3C Webull shadow data
+
+`webull_shadow_bars` links a sandbox provider observation to its canonical `candles` row. It stores
+the session, historical/stream kind, provider timestamp, local receipt timestamp, causal `known_at`,
+raw payload hash, and immutable source revision. `payload_json` is canonical audit evidence and
+contains no credentials. Historical rows do not advance paper checkpoints; completed streaming rows
+may do so only after all causal and session checks pass.

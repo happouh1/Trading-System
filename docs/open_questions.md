@@ -183,3 +183,16 @@ remain deliberately deferred.
 
 Proposed resolutions for questions 57–65 are documented in
 `docs/proposals/phase_3c_webull_sandbox_v1.md` and remain unauthorized pending explicit approval.
+
+Phase 3C-1 and 3C-2 were subsequently approved in bounded stages. Questions 57–62 and the
+market-data portion of 63 are resolved by the pinned SDK, sandbox allowlist, strict `shadow-v1`
+schema, raw-response hashing, RTH-only requests, and fail-closed normalization. Submission and
+reconciliation portions of questions 60, 63, and 64 remain deferred to stages 3C-3 through 3C-5.
+
+66. Webull SDK `2.0.17` does not expose a typed historical-bar response contract. A separately
+captured, redacted sandbox response must be reviewed before adding a versioned provider decoder;
+Stage 3C-2 deliberately refuses to infer aliases, epoch units, adjustment semantics, or completion.
+67. The SDK exposes streaming subscriptions, but reconnect cadence, callback threading, snapshot-to-
+bar construction, and authoritative completion semantics are not specified. Stage 3C-2 accepts
+strict completed streaming-bar envelopes through the same normalizer; opening a long-running SDK
+stream remains deferred until those operational rules are approved.

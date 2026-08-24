@@ -88,3 +88,22 @@ def test_phase1_authority_does_not_import_webull() -> None:
                        for name in names):
                     violations.append(f"{path}:{node.lineno}")
     assert not violations, f"Webull imported by Phase 1 authority: {violations}"
+
+
+def test_only_webull_transport_imports_vendor_sdk() -> None:
+    violations: list[str] = []
+    root = ROOT / "src" / "trading_system"
+    for path in root.rglob("*.py"):
+        if path.as_posix().endswith("webull/transport.py"):
+            continue
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                names = {alias.name for alias in node.names}
+            elif isinstance(node, ast.ImportFrom):
+                names = {node.module or ""}
+            else:
+                continue
+            if any(name == "webull" or name.startswith("webull.") for name in names):
+                violations.append(f"{path}:{node.lineno}")
+    assert not violations, f"vendor SDK escaped Webull transport boundary: {violations}"

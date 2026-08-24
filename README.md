@@ -48,6 +48,16 @@ Stage 3C-1 has successfully verified a Webull sandbox account using only account
 and open-order reads. Persisted response envelopes redact account IDs, account numbers, user IDs,
 tokens, signatures, and secrets. Order preview and submission remain unavailable from the CLI.
 
+Stage 3C-2 adds fail-closed Webull market-data shadow ingestion. Snapshot/history access is read-only;
+history requests force completed US-stock regular-session bars, raw responses are hashed and
+persisted, and only strict causal `shadow-v1` bar records may become canonical candles and Phase 3B
+checkpoints. Unknown provider response shapes are rejected. Order preview and submission remain
+unavailable from the CLI.
+
+Historical shadow bars are stored as revisioned comparison evidence without advancing operational
+checkpoints. Only completed streaming envelopes may advance the Phase 3B runtime and are subject to
+its configured lateness threshold.
+
 ## Development
 
 Requires Python 3.12.
