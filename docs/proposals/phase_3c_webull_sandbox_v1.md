@@ -1,6 +1,6 @@
 # Proposed Phase 3C Webull sandbox adapter v1
 
-Status: **APPROVED — STAGE 3C-1 PASSED; STAGE 3C-2 IMPLEMENTED FOR REVIEW**
+Status: **APPROVED — 3C-1 PASSED; 3C-2 HISTORICAL SHADOW PASSED, STREAM PENDING**
 
 ## Purpose
 
@@ -63,6 +63,12 @@ Historical backfills are immutable revisioned comparison evidence and do not adv
 paper checkpoints. Only completed streaming-bar envelopes enter the Phase 3B runtime, where the
 configured lateness gate applies. Both paths preserve receipt and provider timestamps and reject
 duplicates, revisions, ordering violations, ambiguous timezones, and non-RTH bars.
+
+Stage 3C-2 live review passed with a read-only AAPL M60 sandbox response: ten provider rows decoded
+to ten distinct canonical candles under one raw-response revision, every `known_at` followed its
+derived close, raw/adjusted factor-one provenance matched, and the persisted audit found zero secret-
+redaction violations. This validates historical shadow ingestion only; opening the long-running
+stream remains governed by open question 67.
 
 ### 3C-3 — Preview-only stock adapter
 

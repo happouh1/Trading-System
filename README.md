@@ -61,6 +61,8 @@ its configured lateness threshold.
 The M60 sandbox-history decoder is based on redacted captured SDK `2.0.17` responses. It derives
 bar closes from the next provider start boundary or authoritative XNYS session close and derives the
 source revision from the complete raw response hash; callers no longer supply a revision label.
+The read-only live review persisted ten distinct AAPL candles with causal timestamps, valid
+factor-one provenance, and no secret-redaction violations.
 
 ## Development
 
