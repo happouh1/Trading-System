@@ -39,6 +39,15 @@ fail-closed controls. It has no external broker or live-money path and changes n
 Phase 3B commands use `trading-system paper` with `start`, `resume`, `status`, `reconcile`, `halt`,
 `drain`, and `report`. Submission requires the explicit `--enable-simulated-paper` flag.
 
+Phase 3C begins a sandbox-only Webull adapter using the pinned official SDK. Configuration validation
+is offline; `webull verify-account` permits only explicit read-only account, balance, position, and
+open-order requests. Production Webull hosts are rejected and sandbox order submission is unavailable
+from the CLI during Stage 3C-1.
+
+Stage 3C-1 has successfully verified a Webull sandbox account using only account, balance, position,
+and open-order reads. Persisted response envelopes redact account IDs, account numbers, user IDs,
+tokens, signatures, and secrets. Order preview and submission remain unavailable from the CLI.
+
 ## Development
 
 Requires Python 3.12.

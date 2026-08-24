@@ -20,6 +20,7 @@ from trading_system.replay import ReplayOrchestrator
 from trading_system.reporting import markdown_report
 from trading_system.research.cli import configure_research_parser, handle_research
 from trading_system.serialization import canonical_hash, canonical_json
+from trading_system.webull.cli import configure_webull_parser, handle_webull
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -46,6 +47,7 @@ def _parser() -> argparse.ArgumentParser:
     configure_research_parser(commands)
     configure_model_parser(commands)
     configure_paper_parser(commands)
+    configure_webull_parser(commands)
     return parser
 
 
@@ -148,6 +150,7 @@ def main(argv: list[str] | None = None) -> int:
         "research": handle_research,
         "model": handle_model,
         "paper": handle_paper,
+        "webull": handle_webull,
     }
     return handlers[args.command](args)
 

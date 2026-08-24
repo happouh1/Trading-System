@@ -1,0 +1,17 @@
+{
+  "webull_version": "3C.1.0",
+  "sdk_version": "2.0.17",
+  "region_id": "us",
+  "api_endpoint": "api.sandbox.webull.com",
+  "events_endpoint": "events-api.sandbox.webull.com",
+  "credential_environment": {
+    "app_key": "WEBULL_APP_KEY",
+    "app_secret": "WEBULL_APP_SECRET",
+    "account_id": "WEBULL_ACCOUNT_ID"
+  },
+  "submission_environment_flag": "WEBULL_SANDBOX_SUBMISSION_ENABLED",
+  "connect_timeout_seconds": 5,
+  "request_timeout_seconds": 10,
+  "automatic_sdk_retry": false,
+  "stock_order": {"order_type": "MARKET", "time_in_force": "DAY"}
+}

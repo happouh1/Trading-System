@@ -15,6 +15,7 @@ dependencies = [
   "pyarrow>=17,<22",
   "scikit-learn>=1.5,<2",
   "joblib>=1.4,<2",
+  "webull-openapi-python-sdk==2.0.17",
 ]
 
 [project.scripts]

@@ -168,3 +168,18 @@ internal simulator, durable intent identity, fail-closed policy, operational def
 reuse, audit records, and model-authority boundary in
 `docs/proposals/phase_3b_paper_trading_readiness_v1.md`. External broker selection and connectivity
 remain deliberately deferred.
+
+## Added for Phase 3C proposal
+
+57. Which exact Webull SDK version and sandbox hosts are allowed?
+58. Which read-only calls are permitted before any preview or submission capability exists?
+59. How does an existing next-open Phase 1 stock plan map to Webull order fields?
+60. Which independent controls enable sandbox submission?
+61. How is the internal intent ID mapped into Webull's 32-character client order ID?
+62. How are credentials, tokens, SDK logs, headers, exceptions, and persisted payloads redacted?
+63. What timeout, reconnect, rate-limit, and query-before-retry behavior is deterministic?
+64. Which broker/account/order/position discrepancies halt the runtime?
+65. Which Webull products and environments remain excluded?
+
+Proposed resolutions for questions 57–65 are documented in
+`docs/proposals/phase_3c_webull_sandbox_v1.md` and remain unauthorized pending explicit approval.
