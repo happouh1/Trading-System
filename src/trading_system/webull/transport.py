@@ -33,6 +33,12 @@ def _normalized(response: Any) -> WebullResponse:
     return WebullResponse(status_code, payload)
 
 
+def _integer_config(value: object, name: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ValueError(f"Webull {name} must be an integer")
+    return value
+
+
 class OfficialSdkWebullTransport:
     def __init__(self, config: WebullConfig, credentials: WebullCredentials) -> None:
         from webull.core.client import ApiClient  # type: ignore[import-untyped]
@@ -41,8 +47,11 @@ class OfficialSdkWebullTransport:
         values = config.values
         client = ApiClient(
             credentials.app_key, credentials.app_secret, str(values["region_id"]),
-            connect_timeout=int(values["connect_timeout_seconds"]),
-            timeout=int(values["request_timeout_seconds"]), auto_retry=False,
+            connect_timeout=_integer_config(
+                values["connect_timeout_seconds"], "connect timeout"
+            ),
+            timeout=_integer_config(values["request_timeout_seconds"], "request timeout"),
+            auto_retry=False,
         )
         client.add_endpoint(str(values["region_id"]), str(values["api_endpoint"]))
         # TradeClient otherwise creates webull_trade_sdk.log and a console logger by default.
@@ -109,7 +118,11 @@ class FakeWebullTransport:
 
     def place(self, account_id: str, order: WebullStockOrder) -> WebullResponse:
         self.place_calls += 1
-        item = {"account_id": account_id, "client_order_id": order.client_order_id,
-                "status": "SUBMITTED", "order": order.sdk_payload()}
+        item: dict[str, object] = {
+            "account_id": account_id,
+            "client_order_id": order.client_order_id,
+            "status": "SUBMITTED",
+            "order": order.sdk_payload(),
+        }
         self.orders.setdefault(order.client_order_id, item)
         return WebullResponse(200, item)

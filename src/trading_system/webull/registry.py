@@ -92,7 +92,7 @@ class WebullRegistry:
                WHERE session_id = ? AND intent_id = ? AND request_hash = ?""",
             (session_id, intent_id, request_hash),
         ).fetchone()
-        return row == (1,)
+        return bool(row == (1,))
 
     def insert_mapping(self, session_id: str, intent_id: str,
                        order: WebullStockOrder, response: WebullResponse) -> bool:
@@ -117,4 +117,4 @@ class WebullRegistry:
                WHERE session_id = ? AND intent_id = ? AND request_hash = ?""",
             (session_id, intent_id, request_hash),
         ).fetchone()
-        return row == (1,)
+        return bool(row == (1,))
