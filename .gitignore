@@ -12,3 +12,4 @@ build/
 *.sqlite
 .cli-check*/
 tests/.tmp-phase3d-*/
+.test-tmp-phase3d5/

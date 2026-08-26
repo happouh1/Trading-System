@@ -181,3 +181,16 @@ newer than account verification and at least as new as all order activity before
 
 Migration `014_phase_3d_exits.sql` adds these append-only records. Canonical payloads contain no
 account IDs, credentials, headers, tokens, or SDK objects.
+
+## Phase 3D-5 sandbox validation evidence
+
+- `webull_smoke_captures`: immutable redacted evidence for one approved smoke case, including
+  ordered case identity, sandbox session, SDK version, factor-one attestation, capture time, and
+  canonical hash.
+- `webull_smoke_reviews`: append-only human review of one capture with `PASS`, `FAIL`, or
+  `INCONCLUSIVE`, reviewer identity, reason codes, and notes.
+
+Migration `015_phase_3d_smoke_evidence.sql` adds both tables. Capture import rejects unredacted
+sensitive keys, credential-like plaintext, wrong case order, missing evidence steps, non-sandbox
+environments, non-pinned SDK versions, and adjustment factors other than one. Reviews do not alter
+the capability manifest.

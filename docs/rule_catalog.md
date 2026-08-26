@@ -134,3 +134,15 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `WEBULL_FLATTEN_TWO_FACTOR`: exact one-position flatten requires environment and CLI gates.
 - `WEBULL_FLATTEN_ONE_USE`: CALL_STARTED consumes the persisted flatten authorization.
 - `WEBULL_EXIT_RESEARCH_NO_AUTHORITY`: model probabilities and labels cannot reach exits.
+
+## Phase 3D-5 sandbox evidence rules
+
+- `WEBULL_SMOKE_SEPARATE_INVOCATION`: capture tooling never initiates a broker write.
+- `WEBULL_SMOKE_APPROVED_ORDER`: the seven smoke cases retain the approved 3D-5 order.
+- `WEBULL_SMOKE_DISPOSABLE_ONLY`: imported captures attest to disposable sandbox positions.
+- `WEBULL_SMOKE_FACTOR_ONE`: operational captures require adjustment factor exactly one.
+- `WEBULL_SMOKE_REDACT_BEFORE_STORE`: unredacted sensitive evidence is rejected.
+- `WEBULL_SMOKE_CAUSAL_EVIDENCE`: evidence timestamps cannot follow the capture timestamp.
+- `WEBULL_SMOKE_APPEND_ONLY_REVIEW`: captures and human verdicts are immutable records.
+- `WEBULL_SMOKE_NO_AUTO_PROMOTION`: capture or review success cannot modify capability authority.
+- `WEBULL_SMOKE_OFFICIAL_WRITES_LOCKED`: official exit transport remains disabled during preparation.

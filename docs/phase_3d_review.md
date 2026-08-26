@@ -37,3 +37,10 @@ their existing gates.
 Questions 74–85 in `docs/open_questions.md` require redacted disposable-sandbox evidence. Only a
 separately reviewed manifest containing the exact required capability set may enable an official
 exit transport in a later change. Phase 3D does not authorize production or unattended live trading.
+
+## 3D-5 preparation update
+
+The offline capture harness is complete. It produces the fixed seven-case plan, validates redacted
+factor-one evidence, stores captures and reviews append-only, survives restart, and reports progress.
+It performs no network call or broker write and cannot promote the pending manifest. The operational
+3D-5 result remains pending until disposable-sandbox captures are separately invoked and reviewed.

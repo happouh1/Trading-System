@@ -29,6 +29,13 @@ from trading_system.webull.market_data import (
 from trading_system.webull.registry import WebullRegistry
 from trading_system.webull.security import load_credentials, submission_enabled
 from trading_system.webull.service import WebullSandboxService
+from trading_system.webull.smoke import (
+    load_smoke_capture,
+    load_smoke_config,
+    load_smoke_review,
+    smoke_plan,
+)
+from trading_system.webull.smoke_registry import WebullSmokeRegistry
 from trading_system.webull.transport import (
     OfficialSdkWebullMarketDataSource,
     OfficialSdkWebullTransport,
@@ -131,6 +138,26 @@ def configure_webull_parser(
     )
     arm_exits.add_argument("--allow-network-read", action="store_true")
     arm_exits.add_argument("--enable-sandbox-exits", action="store_true")
+    smoke_plan_parser = actions.add_parser("smoke-plan")
+    smoke_plan_parser.add_argument("--config", required=True)
+    smoke_plan_parser.add_argument("--smoke-config", required=True)
+    import_capture = actions.add_parser("import-smoke-capture")
+    import_capture.add_argument("--database", required=True)
+    import_capture.add_argument("--session-id", required=True)
+    import_capture.add_argument("--config", required=True)
+    import_capture.add_argument("--smoke-config", required=True)
+    import_capture.add_argument("--capture", required=True)
+    import_review = actions.add_parser("import-smoke-review")
+    import_review.add_argument("--database", required=True)
+    import_review.add_argument("--session-id", required=True)
+    import_review.add_argument("--config", required=True)
+    import_review.add_argument("--capture-id", required=True)
+    import_review.add_argument("--review", required=True)
+    smoke_status = actions.add_parser("smoke-status")
+    smoke_status.add_argument("--database", required=True)
+    smoke_status.add_argument("--session-id", required=True)
+    smoke_status.add_argument("--config", required=True)
+    smoke_status.add_argument("--smoke-config", required=True)
 
 
 def _risk_budget(path: str) -> Decimal:
@@ -169,6 +196,65 @@ def handle_webull(args: argparse.Namespace) -> int:
             "config_hash": config.config_hash,
             "environment": "SANDBOX",
             "network_used": False,
+        }
+    elif args.webull_command == "smoke-plan":
+        smoke_config = load_smoke_config(args.smoke_config)
+        result = dict(smoke_plan(smoke_config))
+    elif args.webull_command == "import-smoke-capture":
+        smoke_config = load_smoke_config(args.smoke_config)
+        capture = load_smoke_capture(args.capture, smoke_config)
+        if capture.session_id != args.session_id:
+            raise ValueError("smoke capture belongs to another session")
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            inserted = WebullSmokeRegistry(repository).insert_capture(capture)
+        result = {
+            "session_id": args.session_id,
+            "capture_id": capture.capture_id,
+            "case_id": capture.case,
+            "capture_hash": capture.capture_hash,
+            "inserted": inserted,
+            "review_status": "PENDING_REVIEW",
+            "network_used": False,
+            "broker_write_performed": False,
+            "automatic_manifest_promotion": False,
+        }
+    elif args.webull_command == "import-smoke-review":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = WebullSmokeRegistry(repository)
+            capture = registry.capture(args.capture_id)
+            if capture.session_id != args.session_id:
+                raise ValueError("smoke capture belongs to another session")
+            review = load_smoke_review(args.review, capture)
+            inserted = registry.insert_review(review)
+        result = {
+            "session_id": args.session_id,
+            "capture_id": capture.capture_id,
+            "review_id": review.review_id,
+            "verdict": review.verdict,
+            "inserted": inserted,
+            "network_used": False,
+            "broker_write_performed": False,
+            "automatic_manifest_promotion": False,
+        }
+    elif args.webull_command == "smoke-status":
+        smoke_config = load_smoke_config(args.smoke_config)
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = WebullSmokeRegistry(repository)
+            captures = registry.status(args.session_id)
+            passed = registry.passed_cases(args.session_id)
+        result = {
+            "session_id": args.session_id,
+            "required_cases": smoke_config.cases,
+            "captures": captures,
+            "passed_cases": passed,
+            "all_cases_passed": passed == smoke_config.cases,
+            "official_exit_transport_enabled": False,
+            "automatic_manifest_promotion": False,
+            "network_used": False,
+            "broker_write_performed": False,
         }
     elif args.webull_command == "verify-exit-config":
         exit_config = load_exit_config(args.exit_config)

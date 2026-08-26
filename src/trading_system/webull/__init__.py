@@ -56,6 +56,19 @@ from trading_system.webull.market_data import (
 from trading_system.webull.registry import WebullRegistry
 from trading_system.webull.security import load_credentials, redact, submission_enabled
 from trading_system.webull.service import WebullSandboxService
+from trading_system.webull.smoke import (
+    SmokeCapture,
+    SmokeCase,
+    SmokeConfig,
+    SmokeEvidence,
+    SmokeReview,
+    SmokeReviewVerdict,
+    load_smoke_capture,
+    load_smoke_config,
+    load_smoke_review,
+    smoke_plan,
+)
+from trading_system.webull.smoke_registry import WebullSmokeRegistry
 from trading_system.webull.streaming import (
     StreamNotification,
     StreamState,
@@ -86,6 +99,12 @@ __all__ = [
     "PositionReconciliation",
     "ProtectiveStopVersion",
     "ShadowBar",
+    "SmokeCapture",
+    "SmokeCase",
+    "SmokeConfig",
+    "SmokeEvidence",
+    "SmokeReview",
+    "SmokeReviewVerdict",
     "StreamNotification",
     "StreamState",
     "WebullConfig",
@@ -107,6 +126,7 @@ __all__ = [
     "WebullSandboxService",
     "WebullShadowDataService",
     "WebullSide",
+    "WebullSmokeRegistry",
     "WebullStockOrder",
     "WebullStreamCoordinator",
     "WebullSubmissionEventType",
@@ -118,10 +138,14 @@ __all__ = [
     "load_credentials",
     "load_exit_capabilities",
     "load_exit_config",
+    "load_smoke_capture",
+    "load_smoke_config",
+    "load_smoke_review",
     "load_webull_config",
     "map_stock_order",
     "protective_client_id",
     "redact",
     "reducing_side",
+    "smoke_plan",
     "submission_enabled",
 ]

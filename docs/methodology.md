@@ -226,3 +226,16 @@ never adopted. Emergency flatten is exact, two-factor, one-position, and one-use
 
 The official SDK exposes none of the Phase 3D exit-write protocol. Offline tests use only the fake
 transport. The unapproved capability manifest keeps all official exits locked pending 3D-5 review.
+
+## Phase 3D-5 capture methodology
+
+The committed smoke configuration fixes the seven approved cases and their order. `smoke-plan`,
+capture import, review import, and status reporting are offline operations. A capture must attest
+that its broker write was separately and explicitly invoked against a disposable sandbox position;
+the importer itself cannot perform that write.
+
+Evidence is untrusted. Required labels must appear in order, timestamps must be causal, the
+SDK/environment/factor boundary must match exactly, and sensitive fields must already be redacted.
+Import establishes only `PENDING_REVIEW`. A reviewer may append `PASS`, `FAIL`, or `INCONCLUSIVE`;
+even seven passes do not automatically edit the capability manifest or enable the official
+transport. Enabling official exit methods requires a separate reviewed code/config change.

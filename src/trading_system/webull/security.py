@@ -7,9 +7,12 @@ from collections.abc import Mapping
 
 from trading_system.webull.contracts import WebullCredentials
 
-_SENSITIVE = {"authorization", "x-app-secret", "app_secret", "token", "access_token",
-              "refresh_token", "signature", "x-signature", "account_id", "accountid",
-              "account_number", "accountnumber", "user_id", "userid"}
+_SENSITIVE = {
+    "authorization", "x-app-secret", "app_secret", "secret", "app_key", "api_key",
+    "token", "access_token", "refresh_token", "signature", "x-signature", "cookie",
+    "set-cookie", "password", "private_key", "account_id", "accountid",
+    "account_number", "accountnumber", "user_id", "userid",
+}
 
 
 def load_credentials(environment: Mapping[str, str] | None = None) -> WebullCredentials:

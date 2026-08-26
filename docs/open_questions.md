@@ -273,3 +273,8 @@ must establish whether this is operationally viable without weakening query-befo
 for exact Phase 3C compatibility until v3 receives separate response captures?
 85. How should positions intentionally held across a new runtime session be transferred? V1 proposes
 exact-identity resume only and rejects cross-session adoption.
+
+The Phase 3D-5 preparation harness does not resolve questions 74–85. It records the redacted evidence
+and append-only human reviews needed to resolve them without manufacturing provider semantics.
+`PASS` captures are evidence for a later proposal; they do not themselves authorize a manifest or
+transport change.

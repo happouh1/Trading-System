@@ -133,6 +133,20 @@ trading-system webull position-report --database DB --session-id SESSION --confi
 
 See `docs/proposals/phase_3d_sandbox_exit_lifecycle_v1.md` and `docs/phase_3d_review.md`.
 
+Phase 3D-5 preparation adds an offline, versioned smoke plan plus strict import and append-only
+review storage for redacted disposable-sandbox captures. These commands never call Webull and never
+edit or promote the pending capability manifest:
+
+```text
+trading-system webull smoke-plan --config config/webull.sandbox.v1.yaml --smoke-config config/webull.phase3d5.smoke.v1.json
+trading-system webull import-smoke-capture --database DB --session-id SESSION --config config/webull.sandbox.v1.yaml --smoke-config config/webull.phase3d5.smoke.v1.json --capture CAPTURE.json
+trading-system webull import-smoke-review --database DB --session-id SESSION --config config/webull.sandbox.v1.yaml --capture-id CAPTURE_ID --review REVIEW.json
+trading-system webull smoke-status --database DB --session-id SESSION --config config/webull.sandbox.v1.yaml --smoke-config config/webull.phase3d5.smoke.v1.json
+```
+
+The separately invoked broker writes remain an operator-controlled validation activity. See
+`docs/phase_3d5_sandbox_validation_runbook.md` before collecting any capture.
+
 ## Development
 
 Requires Python 3.12.
