@@ -84,6 +84,7 @@ def _fixture(
         transport,
         registry,
         paper,
+        exit_authorization_check=lambda _at: True,
     )
     return repository, paper, registry, transport, service, intent.intent_id
 
@@ -476,6 +477,7 @@ def test_restart_recovers_call_started_order_without_resubmission(tmp_path: Path
             transport,
             registry,
             paper,
+            exit_authorization_check=lambda _at: True,
         )
         restarted.verify_account(occurred_at + timedelta(seconds=1))
         recovered = restarted.recover(RISK, occurred_at + timedelta(seconds=2))

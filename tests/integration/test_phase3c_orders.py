@@ -69,6 +69,7 @@ def test_multi_intent_submission_soak_restart_and_reconciliation(tmp_path: Path)
             transport,
             WebullRegistry(repository),
             paper,
+            exit_authorization_check=lambda _at: True,
         )
         first_open = paper.load_intent(intent_ids[0]).scheduled_open
         service.verify_account(first_open - timedelta(seconds=2))
@@ -117,6 +118,7 @@ def test_multi_intent_submission_soak_restart_and_reconciliation(tmp_path: Path)
             transport,
             WebullRegistry(repository),
             paper,
+            exit_authorization_check=lambda _at: True,
         )
         restart_at = first_open + timedelta(seconds=50)
         restarted.verify_account(restart_at)

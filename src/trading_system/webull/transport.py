@@ -7,6 +7,7 @@ from typing import Any, Protocol
 
 from trading_system.webull.config import WebullConfig
 from trading_system.webull.contracts import WebullCredentials, WebullResponse, WebullStockOrder
+from trading_system.webull.exit_contracts import WebullExitOrder
 
 
 class WebullTransport(Protocol):
@@ -129,14 +130,22 @@ class FakeWebullTransport:
         reject_place: bool = False,
         ambiguous_place: bool = False,
         accept_before_ambiguity: bool = False,
+        ambiguous_exit_action: str | None = None,
+        accept_exit_before_ambiguity: bool = False,
     ) -> None:
         self.account_id = account_id
         self.reject_preview = reject_preview
         self.reject_place = reject_place
         self.ambiguous_place = ambiguous_place
         self.accept_before_ambiguity = accept_before_ambiguity
+        self.ambiguous_exit_action = ambiguous_exit_action
+        self.accept_exit_before_ambiguity = accept_exit_before_ambiguity
         self.preview_calls = 0
         self.place_calls = 0
+        self.exit_place_calls = 0
+        self.exit_replace_calls = 0
+        self.exit_cancel_calls = 0
+        self.order_detail_calls = 0
         self.orders: dict[str, dict[str, object]] = {}
         self.position_items: tuple[dict[str, object], ...] = ()
         self.market_responses: dict[str, WebullResponse] = {}
@@ -166,6 +175,7 @@ class FakeWebullTransport:
         )
 
     def order_detail(self, account_id: str, client_order_id: str) -> WebullResponse:
+        self.order_detail_calls += 1
         item = self.orders.get(client_order_id)
         return WebullResponse(404 if item is None else 200,
                               {"account_id": account_id, "order": item})
@@ -206,6 +216,84 @@ class FakeWebullTransport:
         item = self.orders[client_order_id]
         item["status"] = status
         item["filled_quantity"] = str(filled_quantity)
+
+    def set_position(self, symbol: str, signed_quantity: int) -> None:
+        self.position_items = () if signed_quantity == 0 else ({
+            "symbol": symbol,
+            "quantity": str(signed_quantity),
+        },)
+
+    def place_exit(self, account_id: str, order: WebullExitOrder) -> WebullResponse:
+        self.exit_place_calls += 1
+        broker_order_id = f"sandbox-exit-{order.client_order_id[:11]}"
+        item = {
+            **order.sdk_payload(),
+            "account_id": account_id,
+            "order_id": broker_order_id,
+            "status": "ACKNOWLEDGED",
+            "filled_quantity": "0",
+        }
+        if (
+            self.ambiguous_exit_action != "place"
+            or self.accept_exit_before_ambiguity
+        ):
+            self.orders[order.client_order_id] = item
+        if self.ambiguous_exit_action == "place":
+            raise TimeoutError("deterministic ambiguous Webull exit placement")
+        return WebullResponse(200, {
+            "account_id": account_id,
+            "accepted": True,
+            "order_id": broker_order_id,
+            "order": item,
+        })
+
+    def replace_exit(self, account_id: str, order: WebullExitOrder) -> WebullResponse:
+        self.exit_replace_calls += 1
+        current = self.orders.get(order.client_order_id)
+        if current is None:
+            return WebullResponse(404, {"account_id": account_id, "order": None})
+        replacement = {
+            **order.sdk_payload(),
+            "account_id": account_id,
+            "order_id": current["order_id"],
+            "status": "ACKNOWLEDGED",
+            "filled_quantity": current["filled_quantity"],
+        }
+        if (
+            self.ambiguous_exit_action != "replace"
+            or self.accept_exit_before_ambiguity
+        ):
+            self.orders[order.client_order_id] = replacement
+        if self.ambiguous_exit_action == "replace":
+            raise TimeoutError("deterministic ambiguous Webull stop replacement")
+        return WebullResponse(200, {
+            "account_id": account_id,
+            "accepted": True,
+            "order_id": replacement["order_id"],
+            "order": replacement,
+        })
+
+    def cancel_exit(self, account_id: str, client_order_id: str) -> WebullResponse:
+        self.exit_cancel_calls += 1
+        current = self.orders.get(client_order_id)
+        if current is None:
+            return WebullResponse(404, {"account_id": account_id, "order": None})
+        canceled = dict(current)
+        if canceled["status"] not in {"FILLED", "CANCELED"}:
+            canceled["status"] = "CANCELED"
+        if (
+            self.ambiguous_exit_action != "cancel"
+            or self.accept_exit_before_ambiguity
+        ):
+            self.orders[client_order_id] = canceled
+        if self.ambiguous_exit_action == "cancel":
+            raise TimeoutError("deterministic ambiguous Webull cancellation")
+        return WebullResponse(200, {
+            "account_id": account_id,
+            "accepted": True,
+            "order_id": canceled["order_id"],
+            "order": canceled,
+        })
 
     def market_snapshot(self, symbols: tuple[str, ...]) -> WebullResponse:
         return self.market_responses.get(

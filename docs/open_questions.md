@@ -238,3 +238,38 @@ captured typed opening-event schema that proves `observed_open`, provider timest
 source revision. ADR20 must also come from the prior completed daily sessions in the causal feature
 store. Until a redacted sandbox capture defines that adapter boundary, no CLI accepts a manually
 typed open or ADR and `submit-stock` fails closed when the durable entry release is absent.
+
+## Added for approved offline Phase 3D and gating 3D-5 review
+
+Questions 71–73 remain gating dependencies. Questions 74–85 are collected in
+`docs/proposals/phase_3d_sandbox_exit_lifecycle_v1.md`. The offline fake-transport behavior is
+approved and implemented; these questions still block all official Webull stop, replace, cancel,
+reducing-exit, and flatten calls.
+
+74. Does the sandbox accept and return exact `STOP_LOSS/GTC` stock protection for both long and short
+positions, including stop price, quantity, reducing side, and client identity?
+75. Does Webull replace a stop under the same client order ID, and which response/detail fields prove
+that the old price is no longer active and the new price is authoritative?
+76. Which exact cancel response and subsequent order-detail/open-order evidence prove cancellation,
+including a stop that fills while cancellation is in flight?
+77. Does `BUY` against a sandbox short position reduce the short without opening or reversing a long,
+and how are partial covers represented?
+78. What instrument metadata is authoritative for tick size, price precision, symbol identity, and
+stock category? No local tick rounding is approved without that evidence.
+79. How are split-adjusted Phase 1 stops converted to raw broker prices across an in-position
+corporate action? The proposal limits live smoke tests to adjustment factor one.
+80. Which terminal entry-detail fields prove the remainder of a partially filled entry was canceled
+before protection is submitted for the final cumulative position? V1 proposes no simultaneous
+working remainder and independently executable closing stop.
+81. Which exact status vocabulary and cumulative-fill fields apply to stop, replace, cancel, and
+reducing market orders? Phase 3C's strict internal schema is not proof of these new shapes.
+82. Phase 3D proposes permitting operator emergency flatten from `HALTED` only after a new exact
+reconciliation and never for account-identity, unknown-exposure, sign, or quantity mismatches. Is
+that boundary sufficiently conservative?
+83. Phase 3D proposes one immediate authenticated detail query and no hidden polling after cancel,
+replace, or placement. An inconclusive result halts for later operator recovery. Sandbox evidence
+must establish whether this is operationally viable without weakening query-before-retry safety.
+84. Should Phase 3D migrate from the SDK's deprecated `order_v2` surface to `order_v3`, or retain v2
+for exact Phase 3C compatibility until v3 receives separate response captures?
+85. How should positions intentionally held across a new runtime session be transferred? V1 proposes
+exact-identity resume only and rejects cross-session adoption.

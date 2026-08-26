@@ -1,0 +1,8 @@
+{
+  "manifest_version": "3D-CAP.1.0",
+  "environment": "SANDBOX",
+  "sdk_version": "2.0.17",
+  "approved": false,
+  "validated_capabilities": [],
+  "official_exit_transport_enabled": false
+}

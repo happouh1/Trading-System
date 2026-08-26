@@ -88,7 +88,9 @@ Stages 3C-4 and 3C-5 implement sandbox-only submission and recovery. Submission 
 accepted preview for the identical request hash, active `PAPER_ENABLED` state, a fresh exact REST
 reconciliation, an immutable opening observation that passes the 0.25 ADR gap and 120-second
 causality gates, the environment value `WEBULL_SANDBOX_SUBMISSION_ENABLED=true`, and the explicit CLI
-flag `--enable-sandbox-submission`. The intent, opening release, prepared request, and call-start
+flag `--enable-sandbox-submission`. Phase 3D additionally requires an exact, unexpired exit
+authorization for the same session/configuration before entry can cross the transport boundary.
+The intent, opening release, prepared request, and call-start
 marker commit before the SDK call. A timeout is queried once by the same client ID, halts the
 runtime, and is never blindly retried. Restart recovery resolves every call-started request before
 another intent can be submitted. Partial fills, fills, rejections, cancellations, executions,
@@ -111,6 +113,25 @@ trading-system webull order-report --database DB --session-id SESSION --config c
 
 `submit-stock` is intentionally omitted from the routine examples because invoking it crosses the
 sandbox order boundary and requires separate first-order operator authorization.
+
+Phase 3D now implements the approved offline sandbox exit lifecycle against the deterministic fake
+transport. It owns exact filled stock positions, terminates partial entries before protection, maps
+Phase 1 stops to full-quantity STOP_LOSS/GTC requests, permits monotonic same-ID replacement, and
+cancels and proves the stop terminal before a MARKET/DAY reducing exit. Every write is persist-first,
+queried once by the same client ID, and halted when ambiguous. Emergency flatten is exact,
+two-factor, one-position, and one-use.
+
+Official Webull exit writes remain intentionally unreachable. The pending capability manifest is
+not approved, so `webull arm-exits` fails before any network call. The separate 3D-5 review must
+validate redacted stop, replace, cancel, long-exit, short-cover, partial-fill, ambiguity, and restart
+captures before that manifest may change. Production and options remain prohibited.
+
+```text
+trading-system webull verify-exit-config --config config/webull.sandbox.v1.yaml --exit-config config/webull.exits.phase3d.v1.yaml --exit-capabilities config/webull.exit_capabilities.pending.v1.json
+trading-system webull position-report --database DB --session-id SESSION --config config/webull.sandbox.v1.yaml
+```
+
+See `docs/proposals/phase_3d_sandbox_exit_lifecycle_v1.md` and `docs/phase_3d_review.md`.
 
 ## Development
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Callable
 from datetime import UTC, datetime
 from decimal import Decimal
 
@@ -14,6 +15,12 @@ from trading_system.persistence import SQLiteRepository
 from trading_system.risk import normalized_units
 from trading_system.serialization import canonical_hash, canonical_json
 from trading_system.webull.config import load_webull_config
+from trading_system.webull.exit_config import (
+    load_exit_capabilities,
+    load_exit_config,
+)
+from trading_system.webull.exit_registry import WebullExitRegistry
+from trading_system.webull.exit_service import create_exit_authorization, environment_gate
 from trading_system.webull.mapping import map_stock_order
 from trading_system.webull.market_data import (
     WebullMarketDataNormalizer,
@@ -94,6 +101,8 @@ def configure_webull_parser(
     submit.add_argument("--intent-id", required=True)
     submit.add_argument("--config", required=True)
     submit.add_argument("--thresholds", required=True)
+    submit.add_argument("--exit-config", required=True)
+    submit.add_argument("--exit-capabilities", required=True)
     submit.add_argument(
         "--account-class", choices=("INDIVIDUAL_MARGIN", "INDIVIDUAL_CASH")
     )
@@ -102,6 +111,26 @@ def configure_webull_parser(
     order_report.add_argument("--database", required=True)
     order_report.add_argument("--session-id", required=True)
     order_report.add_argument("--config", required=True)
+    position_report = actions.add_parser("position-report")
+    position_report.add_argument("--database", required=True)
+    position_report.add_argument("--session-id", required=True)
+    position_report.add_argument("--config", required=True)
+    verify_exit = actions.add_parser("verify-exit-config")
+    verify_exit.add_argument("--config", required=True)
+    verify_exit.add_argument("--exit-config", required=True)
+    verify_exit.add_argument("--exit-capabilities", required=True)
+    arm_exits = actions.add_parser("arm-exits")
+    arm_exits.add_argument("--database", required=True)
+    arm_exits.add_argument("--session-id", required=True)
+    arm_exits.add_argument("--config", required=True)
+    arm_exits.add_argument("--thresholds", required=True)
+    arm_exits.add_argument("--exit-config", required=True)
+    arm_exits.add_argument("--exit-capabilities", required=True)
+    arm_exits.add_argument(
+        "--account-class", choices=("INDIVIDUAL_MARGIN", "INDIVIDUAL_CASH")
+    )
+    arm_exits.add_argument("--allow-network-read", action="store_true")
+    arm_exits.add_argument("--enable-sandbox-exits", action="store_true")
 
 
 def _risk_budget(path: str) -> Decimal:
@@ -119,6 +148,20 @@ def _utc_timestamp(value: str) -> datetime:
     return result.astimezone(UTC)
 
 
+def _exit_authorization_check(
+    repository: SQLiteRepository,
+    session_id: str,
+    config_path: str,
+    capabilities_path: str,
+) -> Callable[[datetime], bool]:
+    exit_config = load_exit_config(config_path)
+    capabilities = load_exit_capabilities(capabilities_path)
+    registry = WebullExitRegistry(repository)
+    return lambda at: capabilities.approved and registry.valid_exit_authorization(
+        session_id, exit_config.config_hash, capabilities.capability_hash, at
+    )
+
+
 def handle_webull(args: argparse.Namespace) -> int:
     config = load_webull_config(args.config)
     if args.webull_command == "verify-config":
@@ -127,11 +170,94 @@ def handle_webull(args: argparse.Namespace) -> int:
             "environment": "SANDBOX",
             "network_used": False,
         }
+    elif args.webull_command == "verify-exit-config":
+        exit_config = load_exit_config(args.exit_config)
+        capabilities = load_exit_capabilities(args.exit_capabilities)
+        result = {
+            "config_hash": exit_config.config_hash,
+            "capability_hash": capabilities.capability_hash,
+            "capabilities_approved": capabilities.approved,
+            "official_exit_transport_enabled": False,
+            "environment": "SANDBOX",
+            "network_used": False,
+        }
+    elif args.webull_command == "position-report":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            exit_registry = WebullExitRegistry(repository)
+            positions = []
+            for position in exit_registry.positions(args.session_id):
+                latest_event = exit_registry.latest_position_event(
+                    position.managed_position_id
+                )
+                stop = exit_registry.latest_stop(position.managed_position_id)
+                positions.append({
+                    "managed_position_id": position.managed_position_id,
+                    "symbol": position.symbol,
+                    "direction": position.direction,
+                    "state": None if latest_event is None else latest_event.state,
+                    "remaining_quantity": (
+                        position.remaining_quantity
+                        if latest_event is None else latest_event.remaining_quantity
+                    ),
+                    "protective_client_order_id": (
+                        None if stop is None else stop.client_order_id
+                    ),
+                    "adjusted_stop": None if stop is None else stop.adjusted_stop,
+                })
+            result = {
+                "session_id": args.session_id,
+                "positions": tuple(positions),
+                "unresolved_actions": exit_registry.unresolved_actions(args.session_id),
+                "environment": "SANDBOX",
+                "official_exit_transport_enabled": False,
+                "network_used": False,
+            }
+    elif args.webull_command == "arm-exits":
+        if not args.allow_network_read:
+            raise ValueError("exit arming requires explicit read-only network permission")
+        exit_config = load_exit_config(args.exit_config)
+        capabilities = load_exit_capabilities(args.exit_capabilities)
+        if not capabilities.approved:
+            raise ValueError("Phase 3D official writes remain locked pending 3D-5 review")
+        credentials = load_credentials()
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            paper = PaperRegistry(repository)
+            exit_registry = WebullExitRegistry(repository)
+            transport = OfficialSdkWebullTransport(config, credentials)
+            read_service = WebullSandboxService(
+                args.session_id, credentials, transport, exit_registry, paper
+            )
+            occurred_at = datetime.now(UTC)
+            read_service.verify_account(occurred_at, account_class=args.account_class)
+            reconciliation = read_service.reconcile(
+                _risk_budget(args.thresholds), datetime.now(UTC)
+            )
+            authorization = create_exit_authorization(
+                exit_registry,
+                args.session_id,
+                exit_config,
+                capabilities,
+                datetime.now(UTC),
+                reconciliation.reconciliation_id,
+                environment_enabled=environment_gate(
+                    str(exit_config.values["exit_environment_flag"])
+                ),
+                cli_enabled=args.enable_sandbox_exits,
+            )
+            result = {
+                "session_id": args.session_id,
+                "authorization_id": authorization.authorization_id,
+                "expires_at": authorization.expires_at,
+                "environment": "SANDBOX",
+                "order_submitted": False,
+            }
     elif args.webull_command == "order-report":
         with SQLiteRepository(args.database) as repository:
             repository.migrate()
             paper = PaperRegistry(repository)
-            registry = WebullRegistry(repository)
+            order_registry = WebullRegistry(repository)
             counts: dict[str, int] = {}
             for table in (
                 "webull_order_previews",
@@ -148,15 +274,15 @@ def handle_webull(args: argparse.Namespace) -> int:
                     (args.session_id,),
                 ).fetchone()
                 counts[table] = 0 if row is None else int(row[0])
-            latest = registry.latest_reconciliation(args.session_id)
+            latest_reconciliation = order_registry.latest_reconciliation(args.session_id)
             result = {
                 "session_id": args.session_id,
                 "state": paper.current_state(args.session_id),
                 "counts": counts,
-                "unresolved_intent_ids": registry.unresolved_submission_intents(
+                "unresolved_intent_ids": order_registry.unresolved_submission_intents(
                     args.session_id
                 ),
-                "latest_reconciliation": latest,
+                "latest_reconciliation": latest_reconciliation,
                 "environment": "SANDBOX",
                 "production_enabled": False,
                 "network_used": False,
@@ -250,6 +376,16 @@ def handle_webull(args: argparse.Namespace) -> int:
                     reconciliation_max_age_seconds=reconciliation_age,
                     max_gap_adr=max_gap_adr,
                     max_release_lateness_seconds=max_release_lateness,
+                    exit_authorization_check=(
+                        None
+                        if args.webull_command != "submit-stock"
+                        else _exit_authorization_check(
+                            repository,
+                            args.session_id,
+                            args.exit_config,
+                            args.exit_capabilities,
+                        )
+                    ),
                 )
                 operation_time = datetime.now(UTC)
                 verification = service.verify_account(

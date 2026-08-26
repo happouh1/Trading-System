@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import hmac
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from datetime import datetime
 from decimal import Decimal
 
@@ -144,7 +144,8 @@ class WebullSandboxService:
                  paper_registry: PaperRegistry,
                  reconciliation_max_age_seconds: int = 60,
                  max_gap_adr: Decimal = Decimal("0.25"),
-                 max_release_lateness_seconds: int = 120) -> None:
+                 max_release_lateness_seconds: int = 120,
+                 exit_authorization_check: Callable[[datetime], bool] | None = None) -> None:
         self.session_id = session_id
         self.credentials = credentials
         self.transport = transport
@@ -153,6 +154,7 @@ class WebullSandboxService:
         self.reconciliation_max_age_seconds = reconciliation_max_age_seconds
         self.max_gap_adr = max_gap_adr
         self.max_release_lateness_seconds = max_release_lateness_seconds
+        self.exit_authorization_check = exit_authorization_check
         self._verified_account_id: str | None = None
         self._verified_at: datetime | None = None
 
@@ -640,6 +642,11 @@ class WebullSandboxService:
             raise ValueError("read-only Webull account verification is required")
         if not environment_enabled or not cli_enabled:
             raise ValueError("Webull sandbox submission requires both independent enablement gates")
+        if (
+            self.exit_authorization_check is None
+            or not self.exit_authorization_check(occurred_at)
+        ):
+            raise ValueError("current Phase 3D exit authorization is required before entry")
         unresolved = self.registry.unresolved_submission_intents(self.session_id)
         if unresolved:
             raise ValueError("all unresolved Webull submissions must be recovered first")

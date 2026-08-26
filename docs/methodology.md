@@ -202,3 +202,27 @@ never crossed the call boundary.
 Order notifications are append-only hints. They require a preceding successful REST reconciliation,
 are persisted before semantic validation, and cannot replace authenticated REST reconciliation. The
 official socket is not instantiated while its sandbox hostname/schema remains unverified.
+
+## Phase 3D deterministic sandbox exit lifecycle
+
+Phase 3D translates existing Phase 1 position rules and never independently changes strategy. A
+managed position begins only with exact Phase 3C identity and a confirmed cumulative fill. A partial
+entry is canceled and proven terminal before protection. Actual broker evidence remains separate
+from simulated Phase 1 outcomes.
+
+Long protection is SELL STOP_LOSS/GTC; short protection is BUY STOP_LOSS/GTC. Quantity equals exact
+remaining integer exposure. The raw stop is `adjusted_stop / adjustment_factor`, must align exactly
+with verified tick metadata, and retains source candle, revision, and known-at evidence. Long stops
+cannot decrease and short stops cannot increase.
+
+Structural damage, opposing trap, and maximum hold preserve next-open semantics. At release, stop
+fills take precedence. The stop is canceled and proven terminal before one full-remaining
+MARKET/DAY reducing exit. There are no targets, scale-outs, OCO/brackets, or fallback orders.
+
+PREPARED and CALL_STARTED persist before every write. Response or exception receives one
+same-client detail query. Inconclusive evidence becomes AMBIGUOUS then HALTED with no automatic
+write retry. Restart queries unresolved identities; unknown exposure, sign, quantity, or order is
+never adopted. Emergency flatten is exact, two-factor, one-position, and one-use.
+
+The official SDK exposes none of the Phase 3D exit-write protocol. Offline tests use only the fake
+transport. The unapproved capability manifest keeps all official exits locked pending 3D-5 review.

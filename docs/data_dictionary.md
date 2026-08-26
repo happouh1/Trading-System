@@ -164,3 +164,20 @@ credential, token, signature, or unredacted response.
 `webull_reconciliations` records exact order and position differences. A successful record must be
 newer than account verification and at least as new as all order activity before another submission.
 `webull_transport_incidents` stores ambiguity, recovery, transition, and reconciliation failures.
+
+## Webull managed exit lifecycle (Phase 3D)
+
+- `webull_managed_positions`: immutable entry ownership, symbol, direction, terminal fill, prices,
+  and code/config identity.
+- `webull_position_events`: append-only state and remaining quantity with causal evidence hash.
+- `webull_exit_intents`: deterministic structural-damage, opposing-trap, or max-hold evidence and
+  its later scheduled open.
+- `webull_protective_stop_versions`: same-client adjusted/raw stop versions, factor, tick, quantity,
+  source candle/revision, known-at, and request hash.
+- `webull_broker_action_events`: persist-first action and resolution journal.
+- `webull_exit_authorizations`: expiring session/config/capability/reconciliation entry prerequisite.
+- `webull_flatten_authorizations`: exact one-position operator evidence; CALL_STARTED proves use.
+- `webull_position_reconciliations`: expected-versus-actual exposure and differences.
+
+Migration `014_phase_3d_exits.sql` adds these append-only records. Canonical payloads contain no
+account IDs, credentials, headers, tokens, or SDK objects.

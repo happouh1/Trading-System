@@ -17,6 +17,7 @@ def _aware(value: datetime) -> None:
 
 class WebullSide(StrEnum):
     BUY = "BUY"
+    SELL = "SELL"
     SELL_SHORT = "SELL_SHORT"
 
 

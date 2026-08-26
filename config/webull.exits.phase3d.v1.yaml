@@ -1,0 +1,24 @@
+{
+  "phase_3d_version": "3D.1.0",
+  "environment": "SANDBOX",
+  "protective_stop": {
+    "order_type": "STOP_LOSS",
+    "time_in_force": "GTC",
+    "extended_hours": false,
+    "replace_only_when_monotonic": true
+  },
+  "queued_exit": {
+    "order_type": "MARKET",
+    "time_in_force": "DAY",
+    "cancel_stop_first": true
+  },
+  "recovery": {
+    "same_client_query_count": 1,
+    "automatic_write_retry_count": 0,
+    "max_inflight_actions_per_position": 1
+  },
+  "exit_environment_flag": "WEBULL_SANDBOX_EXIT_ENABLED",
+  "flatten_environment_flag": "WEBULL_SANDBOX_FLATTEN_ENABLED",
+  "live_smoke_required_adjustment_factor": 1,
+  "authorization_max_age_seconds": 120
+}

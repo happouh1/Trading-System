@@ -110,3 +110,27 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `PAPER-BRIDGE-CAUSAL`: as-of cannot precede `known_at` or reach the scheduled open.
 - `PAPER-BRIDGE-IDEMPOTENT`: identical decision/plan/session scheduling yields one intent.
 - `PAPER-BRIDGE-NO-SUBMIT`: staging writes evidence and never invokes an adapter.
+
+## Phase 3D sandbox exit rules
+
+- `WEBULL_EXIT_ARMED_BEFORE_ENTRY`: entry requires exact unexpired session/config/capability arming.
+- `WEBULL_EXIT_CAPABILITY_LOCK`: an unapproved 3D-5 manifest makes official exit writes unreachable.
+- `WEBULL_POSITION_STRICT_OWNERSHIP`: only exact Phase 3C mappings and cumulative fills are managed.
+- `WEBULL_PARTIAL_ENTRY_TERMINAL`: cancel and prove a partial entry terminal before protection.
+- `WEBULL_STOP_EXACT_QUANTITY`: protection equals exact reconciled remaining integer quantity.
+- `WEBULL_STOP_REDUCING_SIDE`: long protection is SELL; short protection is BUY.
+- `WEBULL_STOP_RAW_PRICE`: raw stop equals adjusted stop divided by the causal adjustment factor.
+- `WEBULL_STOP_TICK_EXACT`: missing or nonaligned verified tick evidence rejects the request.
+- `WEBULL_STOP_MONOTONIC`: long stop never decreases; short stop never increases.
+- `WEBULL_EXIT_NEXT_OPEN`: approved Phase 1 full exits release only at their later scheduled open.
+- `WEBULL_EXIT_STOP_FIRST`: confirmed stop fills precede and suppress or reduce queued exits.
+- `WEBULL_EXIT_CANCEL_CONFIRM`: stop cancellation must be proven before MARKET/DAY release.
+- `WEBULL_EXIT_PERSIST_FIRST`: PREPARED and CALL_STARTED commit before every fake write boundary.
+- `WEBULL_EXIT_QUERY_ONCE`: response or exception receives one same-client detail query.
+- `WEBULL_EXIT_NO_RETRY`: inconclusive action becomes AMBIGUOUS then HALTED without write replay.
+- `WEBULL_EXIT_RESTART_RECOVERY`: unresolved client IDs are queried before later action.
+- `WEBULL_EXIT_NO_ADOPTION`: unknown order, exposure, sign, quantity, or identity halts.
+- `WEBULL_EXIT_FULL_ONLY`: no partial strategy exit, scale-out, target, OCO, or bracket exists.
+- `WEBULL_FLATTEN_TWO_FACTOR`: exact one-position flatten requires environment and CLI gates.
+- `WEBULL_FLATTEN_ONE_USE`: CALL_STARTED consumes the persisted flatten authorization.
+- `WEBULL_EXIT_RESEARCH_NO_AUTHORITY`: model probabilities and labels cannot reach exits.
