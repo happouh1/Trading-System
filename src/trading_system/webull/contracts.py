@@ -58,6 +58,7 @@ class WebullStockOrder:
     quantity: int
     order_type: str = "MARKET"
     time_in_force: str = "DAY"
+    support_trading_session: str = "CORE"
 
     def __post_init__(self) -> None:
         if not 1 <= len(self.client_order_id) <= 32:
@@ -68,6 +69,8 @@ class WebullStockOrder:
             raise ValueError("Webull stock quantity must be a positive integer")
         if self.order_type != "MARKET" or self.time_in_force != "DAY":
             raise ValueError("Phase 3C supports MARKET DAY stock orders only")
+        if self.support_trading_session != "CORE":
+            raise ValueError("Phase 3C supports CORE regular-session orders only")
 
     def sdk_payload(self) -> dict[str, object]:
         return {
@@ -81,6 +84,7 @@ class WebullStockOrder:
             "instrument_type": "EQUITY",
             "market": "US",
             "symbol": self.symbol,
+            "support_trading_session": self.support_trading_session,
         }
 
 

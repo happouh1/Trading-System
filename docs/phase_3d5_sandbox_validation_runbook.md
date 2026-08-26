@@ -48,6 +48,14 @@ python -m trading_system.cli webull smoke-case1-preflight `
 `case1_ready` is true only for exactly one positive sandbox stock position and zero open orders.
 The command persists redacted read evidence and performs no preview, placement, or cancellation.
 
+All US-stock entry and exit requests include Webull's required
+`support_trading_session="CORE"`. This is derived from the repository's existing RTH-only policy;
+extended-hours values `ALL` and `NIGHT` are rejected by immutable contracts.
+The disposable-position seed helper checks the authoritative XNYS calendar before loading
+credentials or making any network request and refuses to preview or place outside the open regular
+session. Run it only between the session's actual open and close, including holiday/early-close
+handling.
+
 ## 2. Build a redacted capture
 
 Use this exact top-level JSON shape. The case-specific evidence labels come from `smoke-plan`.

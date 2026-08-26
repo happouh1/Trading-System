@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
@@ -134,6 +135,13 @@ def test_exit_contracts_and_pending_capability_manifest_fail_closed() -> None:
             "stop", "AAPL", WebullSide.SELL_SHORT, 1,
             "STOP_LOSS", "GTC", D("99"),
         )
+    regular_session_order = WebullExitOrder(
+        "stop", "AAPL", WebullSide.SELL, 1, "STOP_LOSS", "GTC", D("99")
+    )
+    assert regular_session_order.sdk_payload()["support_trading_session"] == "CORE"
+    assert "extended_hours_trading" not in regular_session_order.sdk_payload()
+    with pytest.raises(ValueError, match="CORE regular-session"):
+        replace(regular_session_order, support_trading_session="ALL")
 
 
 @pytest.mark.parametrize(

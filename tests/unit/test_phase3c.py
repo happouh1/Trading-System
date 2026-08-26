@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
@@ -110,6 +111,9 @@ def test_client_order_mapping_is_stable_exact_and_bounded() -> None:
     assert order.client_order_id == first
     assert order.sdk_payload()["side"] == "BUY"
     assert order.sdk_payload()["quantity"] == "10"
+    assert order.sdk_payload()["support_trading_session"] == "CORE"
+    with pytest.raises(ValueError, match="CORE regular-session"):
+        replace(order, support_trading_session="ALL")
 
 
 def test_phase3c4_has_explicit_stock_placement_transport_only() -> None:
@@ -196,6 +200,7 @@ def test_preview_intent_uses_exact_phase1_normalized_quantity(tmp_path: Path) ->
             "instrument_type": "EQUITY",
             "market": "US",
             "symbol": "AAPL",
+            "support_trading_session": "CORE",
         }
         assert transport.preview_calls == 1
         assert repository.connection.execute(

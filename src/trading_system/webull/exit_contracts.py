@@ -85,6 +85,7 @@ class WebullExitOrder:
     time_in_force: str
     stop_price: Decimal | None = None
     extended_hours: bool = False
+    support_trading_session: str = "CORE"
 
     def __post_init__(self) -> None:
         if not 1 <= len(self.client_order_id) <= 32:
@@ -97,6 +98,8 @@ class WebullExitOrder:
             raise ValueError("Webull exit quantity must be a positive integer")
         if self.extended_hours:
             raise ValueError("Phase 3D extended-hours exits are prohibited")
+        if self.support_trading_session != "CORE":
+            raise ValueError("Phase 3D supports CORE regular-session exits only")
         if self.order_type == "STOP_LOSS":
             if self.time_in_force != "GTC" or self.stop_price is None:
                 raise ValueError("protective stops require STOP_LOSS/GTC and a stop price")
@@ -119,7 +122,7 @@ class WebullExitOrder:
             "instrument_type": "EQUITY",
             "market": "US",
             "symbol": self.symbol,
-            "extended_hours_trading": False,
+            "support_trading_session": self.support_trading_session,
         }
         if self.stop_price is not None:
             payload["stop_price"] = format(self.stop_price, "f")

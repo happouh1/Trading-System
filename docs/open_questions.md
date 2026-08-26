@@ -282,3 +282,15 @@ transport change.
 The 2026-08-26 read-only case-1 preflight resolved only the outer position/open-order response
 envelope: SDK list responses normalize to `{"items": [...]}`. Both captured arrays were empty, so
 no position or order-field semantics and none of questions 74–85 were resolved.
+
+The 2026-08-26 disposable-position seed preview returned Webull `OPENAPI_PARAM_ERR` before any
+order submission because `support_trading_session` was absent. The documented US-stock request
+contract requires that field and permits `CORE`, `ALL`, or `NIGHT`. Existing RTH-only policy fixes
+the deterministic adapter value to `CORE`; `ALL` and `NIGHT` remain prohibited. This resolves only
+the request-field mapping and does not resolve preview-response or order-lifecycle semantics.
+
+A subsequent after-hours seed attempt reached placement only after preview succeeded, then Webull
+explicitly rejected the MARKET order with `OPENAPI_CAN_NOT_TRADING_FOR_FIXGW_NOT_READY_MARKET`.
+No order was accepted. This confirms that sandbox placement enforces the `CORE` session boundary;
+the helper now fails locally before any network call when XNYS is closed. In-session placement and
+response semantics remain unresolved.
