@@ -144,6 +144,26 @@ def test_preview_is_exact_persisted_and_submission_gates_fail_closed(tmp_path: P
         repository.close()
 
 
+def test_smoke_position_preflight_is_read_only_and_redaction_safe(tmp_path: Path) -> None:
+    repository, service, transport, _intent_id = _service(tmp_path)
+    try:
+        transport.set_position("AAPL", 2)
+        service.verify_account(NOW)
+        positions, open_order_count = service.smoke_position_preflight(NOW)
+        assert positions == (("AAPL", 2),)
+        assert open_order_count == 0
+        assert transport.place_calls == 0
+        assert transport.exit_place_calls == 0
+        rows = repository.connection.execute(
+            """SELECT operation, payload_json FROM webull_envelopes
+               WHERE operation LIKE 'SMOKE_PREFLIGHT_%' ORDER BY operation"""
+        ).fetchall()
+        assert len(rows) == 2
+        assert all("sandbox-account" not in str(row[1]) for row in rows)
+    finally:
+        repository.close()
+
+
 def test_preview_intent_uses_exact_phase1_normalized_quantity(tmp_path: Path) -> None:
     repository, service, transport, intent_id = _service(tmp_path)
     try:

@@ -158,6 +158,15 @@ def configure_webull_parser(
     smoke_status.add_argument("--session-id", required=True)
     smoke_status.add_argument("--config", required=True)
     smoke_status.add_argument("--smoke-config", required=True)
+    smoke_preflight = actions.add_parser("smoke-case1-preflight")
+    smoke_preflight.add_argument("--database", required=True)
+    smoke_preflight.add_argument("--session-id", required=True)
+    smoke_preflight.add_argument("--config", required=True)
+    smoke_preflight.add_argument("--smoke-config", required=True)
+    smoke_preflight.add_argument(
+        "--account-class", choices=("INDIVIDUAL_MARGIN", "INDIVIDUAL_CASH")
+    )
+    smoke_preflight.add_argument("--allow-network-read", action="store_true")
 
 
 def _risk_budget(path: str) -> Decimal:
@@ -255,6 +264,41 @@ def handle_webull(args: argparse.Namespace) -> int:
             "automatic_manifest_promotion": False,
             "network_used": False,
             "broker_write_performed": False,
+        }
+    elif args.webull_command == "smoke-case1-preflight":
+        if not args.allow_network_read:
+            raise ValueError("case-1 preflight requires explicit read-only network permission")
+        smoke_config = load_smoke_config(args.smoke_config)
+        credentials = load_credentials()
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            service = WebullSandboxService(
+                args.session_id, credentials,
+                OfficialSdkWebullTransport(config, credentials),
+                WebullRegistry(repository), PaperRegistry(repository),
+            )
+            verification = service.verify_account(
+                datetime.now(UTC), account_class=args.account_class
+            )
+            smoke_positions, open_order_count = service.smoke_position_preflight(
+                datetime.now(UTC)
+            )
+        long_positions = tuple(
+            {"symbol": symbol, "quantity": quantity}
+            for symbol, quantity in smoke_positions if quantity > 0
+        )
+        result = {
+            "session_id": args.session_id,
+            "verification_id": verification.verification_id,
+            "case_id": smoke_config.cases[0],
+            "long_positions": long_positions,
+            "open_order_count": open_order_count,
+            "case1_ready": len(long_positions) == 1 and open_order_count == 0,
+            "environment": "SANDBOX",
+            "network_used": True,
+            "network_mode": "READ_ONLY",
+            "broker_write_performed": False,
+            "official_exit_transport_enabled": False,
         }
     elif args.webull_command == "verify-exit-config":
         exit_config = load_exit_config(args.exit_config)

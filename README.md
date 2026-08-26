@@ -142,6 +142,7 @@ trading-system webull smoke-plan --config config/webull.sandbox.v1.yaml --smoke-
 trading-system webull import-smoke-capture --database DB --session-id SESSION --config config/webull.sandbox.v1.yaml --smoke-config config/webull.phase3d5.smoke.v1.json --capture CAPTURE.json
 trading-system webull import-smoke-review --database DB --session-id SESSION --config config/webull.sandbox.v1.yaml --capture-id CAPTURE_ID --review REVIEW.json
 trading-system webull smoke-status --database DB --session-id SESSION --config config/webull.sandbox.v1.yaml --smoke-config config/webull.phase3d5.smoke.v1.json
+trading-system webull smoke-case1-preflight --database DB --session-id SESSION --config config/webull.sandbox.v1.yaml --smoke-config config/webull.phase3d5.smoke.v1.json --account-class INDIVIDUAL_MARGIN --allow-network-read
 ```
 
 The separately invoked broker writes remain an operator-controlled validation activity. See

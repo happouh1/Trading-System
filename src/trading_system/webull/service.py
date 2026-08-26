@@ -228,6 +228,27 @@ class WebullSandboxService:
                 raise ValueError(f"Webull read-only verification failed: {operation}")
         return item
 
+    def smoke_position_preflight(
+        self, occurred_at: datetime
+    ) -> tuple[tuple[tuple[str, int], ...], int]:
+        """Return redaction-safe position inventory for an explicitly gated smoke read."""
+        account_id = self._require_verified()
+        position_response = self.transport.positions(account_id)
+        open_response = self.transport.open_orders(account_id)
+        self.registry.insert_envelope(
+            self.session_id, "SMOKE_PREFLIGHT_POSITIONS", occurred_at, position_response
+        )
+        self.registry.insert_envelope(
+            self.session_id, "SMOKE_PREFLIGHT_OPEN_ORDERS", occurred_at, open_response
+        )
+        if not 200 <= position_response.status_code < 300:
+            raise ValueError("Webull smoke preflight position request failed")
+        if not 200 <= open_response.status_code < 300:
+            raise ValueError("Webull smoke preflight open-order request failed")
+        positions = self._positions(position_response, account_id)
+        open_orders = self._open_client_ids(open_response, account_id)
+        return tuple(sorted(positions.items())), len(open_orders)
+
     def preview(self, intent_id: str, order: WebullStockOrder,
                 occurred_at: datetime) -> bool:
         if self._verified_account_id is None:

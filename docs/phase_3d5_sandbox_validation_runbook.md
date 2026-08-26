@@ -33,6 +33,21 @@ The cases are fixed in this order:
 Complete and review one case before the next. No harness command performs these operations because
 their exact official response semantics are the evidence being validated.
 
+Before case 1, run the separately gated read-only inventory:
+
+```powershell
+python -m trading_system.cli webull smoke-case1-preflight `
+  --database webull-sandbox.sqlite `
+  --session-id DISPOSABLE_SANDBOX_SESSION `
+  --config config/webull.sandbox.v1.yaml `
+  --smoke-config config/webull.phase3d5.smoke.v1.json `
+  --account-class INDIVIDUAL_MARGIN `
+  --allow-network-read
+```
+
+`case1_ready` is true only for exactly one positive sandbox stock position and zero open orders.
+The command persists redacted read evidence and performs no preview, placement, or cancellation.
+
 ## 2. Build a redacted capture
 
 Use this exact top-level JSON shape. The case-specific evidence labels come from `smoke-plan`.
