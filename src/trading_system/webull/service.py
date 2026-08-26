@@ -801,9 +801,12 @@ class WebullSandboxService:
     @staticmethod
     def _open_client_ids(response: WebullResponse, account_id: str) -> set[str]:
         payload = response.payload
-        if payload.get("account_id") != account_id:
-            raise ValueError("Webull open-order account mismatch")
-        raw = payload.get("orders")
+        if set(payload) == {"items"}:
+            raw = payload.get("items")
+        else:
+            if payload.get("account_id") != account_id:
+                raise ValueError("Webull open-order account mismatch")
+            raw = payload.get("orders")
         if not isinstance(raw, (tuple, list)):
             raise ValueError("Webull open-order response lacks an orders array")
         result: set[str] = set()
@@ -819,9 +822,12 @@ class WebullSandboxService:
     @staticmethod
     def _positions(response: WebullResponse, account_id: str) -> dict[str, int]:
         payload = response.payload
-        if payload.get("account_id") != account_id:
-            raise ValueError("Webull position account mismatch")
-        raw = payload.get("positions")
+        if set(payload) == {"items"}:
+            raw = payload.get("items")
+        else:
+            if payload.get("account_id") != account_id:
+                raise ValueError("Webull position account mismatch")
+            raw = payload.get("positions")
         if not isinstance(raw, (tuple, list)):
             raise ValueError("Webull position response lacks a positions array")
         result: dict[str, int] = {}

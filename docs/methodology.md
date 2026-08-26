@@ -239,3 +239,8 @@ SDK/environment/factor boundary must match exactly, and sensitive fields must al
 Import establishes only `PENDING_REVIEW`. A reviewer may append `PASS`, `FAIL`, or `INCONCLUSIVE`;
 even seven passes do not automatically edit the capability manifest or enable the official
 transport. Enabling official exit methods requires a separate reviewed code/config change.
+
+The first read-only case-1 preflight capture established that SDK `2.0.17` returns position and
+open-order arrays as a top-level JSON list, normalized internally to the exact `{"items": [...]}`
+envelope. The parser accepts that captured envelope or the existing account-echo fixture envelope;
+it does not infer alternate field aliases. Empty arrays are valid and mean the case is not ready.

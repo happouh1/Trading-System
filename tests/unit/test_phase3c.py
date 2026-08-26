@@ -22,6 +22,7 @@ from trading_system.webull import (
     OfficialSdkWebullTransport,
     WebullCredentials,
     WebullRegistry,
+    WebullResponse,
     WebullSandboxService,
     client_order_id,
     load_credentials,
@@ -162,6 +163,19 @@ def test_smoke_position_preflight_is_read_only_and_redaction_safe(tmp_path: Path
         assert all("sandbox-account" not in str(row[1]) for row in rows)
     finally:
         repository.close()
+
+
+def test_captured_sdk_list_envelopes_are_accepted_without_aliases() -> None:
+    assert WebullSandboxService._positions(
+        WebullResponse(200, {"items": ()}), "verified-account"
+    ) == {}
+    assert WebullSandboxService._open_client_ids(
+        WebullResponse(200, {"items": ()}), "verified-account"
+    ) == set()
+    with pytest.raises(ValueError, match="account mismatch"):
+        WebullSandboxService._positions(
+            WebullResponse(200, {"unexpected": ()}), "verified-account"
+        )
 
 
 def test_preview_intent_uses_exact_phase1_normalized_quantity(tmp_path: Path) -> None:

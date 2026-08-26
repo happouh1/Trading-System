@@ -278,3 +278,7 @@ The Phase 3D-5 preparation harness does not resolve questions 74–85. It record
 and append-only human reviews needed to resolve them without manufacturing provider semantics.
 `PASS` captures are evidence for a later proposal; they do not themselves authorize a manifest or
 transport change.
+
+The 2026-08-26 read-only case-1 preflight resolved only the outer position/open-order response
+envelope: SDK list responses normalize to `{"items": [...]}`. Both captured arrays were empty, so
+no position or order-field semantics and none of questions 74–85 were resolved.
