@@ -21,6 +21,12 @@ def test_shadow_cli_lifecycle_and_report(tmp_path: Path) -> None:
         "--config", str(ROOT / "config/paper.phase3b.v1.yaml"),
         "--data-revision", "fixture-v1", "--calendar-version", "XNYS-test",
     ]) == 0
+    assert main([
+        "paper", "enable", *common,
+        "--config", str(ROOT / "config/paper.phase3b.v1.yaml"),
+        "--data-revision", "fixture-v1", "--calendar-version", "XNYS-test",
+        "--enable-paper",
+    ]) == 0
     assert main(["paper", "report", *common, "--output", str(report)]) == 0
     body = report.read_text(encoding="utf-8")
     assert "external broker: `NONE`" in body

@@ -32,7 +32,7 @@ def load_webull_config(path: str | Path) -> WebullConfig:
         raise ValueError("Phase 3C configuration keys are invalid")
     if raw["sdk_version"] != "2.0.17" or raw["region_id"] != "us":
         raise ValueError("unsupported Webull SDK version or region")
-    if raw["webull_version"] != "3C.2.0":
+    if raw["webull_version"] != "3C.5.0":
         raise ValueError("unsupported Webull adapter configuration version")
     if raw["api_endpoint"] != API_SANDBOX_HOST:
         raise ValueError("only the Webull API sandbox host is allowed")
@@ -47,7 +47,19 @@ def load_webull_config(path: str | Path) -> WebullConfig:
     }:
         raise ValueError("Webull credential environment names are fixed")
     stock_order = raw["stock_order"]
-    if stock_order != {"order_type": "MARKET", "time_in_force": "DAY"}:
+    if not isinstance(stock_order, dict) or set(stock_order) != {
+        "order_type",
+        "time_in_force",
+        "max_gap_adr",
+        "max_release_lateness_seconds",
+    }:
+        raise ValueError("unsupported Phase 3C stock-order policy")
+    if (
+        stock_order["order_type"] != "MARKET"
+        or stock_order["time_in_force"] != "DAY"
+        or stock_order["max_gap_adr"] != 0.25
+        or stock_order["max_release_lateness_seconds"] != 120
+    ):
         raise ValueError("unsupported Phase 3C stock-order policy")
     market_data = raw["market_data"]
     if not isinstance(market_data, dict) or set(market_data) != {

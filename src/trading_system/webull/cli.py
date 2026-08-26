@@ -20,7 +20,7 @@ from trading_system.webull.market_data import (
     WebullShadowDataService,
 )
 from trading_system.webull.registry import WebullRegistry
-from trading_system.webull.security import load_credentials
+from trading_system.webull.security import load_credentials, submission_enabled
 from trading_system.webull.service import WebullSandboxService
 from trading_system.webull.transport import (
     OfficialSdkWebullMarketDataSource,
@@ -78,6 +78,30 @@ def configure_webull_parser(
     candidates.add_argument("--config", required=True)
     candidates.add_argument("--thresholds", required=True)
     candidates.add_argument("--as-of", required=True)
+    for name in ("reconcile-orders", "recover-orders"):
+        parser = actions.add_parser(name)
+        parser.add_argument("--database", required=True)
+        parser.add_argument("--session-id", required=True)
+        parser.add_argument("--config", required=True)
+        parser.add_argument("--thresholds", required=True)
+        parser.add_argument(
+            "--account-class", choices=("INDIVIDUAL_MARGIN", "INDIVIDUAL_CASH")
+        )
+        parser.add_argument("--allow-network-read", action="store_true")
+    submit = actions.add_parser("submit-stock")
+    submit.add_argument("--database", required=True)
+    submit.add_argument("--session-id", required=True)
+    submit.add_argument("--intent-id", required=True)
+    submit.add_argument("--config", required=True)
+    submit.add_argument("--thresholds", required=True)
+    submit.add_argument(
+        "--account-class", choices=("INDIVIDUAL_MARGIN", "INDIVIDUAL_CASH")
+    )
+    submit.add_argument("--enable-sandbox-submission", action="store_true")
+    order_report = actions.add_parser("order-report")
+    order_report.add_argument("--database", required=True)
+    order_report.add_argument("--session-id", required=True)
+    order_report.add_argument("--config", required=True)
 
 
 def _risk_budget(path: str) -> Decimal:
@@ -103,6 +127,40 @@ def handle_webull(args: argparse.Namespace) -> int:
             "environment": "SANDBOX",
             "network_used": False,
         }
+    elif args.webull_command == "order-report":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            paper = PaperRegistry(repository)
+            registry = WebullRegistry(repository)
+            counts: dict[str, int] = {}
+            for table in (
+                "webull_order_previews",
+                "webull_entry_releases",
+                "webull_submission_events",
+                "webull_client_orders",
+                "webull_broker_events",
+                "webull_executions",
+                "webull_reconciliations",
+                "webull_transport_incidents",
+            ):
+                row = repository.connection.execute(
+                    f"SELECT COUNT(*) FROM {table} WHERE session_id = ?",
+                    (args.session_id,),
+                ).fetchone()
+                counts[table] = 0 if row is None else int(row[0])
+            latest = registry.latest_reconciliation(args.session_id)
+            result = {
+                "session_id": args.session_id,
+                "state": paper.current_state(args.session_id),
+                "counts": counts,
+                "unresolved_intent_ids": registry.unresolved_submission_intents(
+                    args.session_id
+                ),
+                "latest_reconciliation": latest,
+                "environment": "SANDBOX",
+                "production_enabled": False,
+                "network_used": False,
+            }
     elif args.webull_command == "preview-candidates":
         as_of = _utc_timestamp(args.as_of)
         risk_budget = _risk_budget(args.thresholds)
@@ -154,46 +212,116 @@ def handle_webull(args: argparse.Namespace) -> int:
         }
     elif args.webull_command in {
         "verify-account", "discover-accounts", "shadow-history", "market-snapshot",
-        "preview-stock",
+        "preview-stock", "reconcile-orders", "recover-orders", "submit-stock",
     }:
         if args.webull_command == "preview-stock":
             if not args.allow_network_preview:
                 raise ValueError("Webull preview requires explicit preview-only permission")
+        elif args.webull_command == "submit-stock":
+            if not args.enable_sandbox_submission:
+                raise ValueError("Webull submission requires explicit CLI enablement")
         elif not args.allow_network_read:
             raise ValueError("read-only Webull network verification requires explicit permission")
         credentials = load_credentials()
         with SQLiteRepository(args.database) as repository:
             repository.migrate()
-            if args.webull_command == "preview-stock":
+            if args.webull_command in {
+                "preview-stock", "reconcile-orders", "recover-orders", "submit-stock"
+            }:
                 paper = PaperRegistry(repository)
-                intent = paper.load_intent(args.intent_id)
-                if intent.session_id != args.session_id:
-                    raise ValueError("Webull preview intent belongs to another paper session")
-                bounds = XNYSCalendar().bounds(intent.scheduled_open.date())
-                if bounds is None or intent.scheduled_open != bounds[0]:
-                    raise ValueError("Webull preview intent is not scheduled for an XNYS open")
                 risk_budget = _risk_budget(args.thresholds)
+                streaming = config.values["streaming"]
+                if not isinstance(streaming, dict):
+                    raise TypeError("validated Webull streaming config must be a mapping")
+                reconciliation_age = streaming["reconciliation_interval_seconds"]
+                if not isinstance(reconciliation_age, int):
+                    raise TypeError("validated reconciliation interval must be an integer")
+                stock_order = config.values["stock_order"]
+                if not isinstance(stock_order, dict):
+                    raise TypeError("validated Webull stock-order config must be a mapping")
+                max_gap_adr = Decimal(str(stock_order["max_gap_adr"]))
+                max_release_lateness = stock_order["max_release_lateness_seconds"]
+                if not isinstance(max_release_lateness, int):
+                    raise TypeError("validated release lateness must be an integer")
                 service = WebullSandboxService(
                     args.session_id, credentials,
                     OfficialSdkWebullTransport(config, credentials),
                     WebullRegistry(repository), paper,
+                    reconciliation_max_age_seconds=reconciliation_age,
+                    max_gap_adr=max_gap_adr,
+                    max_release_lateness_seconds=max_release_lateness,
                 )
+                operation_time = datetime.now(UTC)
                 verification = service.verify_account(
-                    datetime.now(UTC), account_class=args.account_class
+                    operation_time, account_class=args.account_class
                 )
-                order, accepted = service.preview_intent(
-                    args.intent_id, risk_budget, datetime.now(UTC)
-                )
-                result = {
-                    "session_id": args.session_id,
-                    "intent_id": args.intent_id,
-                    "verification_id": verification.verification_id,
-                    "client_order_id": order.client_order_id,
-                    "request_hash": canonical_hash(order),
-                    "accepted": accepted,
-                    "environment": "SANDBOX",
-                    "order_submitted": False,
-                }
+                if args.webull_command == "preview-stock":
+                    intent = paper.load_intent(args.intent_id)
+                    if intent.session_id != args.session_id:
+                        raise ValueError("Webull preview intent belongs to another paper session")
+                    bounds = XNYSCalendar().bounds(intent.scheduled_open.date())
+                    if bounds is None or intent.scheduled_open != bounds[0]:
+                        raise ValueError("Webull preview intent is not scheduled for an XNYS open")
+                    order, accepted = service.preview_intent(
+                        args.intent_id, risk_budget, datetime.now(UTC)
+                    )
+                    result = {
+                        "session_id": args.session_id,
+                        "intent_id": args.intent_id,
+                        "verification_id": verification.verification_id,
+                        "client_order_id": order.client_order_id,
+                        "request_hash": canonical_hash(order),
+                        "accepted": accepted,
+                        "environment": "SANDBOX",
+                        "order_submitted": False,
+                    }
+                elif args.webull_command == "reconcile-orders":
+                    reconciliation = service.reconcile(risk_budget, datetime.now(UTC))
+                    result = {
+                        "session_id": args.session_id,
+                        "verification_id": verification.verification_id,
+                        "reconciliation_id": reconciliation.reconciliation_id,
+                        "matched": reconciliation.matched,
+                        "differences": reconciliation.differences,
+                        "environment": "SANDBOX",
+                        "order_submitted": False,
+                    }
+                elif args.webull_command == "recover-orders":
+                    recovered = service.recover(risk_budget, datetime.now(UTC))
+                    reconciliation = service.reconcile(risk_budget, datetime.now(UTC))
+                    result = {
+                        "session_id": args.session_id,
+                        "verification_id": verification.verification_id,
+                        "recovered_client_order_ids": tuple(
+                            item.client_order_id for item in recovered
+                        ),
+                        "matched": reconciliation.matched,
+                        "environment": "SANDBOX",
+                        "order_submitted": False,
+                    }
+                else:
+                    order = service.order_for_intent(args.intent_id, risk_budget)
+                    reconciliation = service.reconcile(risk_budget, datetime.now(UTC))
+                    item = service.submit(
+                        args.intent_id,
+                        order,
+                        datetime.now(UTC),
+                        environment_enabled=submission_enabled(
+                            str(config.values["submission_environment_flag"])
+                        ),
+                        cli_enabled=args.enable_sandbox_submission,
+                    )
+                    result = {
+                        "session_id": args.session_id,
+                        "intent_id": args.intent_id,
+                        "verification_id": verification.verification_id,
+                        "reconciliation_id": reconciliation.reconciliation_id,
+                        "client_order_id": item.client_order_id,
+                        "broker_order_id": item.broker_order_id,
+                        "status": item.status,
+                        "environment": "SANDBOX",
+                        "order_submitted": True,
+                    }
             elif args.webull_command == "market-snapshot":
                 market_source = OfficialSdkWebullMarketDataSource(config, credentials)
                 symbols = tuple(

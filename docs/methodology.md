@@ -176,3 +176,29 @@ The decision bridge reconstructs the immutable plan from canonical decision evid
 re-score or reinterpret the decision. Runtime identity and causal timing are checked before the
 intent is persisted. Scheduling scans only the authoritative exchange calendar for the first open
 after `known_at`; a stale decision is rejected instead of being moved to a later session.
+
+## Phase 3C sandbox submission and recovery methodology
+
+Sandbox submission is a separately gated operational action, not a decision rule. The adapter uses
+the already-previewed order without changing symbol, side, quantity, type, TIF, client ID, plan, or
+risk. Before release, a causal opening observation must match the intent's scheduled XNYS open and
+arrive no more than 120 seconds later. For LONG, adverse gap is `max(0, open - planned_entry)`; for
+SHORT it is `max(0, planned_entry - open)`. Division by the prior causal ADR20 must not exceed
+`0.25`. The durable release must exist before the submission timestamp. Missing, stale, non-finite,
+or excessive-gap evidence fails closed.
+
+After those checks, the adapter commits `PREPARED` and `CALL_STARTED` before invoking the SDK. An
+exception or malformed response is ambiguous: the adapter queries the same client ID exactly once,
+records the evidence, and halts even when the query finds the order. It never creates a replacement
+ID or blindly retries.
+
+REST reconciliation compares every internal mapping with broker detail, the exact open-order client
+ID set, and positions derived from cumulative executions. Unknown/missing orders, account or field
+mismatch, broker-ID mismatch, impossible status regression, unexpected fill, or position mismatch
+records incidents and halts. Restart recovery queries all call-started requests before submission can
+resume. Prepared-only requests are causally marked `NOT_SUBMITTED`; they were durably recorded but
+never crossed the call boundary.
+
+Order notifications are append-only hints. They require a preceding successful REST reconciliation,
+are persisted before semantic validation, and cannot replace authenticated REST reconciliation. The
+official socket is not instantiated while its sandbox hostname/schema remains unverified.

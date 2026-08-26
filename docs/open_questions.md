@@ -181,8 +181,9 @@ remain deliberately deferred.
 64. Which broker/account/order/position discrepancies halt the runtime?
 65. Which Webull products and environments remain excluded?
 
-Proposed resolutions for questions 57–65 are documented in
-`docs/proposals/phase_3c_webull_sandbox_v1.md` and remain unauthorized pending explicit approval.
+Resolutions for questions 57–65 are documented in
+`docs/proposals/phase_3c_webull_sandbox_v1.md`. Stages 3C-1 through 3C-5 are implemented under that
+approval, while the live sandbox reviews and open questions below remain gating evidence.
 
 Phase 3C-1 and 3C-2 were subsequently approved in bounded stages. Questions 57–62 and the
 market-data portion of 63 are resolved by the pinned SDK, sandbox allowlist, strict `shadow-v1`
@@ -212,3 +213,28 @@ formula. Phase 3C-3 therefore accepts only an exact account/order echo with expl
 acceptance and treats that provider acceptance as the buying-power gate. A redacted sandbox capture
 must confirm this response shape before 3C-3 is marked passed. Unknown shapes are persisted and
 rejected; no aliases or margin assumptions are inferred.
+
+69. Webull SDK `2.0.17` does not publish typed place-order, order-detail, open-order, position, or
+trade-event response schemas. Phase 3C-4/3C-5 accept only the documented strict internal shape in
+offline fake-transport tests. Redacted sandbox captures must confirm each live shape before the
+corresponding live smoke gate passes. Unknown fields may be retained, but aliases or inferred status
+semantics are not authorized.
+
+70. The exact sandbox order-event MQTT hostname and callback threading contract remain unverified.
+The official socket stays disabled. Order notifications can enter only through the tested internal
+boundary after REST reconciliation, and REST remains authoritative.
+
+71. External cancel/replace initiation is not specified. The system observes and reconciles broker
+`CANCELED` states but does not issue cancel or replace requests. A separate approved policy is needed
+for draining pending external orders and ambiguity around cancel acknowledgements.
+
+72. Phase 3C maps initial entry plans only. Exact broker mapping for Phase 1 stop exits, structural-
+damage exits, opposing-trap exits, maximum-hold exits, gap handling, emergency flattening, and
+restart ownership of pre-existing positions remains unspecified. No live or sandbox exit order is
+invented until a separate versioned proposal is approved.
+
+73. The deterministic 0.25 ADR next-open release gate is implemented, but the pinned SDK has no
+captured typed opening-event schema that proves `observed_open`, provider timestamp, completion, and
+source revision. ADR20 must also come from the prior completed daily sessions in the causal feature
+store. Until a redacted sandbox capture defines that adapter boundary, no CLI accepts a manually
+typed open or ADR and `submit-stock` fails closed when the durable entry release is absent.

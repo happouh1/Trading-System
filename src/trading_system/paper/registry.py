@@ -84,7 +84,11 @@ class PaperRegistry:
             RuntimeState.CREATED: {RuntimeState.STARTING, RuntimeState.HALTED},
             RuntimeState.STARTING: {RuntimeState.SHADOW, RuntimeState.PAPER_ENABLED,
                                     RuntimeState.HALTED},
-            RuntimeState.SHADOW: {RuntimeState.DRAINING, RuntimeState.HALTED},
+            RuntimeState.SHADOW: {
+                RuntimeState.PAPER_ENABLED,
+                RuntimeState.DRAINING,
+                RuntimeState.HALTED,
+            },
             RuntimeState.PAPER_ENABLED: {RuntimeState.DRAINING, RuntimeState.HALTED},
             RuntimeState.DRAINING: {RuntimeState.STOPPED, RuntimeState.HALTED},
             RuntimeState.HALTED: {RuntimeState.STARTING},

@@ -41,6 +41,13 @@ def configure_paper_parser(
     stage.add_argument("--session-id", required=True)
     stage.add_argument("--decision-id", required=True)
     stage.add_argument("--as-of", required=True)
+    enable = actions.add_parser("enable")
+    enable.add_argument("--database", required=True)
+    enable.add_argument("--session-id", required=True)
+    enable.add_argument("--config", required=True)
+    enable.add_argument("--data-revision", required=True)
+    enable.add_argument("--calendar-version", required=True)
+    enable.add_argument("--enable-paper", action="store_true")
     for name in ("status", "halt", "drain", "reconcile", "report"):
         parser = actions.add_parser(name)
         parser.add_argument("--database", required=True)
@@ -98,6 +105,32 @@ def handle_paper(args: argparse.Namespace) -> int:
                 "status": intent.status,
                 "network_used": False,
                 "order_submitted": False,
+            }
+        elif command == "enable":
+            if not args.enable_paper:
+                raise ValueError("paper enable requires explicit --enable-paper")
+            config = load_paper_config(args.config)
+            payload = registry.session_payload(args.session_id)
+            expected = {
+                "code_version": PACKAGE_VERSION,
+                "config_hash": config.config_hash,
+                "data_revision": args.data_revision,
+                "calendar_version": args.calendar_version,
+            }
+            if any(payload.get(key) != value for key, value in expected.items()):
+                raise ValueError("paper enable identity does not match stored session")
+            if registry.current_state(args.session_id) is not RuntimeState.SHADOW:
+                raise ValueError("paper enable requires SHADOW state")
+            registry.transition(
+                args.session_id,
+                RuntimeState.PAPER_ENABLED,
+                now,
+                "EXPLICIT_OPERATOR_ENABLE",
+            )
+            result = {
+                "session_id": args.session_id,
+                "state": RuntimeState.PAPER_ENABLED,
+                "external_submission_enabled": False,
             }
         elif command == "status":
             result = {"session_id": args.session_id,

@@ -45,18 +45,17 @@ and open-order requests. Phase 3C also includes a provider-neutral, read-only st
 append-only callback evidence, restart cursors, fixed `1,2,4` reconnect delays, mandatory REST
 reconciliation, and fail-closed stale/order checks. The official SDK streaming socket remains
 disabled until a Webull sandbox MQTT hostname is independently verified; no production hostname
-may be auto-resolved. Production Webull hosts are rejected and sandbox order submission is unavailable
-from the CLI during Stage 3C-1.
+may be auto-resolved. Production Webull hosts are always rejected.
 
-Stage 3C-1 has successfully verified a Webull sandbox account using only account, balance, position,
+Stage 3C-1 successfully verified a Webull sandbox account using only account, balance, position,
 and open-order reads. Persisted response envelopes redact account IDs, account numbers, user IDs,
-tokens, signatures, and secrets. Order preview and submission remain unavailable from the CLI.
+tokens, signatures, and secrets.
 
 Stage 3C-2 adds fail-closed Webull market-data shadow ingestion. Snapshot/history access is read-only;
 history requests force completed US-stock regular-session bars, raw responses are hashed and
 persisted, and only strict causal `shadow-v1` bar records may become canonical candles and Phase 3B
-checkpoints. Unknown provider response shapes are rejected. Order preview and submission remain
-unavailable from the CLI.
+checkpoints. Unknown provider response shapes are rejected. This read-only command surface never
+previews or submits orders.
 
 Historical shadow bars are stored as revisioned comparison evidence without advancing operational
 checkpoints. Only completed streaming envelopes may advance the Phase 3B runtime and are subject to
@@ -71,7 +70,7 @@ factor-one provenance, and no secret-redaction violations.
 Stage 3C-3 adds `webull preview-stock`. It reconstructs a stored Phase 3B intent, calculates the
 exact Phase 1 normalized integer quantity, verifies the scheduled XNYS open and sandbox account,
 and persists the redacted preview request/response hash. It supports only US equity MARKET/DAY
-BUY or SELL_SHORT previews. Rejection has no fallback, submission is structurally unavailable, and
+BUY or SELL_SHORT previews. Rejection has no fallback, preview never submits, and
 `--allow-network-preview` must be provided explicitly.
 
 Use `webull preview-candidates` before any preview call. It is fully offline and requires an explicit
@@ -84,6 +83,34 @@ directional Phase 1 decision, verifies code/data/calendar identity against an ac
 and schedules its immutable plan for the next authoritative XNYS open. The explicit `--as-of` must
 fall between decision availability and that open. The bridge is offline, append-only, idempotent,
 and cannot submit to an adapter.
+
+Stages 3C-4 and 3C-5 implement sandbox-only submission and recovery. Submission requires an
+accepted preview for the identical request hash, active `PAPER_ENABLED` state, a fresh exact REST
+reconciliation, an immutable opening observation that passes the 0.25 ADR gap and 120-second
+causality gates, the environment value `WEBULL_SANDBOX_SUBMISSION_ENABLED=true`, and the explicit CLI
+flag `--enable-sandbox-submission`. The intent, opening release, prepared request, and call-start
+marker commit before the SDK call. A timeout is queried once by the same client ID, halts the
+runtime, and is never blindly retried. Restart recovery resolves every call-started request before
+another intent can be submitted. Partial fills, fills, rejections, cancellations, executions,
+reconciliations, and incidents are append-only. `webull order-report` is offline and always reports
+production as disabled.
+
+The first real sandbox submission is not automatic. The operator workflow is `paper enable`,
+`webull preview-stock`, causal opening-event capture, `webull reconcile-orders`, and finally
+`webull submit-stock`. No manual open-price CLI exists: submission fails closed until the pinned SDK
+opening schema has a redacted sandbox capture and a typed bridge. The official order-event socket
+remains disabled; authenticated REST detail/open-order/position reads remain authoritative until the
+exact sandbox event hostname and schema are independently verified.
+
+```text
+trading-system paper enable --database DB --session-id SESSION --config config/paper.phase3b.v1.yaml --data-revision REVISION --calendar-version CALENDAR --enable-paper
+trading-system webull reconcile-orders --database DB --session-id SESSION --config config/webull.sandbox.v1.yaml --thresholds config/thresholds.phase1e.v1.yaml --account-class INDIVIDUAL_MARGIN --allow-network-read
+trading-system webull recover-orders --database DB --session-id SESSION --config config/webull.sandbox.v1.yaml --thresholds config/thresholds.phase1e.v1.yaml --account-class INDIVIDUAL_MARGIN --allow-network-read
+trading-system webull order-report --database DB --session-id SESSION --config config/webull.sandbox.v1.yaml
+```
+
+`submit-stock` is intentionally omitted from the routine examples because invoking it crosses the
+sandbox order boundary and requires separate first-order operator authorization.
 
 ## Development
 

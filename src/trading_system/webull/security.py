@@ -21,6 +21,16 @@ def load_credentials(environment: Mapping[str, str] | None = None) -> WebullCred
     )
 
 
+def submission_enabled(
+    environment_name: str,
+    environment: Mapping[str, str] | None = None,
+) -> bool:
+    if environment_name != "WEBULL_SANDBOX_SUBMISSION_ENABLED":
+        raise ValueError("Webull submission environment flag name is invalid")
+    source = os.environ if environment is None else environment
+    return source.get(environment_name, "") == "true"
+
+
 def redact(value: object) -> object:
     if isinstance(value, Mapping):
         return {str(key): "[REDACTED]" if str(key).lower() in _SENSITIVE else redact(item)

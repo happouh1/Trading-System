@@ -142,3 +142,25 @@ It contains no credentials and grants no order authority.
 request hash. `accepted` is true only when HTTP status, explicit provider acceptance, verified
 account identity, and every echoed order field match. The redacted canonical response remains in
 `payload_json`; a repeated identical request reads this durable result without another network call.
+
+## Webull sandbox order lifecycle (Phase 3C-4/3C-5)
+
+`webull_entry_releases` contains the immutable next-open release decision for one intent and exact
+request hash. It preserves the authoritative scheduled-open provider timestamp, local receipt time,
+observed opening price, causal ADR20, adverse gap in ADR units, approval, and reason in the canonical
+payload. A rejected release cannot be replaced for the same intent/request pair.
+
+`webull_submission_events` is the append-only persist-before-call journal. `PREPARED` proves the
+canonical request was durable; `CALL_STARTED` marks the ambiguity boundary; `ACKNOWLEDGED`,
+`REJECTED`, `AMBIGUOUS`, `RECOVERED`, and `NOT_SUBMITTED` preserve resolution without rewriting
+earlier evidence. The canonical request hash and deterministic client order ID never change.
+
+`webull_client_orders` maps one internal intent and client ID to the immutable request hash and
+nullable broker order ID. `webull_broker_events` stores validated status transitions.
+`webull_executions` stores idempotent cumulative filled quantity per client order; expected positions
+use only the latest cumulative quantity for each order. None of these payloads stores an account ID,
+credential, token, signature, or unredacted response.
+
+`webull_reconciliations` records exact order and position differences. A successful record must be
+newer than account verification and at least as new as all order activity before another submission.
+`webull_transport_incidents` stores ambiguity, recovery, transition, and reconciliation failures.

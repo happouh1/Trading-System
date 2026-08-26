@@ -28,6 +28,7 @@ from trading_system.webull import (
     load_webull_config,
     map_stock_order,
     redact,
+    submission_enabled,
 )
 
 ROOT = Path(__file__).parents[2]
@@ -90,6 +91,14 @@ def test_credentials_are_not_represented_and_redaction_is_recursive() -> None:
         "nested": {"app_secret": "[REDACTED]", "account_id": "[REDACTED]",
                    "account_number": "[REDACTED]", "user_id": "[REDACTED]"}
     }
+    assert submission_enabled(
+        "WEBULL_SANDBOX_SUBMISSION_ENABLED",
+        {"WEBULL_SANDBOX_SUBMISSION_ENABLED": "true"},
+    )
+    assert not submission_enabled(
+        "WEBULL_SANDBOX_SUBMISSION_ENABLED",
+        {"WEBULL_SANDBOX_SUBMISSION_ENABLED": "TRUE"},
+    )
 
 
 def test_client_order_mapping_is_stable_exact_and_bounded() -> None:
@@ -102,12 +111,14 @@ def test_client_order_mapping_is_stable_exact_and_bounded() -> None:
     assert order.sdk_payload()["quantity"] == "10"
 
 
-def test_phase3c3_has_no_order_placement_transport() -> None:
-    assert not hasattr(OfficialSdkWebullTransport, "place")
-    assert not hasattr(FakeWebullTransport, "place")
+def test_phase3c4_has_explicit_stock_placement_transport_only() -> None:
+    assert hasattr(OfficialSdkWebullTransport, "place")
+    assert hasattr(FakeWebullTransport, "place")
+    assert not hasattr(OfficialSdkWebullTransport, "replace")
+    assert not hasattr(OfficialSdkWebullTransport, "cancel")
 
 
-def test_preview_is_exact_persisted_and_submission_is_unavailable(tmp_path: Path) -> None:
+def test_preview_is_exact_persisted_and_submission_gates_fail_closed(tmp_path: Path) -> None:
     repository, service, transport, intent_id = _service(tmp_path)
     try:
         verification = service.verify_account(NOW)
@@ -119,10 +130,10 @@ def test_preview_is_exact_persisted_and_submission_is_unavailable(tmp_path: Path
         assert transport.preview_calls == transport.place_calls == 0
         order = map_stock_order(_plan(), intent_id, 10)
         assert service.preview(intent_id, order, NOW)
-        with pytest.raises(ValueError, match="not authorized"):
+        with pytest.raises(ValueError, match="enablement gates"):
             service.submit(intent_id, order, NOW, environment_enabled=True, cli_enabled=False)
-        with pytest.raises(ValueError, match="not authorized"):
-            service.submit(intent_id, order, NOW, environment_enabled=True, cli_enabled=True)
+        with pytest.raises(ValueError, match="enablement gates"):
+            service.submit(intent_id, order, NOW, environment_enabled=False, cli_enabled=True)
         assert transport.place_calls == 0
         rows = repository.connection.execute(
             "SELECT payload_json FROM webull_envelopes"

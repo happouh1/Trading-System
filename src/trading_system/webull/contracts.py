@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import datetime
+from decimal import Decimal
 from enum import StrEnum
 from types import MappingProxyType
 
@@ -17,6 +18,24 @@ def _aware(value: datetime) -> None:
 class WebullSide(StrEnum):
     BUY = "BUY"
     SELL_SHORT = "SELL_SHORT"
+
+
+class WebullOrderStatus(StrEnum):
+    ACKNOWLEDGED = "ACKNOWLEDGED"
+    PARTIALLY_FILLED = "PARTIALLY_FILLED"
+    FILLED = "FILLED"
+    REJECTED = "REJECTED"
+    CANCELED = "CANCELED"
+
+
+class WebullSubmissionEventType(StrEnum):
+    PREPARED = "PREPARED"
+    CALL_STARTED = "CALL_STARTED"
+    ACKNOWLEDGED = "ACKNOWLEDGED"
+    REJECTED = "REJECTED"
+    AMBIGUOUS = "AMBIGUOUS"
+    NOT_SUBMITTED = "NOT_SUBMITTED"
+    RECOVERED = "RECOVERED"
 
 
 @dataclass(frozen=True, slots=True)
@@ -87,3 +106,94 @@ class AccountVerification:
         _aware(self.occurred_at)
         if self.account_count <= 0:
             raise ValueError("account verification requires at least one account")
+
+
+@dataclass(frozen=True, slots=True)
+class WebullOrderSnapshot:
+    account_id: str = field(repr=False)
+    broker_order_id: str
+    client_order_id: str
+    symbol: str
+    side: WebullSide
+    quantity: int
+    filled_quantity: int
+    status: WebullOrderStatus
+
+    def __post_init__(self) -> None:
+        if not self.account_id or not self.broker_order_id or not self.client_order_id:
+            raise ValueError("Webull order identities are required")
+        if not self.symbol or self.symbol != self.symbol.upper():
+            raise ValueError("Webull order symbol must be uppercase")
+        if isinstance(self.quantity, bool) or self.quantity <= 0:
+            raise ValueError("Webull order quantity must be positive")
+        if (
+            isinstance(self.filled_quantity, bool)
+            or self.filled_quantity < 0
+            or self.filled_quantity > self.quantity
+        ):
+            raise ValueError("Webull filled quantity is invalid")
+        if self.status is WebullOrderStatus.PARTIALLY_FILLED and not (
+            0 < self.filled_quantity < self.quantity
+        ):
+            raise ValueError("partial-fill status requires a partial quantity")
+        if self.status is WebullOrderStatus.FILLED and self.filled_quantity != self.quantity:
+            raise ValueError("filled status requires the full quantity")
+        if self.status in {
+            WebullOrderStatus.ACKNOWLEDGED,
+            WebullOrderStatus.REJECTED,
+        } and self.filled_quantity != 0:
+            raise ValueError("unfilled Webull status requires zero filled quantity")
+
+
+@dataclass(frozen=True, slots=True)
+class WebullReconciliation:
+    reconciliation_id: str
+    session_id: str
+    occurred_at: datetime
+    matched: bool
+    differences: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        _aware(self.occurred_at)
+        if not self.reconciliation_id or not self.session_id:
+            raise ValueError("Webull reconciliation identity is required")
+        if self.matched and self.differences:
+            raise ValueError("matched Webull reconciliation cannot contain differences")
+
+
+@dataclass(frozen=True, slots=True)
+class WebullEntryRelease:
+    release_id: str
+    session_id: str
+    intent_id: str
+    request_hash: str
+    provider_timestamp: datetime
+    received_at: datetime
+    observed_open: Decimal
+    adr20: Decimal
+    gap_adr: Decimal
+    approved: bool
+    reason: str
+
+    def __post_init__(self) -> None:
+        _aware(self.provider_timestamp)
+        _aware(self.received_at)
+        if self.received_at < self.provider_timestamp:
+            raise ValueError("entry release cannot arrive before its provider timestamp")
+        if (
+            not self.observed_open.is_finite()
+            or not self.adr20.is_finite()
+            or not self.gap_adr.is_finite()
+            or self.observed_open <= 0
+            or self.adr20 <= 0
+            or self.gap_adr < 0
+        ):
+            raise ValueError("entry release prices and distances are invalid")
+        if (
+            not self.release_id
+            or not self.session_id
+            or not self.intent_id
+            or not self.request_hash
+            or not self.reason
+        ):
+            raise ValueError("entry release identity and reason are required")

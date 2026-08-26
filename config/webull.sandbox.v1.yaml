@@ -1,5 +1,5 @@
 {
-  "webull_version": "3C.2.0",
+  "webull_version": "3C.5.0",
   "sdk_version": "2.0.17",
   "region_id": "us",
   "api_endpoint": "api.sandbox.webull.com",
@@ -29,5 +29,10 @@
     "reconnect_delays_seconds": [1, 2, 4],
     "rest_reconciliation_required": true
   },
-  "stock_order": {"order_type": "MARKET", "time_in_force": "DAY"}
+  "stock_order": {
+    "order_type": "MARKET",
+    "time_in_force": "DAY",
+    "max_gap_adr": 0.25,
+    "max_release_lateness_seconds": 120
+  }
 }

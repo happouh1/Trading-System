@@ -81,10 +81,25 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `WEBULL_PREVIEW_PARITY`: account and all canonical MARKET/DAY stock fields must echo exactly.
 - `WEBULL_PREVIEW_PERSIST`: accepted and rejected responses retain the exact request hash.
 - `WEBULL_PREVIEW_NO_FALLBACK`: a rejection cannot change quantity, side, type, TIF, or plan.
-- `WEBULL_SUBMISSION_DISABLED_3C3`: preview evidence cannot route an order.
+- `WEBULL_SUBMISSION_DISABLED_3C3`: historical 3C-3 boundary; preview alone cannot route an order.
 - `WEBULL_CANDIDATE_OFFLINE`: candidate discovery uses only immutable SQLite evidence.
 - `WEBULL_CANDIDATE_ASOF`: eligibility uses an explicit UTC as-of timestamp, never hidden wall time.
 - `WEBULL_CANDIDATE_NO_INVENTION`: discovery cannot create or alter a trade plan.
+
+## Phase 3C-4/3C-5 sandbox order rules
+
+- `WEBULL_SUBMIT_TWO_FACTOR`: exact lowercase environment enablement and explicit CLI enablement are both required.
+- `WEBULL_SUBMIT_PREVIEW_HASH`: the identical canonical request must have a persisted accepted preview.
+- `WEBULL_SUBMIT_OPEN_RELEASE`: submission requires a prior causal next-open observation with adverse gap no greater than 0.25 ADR20 and no more than 120 seconds of open-to-receipt latency.
+- `WEBULL_SUBMIT_STATE`: only active `PAPER_ENABLED` sessions can submit.
+- `WEBULL_SUBMIT_RECONCILED`: reconciliation must follow verification and all prior order activity.
+- `WEBULL_SUBMIT_PERSIST_FIRST`: `PREPARED` and `CALL_STARTED` commit before the SDK call.
+- `WEBULL_SUBMIT_NO_BLIND_RETRY`: ambiguous placement queries the same client ID once and halts.
+- `WEBULL_RECOVER_BEFORE_NEW`: every unresolved call boundary must be recovered first.
+- `WEBULL_EVENT_MONOTONIC`: terminal states cannot regress; impossible transitions halt.
+- `WEBULL_REST_AUTHORITATIVE`: notifications are hints and cannot replace REST detail reconciliation.
+- `WEBULL_RECONCILE_EXACT`: unknown/missing orders and any order/position mismatch halt.
+- `WEBULL_PRODUCTION_PROHIBITED`: configuration and reports contain no production execution mode.
 
 ## Phase 3B decision-to-intent bridge
 

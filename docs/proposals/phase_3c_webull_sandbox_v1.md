@@ -1,6 +1,6 @@
 # Proposed Phase 3C Webull sandbox adapter v1
 
-Status: **APPROVED — 3C-1 PASSED; 3C-2 PASSED; 3C-3 IMPLEMENTED, SANDBOX REVIEW PENDING**
+Status: **APPROVED — 3C-1/3C-2 PASSED; 3C-3/3C-4/3C-5 IMPLEMENTED, SANDBOX REVIEW PENDING**
 
 ## Purpose
 
@@ -116,6 +116,17 @@ manufacture a sandbox plan merely to exercise the preview endpoint.
 3. On restart, query every unresolved client order ID before accepting new intents.
 4. Unknown orders, missing orders, account mismatch, side/symbol/quantity mismatch, impossible status
    transition, unexpected fill, or position mismatch records an incident and halts submission.
+
+Implementation status: the sandbox-only transport exposes place and detail operations, while
+replace/cancel and production endpoints remain absent. Submission uses two independent enablement
+gates, exact preview-hash parity, `PAPER_ENABLED`, a durable causal 0.25 ADR opening release, and a
+fresh reconciliation. Prepared and call-started evidence commits first. Ambiguity performs one
+same-client-ID query and halts without retry. Recovery resolves all call-started requests before new
+submissions. REST reconciliation validates mapped details, open-order membership, cumulative
+executions, and positions. Deterministic fake transports cover acknowledgement, rejection,
+ambiguity, recovery, gap cancellation, partial fill, fill/cancel state, unknown/missing order,
+mismatch, idempotency, storage failure, and restart soak. The official order-event socket and live
+opening-event bridge remain disabled pending the verified items in open questions 69–73.
 
 ### Approved 3C-2 streaming control amendment
 

@@ -16,6 +16,7 @@ class WebullTransport(Protocol):
     def open_orders(self, account_id: str) -> WebullResponse: ...
     def order_detail(self, account_id: str, client_order_id: str) -> WebullResponse: ...
     def preview(self, account_id: str, order: WebullStockOrder) -> WebullResponse: ...
+    def place(self, account_id: str, order: WebullStockOrder) -> WebullResponse: ...
 
 
 def _normalized(response: Any) -> WebullResponse:
@@ -76,6 +77,9 @@ class OfficialSdkWebullTransport:
     def preview(self, account_id: str, order: WebullStockOrder) -> WebullResponse:
         return _normalized(self._trade.order_v2.preview_order(account_id, [order.sdk_payload()]))
 
+    def place(self, account_id: str, order: WebullStockOrder) -> WebullResponse:
+        return _normalized(self._trade.order_v2.place_order(account_id, [order.sdk_payload()]))
+
 class OfficialSdkWebullMarketDataSource:
     """Read-only SDK client with no trade client or order methods."""
 
@@ -117,12 +121,24 @@ class OfficialSdkWebullMarketDataSource:
 
 
 class FakeWebullTransport:
-    def __init__(self, account_id: str, *, reject_preview: bool = False) -> None:
+    def __init__(
+        self,
+        account_id: str,
+        *,
+        reject_preview: bool = False,
+        reject_place: bool = False,
+        ambiguous_place: bool = False,
+        accept_before_ambiguity: bool = False,
+    ) -> None:
         self.account_id = account_id
         self.reject_preview = reject_preview
+        self.reject_place = reject_place
+        self.ambiguous_place = ambiguous_place
+        self.accept_before_ambiguity = accept_before_ambiguity
         self.preview_calls = 0
         self.place_calls = 0
         self.orders: dict[str, dict[str, object]] = {}
+        self.position_items: tuple[dict[str, object], ...] = ()
         self.market_responses: dict[str, WebullResponse] = {}
 
     def account_list(self) -> WebullResponse:
@@ -135,11 +151,19 @@ class FakeWebullTransport:
         return WebullResponse(200, {"account_id": account_id, "buying_power": "1000000"})
 
     def positions(self, account_id: str) -> WebullResponse:
-        return WebullResponse(200, {"account_id": account_id, "positions": ()})
+        return WebullResponse(
+            200, {"account_id": account_id, "positions": self.position_items}
+        )
 
     def open_orders(self, account_id: str) -> WebullResponse:
-        return WebullResponse(200, {"account_id": account_id,
-                                    "orders": tuple(self.orders.values())})
+        open_items = tuple(
+            item
+            for item in self.orders.values()
+            if item.get("status") in {"ACKNOWLEDGED", "PARTIALLY_FILLED"}
+        )
+        return WebullResponse(
+            200, {"account_id": account_id, "orders": open_items}
+        )
 
     def order_detail(self, account_id: str, client_order_id: str) -> WebullResponse:
         item = self.orders.get(client_order_id)
@@ -151,6 +175,37 @@ class FakeWebullTransport:
         return WebullResponse(422 if self.reject_preview else 200,
                               {"account_id": account_id, "accepted": not self.reject_preview,
                                "order": order.sdk_payload()})
+
+    def place(self, account_id: str, order: WebullStockOrder) -> WebullResponse:
+        self.place_calls += 1
+        broker_order_id = f"sandbox-{order.client_order_id[:16]}"
+        item = {
+            **order.sdk_payload(),
+            "account_id": account_id,
+            "order_id": broker_order_id,
+            "status": "REJECTED" if self.reject_place else "ACKNOWLEDGED",
+            "filled_quantity": "0",
+        }
+        if not self.ambiguous_place or self.accept_before_ambiguity:
+            self.orders[order.client_order_id] = item
+        if self.ambiguous_place:
+            raise TimeoutError("deterministic ambiguous Webull placement")
+        return WebullResponse(
+            422 if self.reject_place else 200,
+            {
+                "account_id": account_id,
+                "accepted": not self.reject_place,
+                "order_id": broker_order_id,
+                "order": item,
+            },
+        )
+
+    def set_order_state(
+        self, client_order_id: str, status: str, filled_quantity: int
+    ) -> None:
+        item = self.orders[client_order_id]
+        item["status"] = status
+        item["filled_quantity"] = str(filled_quantity)
 
     def market_snapshot(self, symbols: tuple[str, ...]) -> WebullResponse:
         return self.market_responses.get(

@@ -70,3 +70,41 @@ def test_webull_preview_candidates_is_offline_and_uses_phase1_quantity(
     assert payload["order_submitted"] is False
     assert payload["candidates"][0]["eligible"] is True
     assert payload["candidates"][0]["quantity"] == 500
+
+
+def test_webull_order_report_is_offline_and_production_disabled(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    database = tmp_path / "order-report.sqlite"
+    created_at = datetime(2026, 1, 5, 20, tzinfo=UTC)
+    with SQLiteRepository(database) as repository:
+        repository.migrate()
+        paper = PaperRegistry(repository)
+        paper.insert_session(
+            PaperSession(
+                "report-session",
+                created_at,
+                PaperMode.SHADOW,
+                "code",
+                "config",
+                "data",
+                "XNYS",
+            )
+        )
+        PaperRuntime(
+            paper, "report-session", PaperMode.SHADOW, InternalSimulatorAdapter()
+        ).start(created_at)
+    assert main([
+        "webull",
+        "order-report",
+        "--database",
+        str(database),
+        "--session-id",
+        "report-session",
+        "--config",
+        str(ROOT / "config/webull.sandbox.v1.yaml"),
+    ]) == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["network_used"] is False
+    assert payload["production_enabled"] is False
+    assert payload["unresolved_intent_ids"] == []
