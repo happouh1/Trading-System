@@ -56,6 +56,7 @@ from trading_system.webull.market_data import (
 from trading_system.webull.registry import WebullRegistry
 from trading_system.webull.security import load_credentials, redact, submission_enabled
 from trading_system.webull.service import WebullSandboxService
+from trading_system.webull.session import CoreSessionStatus, core_session_status
 from trading_system.webull.smoke import (
     SmokeCapture,
     SmokeCase,
@@ -85,6 +86,7 @@ __all__ = [
     "BrokerActionEvent",
     "BrokerActionEventType",
     "BrokerActionKind",
+    "CoreSessionStatus",
     "ExitAuthorization",
     "ExitIntent",
     "ExitReason",
@@ -131,6 +133,7 @@ __all__ = [
     "WebullStreamCoordinator",
     "WebullSubmissionEventType",
     "client_order_id",
+    "core_session_status",
     "create_exit_authorization",
     "decode_sdk_history",
     "environment_gate",

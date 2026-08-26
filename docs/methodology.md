@@ -229,6 +229,11 @@ transport. The unapproved capability manifest keeps all official exits locked pe
 
 ## Phase 3D-5 capture methodology
 
+The reusable Webull CORE-session gate evaluates a timezone-aware instant against the versioned
+XNYS calendar. Open is inclusive and close is exclusive. When closed, it searches forward at most
+15 calendar days for the next session open and performs no credential load or network request.
+Holiday and early-close behavior comes from the same calendar adapter used by ingestion.
+
 The committed smoke configuration fixes the seven approved cases and their order. `smoke-plan`,
 capture import, review import, and status reporting are offline operations. A capture must attest
 that its broker write was separately and explicitly invoked against a disposable sandbox position;

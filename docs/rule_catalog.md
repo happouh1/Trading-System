@@ -137,6 +137,8 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 
 ## Phase 3D-5 sandbox evidence rules
 
+- `WEBULL_CORE_SESSION_GATE`: CORE orders are eligible only while the authoritative XNYS regular
+  session is open; a closed session fails locally before credentials or network access.
 - `WEBULL_SMOKE_SEPARATE_INVOCATION`: capture tooling never initiates a broker write.
 - `WEBULL_SMOKE_APPROVED_ORDER`: the seven smoke cases retain the approved 3D-5 order.
 - `WEBULL_SMOKE_DISPOSABLE_ONLY`: imported captures attest to disposable sandbox positions.

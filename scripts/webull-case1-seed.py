@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from pathlib import Path
 
 from trading_system.market_data import XNYSCalendar
@@ -17,6 +17,7 @@ from trading_system.webull.mapping import client_order_id
 from trading_system.webull.registry import WebullRegistry
 from trading_system.webull.security import load_credentials
 from trading_system.webull.service import WebullSandboxService
+from trading_system.webull.session import core_session_status
 from trading_system.webull.transport import OfficialSdkWebullTransport
 
 CONFIRMATION = "BUY-1-AAPL-IN-WEBULL-SANDBOX"
@@ -44,14 +45,6 @@ def _safe_shape(payload: object) -> dict[str, object]:
     return result
 
 
-def _next_xnys_open(calendar: XNYSCalendar, now: datetime) -> datetime:
-    for offset in range(15):
-        bounds = calendar.bounds((now + timedelta(days=offset)).date())
-        if bounds is not None and bounds[0] > now:
-            return bounds[0]
-    raise ValueError("no eligible XNYS session open found within 15 calendar days")
-
-
 def main() -> int:
     args = _parser().parse_args()
     if args.confirmation != CONFIRMATION:
@@ -65,13 +58,16 @@ def main() -> int:
         raise ValueError("only the official Webull sandbox endpoint is permitted")
 
     now = datetime.now(UTC)
-    calendar = XNYSCalendar()
-    bounds = calendar.bounds(now.date())
-    if bounds is None or not bounds[0] <= now < bounds[1]:
+    session = core_session_status(now, XNYSCalendar())
+    if not session.is_open:
+        if session.next_open is None:
+            raise ValueError("closed XNYS session has no next eligible open")
         print(json.dumps({
+            "calendar": session.calendar_name,
+            "calendar_version": session.calendar_version,
             "environment": "SANDBOX",
             "network_used": False,
-            "next_eligible_open": _next_xnys_open(calendar, now).isoformat(),
+            "next_eligible_open": session.next_open.isoformat(),
             "order_submitted": False,
             "reason": "XNYS_CORE_SESSION_CLOSED",
         }, sort_keys=True))
