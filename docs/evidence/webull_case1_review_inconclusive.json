@@ -1,0 +1,13 @@
+{
+  "review_version": "3D-SMOKE-REVIEW.1.0",
+  "capture_id": "webull_smoke_capture_123251d0e1776aaac7d3881867dd4385",
+  "reviewed_at": "2026-08-27T20:55:04.561523Z",
+  "reviewer_id": "OPTIONS_ONLY_OPERATOR",
+  "verdict": "INCONCLUSIVE",
+  "reason_codes": [
+    "AMBIGUOUS_CANCEL_RESPONSE",
+    "TERMINAL_CANCEL_STATUS_CONFIRMED",
+    "POSITION_ABSENCE_UNEXPLAINED"
+  ],
+  "notes": "Preview and placement returned HTTP 200; initial exact detail was PENDING. The cancellation call raised, one same-client recovery query was performed without retry, and later exact detail returned CANCELLED. The AAPL position was subsequently absent. Cancellation effect is confirmed, but direct cancellation response semantics and the position disappearance remain unresolved. No capability promotion is authorized."
+}

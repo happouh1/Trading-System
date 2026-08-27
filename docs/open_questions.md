@@ -316,3 +316,5 @@ can be classified or reviewed; no automatic conclusion or capability promotion i
 The exact detail was subsequently observed as `CANCELLED` and packaged into a deterministic
 `PENDING_REVIEW` recovery capture. The absent AAPL position remains unexplained and must be addressed
 by human review; it does not invalidate the cancellation status or authorize capability promotion.
+The operator reviewed capture `webull_smoke_capture_123251d0e1776aaac7d3881867dd4385`
+as `INCONCLUSIVE` because the direct cancel response and position disappearance remain unresolved.
