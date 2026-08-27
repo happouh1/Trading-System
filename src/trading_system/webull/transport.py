@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any, Protocol
 
+from trading_system.webull.case1_transport import case1_client_order_id, validate_case1_order
 from trading_system.webull.config import WebullConfig
 from trading_system.webull.contracts import WebullCredentials, WebullResponse, WebullStockOrder
 from trading_system.webull.exit_contracts import WebullExitOrder
@@ -40,25 +41,29 @@ def _integer_config(value: object, name: str) -> int:
     return value
 
 
+def _trade_client(config: WebullConfig, credentials: WebullCredentials) -> Any:
+    from webull.core.client import ApiClient  # type: ignore[import-untyped]
+    from webull.trade.trade_client import TradeClient  # type: ignore[import-untyped]
+
+    values = config.values
+    client = ApiClient(
+        credentials.app_key,
+        credentials.app_secret,
+        str(values["region_id"]),
+        connect_timeout=_integer_config(values["connect_timeout_seconds"], "connect timeout"),
+        timeout=_integer_config(values["request_timeout_seconds"], "request timeout"),
+        auto_retry=False,
+    )
+    client.add_endpoint(str(values["region_id"]), str(values["api_endpoint"]))
+    client._stream_logger_set = True
+    client._file_logger_set = True
+    return TradeClient(client)
+
+
 class OfficialSdkWebullTransport:
     def __init__(self, config: WebullConfig, credentials: WebullCredentials) -> None:
-        from webull.core.client import ApiClient  # type: ignore[import-untyped]
-        from webull.trade.trade_client import TradeClient  # type: ignore[import-untyped]
-
-        values = config.values
-        client = ApiClient(
-            credentials.app_key, credentials.app_secret, str(values["region_id"]),
-            connect_timeout=_integer_config(
-                values["connect_timeout_seconds"], "connect timeout"
-            ),
-            timeout=_integer_config(values["request_timeout_seconds"], "request timeout"),
-            auto_retry=False,
-        )
-        client.add_endpoint(str(values["region_id"]), str(values["api_endpoint"]))
         # TradeClient otherwise creates webull_trade_sdk.log and a console logger by default.
-        client._stream_logger_set = True
-        client._file_logger_set = True
-        self._trade = TradeClient(client)
+        self._trade = _trade_client(config, credentials)
 
     def account_list(self) -> WebullResponse:
         return _normalized(self._trade.account_v2.get_account_list())
@@ -80,6 +85,59 @@ class OfficialSdkWebullTransport:
 
     def place(self, account_id: str, order: WebullStockOrder) -> WebullResponse:
         return _normalized(self._trade.order_v2.place_order(account_id, [order.sdk_payload()]))
+
+
+class OfficialSdkWebullCase1Transport:
+    """Only the exact approved stop preview/place/detail/cancel surface."""
+
+    def __init__(
+        self, session_id: str, config: WebullConfig, credentials: WebullCredentials
+    ) -> None:
+        self._session_id = session_id
+        self._trade = _trade_client(config, credentials)
+
+    def account_list(self) -> WebullResponse:
+        return _normalized(self._trade.account_v2.get_account_list())
+
+    def balance(self, account_id: str) -> WebullResponse:
+        return _normalized(self._trade.account_v2.get_account_balance(account_id))
+
+    def positions(self, account_id: str) -> WebullResponse:
+        return _normalized(self._trade.account_v2.get_account_position(account_id))
+
+    def open_orders(self, account_id: str) -> WebullResponse:
+        return _normalized(self._trade.order_v2.get_order_open(account_id))
+
+    def order_detail(self, account_id: str, client_order_id_value: str) -> WebullResponse:
+        if client_order_id_value != case1_client_order_id(self._session_id):
+            raise ValueError("Case-1 detail query requires the exact approved client ID")
+        return _normalized(
+            self._trade.order_v2.get_order_detail(account_id, client_order_id_value)
+        )
+
+    def preview_exact_stop(
+        self, account_id: str, order: WebullExitOrder
+    ) -> WebullResponse:
+        validate_case1_order(self._session_id, order)
+        return _normalized(
+            self._trade.order_v2.preview_order(account_id, [order.sdk_payload()])
+        )
+
+    def place_exact_stop(
+        self, account_id: str, order: WebullExitOrder
+    ) -> WebullResponse:
+        validate_case1_order(self._session_id, order)
+        return _normalized(
+            self._trade.order_v2.place_order(account_id, [order.sdk_payload()])
+        )
+
+    def cancel_exact_stop(
+        self, account_id: str, order: WebullExitOrder
+    ) -> WebullResponse:
+        validate_case1_order(self._session_id, order)
+        return _normalized(
+            self._trade.order_v2.cancel_order(account_id, order.client_order_id)
+        )
 
 class OfficialSdkWebullMarketDataSource:
     """Read-only SDK client with no trade client or order methods."""
@@ -146,11 +204,13 @@ class FakeWebullTransport:
         self.exit_replace_calls = 0
         self.exit_cancel_calls = 0
         self.order_detail_calls = 0
+        self.account_list_calls = 0
         self.orders: dict[str, dict[str, object]] = {}
         self.position_items: tuple[dict[str, object], ...] = ()
         self.market_responses: dict[str, WebullResponse] = {}
 
     def account_list(self) -> WebullResponse:
+        self.account_list_calls += 1
         return WebullResponse(200, {"accounts": ({
             "account_id": self.account_id, "account_number": self.account_id,
             "account_class": "INDIVIDUAL_MARGIN",

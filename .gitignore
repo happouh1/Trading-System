@@ -13,3 +13,5 @@ build/
 .cli-check*/
 tests/.tmp-phase3d-*/
 .test-tmp-phase3d5/
+.test-tmp-*/
+.test-tmp/

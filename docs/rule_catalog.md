@@ -139,6 +139,8 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 
 - `WEBULL_CORE_SESSION_GATE`: CORE orders are eligible only while the authoritative XNYS regular
   session is open; a closed session fails locally before credentials or network access.
+- `WEBULL_PARENT_SESSION_REQUIRED`: every Webull service validates its immutable paper-session
+  parent before the first transport call; missing provenance fails locally.
 - `WEBULL_SMOKE_SEPARATE_INVOCATION`: capture tooling never initiates a broker write.
 - `WEBULL_SMOKE_APPROVED_ORDER`: the seven smoke cases retain the approved 3D-5 order.
 - `WEBULL_SMOKE_DISPOSABLE_ONLY`: imported captures attest to disposable sandbox positions.
@@ -148,3 +150,22 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `WEBULL_SMOKE_APPEND_ONLY_REVIEW`: captures and human verdicts are immutable records.
 - `WEBULL_SMOKE_NO_AUTO_PROMOTION`: capture or review success cannot modify capability authority.
 - `WEBULL_SMOKE_OFFICIAL_WRITES_LOCKED`: official exit transport remains disabled during preparation.
+- `WEBULL_SMOKE_CASE1_EXACT`: the only official exit write surface fixes AAPL, SELL, quantity one,
+  STOP_LOSS/GTC, raw stop 1.00, and CORE; every changed field is rejected locally.
+- `WEBULL_SMOKE_CASE1_PERSIST_FIRST`: placement and cancellation commit PREPARED and CALL_STARTED
+  before their SDK call.
+- `WEBULL_SMOKE_CASE1_NO_REPLAY`: an exception receives one same-client detail query, and any prior
+  CALL_STARTED blocks automatic rerun for the same session/case.
+- `WEBULL_SANDBOX_OPEN_ORDERS_READ_ONLY`: authenticated Sandbox order inventory is normalized into
+  redaction-safe immutable records; combo and child client IDs must agree.
+- `WEBULL_CASE1_OPERATOR_CANCEL_EXACT`: recovery can cancel only the deterministic Case-1 AAPL stop
+  after complete identity and active-status verification.
+- `WEBULL_CASE1_OPERATOR_CANCEL_TRIPLE_GATE`: recovery requires the SANDBOX environment, a
+  short-lived cancellation environment flag, explicit CLI enablement, and the exact generated
+  confirmation phrase.
+- `WEBULL_CASE1_OPERATOR_CANCEL_ONCE`: persist PREPARED/CALL_STARTED before the single SDK call,
+  query the same client ID once after ambiguity, require terminal detail, and prohibit replay.
+- `WEBULL_CASE1_STATUS_EXACT_READ`: when Case 1 is absent from open orders, query its deterministic
+  client ID and current AAPL position; absence alone cannot prove cancellation.
+- `WEBULL_CASE1_RECOVERY_CAPTURE_OFFLINE`: package only matching persisted envelopes, the exact
+  ambiguous cancel journal, and terminal canceled detail; keep the capture pending review.

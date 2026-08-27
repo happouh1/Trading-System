@@ -79,6 +79,27 @@ def test_config_is_sandbox_only_and_sdk_is_pinned(tmp_path: Path) -> None:
         load_webull_config(invalid)
 
 
+def test_service_requires_persisted_parent_session_before_transport(
+    tmp_path: Path,
+) -> None:
+    repository = SQLiteRepository(tmp_path / "missing-session.sqlite")
+    repository.migrate()
+    credentials = WebullCredentials("key", "secret", "sandbox-account")
+    transport = FakeWebullTransport(credentials.account_id)
+    try:
+        with pytest.raises(ValueError, match="unknown paper session"):
+            WebullSandboxService(
+                "missing-session",
+                credentials,
+                transport,
+                WebullRegistry(repository),
+                PaperRegistry(repository),
+            )
+        assert transport.account_list_calls == 0
+    finally:
+        repository.close()
+
+
 def test_credentials_are_not_represented_and_redaction_is_recursive() -> None:
     credentials = load_credentials({
         "WEBULL_APP_KEY": "key", "WEBULL_APP_SECRET": "secret",

@@ -143,10 +143,21 @@ trading-system webull import-smoke-capture --database DB --session-id SESSION --
 trading-system webull import-smoke-review --database DB --session-id SESSION --config config/webull.sandbox.v1.yaml --capture-id CAPTURE_ID --review REVIEW.json
 trading-system webull smoke-status --database DB --session-id SESSION --config config/webull.sandbox.v1.yaml --smoke-config config/webull.phase3d5.smoke.v1.json
 trading-system webull smoke-case1-preflight --database DB --session-id SESSION --config config/webull.sandbox.v1.yaml --smoke-config config/webull.phase3d5.smoke.v1.json --account-class INDIVIDUAL_MARGIN --allow-network-read
+trading-system webull open-orders --database DB --session-id SESSION --config config/webull.sandbox.v1.yaml --account-class INDIVIDUAL_MARGIN --allow-network-read
+trading-system webull case1-status --database DB --session-id SESSION --config config/webull.sandbox.v1.yaml --allow-network-read
+trading-system webull finalize-case1-recovery --database DB --session-id SESSION --config config/webull.sandbox.v1.yaml --smoke-config config/webull.phase3d5.smoke.v1.json
 ```
 
 The separately invoked broker writes remain an operator-controlled validation activity. See
 `docs/phase_3d5_sandbox_validation_runbook.md` before collecting any capture.
+
+Case 1 has a one-shot script fixed to `SELL 1 AAPL STOP_LOSS/GTC @ 1.00 CORE`, followed by detail,
+cancel, and final detail. It accepts no alternate order parameters, persists each write boundary
+first, never retries an ambiguous write, and does not enable general exit routing.
+If its cancellation is ambiguous, `open-orders` returns a redaction-safe OpenAPI Sandbox inventory
+and the exact confirmation phrase for the matching deterministic order. The separately gated
+`cancel-case1-order` recovery is fixed to that order, sends at most one cancellation request, and
+remains unable to route general exits. See the runbook for its environment and CLI gates.
 
 ## Development
 

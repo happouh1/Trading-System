@@ -194,3 +194,23 @@ Migration `015_phase_3d_smoke_evidence.sql` adds both tables. Capture import rej
 sensitive keys, credential-like plaintext, wrong case order, missing evidence steps, non-sandbox
 environments, non-pinned SDK versions, and adjustment factors other than one. Reviews do not alter
 the capability manifest.
+
+`webull_smoke_operation_events` is the append-only Case-1 write-boundary journal added by migration
+`016_phase_3d_case1_evidence.sql`. It stores session/case/operation, `PREPARED`, `CALL_STARTED`,
+`RESPONSE`, `EXCEPTION`, or `RECOVERED`, deterministic client identity, UTC occurrence time, exact
+request hash, and redacted canonical payload/hash. Any prior `CALL_STARTED` blocks automatic replay
+for the same session and case.
+
+`WebullOpenOrder` is the redaction-safe operator projection of an authenticated OpenAPI Sandbox
+order. It contains client and broker order IDs, symbol, side, total and filled quantities, order
+type, time in force, supported trading session, provider status, and optional limit/stop prices. It
+never contains credentials or an internal account identifier. SDK combo groups are flattened only
+when the group and child client identities agree.
+
+The exact Case-1 recovery reuses `webull_smoke_operation_events` with operation
+`OPERATOR_CANCEL_EXACT_CASE1_STOP`. This records a separate human-authorized recovery boundary; it
+is not treated as completed smoke-test evidence.
+
+`Case1StatusResult` is the read-only terminal-diagnosis projection: deterministic client order ID,
+provider detail status, current AAPL quantity, open-order count, exact-open flag, and assessment. It
+contains no credentials or internal account identifier.

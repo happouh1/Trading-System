@@ -249,3 +249,31 @@ The first read-only case-1 preflight capture established that SDK `2.0.17` retur
 open-order arrays as a top-level JSON list, normalized internally to the exact `{"items": [...]}`
 envelope. The parser accepts that captured envelope or the existing account-echo fixture envelope;
 it does not infer alternate field aliases. Empty arrays are valid and mean the case is not ready.
+
+The exact Case-1 helper is isolated from the official runtime transport. Its immutable request is
+one AAPL `SELL STOP_LOSS/GTC`, quantity one, raw stop `1.00`, session `CORE`, using a deterministic
+session-derived client ID. It has no replace, market-exit, cover, or arbitrary-order surface.
+Placement and cancellation commit `PREPARED` and `CALL_STARTED` before invoking the pinned SDK.
+Exceptions trigger one same-client detail query, persist the result, and halt without replay.
+Successful responses are retained as redacted provider evidence and remain `PENDING_REVIEW`; no
+status alias is inferred and no capability is promoted.
+
+An ambiguous Case-1 cancellation may be followed by one new, explicitly human-authorized operator
+action only after a fresh read proves the deterministic order remains open. Recovery requires the
+sandbox host, `WEBULL_ENVIRONMENT=SANDBOX`, a short-lived
+`WEBULL_SANDBOX_CANCEL_ENABLED=true` flag, explicit CLI enablement, and a confirmation containing
+the deterministic client ID and every immutable order field. It persists a new write boundary,
+sends one cancel request, queries final same-client detail, and blocks replay. This narrow exception
+does not authorize arbitrary cancellation or general exit routing.
+
+If the order later disappears from the open-order inventory, exact-ID status diagnosis combines
+its historical detail with current AAPL quantity. This prevents a fill, manual close, or sandbox
+reset from being classified as a successful cancellation based only on absence from open orders.
+Once exact detail is terminal, an offline finalizer can package the original envelopes, ambiguous
+write journal, and terminal detail into a deterministic capture. The result remains pending human
+review and cannot promote capabilities.
+
+The disposable seed established only these provider envelope facts: preview HTTP 200 exposed
+`currency`, `estimated_cost`, and `estimated_transaction_fee`; placement HTTP 200 exposed
+`client_order_id` and `order_id`; a subsequent position read proved one AAPL share. These observations
+do not authorize broader order behavior.

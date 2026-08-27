@@ -20,6 +20,7 @@ from trading_system.webull.contracts import (
     AccountVerification,
     WebullCredentials,
     WebullEntryRelease,
+    WebullOpenOrder,
     WebullOrderSnapshot,
     WebullOrderStatus,
     WebullReconciliation,
@@ -75,6 +76,16 @@ def _signed_integer(value: object, name: str) -> int:
     if isinstance(value, str) and value.lstrip("-").isdigit():
         return int(value)
     raise ValueError(f"Webull {name} is invalid")
+
+
+def _optional_price(item: Mapping[str, object], name: str) -> Decimal | None:
+    value = item.get(name)
+    if value is None or value == "":
+        return None
+    result = Decimal(str(value))
+    if not result.is_finite() or result <= 0:
+        raise ValueError(f"Webull open-order {name} is invalid")
+    return result
 
 
 def _snapshot(
@@ -146,6 +157,7 @@ class WebullSandboxService:
                  max_gap_adr: Decimal = Decimal("0.25"),
                  max_release_lateness_seconds: int = 120,
                  exit_authorization_check: Callable[[datetime], bool] | None = None) -> None:
+        paper_registry.session_payload(session_id)
         self.session_id = session_id
         self.credentials = credentials
         self.transport = transport
@@ -248,6 +260,28 @@ class WebullSandboxService:
         positions = self._positions(position_response, account_id)
         open_orders = self._open_client_ids(open_response, account_id)
         return tuple(sorted(positions.items())), len(open_orders)
+
+    def sandbox_open_orders(self, occurred_at: datetime) -> tuple[WebullOpenOrder, ...]:
+        """Return a redaction-safe, deterministic view of current sandbox orders."""
+        account_id = self._require_verified()
+        response = self.transport.open_orders(account_id)
+        self.registry.insert_envelope(
+            self.session_id, "SANDBOX_OPEN_ORDERS", occurred_at, response
+        )
+        if not 200 <= response.status_code < 300:
+            raise ValueError("Webull sandbox open-order request failed")
+        return self._open_orders(response, account_id)
+
+    def sandbox_positions(self, occurred_at: datetime) -> tuple[tuple[str, int], ...]:
+        """Return a redaction-safe, deterministic current-position inventory."""
+        account_id = self._require_verified()
+        response = self.transport.positions(account_id)
+        self.registry.insert_envelope(
+            self.session_id, "SANDBOX_POSITIONS", occurred_at, response
+        )
+        if not 200 <= response.status_code < 300:
+            raise ValueError("Webull sandbox position request failed")
+        return tuple(sorted(self._positions(response, account_id).items()))
 
     def preview(self, intent_id: str, order: WebullStockOrder,
                 occurred_at: datetime) -> bool:
@@ -800,6 +834,15 @@ class WebullSandboxService:
 
     @staticmethod
     def _open_client_ids(response: WebullResponse, account_id: str) -> set[str]:
+        return {
+            item.client_order_id
+            for item in WebullSandboxService._open_orders(response, account_id)
+        }
+
+    @staticmethod
+    def _open_orders(
+        response: WebullResponse, account_id: str
+    ) -> tuple[WebullOpenOrder, ...]:
         payload = response.payload
         if set(payload) == {"items"}:
             raw = payload.get("items")
@@ -809,15 +852,62 @@ class WebullSandboxService:
             raw = payload.get("orders")
         if not isinstance(raw, (tuple, list)):
             raise ValueError("Webull open-order response lacks an orders array")
-        result: set[str] = set()
-        for item in raw:
-            if not isinstance(item, Mapping):
+        flattened: list[Mapping[str, object]] = []
+        for container in raw:
+            if not isinstance(container, Mapping):
                 raise ValueError("Webull open-order item is invalid")
+            nested = container.get("orders")
+            if nested is None:
+                flattened.append(container)
+                continue
+            if not isinstance(nested, (tuple, list)) or not nested:
+                raise ValueError("Webull open-order group is invalid")
+            group_client_id = container.get("client_order_id")
+            for item in nested:
+                if not isinstance(item, Mapping):
+                    raise ValueError("Webull nested open-order item is invalid")
+                if item.get("client_order_id") != group_client_id:
+                    raise ValueError("Webull open-order group identity mismatch")
+                flattened.append(item)
+        result: list[WebullOpenOrder] = []
+        for item in flattened:
             client_id = item.get("client_order_id")
             if not isinstance(client_id, str) or not client_id:
                 raise ValueError("Webull open-order item lacks client identity")
-            result.add(client_id)
-        return result
+            broker_id = item.get("order_id")
+            symbol = item.get("symbol")
+            side = item.get("side")
+            order_type = item.get("order_type")
+            time_in_force = item.get("time_in_force")
+            # Older reconciliation envelopes did not retain this field. Keep
+            # them observable as UNKNOWN, which can never satisfy the exact
+            # Case-1 cancellation identity check.
+            trading_session = item.get("support_trading_session", "UNKNOWN")
+            status = item.get("status")
+            if not all(isinstance(value, str) and value for value in (
+                broker_id, symbol, side, order_type, time_in_force, trading_session, status
+            )):
+                raise ValueError("Webull open-order fields are incomplete")
+
+            result.append(WebullOpenOrder(
+                client_id,
+                str(broker_id),
+                str(symbol),
+                WebullSide(str(side)),
+                _positive_integer(
+                    item.get("total_quantity", item.get("quantity")), "order quantity"
+                ),
+                _positive_integer(
+                    item.get("filled_quantity", 0), "filled quantity", allow_zero=True
+                ),
+                str(order_type),
+                str(time_in_force),
+                str(trading_session),
+                str(status),
+                _optional_price(item, "limit_price"),
+                _optional_price(item, "stop_price"),
+            ))
+        return tuple(sorted(result, key=lambda item: item.client_order_id))
 
     @staticmethod
     def _positions(response: WebullResponse, account_id: str) -> dict[str, int]:

@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import argparse
+import os
 from collections.abc import Callable
 from datetime import UTC, datetime
 from decimal import Decimal
+from typing import cast
 
 from trading_system.config import load_config
 from trading_system.domain import TradePlan
@@ -14,6 +16,7 @@ from trading_system.paper import InternalSimulatorAdapter, PaperMode, PaperRegis
 from trading_system.persistence import SQLiteRepository
 from trading_system.risk import normalized_units
 from trading_system.serialization import canonical_hash, canonical_json
+from trading_system.webull.case1 import exact_case1_order
 from trading_system.webull.config import load_webull_config
 from trading_system.webull.exit_config import (
     load_exit_capabilities,
@@ -26,6 +29,13 @@ from trading_system.webull.market_data import (
     WebullMarketDataNormalizer,
     WebullShadowDataService,
 )
+from trading_system.webull.operator import (
+    Case1CancelRecovery,
+    Case1RecoveryCaptureFinalizer,
+    Case1StatusInspector,
+    case1_cancel_confirmation,
+    case1_order_matches,
+)
 from trading_system.webull.registry import WebullRegistry
 from trading_system.webull.security import load_credentials, submission_enabled
 from trading_system.webull.service import WebullSandboxService
@@ -37,8 +47,10 @@ from trading_system.webull.smoke import (
 )
 from trading_system.webull.smoke_registry import WebullSmokeRegistry
 from trading_system.webull.transport import (
+    OfficialSdkWebullCase1Transport,
     OfficialSdkWebullMarketDataSource,
     OfficialSdkWebullTransport,
+    WebullTransport,
 )
 
 
@@ -167,6 +179,31 @@ def configure_webull_parser(
         "--account-class", choices=("INDIVIDUAL_MARGIN", "INDIVIDUAL_CASH")
     )
     smoke_preflight.add_argument("--allow-network-read", action="store_true")
+    open_orders = actions.add_parser("open-orders")
+    open_orders.add_argument("--database", required=True)
+    open_orders.add_argument("--session-id", required=True)
+    open_orders.add_argument("--config", required=True)
+    open_orders.add_argument(
+        "--account-class", choices=("INDIVIDUAL_MARGIN", "INDIVIDUAL_CASH")
+    )
+    open_orders.add_argument("--allow-network-read", action="store_true")
+    case1_status = actions.add_parser("case1-status")
+    case1_status.add_argument("--database", required=True)
+    case1_status.add_argument("--session-id", required=True)
+    case1_status.add_argument("--config", required=True)
+    case1_status.add_argument("--allow-network-read", action="store_true")
+    finalize_case1 = actions.add_parser("finalize-case1-recovery")
+    finalize_case1.add_argument("--database", required=True)
+    finalize_case1.add_argument("--session-id", required=True)
+    finalize_case1.add_argument("--config", required=True)
+    finalize_case1.add_argument("--smoke-config", required=True)
+    cancel_case1 = actions.add_parser("cancel-case1-order")
+    cancel_case1.add_argument("--database", required=True)
+    cancel_case1.add_argument("--session-id", required=True)
+    cancel_case1.add_argument("--config", required=True)
+    cancel_case1.add_argument("--confirmation", required=True)
+    cancel_case1.add_argument("--allow-network-read", action="store_true")
+    cancel_case1.add_argument("--enable-sandbox-cancel", action="store_true")
 
 
 def _risk_budget(path: str) -> Decimal:
@@ -299,6 +336,136 @@ def handle_webull(args: argparse.Namespace) -> int:
             "network_mode": "READ_ONLY",
             "broker_write_performed": False,
             "official_exit_transport_enabled": False,
+        }
+    elif args.webull_command == "open-orders":
+        if not args.allow_network_read:
+            raise ValueError("open-orders requires explicit read-only network permission")
+        credentials = load_credentials()
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            service = WebullSandboxService(
+                args.session_id,
+                credentials,
+                OfficialSdkWebullTransport(config, credentials),
+                WebullRegistry(repository),
+                PaperRegistry(repository),
+            )
+            verification = service.verify_account(
+                datetime.now(UTC), account_class=args.account_class
+            )
+            orders = service.sandbox_open_orders(datetime.now(UTC))
+        expected = exact_case1_order(args.session_id)
+        exact_match = tuple(
+            item for item in orders if case1_order_matches(item, expected)
+        )
+        result = {
+            "session_id": args.session_id,
+            "verification_id": verification.verification_id,
+            "orders": orders,
+            "open_order_count": len(orders),
+            "case1_exact_match": len(exact_match) == 1,
+            "case1_cancel_confirmation": (
+                case1_cancel_confirmation(args.session_id)
+                if len(exact_match) == 1 else None
+            ),
+            "environment": "SANDBOX",
+            "network_mode": "READ_ONLY",
+            "broker_write_performed": False,
+        }
+    elif args.webull_command == "cancel-case1-order":
+        if not args.allow_network_read:
+            raise ValueError("Case-1 cancellation requires pre-write network reads")
+        if not args.enable_sandbox_cancel:
+            raise ValueError("Case-1 cancellation requires explicit CLI enablement")
+        if os.environ.get("WEBULL_ENVIRONMENT", "").upper() != "SANDBOX":
+            raise ValueError("WEBULL_ENVIRONMENT must be SANDBOX")
+        if os.environ.get("WEBULL_SANDBOX_CANCEL_ENABLED", "") != "true":
+            raise ValueError("WEBULL_SANDBOX_CANCEL_ENABLED must equal true")
+        credentials = load_credentials()
+        case1_transport = OfficialSdkWebullCase1Transport(
+            args.session_id, config, credentials
+        )
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = WebullSmokeRegistry(repository)
+            service = WebullSandboxService(
+                args.session_id,
+                credentials,
+                cast(WebullTransport, case1_transport),
+                registry,
+                PaperRegistry(repository),
+            )
+            cancellation = Case1CancelRecovery(
+                args.session_id,
+                service,
+                case1_transport,
+                registry,
+                exact_case1_order(args.session_id),
+            ).run(args.confirmation)
+        result = {
+            "session_id": args.session_id,
+            "client_order_id": cancellation.client_order_id,
+            "prior_status": cancellation.prior_status,
+            "final_status": cancellation.final_status,
+            "cancel_requested": cancellation.cancel_requested,
+            "environment": "SANDBOX",
+            "broker_write_performed": cancellation.cancel_requested,
+            "automatic_retry": False,
+        }
+    elif args.webull_command == "case1-status":
+        if not args.allow_network_read:
+            raise ValueError("Case-1 status requires explicit read-only network permission")
+        credentials = load_credentials()
+        case1_transport = OfficialSdkWebullCase1Transport(
+            args.session_id, config, credentials
+        )
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            service = WebullSandboxService(
+                args.session_id,
+                credentials,
+                cast(WebullTransport, case1_transport),
+                WebullRegistry(repository),
+                PaperRegistry(repository),
+            )
+            status = Case1StatusInspector(
+                args.session_id,
+                service,
+                case1_transport,
+                exact_case1_order(args.session_id),
+            ).run()
+        result = {
+            "session_id": args.session_id,
+            "client_order_id": status.client_order_id,
+            "detail_status": status.detail_status,
+            "aapl_position_quantity": status.aapl_position_quantity,
+            "open_order_count": status.open_order_count,
+            "exact_order_open": status.exact_order_open,
+            "assessment": status.assessment,
+            "environment": "SANDBOX",
+            "network_mode": "READ_ONLY",
+            "broker_write_performed": False,
+        }
+    elif args.webull_command == "finalize-case1-recovery":
+        smoke_config = load_smoke_config(args.smoke_config)
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            capture, inserted = Case1RecoveryCaptureFinalizer(
+                args.session_id,
+                WebullSmokeRegistry(repository),
+                smoke_config,
+                exact_case1_order(args.session_id),
+            ).run()
+        result = {
+            "session_id": args.session_id,
+            "capture_id": capture.capture_id,
+            "capture_hash": capture.capture_hash,
+            "case_id": capture.case,
+            "inserted": inserted,
+            "review_status": "PENDING_REVIEW",
+            "network_used": False,
+            "broker_write_performed": False,
+            "automatic_manifest_promotion": False,
         }
     elif args.webull_command == "verify-exit-config":
         exit_config = load_exit_config(args.exit_config)

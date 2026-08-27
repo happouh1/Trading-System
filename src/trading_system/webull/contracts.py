@@ -100,6 +100,46 @@ class WebullResponse:
 
 
 @dataclass(frozen=True, slots=True)
+class WebullOpenOrder:
+    client_order_id: str
+    broker_order_id: str
+    symbol: str
+    side: WebullSide
+    quantity: int
+    filled_quantity: int
+    order_type: str
+    time_in_force: str
+    support_trading_session: str
+    status: str
+    limit_price: Decimal | None = None
+    stop_price: Decimal | None = None
+
+    def __post_init__(self) -> None:
+        if not 1 <= len(self.client_order_id) <= 32 or not self.broker_order_id:
+            raise ValueError("Webull open-order identities are invalid")
+        if not self.symbol or self.symbol != self.symbol.upper():
+            raise ValueError("Webull open-order symbol must be uppercase")
+        if isinstance(self.quantity, bool) or self.quantity <= 0:
+            raise ValueError("Webull open-order quantity must be positive")
+        if (
+            isinstance(self.filled_quantity, bool)
+            or self.filled_quantity < 0
+            or self.filled_quantity > self.quantity
+        ):
+            raise ValueError("Webull open-order filled quantity is invalid")
+        for name in (
+            "order_type", "time_in_force", "support_trading_session", "status"
+        ):
+            value = getattr(self, name)
+            if not value or value != value.upper():
+                raise ValueError(f"Webull open-order {name} must be uppercase")
+        for name in ("limit_price", "stop_price"):
+            value = getattr(self, name)
+            if value is not None and (not value.is_finite() or value <= 0):
+                raise ValueError(f"Webull open-order {name} is invalid")
+
+
+@dataclass(frozen=True, slots=True)
 class AccountVerification:
     verification_id: str
     session_id: str

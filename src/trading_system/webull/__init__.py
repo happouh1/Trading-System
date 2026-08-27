@@ -5,6 +5,7 @@ from trading_system.webull.contracts import (
     AccountVerification,
     WebullCredentials,
     WebullEntryRelease,
+    WebullOpenOrder,
     WebullOrderSnapshot,
     WebullOrderStatus,
     WebullReconciliation,
@@ -53,6 +54,14 @@ from trading_system.webull.market_data import (
     WebullShadowDataService,
     decode_sdk_history,
 )
+from trading_system.webull.operator import (
+    Case1CancelRecovery,
+    Case1CancelResult,
+    Case1RecoveryCaptureFinalizer,
+    Case1StatusInspector,
+    Case1StatusResult,
+    case1_cancel_confirmation,
+)
 from trading_system.webull.registry import WebullRegistry
 from trading_system.webull.security import load_credentials, redact, submission_enabled
 from trading_system.webull.service import WebullSandboxService
@@ -86,6 +95,11 @@ __all__ = [
     "BrokerActionEvent",
     "BrokerActionEventType",
     "BrokerActionKind",
+    "Case1CancelRecovery",
+    "Case1CancelResult",
+    "Case1RecoveryCaptureFinalizer",
+    "Case1StatusInspector",
+    "Case1StatusResult",
     "CoreSessionStatus",
     "ExitAuthorization",
     "ExitIntent",
@@ -120,6 +134,7 @@ __all__ = [
     "WebullMarketDataError",
     "WebullMarketDataNormalizer",
     "WebullMarketDataSource",
+    "WebullOpenOrder",
     "WebullOrderSnapshot",
     "WebullOrderStatus",
     "WebullReconciliation",
@@ -132,6 +147,7 @@ __all__ = [
     "WebullStockOrder",
     "WebullStreamCoordinator",
     "WebullSubmissionEventType",
+    "case1_cancel_confirmation",
     "client_order_id",
     "core_session_status",
     "create_exit_authorization",

@@ -31,6 +31,14 @@ class SmokeReviewVerdict(StrEnum):
     INCONCLUSIVE = "INCONCLUSIVE"
 
 
+class SmokeOperationEventType(StrEnum):
+    PREPARED = "PREPARED"
+    CALL_STARTED = "CALL_STARTED"
+    RESPONSE = "RESPONSE"
+    EXCEPTION = "EXCEPTION"
+    RECOVERED = "RECOVERED"
+
+
 @dataclass(frozen=True, slots=True)
 class SmokeConfig:
     values: Mapping[str, object]
@@ -95,6 +103,74 @@ class SmokeReview:
     verdict: SmokeReviewVerdict
     reason_codes: tuple[str, ...]
     notes: str
+
+
+@dataclass(frozen=True, slots=True)
+class SmokeOperationEvent:
+    event_id: str
+    session_id: str
+    case: SmokeCase
+    operation: str
+    event_type: SmokeOperationEventType
+    client_order_id: str
+    occurred_at: datetime
+    request_hash: str
+    detail: Mapping[str, object]
+
+    def __post_init__(self) -> None:
+        _aware(self.occurred_at)
+        if not self.event_id or not self.session_id or not self.request_hash:
+            raise ValueError("smoke operation identity is required")
+        if not self.operation or self.operation != self.operation.upper():
+            raise ValueError("smoke operation must be uppercase")
+        if not 1 <= len(self.client_order_id) <= 32:
+            raise ValueError("smoke operation client order ID is invalid")
+        _require_redacted(self.detail)
+        object.__setattr__(self, "detail", MappingProxyType(dict(self.detail)))
+
+
+def build_smoke_capture(
+    session_id: str,
+    case: SmokeCase,
+    captured_at: datetime,
+    evidence: tuple[SmokeEvidence, ...],
+    config: SmokeConfig,
+) -> SmokeCapture:
+    """Build an immutable capture from already-redacted operational evidence."""
+    _aware(captured_at)
+    if not session_id or not evidence:
+        raise ValueError("smoke capture identity and evidence are required")
+    required = config.required_evidence(case)
+    operations = tuple(item.operation for item in evidence)
+    if operations != required:
+        raise ValueError("smoke capture evidence must exactly match the required order")
+    if any(item.occurred_at > captured_at for item in evidence):
+        raise ValueError("capture cannot precede its evidence")
+    sequence = config.cases.index(case) + 1
+    normalized = {
+        "capture_version": "3D-SMOKE-CAPTURE.1.0",
+        "session_id": session_id,
+        "case_id": case.value,
+        "case_sequence": sequence,
+        "environment": "SANDBOX",
+        "sdk_version": "2.0.17",
+        "captured_at": captured_at,
+        "adjustment_factor": Decimal("1"),
+        "disposable_position_attested": True,
+        "explicit_write_invocation_attested": True,
+        "evidence": evidence,
+    }
+    capture_hash = canonical_hash(normalized)
+    return SmokeCapture(
+        deterministic_id("webull_smoke_capture", capture_hash),
+        session_id,
+        case,
+        sequence,
+        captured_at,
+        Decimal("1"),
+        evidence,
+        capture_hash,
+    )
 
 
 def _aware(value: datetime) -> None:

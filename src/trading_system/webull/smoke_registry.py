@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from decimal import Decimal
 
@@ -12,6 +13,8 @@ from trading_system.webull.smoke import (
     SmokeCapture,
     SmokeCase,
     SmokeEvidence,
+    SmokeOperationEvent,
+    SmokeOperationEventType,
     SmokeReview,
     SmokeReviewVerdict,
 )
@@ -52,6 +55,88 @@ class WebullSmokeRegistry(WebullRegistry):
             ),
             item,
         )
+
+    def insert_operation_event(self, item: SmokeOperationEvent) -> bool:
+        return self._insert(
+            "webull_smoke_operation_events", "event_id", item.event_id,
+            (
+                "event_id", "session_id", "case_id", "operation", "event_type",
+                "client_order_id", "occurred_at", "request_hash",
+            ),
+            (
+                item.event_id, item.session_id, item.case.value, item.operation,
+                item.event_type.value, item.client_order_id, _time(item.occurred_at),
+                item.request_hash,
+            ),
+            item,
+        )
+
+    def operation_events(
+        self, session_id: str, case: SmokeCase
+    ) -> tuple[SmokeOperationEvent, ...]:
+        rows = self.repository.connection.execute(
+            """SELECT payload_json FROM webull_smoke_operation_events
+               WHERE session_id = ? AND case_id = ? ORDER BY occurred_at, rowid""",
+            (session_id, case.value),
+        ).fetchall()
+        result: list[SmokeOperationEvent] = []
+        for row in rows:
+            raw = json.loads(str(row[0]))
+            result.append(SmokeOperationEvent(
+                str(raw["event_id"]), str(raw["session_id"]), SmokeCase(str(raw["case"])),
+                str(raw["operation"]), SmokeOperationEventType(str(raw["event_type"])),
+                str(raw["client_order_id"]),
+                datetime.fromisoformat(
+                    raw["occurred_at"]["__datetime__"].replace("Z", "+00:00")
+                ),
+                str(raw["request_hash"]), raw["detail"],
+            ))
+        return tuple(result)
+
+    def latest_envelope_evidence(
+        self, session_id: str, operation: str
+    ) -> tuple[datetime, str | None, Mapping[str, object]]:
+        row = self.repository.connection.execute(
+            """SELECT occurred_at, request_hash, payload_json
+               FROM webull_envelopes WHERE session_id = ? AND operation = ?
+               ORDER BY occurred_at DESC, rowid DESC LIMIT 1""",
+            (session_id, operation),
+        ).fetchone()
+        if row is None:
+            raise KeyError(f"missing Webull evidence envelope: {operation}")
+        raw = json.loads(str(row[2]))
+        response = raw.get("response")
+        if not isinstance(response, dict):
+            raise ValueError("Webull evidence envelope response is invalid")
+        payload = response.get("payload")
+        status_code = response.get("status_code")
+        if not isinstance(payload, dict) or not isinstance(status_code, int):
+            raise ValueError("Webull evidence envelope fields are invalid")
+        return (
+            datetime.fromisoformat(str(row[0]).replace("Z", "+00:00")).astimezone(UTC),
+            None if row[1] is None else str(row[1]),
+            {"status_code": status_code, "payload": payload},
+        )
+
+    def has_call_boundary(self, session_id: str, case: SmokeCase) -> bool:
+        row = self.repository.connection.execute(
+            """SELECT 1 FROM webull_smoke_operation_events
+               WHERE session_id = ? AND case_id = ? AND event_type = 'CALL_STARTED'
+               LIMIT 1""",
+            (session_id, case.value),
+        ).fetchone()
+        return bool(row == (1,))
+
+    def has_operation_call_boundary(
+        self, session_id: str, case: SmokeCase, operation: str
+    ) -> bool:
+        row = self.repository.connection.execute(
+            """SELECT 1 FROM webull_smoke_operation_events
+               WHERE session_id = ? AND case_id = ? AND operation = ?
+                 AND event_type = 'CALL_STARTED' LIMIT 1""",
+            (session_id, case.value, operation),
+        ).fetchone()
+        return bool(row == (1,))
 
     def capture(self, capture_id: str) -> SmokeCapture:
         row = self.repository.connection.execute(

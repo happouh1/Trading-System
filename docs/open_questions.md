@@ -294,3 +294,25 @@ explicitly rejected the MARKET order with `OPENAPI_CAN_NOT_TRADING_FOR_FIXGW_NOT
 No order was accepted. This confirms that sandbox placement enforces the `CORE` session boundary;
 the helper now fails locally before any network call when XNYS is closed. In-session placement and
 response semantics remain unresolved.
+
+An in-session disposable seed later returned HTTP 200. Preview exposed top-level `currency`,
+`estimated_cost`, and `estimated_transaction_fee`; placement exposed `client_order_id` and
+`order_id`; read-only preflight then found exactly one AAPL share and zero open orders. This proves
+only the seed envelope and resulting position. Case-1 stop/detail/cancel response fields and status
+semantics remain unresolved until the exact capture is reviewed.
+
+86. A narrowly scoped operator recovery now handles only an ambiguous cancellation of the exact
+Case-1 AAPL stop. The observed open-order envelope uses grouped `items[].orders[]`, reports
+`SUBMITTED`, and the detail endpoint reports `PENDING`. Whether Webull consistently returns
+`CANCELED` or `CANCELLED` after a successful sandbox cancellation remains evidence-dependent. Both
+spellings are accepted only as terminal recovery detail; every other status halts. This does not
+resolve general cancellation, replacement, race, or production behavior.
+
+87. After the ambiguous Case-1 cancel, later authenticated snapshots returned zero open orders and
+zero AAPL positions. Absence does not distinguish cancellation, fill/manual close, or sandbox reset.
+The exact historical client-order detail must be captured with `webull case1-status` before Case 1
+can be classified or reviewed; no automatic conclusion or capability promotion is permitted.
+
+The exact detail was subsequently observed as `CANCELLED` and packaged into a deterministic
+`PENDING_REVIEW` recovery capture. The absent AAPL position remains unexplained and must be addressed
+by human review; it does not invalidate the cancellation status or authorize capability promotion.
