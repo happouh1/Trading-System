@@ -318,3 +318,7 @@ The exact detail was subsequently observed as `CANCELLED` and packaged into a de
 by human review; it does not invalidate the cancellation status or authorize capability promotion.
 The operator reviewed capture `webull_smoke_capture_123251d0e1776aaac7d3881867dd4385`
 as `INCONCLUSIVE` because the direct cancel response and position disappearance remain unresolved.
+Inspection of pinned SDK 2.0.17 showed that the exercised `OrderOperationV2` class is deprecated and
+uses the stock-specific V2 cancel route, while `OrderOperationV3` is the supported surface with the
+generic order cancel route. The isolated Case-1 transport now uses only V3. A fresh disposable
+sandbox run is still required to determine whether this resolves the ambiguous cancel response.

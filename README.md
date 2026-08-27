@@ -154,6 +154,7 @@ The separately invoked broker writes remain an operator-controlled validation ac
 Case 1 has a one-shot script fixed to `SELL 1 AAPL STOP_LOSS/GTC @ 1.00 CORE`, followed by detail,
 cancel, and final detail. It accepts no alternate order parameters, persists each write boundary
 first, never retries an ambiguous write, and does not enable general exit routing.
+Its isolated transport uses the pinned SDK's non-deprecated `OrderOperationV3` API exclusively.
 If its cancellation is ambiguous, `open-orders` returns a redaction-safe OpenAPI Sandbox inventory
 and the exact confirmation phrase for the matching deterministic order. The separately gated
 `cancel-case1-order` recovery is fixed to that order, sends at most one cancellation request, and

@@ -152,6 +152,8 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `WEBULL_SMOKE_OFFICIAL_WRITES_LOCKED`: official exit transport remains disabled during preparation.
 - `WEBULL_SMOKE_CASE1_EXACT`: the only official exit write surface fixes AAPL, SELL, quantity one,
   STOP_LOSS/GTC, raw stop 1.00, and CORE; every changed field is rejected locally.
+- `WEBULL_SMOKE_CASE1_ORDER_V3`: the isolated Case-1 transport must use the pinned SDK's
+  non-deprecated `OrderOperationV3` surface and must not call `OrderOperationV2`.
 - `WEBULL_SMOKE_CASE1_PERSIST_FIRST`: placement and cancellation commit PREPARED and CALL_STARTED
   before their SDK call.
 - `WEBULL_SMOKE_CASE1_NO_REPLAY`: an exception receives one same-client detail query, and any prior

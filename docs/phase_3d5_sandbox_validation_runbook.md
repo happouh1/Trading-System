@@ -158,6 +158,10 @@ credentials or making any network request and refuses to preview or place outsid
 session. Run it only between the session's actual open and close, including holiday/early-close
 handling.
 
+The exact Case-1 helper is pinned to the SDK's `OrderOperationV3` surface. The SDK marks
+`OrderOperationV2` deprecated; do not repeat Case 1 with a build that still routes exact stop calls
+through V2.
+
 ## 2. Build a redacted capture manually (non-Case-1 cases)
 
 Use this exact top-level JSON shape. The case-specific evidence labels come from `smoke-plan`.

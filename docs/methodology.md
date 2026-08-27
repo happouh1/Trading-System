@@ -253,6 +253,8 @@ it does not infer alternate field aliases. Empty arrays are valid and mean the c
 The exact Case-1 helper is isolated from the official runtime transport. Its immutable request is
 one AAPL `SELL STOP_LOSS/GTC`, quantity one, raw stop `1.00`, session `CORE`, using a deterministic
 session-derived client ID. It has no replace, market-exit, cover, or arbitrary-order surface.
+The pinned SDK marks `OrderOperationV2` deprecated in favor of `OrderOperationV3`; the isolated
+Case-1 transport therefore uses only `order_v3` for open, preview, place, detail, and cancel calls.
 Placement and cancellation commit `PREPARED` and `CALL_STARTED` before invoking the pinned SDK.
 Exceptions trigger one same-client detail query, persist the result, and halt without replay.
 Successful responses are retained as redacted provider evidence and remain `PENDING_REVIEW`; no

@@ -8,6 +8,7 @@ from typing import cast
 
 import pytest
 
+import trading_system.webull.transport as transport_module
 from trading_system.paper import PaperMode, PaperRegistry, PaperSession
 from trading_system.persistence import SQLiteRepository
 from trading_system.webull.case1 import (
@@ -20,6 +21,7 @@ from trading_system.webull.case1_transport import (
     case1_client_order_id,
     validate_case1_order,
 )
+from trading_system.webull.config import load_webull_config
 from trading_system.webull.contracts import WebullCredentials, WebullResponse, WebullSide
 from trading_system.webull.exit_config import load_exit_capabilities
 from trading_system.webull.operator import (
@@ -129,6 +131,55 @@ class FakeCase1Transport:
         return WebullResponse(200, {"order_id": "sandbox-stop", "account_id": account_id})
 
 
+class FakeSdkResponse:
+    status_code = 200
+
+    def json(self) -> dict[str, object]:
+        return {}
+
+
+class FakeSdkOrderV3:
+    def __init__(self) -> None:
+        self.calls: list[str] = []
+
+    def get_order_open(self, account_id: str) -> FakeSdkResponse:
+        self.calls.append(f"open:{account_id}")
+        return FakeSdkResponse()
+
+    def get_order_detail(
+        self, account_id: str, client_order_id: str
+    ) -> FakeSdkResponse:
+        self.calls.append(f"detail:{account_id}:{client_order_id}")
+        return FakeSdkResponse()
+
+    def preview_order(
+        self, account_id: str, orders: list[dict[str, object]]
+    ) -> FakeSdkResponse:
+        self.calls.append(f"preview:{account_id}:{len(orders)}")
+        return FakeSdkResponse()
+
+    def place_order(
+        self, account_id: str, orders: list[dict[str, object]]
+    ) -> FakeSdkResponse:
+        self.calls.append(f"place:{account_id}:{len(orders)}")
+        return FakeSdkResponse()
+
+    def cancel_order(self, account_id: str, client_order_id: str) -> FakeSdkResponse:
+        self.calls.append(f"cancel:{account_id}:{client_order_id}")
+        return FakeSdkResponse()
+
+
+class ForbiddenSdkOrderV2:
+    def __getattr__(self, name: str) -> object:
+        raise AssertionError(f"deprecated OrderOperationV2 was accessed: {name}")
+
+
+class FakeSdkTrade:
+    def __init__(self) -> None:
+        self.order_v2 = ForbiddenSdkOrderV2()
+        self.order_v3 = FakeSdkOrderV3()
+
+
 def runner(
     repository: SQLiteRepository, fake: FakeCase1Transport, clock: FixedClock
 ) -> Case1Runner:
@@ -189,6 +240,35 @@ def test_official_case1_transport_has_no_general_exit_surface() -> None:
         ROOT / "config/webull.exit_capabilities.pending.v1.json"
     )
     assert capabilities.approved is False
+
+
+def test_official_case1_transport_uses_only_order_v3(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    sdk = FakeSdkTrade()
+
+    def fake_client(config: object, credentials: object) -> FakeSdkTrade:
+        return sdk
+
+    monkeypatch.setattr(transport_module, "_trade_client", fake_client)
+    transport = OfficialSdkWebullCase1Transport(
+        "case1-v3",
+        load_webull_config(ROOT / "config/webull.sandbox.v1.yaml"),
+        WebullCredentials("key", "secret", "account"),
+    )
+    order = exact_case1_order("case1-v3")
+    transport.open_orders("internal")
+    transport.order_detail("internal", order.client_order_id)
+    transport.preview_exact_stop("internal", order)
+    transport.place_exact_stop("internal", order)
+    transport.cancel_exact_stop("internal", order)
+    assert sdk.order_v3.calls == [
+        "open:internal",
+        f"detail:internal:{order.client_order_id}",
+        "preview:internal:1",
+        "place:internal:1",
+        f"cancel:internal:{order.client_order_id}",
+    ]
 
 
 def test_case1_success_persists_exact_evidence_and_blocks_replay(tmp_path: Path) -> None:

@@ -88,7 +88,7 @@ class OfficialSdkWebullTransport:
 
 
 class OfficialSdkWebullCase1Transport:
-    """Only the exact approved stop preview/place/detail/cancel surface."""
+    """Exact Case-1 surface pinned to the SDK's non-deprecated V3 order API."""
 
     def __init__(
         self, session_id: str, config: WebullConfig, credentials: WebullCredentials
@@ -106,13 +106,13 @@ class OfficialSdkWebullCase1Transport:
         return _normalized(self._trade.account_v2.get_account_position(account_id))
 
     def open_orders(self, account_id: str) -> WebullResponse:
-        return _normalized(self._trade.order_v2.get_order_open(account_id))
+        return _normalized(self._trade.order_v3.get_order_open(account_id))
 
     def order_detail(self, account_id: str, client_order_id_value: str) -> WebullResponse:
         if client_order_id_value != case1_client_order_id(self._session_id):
             raise ValueError("Case-1 detail query requires the exact approved client ID")
         return _normalized(
-            self._trade.order_v2.get_order_detail(account_id, client_order_id_value)
+            self._trade.order_v3.get_order_detail(account_id, client_order_id_value)
         )
 
     def preview_exact_stop(
@@ -120,7 +120,7 @@ class OfficialSdkWebullCase1Transport:
     ) -> WebullResponse:
         validate_case1_order(self._session_id, order)
         return _normalized(
-            self._trade.order_v2.preview_order(account_id, [order.sdk_payload()])
+            self._trade.order_v3.preview_order(account_id, [order.sdk_payload()])
         )
 
     def place_exact_stop(
@@ -128,7 +128,7 @@ class OfficialSdkWebullCase1Transport:
     ) -> WebullResponse:
         validate_case1_order(self._session_id, order)
         return _normalized(
-            self._trade.order_v2.place_order(account_id, [order.sdk_payload()])
+            self._trade.order_v3.place_order(account_id, [order.sdk_payload()])
         )
 
     def cancel_exact_stop(
@@ -136,7 +136,7 @@ class OfficialSdkWebullCase1Transport:
     ) -> WebullResponse:
         validate_case1_order(self._session_id, order)
         return _normalized(
-            self._trade.order_v2.cancel_order(account_id, order.client_order_id)
+            self._trade.order_v3.cancel_order(account_id, order.client_order_id)
         )
 
 class OfficialSdkWebullMarketDataSource:
