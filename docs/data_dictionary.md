@@ -236,3 +236,8 @@ one-share BUY did not reverse the disposable one-share short into a long.
 quantities—entry 4/fill 2 and independent stop/exit 2/fill 1—are validation fixtures, not order-size
 rules. `build_case5_capture` returns a deterministic pending-review capture without transport or
 database access.
+
+`Case6Result` contains the pending-review ambiguity-recovery capture and unchanged deterministic
+client ID. Its evidence is exactly `AMBIGUOUS_WRITE`, `SAME_CLIENT_DETAIL_QUERY`, and
+`RECOVERY_RESULT`. The corresponding append-only operation events are PREPARED, CALL_STARTED,
+EXCEPTION, and RECOVERED; a CALL_STARTED record is the permanent no-replay boundary.

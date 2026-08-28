@@ -195,6 +195,14 @@ and separate two-share stop and exit examples with cumulative fill one. These ar
 fixtures, not trading sizes or one executable sequence. Collection remains unavailable until Cases
 1–4 are reviewed and separate safe seeding procedures are approved.
 
+## Case 6 preparation boundary
+
+Case 6 currently runs only against an injected fake transport. It persists one write boundary,
+requires the fake call to become ambiguous, queries the unchanged client ID once, records a
+recovery classification, and blocks replay. No official transport or operator command exposes this
+operation. Provider collection requires a separately reviewed fault-injection procedure after Cases
+1–5 are approved.
+
 ## 2. Build a redacted capture manually (non-Case-1 cases)
 
 Use this exact top-level JSON shape. The case-specific evidence labels come from `smoke-plan`.

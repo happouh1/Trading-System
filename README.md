@@ -176,6 +176,10 @@ Case 5 adds a pure offline cumulative-fill evidence validator. It verifies parti
 cancellation-terminal consistency, and independent partial stop/exit fixtures without contacting
 Webull or exposing any partial-fill broker operation.
 
+Case 6 adds offline ambiguity injection and exact same-client recovery. It guarantees one write
+attempt, one detail query, no retry, explicit recovery evidence, and replay blocking. No official
+ambiguity-test broker operation is available.
+
 ## Development
 
 Requires Python 3.12.

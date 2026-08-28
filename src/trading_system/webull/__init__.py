@@ -30,6 +30,13 @@ from trading_system.webull.case5 import (
     exact_case5_exit,
     exact_case5_stop,
 )
+from trading_system.webull.case6 import (
+    Case6Result,
+    Case6Runner,
+    case6_client_order_id,
+    exact_case6_order,
+    validate_case6_order,
+)
 from trading_system.webull.config import WebullConfig, load_webull_config
 from trading_system.webull.contracts import (
     AccountVerification,
@@ -137,6 +144,8 @@ __all__ = [
     "Case4Result",
     "Case4Runner",
     "Case5EvidenceSet",
+    "Case6Result",
+    "Case6Runner",
     "CoreSessionStatus",
     "ExitAuthorization",
     "ExitIntent",
@@ -191,6 +200,7 @@ __all__ = [
     "case3_client_order_id",
     "case4_client_order_id",
     "case5_client_order_id",
+    "case6_client_order_id",
     "client_order_id",
     "core_session_status",
     "create_exit_authorization",
@@ -202,6 +212,7 @@ __all__ = [
     "exact_case5_entry",
     "exact_case5_exit",
     "exact_case5_stop",
+    "exact_case6_order",
     "exit_client_id",
     "load_credentials",
     "load_exit_capabilities",
@@ -219,4 +230,5 @@ __all__ = [
     "validate_case2_replacement",
     "validate_case3_order",
     "validate_case4_order",
+    "validate_case6_order",
 ]

@@ -307,3 +307,10 @@ cancellation preserving cumulative fill two, and separate two-share stop and exi
 cumulative fill one. The numbers exist only to expose cumulative-versus-incremental semantics.
 Partial stop and partial market-exit evidence are not executed as one simultaneous order sequence.
 The validator performs no network call, transport call, or persistence mutation.
+
+Case 6 is a fake-transport ambiguity-injection harness. It persists PREPARED and CALL_STARTED,
+requires the one supplied write call to raise, records the exception, performs exactly one detail
+query using the unchanged deterministic client ID, and classifies recovery only when the returned
+order identity matches exactly. Any successful initial write response, failed query, missing order,
+or identity mismatch remains incomplete or ambiguous. Replay is permanently blocked after the call
+boundary, and no official transport implements the injected write method.

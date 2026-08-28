@@ -342,3 +342,8 @@ the authoritative short quantity changes between preview and placement.
 evidence must establish actual V3 field names, status vocabulary, whether cancel detail preserves
 cumulative fills, and how separate partial-stop and partial-exit scenarios should be seeded safely.
 No single sequence combining a working partially filled stop and market exit is approved.
+
+92. Case 6 proves the internal one-write/one-query invariant using injected fake ambiguity. Before
+collecting provider evidence, define which V3 operation is safest for a disposable test, how the
+timeout is injected without hiding a provider response, and which exact detail response proves
+found, rejected, or unresolved while preserving the same client identity.

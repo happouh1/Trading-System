@@ -208,3 +208,12 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   capture timestamp.
 - `WEBULL_SMOKE_CASE5_OFFLINE_ONLY`: Case 5 performs no transport, persistence, or broker write and
   exposes no official partial-fill operation.
+- `WEBULL_SMOKE_CASE6_INJECTED`: the supplied fake write must raise after one invocation; a normal
+  response is not valid ambiguity evidence.
+- `WEBULL_SMOKE_CASE6_SAME_ID`: recovery performs exactly one detail query using the original
+  deterministic client order ID and validates every immutable request field.
+- `WEBULL_SMOKE_CASE6_NO_RETRY`: the write count remains one regardless of recovery outcome, and a
+  persisted CALL_STARTED permanently blocks automatic replay.
+- `WEBULL_SMOKE_CASE6_EXPLICIT_RESULT`: capture evidence records the ambiguous write, same-client
+  query, and recovery classification without inferring provider status aliases.
+- `WEBULL_SMOKE_CASE6_OFFLINE_ONLY`: no official transport or CLI exposes the injected write.
