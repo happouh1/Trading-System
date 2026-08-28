@@ -230,3 +230,9 @@ filled quantity one; the final authenticated position inventory must be empty.
 deterministic BUY-cover client ID. Evidence is exactly `SHORT_POSITION_BEFORE`, `COVER_PREVIEW`,
 `COVER_PLACE`, `COVER_DETAIL`, `POSITION_REDUCED`. The final position must be flat, proving the
 one-share BUY did not reverse the disposable one-share short into a long.
+
+`TimedCase5Response` pairs a timezone-aware evidence timestamp with an immutable redacted
+`WebullResponse`. `Case5EvidenceSet` contains exactly the five required Case-5 records. The fixed
+quantities—entry 4/fill 2 and independent stop/exit 2/fill 1—are validation fixtures, not order-size
+rules. `build_case5_capture` returns a deterministic pending-review capture without transport or
+database access.

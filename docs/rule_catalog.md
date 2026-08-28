@@ -198,3 +198,13 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `WEBULL_SMOKE_CASE4_NO_RETRY`: ambiguous cover placement receives one same-client detail query,
   halts, and blocks replay.
 - `WEBULL_SMOKE_CASE4_OFFLINE_ONLY`: no official cover preview, placement, or CLI write is exposed.
+- `WEBULL_SMOKE_CASE5_CUMULATIVE`: entry terminal detail must preserve the earlier cumulative fill;
+  partial stop and exit evidence must report the exact fixture cumulative quantity.
+- `WEBULL_SMOKE_CASE5_ENTRY_TERMINAL`: partial entry evidence precedes cancellation evidence, which
+  precedes terminal detail for the same deterministic entry client ID.
+- `WEBULL_SMOKE_CASE5_SEPARATE_FIXTURES`: partial stop and partial market-exit records validate
+  independent provider semantics and never authorize simultaneous executable orders.
+- `WEBULL_SMOKE_CASE5_CAUSAL`: all five evidence timestamps must be ordered and cannot follow the
+  capture timestamp.
+- `WEBULL_SMOKE_CASE5_OFFLINE_ONLY`: Case 5 performs no transport, persistence, or broker write and
+  exposes no official partial-fill operation.

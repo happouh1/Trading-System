@@ -172,6 +172,10 @@ Case 4 adds offline-only short-cover netting validation: one short AAPL share, e
 MARKET/DAY CORE preview and placement evidence, cumulative fill one, and an authenticated flat
 position. Official Webull cover methods remain unavailable.
 
+Case 5 adds a pure offline cumulative-fill evidence validator. It verifies partial entry,
+cancellation-terminal consistency, and independent partial stop/exit fixtures without contacting
+Webull or exposing any partial-fill broker operation.
+
 ## Development
 
 Requires Python 3.12.

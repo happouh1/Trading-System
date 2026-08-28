@@ -187,6 +187,14 @@ for quantity one. A valid capture requires preview evidence, exact cumulative fi
 position proving reduction without reversal. Execute no sandbox cover until Cases 1–3 have reviewed
 captures and a separate change authorizes the exact V3 cover contract.
 
+## Case 5 preparation boundary
+
+Case 5 currently accepts only already-collected, redacted evidence and invokes no transport. Its
+fixed schema uses a four-share entry with cumulative fill two, terminal cancellation retaining two,
+and separate two-share stop and exit examples with cumulative fill one. These are disposable schema
+fixtures, not trading sizes or one executable sequence. Collection remains unavailable until Cases
+1–4 are reviewed and separate safe seeding procedures are approved.
+
 ## 2. Build a redacted capture manually (non-Case-1 cases)
 
 Use this exact top-level JSON shape. The case-specific evidence labels come from `smoke-plan`.

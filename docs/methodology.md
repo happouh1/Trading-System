@@ -300,3 +300,10 @@ exactly one short AAPL share, no working orders, and one AAPL BUY MARKET/DAY COR
 quantity one. A successful preview is retained but not semantically inferred. Completion requires
 exact request identity, cumulative fill quantity one, and a flat authenticated position so a long
 reversal cannot be mistaken for reduction. No official cover preview or submission surface exists.
+
+Case 5 is a pure offline evidence validator rather than a broker runner. Its fixed disposable
+fixtures validate a BUY entry requested for four shares with cumulative fill two, terminal
+cancellation preserving cumulative fill two, and separate two-share stop and exit examples with
+cumulative fill one. The numbers exist only to expose cumulative-versus-incremental semantics.
+Partial stop and partial market-exit evidence are not executed as one simultaneous order sequence.
+The validator performs no network call, transport call, or persistence mutation.

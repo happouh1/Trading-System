@@ -337,3 +337,8 @@ status vocabulary, and prove that SELL one reduced the long without creating sho
 official cover surface, verify that the Sandbox account permits short seeding, capture V3 preview,
 placement, and detail envelopes, and confirm that BUY netting cannot open or reverse a long when
 the authoritative short quantity changes between preview and placement.
+
+91. Case 5 uses fixed 4/2 and 2/1 quantities solely to validate cumulative-fill schemas. Provider
+evidence must establish actual V3 field names, status vocabulary, whether cancel detail preserves
+cumulative fills, and how separate partial-stop and partial-exit scenarios should be seeded safely.
+No single sequence combining a working partially filled stop and market exit is approved.
