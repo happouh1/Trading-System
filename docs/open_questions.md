@@ -332,3 +332,8 @@ whether an already-open initial stop must be created by a separate explicitly ap
 position response, but does not canonize a provider status spelling. Before exposing an official
 write, capture the V3 placement/detail envelopes, confirm cumulative-fill field names and terminal
 status vocabulary, and prove that SELL one reduced the long without creating short exposure.
+
+90. Case 4's offline fixture models a one-share short fully covered to flat. Before exposing an
+official cover surface, verify that the Sandbox account permits short seeding, capture V3 preview,
+placement, and detail envelopes, and confirm that BUY netting cannot open or reverse a long when
+the authoritative short quantity changes between preview and placement.

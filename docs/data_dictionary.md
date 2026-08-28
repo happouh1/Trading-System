@@ -225,3 +225,8 @@ sandbox-validation constants and are not trading thresholds.
 capture and deterministic exit client ID. Evidence is exactly `POSITION_BEFORE`, `EXIT_PLACE`,
 `EXIT_DETAIL`, `POSITION_FLAT`. The detail must echo the immutable MARKET/DAY request and cumulative
 filled quantity one; the final authenticated position inventory must be empty.
+
+`Case4Result` is the offline short-cover netting result. It contains the pending-review capture and
+deterministic BUY-cover client ID. Evidence is exactly `SHORT_POSITION_BEFORE`, `COVER_PREVIEW`,
+`COVER_PLACE`, `COVER_DETAIL`, `POSITION_REDUCED`. The final position must be flat, proving the
+one-share BUY did not reverse the disposable one-share short into a long.

@@ -179,6 +179,14 @@ for quantity one. Completion requires matching cumulative fill quantity and an a
 position. Do not execute it at Webull until Cases 1 and 2 have reviewed captures and a separate
 change approves the exact V3 exit request/response contract.
 
+## Case 4 preparation boundary
+
+Case 4 has an offline-tested runner and no official SDK or operator write surface. Its disposable
+fixture requires exactly one short AAPL share, no working orders, and one BUY MARKET/DAY CORE cover
+for quantity one. A valid capture requires preview evidence, exact cumulative fill, and a flat final
+position proving reduction without reversal. Execute no sandbox cover until Cases 1–3 have reviewed
+captures and a separate change authorizes the exact V3 cover contract.
+
 ## 2. Build a redacted capture manually (non-Case-1 cases)
 
 Use this exact top-level JSON shape. The case-specific evidence labels come from `smoke-plan`.

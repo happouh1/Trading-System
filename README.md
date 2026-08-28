@@ -168,6 +168,10 @@ Case 3 likewise has an offline-only full-long reducing-exit harness. It requires
 share, no working orders, exact SELL MARKET/DAY CORE identity, cumulative fill proof, and flat
 position reconciliation. Official exit submission remains unavailable.
 
+Case 4 adds offline-only short-cover netting validation: one short AAPL share, exact BUY
+MARKET/DAY CORE preview and placement evidence, cumulative fill one, and an authenticated flat
+position. Official Webull cover methods remain unavailable.
+
 ## Development
 
 Requires Python 3.12.

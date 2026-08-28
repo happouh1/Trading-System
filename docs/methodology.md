@@ -294,3 +294,9 @@ request for quantity one. The runner preserves the position-before response, per
 boundary, validates exact order identity and cumulative fill quantity, and requires an authenticated
 flat-position response. Placement ambiguity receives one same-client detail query and no retry.
 Provider status vocabulary remains evidence-dependent; no official transport or CLI write exists.
+
+Case 4 now has an offline-only short-cover netting state machine. Its disposable fixture requires
+exactly one short AAPL share, no working orders, and one AAPL BUY MARKET/DAY CORE request for
+quantity one. A successful preview is retained but not semantically inferred. Completion requires
+exact request identity, cumulative fill quantity one, and a flat authenticated position so a long
+reversal cannot be mistaken for reduction. No official cover preview or submission surface exists.

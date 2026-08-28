@@ -189,3 +189,12 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   and cannot be replayed automatically.
 - `WEBULL_SMOKE_CASE3_OFFLINE_ONLY`: no official SDK reducing-exit method or CLI broker-write command
   is reachable pending ordered capture review.
+- `WEBULL_SMOKE_CASE4_EXACT`: offline Case 4 fixes AAPL, BUY, quantity one, MARKET/DAY, CORE, and one
+  deterministic client ID for the disposable cover fixture.
+- `WEBULL_SMOKE_CASE4_SHORT_ONLY`: require exactly one short AAPL share and no working orders before
+  preview or placement.
+- `WEBULL_SMOKE_CASE4_NO_REVERSAL`: cumulative BUY fill one plus an authenticated flat inventory is
+  required; any residual short or new long position rejects completion.
+- `WEBULL_SMOKE_CASE4_NO_RETRY`: ambiguous cover placement receives one same-client detail query,
+  halts, and blocks replay.
+- `WEBULL_SMOKE_CASE4_OFFLINE_ONLY`: no official cover preview, placement, or CLI write is exposed.
