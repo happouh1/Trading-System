@@ -171,6 +171,14 @@ disposable validation constants, not a stop policy. Do not attempt Case 2 until 
 capture has been reviewed and a separate change approves the exact initial-stop setup and V3
 replacement request/response contract.
 
+## Case 3 preparation boundary
+
+Case 3 has an offline-tested runner but no official SDK or operator write surface. Its disposable
+fixture requires exactly one AAPL long share, no working orders, and one SELL MARKET/DAY CORE exit
+for quantity one. Completion requires matching cumulative fill quantity and an authenticated flat
+position. Do not execute it at Webull until Cases 1 and 2 have reviewed captures and a separate
+change approves the exact V3 exit request/response contract.
+
 ## 2. Build a redacted capture manually (non-Case-1 cases)
 
 Use this exact top-level JSON shape. The case-specific evidence labels come from `smoke-plan`.

@@ -287,3 +287,10 @@ test constants, not strategy behavior. The runner requires exact position and op
 persists PREPARED/CALL_STARTED before one replacement call, queries the same identity once after
 ambiguity, blocks replay, and produces ordered redacted evidence. No official SDK replacement
 transport or CLI write command is exposed.
+
+Case 3 now has an offline-only state machine for a full long reducing exit. Its disposable fixture
+requires exactly one AAPL long share, no working orders, and exactly one AAPL SELL MARKET/DAY CORE
+request for quantity one. The runner preserves the position-before response, persists the write
+boundary, validates exact order identity and cumulative fill quantity, and requires an authenticated
+flat-position response. Placement ambiguity receives one same-client detail query and no retry.
+Provider status vocabulary remains evidence-dependent; no official transport or CLI write exists.

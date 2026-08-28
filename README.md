@@ -164,6 +164,10 @@ Case 2 now has an offline-only, deterministic same-client stop-replacement harne
 transport coverage and append-only evidence. It deliberately exposes no official SDK replacement
 method or CLI broker-write command pending fresh Case-1 review and explicit Case-2 approval.
 
+Case 3 likewise has an offline-only full-long reducing-exit harness. It requires one AAPL long
+share, no working orders, exact SELL MARKET/DAY CORE identity, cumulative fill proof, and flat
+position reconciliation. Official exit submission remains unavailable.
+
 ## Development
 
 Requires Python 3.12.

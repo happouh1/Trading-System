@@ -179,3 +179,13 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   same client ID once after ambiguity, halt, and block replay.
 - `WEBULL_SMOKE_CASE2_OFFLINE_ONLY`: the official SDK replacement surface and CLI write command
   remain absent until reviewed sandbox evidence explicitly authorizes them.
+- `WEBULL_SMOKE_CASE3_EXACT`: offline Case 3 fixes AAPL, SELL, quantity one, MARKET/DAY, CORE, and
+  one deterministic client order ID; arbitrary exit parameters are rejected.
+- `WEBULL_SMOKE_CASE3_PREFLIGHT`: require exactly one AAPL long share and no working orders before
+  the exit write boundary, preventing simultaneous protection and market-exit exposure.
+- `WEBULL_SMOKE_CASE3_FLAT_PROOF`: exact cumulative fill quantity and authenticated empty position
+  inventory are both required for a complete capture.
+- `WEBULL_SMOKE_CASE3_NO_RETRY`: ambiguous placement receives one same-client detail query, halts,
+  and cannot be replayed automatically.
+- `WEBULL_SMOKE_CASE3_OFFLINE_ONLY`: no official SDK reducing-exit method or CLI broker-write command
+  is reachable pending ordered capture review.

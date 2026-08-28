@@ -7,6 +7,13 @@ from trading_system.webull.case2 import (
     exact_case2_order,
     validate_case2_replacement,
 )
+from trading_system.webull.case3 import (
+    Case3Result,
+    Case3Runner,
+    case3_client_order_id,
+    exact_case3_order,
+    validate_case3_order,
+)
 from trading_system.webull.config import WebullConfig, load_webull_config
 from trading_system.webull.contracts import (
     AccountVerification,
@@ -109,6 +116,8 @@ __all__ = [
     "Case1StatusResult",
     "Case2Result",
     "Case2Runner",
+    "Case3Result",
+    "Case3Runner",
     "CoreSessionStatus",
     "ExitAuthorization",
     "ExitIntent",
@@ -158,12 +167,14 @@ __all__ = [
     "WebullSubmissionEventType",
     "case1_cancel_confirmation",
     "case2_client_order_id",
+    "case3_client_order_id",
     "client_order_id",
     "core_session_status",
     "create_exit_authorization",
     "decode_sdk_history",
     "environment_gate",
     "exact_case2_order",
+    "exact_case3_order",
     "exit_client_id",
     "load_credentials",
     "load_exit_capabilities",
@@ -179,4 +190,5 @@ __all__ = [
     "smoke_plan",
     "submission_enabled",
     "validate_case2_replacement",
+    "validate_case3_order",
 ]

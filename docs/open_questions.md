@@ -327,3 +327,8 @@ sandbox run is still required to determine whether this resolves the ambiguous c
 official sandbox write surface is added, confirm the provider's exact V3 replacement request,
 same-client identity behavior, authoritative detail fields, tick metadata, status vocabulary, and
 whether an already-open initial stop must be created by a separate explicitly approved step.
+
+89. Case 3's offline fixture requires exact cumulative fill quantity one plus a flat authenticated
+position response, but does not canonize a provider status spelling. Before exposing an official
+write, capture the V3 placement/detail envelopes, confirm cumulative-fill field names and terminal
+status vocabulary, and prove that SELL one reduced the long without creating short exposure.

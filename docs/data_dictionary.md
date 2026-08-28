@@ -220,3 +220,8 @@ capture and deterministic client order ID. Its evidence sequence is exactly
 `STOP_DETAIL_BEFORE`, `STOP_REPLACE`, `STOP_DETAIL_AFTER`; its write journal uses the existing
 `webull_smoke_operation_events` table. The fixed `1.00` and `1.01` raw stops are disposable
 sandbox-validation constants and are not trading thresholds.
+
+`Case3Result` is the offline full-long reducing-exit result. It contains the pending-review smoke
+capture and deterministic exit client ID. Evidence is exactly `POSITION_BEFORE`, `EXIT_PLACE`,
+`EXIT_DETAIL`, `POSITION_FLAT`. The detail must echo the immutable MARKET/DAY request and cumulative
+filled quantity one; the final authenticated position inventory must be empty.
