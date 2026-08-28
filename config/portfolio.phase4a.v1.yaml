@@ -1,0 +1,33 @@
+{
+  "portfolio_version": "4A.1.0",
+  "classification": {
+    "intraday_max_sessions": 1,
+    "swing_max_sessions": 20,
+    "position_max_sessions": 126
+  },
+  "liquidity": {
+    "minimum_price": 2.0,
+    "minimum_average_daily_dollar_volume": 5000000.0,
+    "maximum_volume_participation": 0.01
+  },
+  "exposure": {
+    "maximum_positions": 10,
+    "maximum_gross_exposure_pct": 1.0,
+    "maximum_absolute_net_exposure_pct": 0.6,
+    "maximum_position_exposure_pct": 0.1,
+    "maximum_sector_exposure_pct": 0.25,
+    "duplicate_symbol_policy": "REJECT"
+  },
+  "strategy_risk_budget_pct": {
+    "INTRADAY": 0.005,
+    "SWING": 0.01,
+    "POSITION": 0.0075,
+    "LONG_TERM_RESEARCH": 0.0
+  },
+  "authority": {
+    "research_only": true,
+    "broker_writes_enabled": false,
+    "options_enabled": false,
+    "long_term_requires_fundamentals": true
+  }
+}

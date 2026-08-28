@@ -1,5 +1,15 @@
 # Phase 1A data dictionary
 
+## Phase 4A portfolio research
+
+- `PortfolioCandidate`: immutable upstream equity plan plus holding horizon, quantity, point-in-time
+  liquidity, sector, and source revision.
+- `PortfolioState`: equity, marked open positions, and pending symbols at one exact as-of timestamp.
+- `PortfolioPosition`: simulated marked position with direction, stop, sector, and strategy class.
+- `PortfolioAssessment`: deterministic ACCEPT/REJECT result, sorted reasons, pro-forma gross, signed
+  net, position, sector, and risk percentages, plus configuration hash.
+- `portfolio_states` and `portfolio_assessments`: canonical append-only SQLite records.
+
 The authoritative executable definitions are frozen dataclasses in
 `src/trading_system/domain/models.py`.
 

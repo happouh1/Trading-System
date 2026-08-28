@@ -1,5 +1,20 @@
 # Open questions deferred beyond Phase 0
 
+## Added for Phase 4A portfolio research
+
+94. Which point-in-time provider supplies sectors, market capitalization, shares outstanding,
+delistings, and corporate actions for real-universe portfolio claims?
+95. Which audited fundamental fields and valuation rules must exist before `LONG_TERM_RESEARCH`
+may become an investable classification?
+96. Should future simulation model cash settlement, leverage, margin, short borrow and locate, or
+remain gross-notional normalized?
+97. Which point-in-time correlation model and sector taxonomy should govern concentration beyond
+the explicit sector cap?
+98. Initial horizon, liquidity, exposure, and risk thresholds are tunable research fixtures;
+untouched walk-forward evidence is required before efficacy claims or promotion.
+99. Options, implied volatility, Greeks, assignment, exercise, spreads, and contract-liquidity rules
+require a separate Phase 4B proposal and have no Phase 4A authority.
+
 These items are intentionally unresolved because the specification does not define them precisely.
 They must be answered or made explicitly configurable before the phase that uses them.
 

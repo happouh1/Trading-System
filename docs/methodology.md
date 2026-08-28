@@ -1,5 +1,13 @@
 # Phase 1A methodology
 
+## Phase 4A portfolio methodology
+
+Portfolio evaluation occurs after a deterministic trade plan exists and never feeds back into the
+Phase 1 confidence score. Candidates and state share one exact as-of timestamp. The engine requires
+canonical order, calculates marked notional and entry-stop risk against explicit equity, and applies
+every configured gate without resizing upstream quantity. Accepted candidates update only simulated
+state. All Phase 4A defaults are tunable research assumptions.
+
 Phase 0 establishes contracts only. It validates local invariants, produces canonical JSON and hashes,
 and validates the versioned threshold configuration. It contains no signal, feature, state-transition,
 execution, outcome-label, or backtest algorithms.

@@ -16,6 +16,7 @@ from trading_system.market_data import XNYSCalendar, read_ohlcv
 from trading_system.modeling.cli import configure_model_parser, handle_model
 from trading_system.paper.cli import configure_paper_parser, handle_paper
 from trading_system.persistence import RunRecord, SQLiteRepository
+from trading_system.portfolio.cli import configure_portfolio_parser, handle_portfolio
 from trading_system.replay import ReplayOrchestrator
 from trading_system.reporting import markdown_report
 from trading_system.research.cli import configure_research_parser, handle_research
@@ -48,6 +49,7 @@ def _parser() -> argparse.ArgumentParser:
     configure_model_parser(commands)
     configure_paper_parser(commands)
     configure_webull_parser(commands)
+    configure_portfolio_parser(commands)
     return parser
 
 
@@ -151,6 +153,7 @@ def main(argv: list[str] | None = None) -> int:
         "model": handle_model,
         "paper": handle_paper,
         "webull": handle_webull,
+        "portfolio": handle_portfolio,
     }
     return handlers[args.command](args)
 

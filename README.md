@@ -9,6 +9,17 @@ scoring, explained decisions, structural plans, simulated trade lifecycle events
 replay checkpoints, versioned outcomes, metrics, and bias-disclosed reports. It intentionally contains
 no brokerage connectivity, live trading, options, or machine-learning authority.
 
+Phase 4A adds a separate deterministic portfolio-research layer. It classifies planned holding
+horizons, applies versioned liquidity/exposure/risk gates, simulates accepted equity candidates,
+and stores append-only assessments. It does not change Phase 1 decisions or permit broker writes.
+Long-term classifications require a future fundamentals phase, and options remain disabled.
+
+```powershell
+trading-system portfolio validate-config --config config/portfolio.phase4a.v1.yaml
+trading-system portfolio classify --config config/portfolio.phase4a.v1.yaml --planned-hold-sessions 10
+trading-system portfolio assess --config config/portfolio.phase4a.v1.yaml --input candidate.json --database portfolio.sqlite
+```
+
 Phase 2A adds an isolated empirical-research layer: immutable experiment registration,
 point-in-time universes, expanding walk-forward folds, descriptive statistics and bootstrap
 intervals, calibration reports, deterministic similarity search, append-only human reviews, and

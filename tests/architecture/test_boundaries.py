@@ -107,3 +107,30 @@ def test_only_webull_transport_imports_vendor_sdk() -> None:
             if any(name == "webull" or name.startswith("webull.") for name in names):
                 violations.append(f"{path}:{node.lineno}")
     assert not violations, f"vendor SDK escaped Webull transport boundary: {violations}"
+
+
+def test_portfolio_research_has_no_broker_model_or_learning_dependency() -> None:
+    violations: list[str] = []
+    root = ROOT / "src" / "trading_system" / "portfolio"
+    forbidden = {
+        "trading_system.learning",
+        "trading_system.modeling",
+        "trading_system.paper",
+        "trading_system.webull",
+    }
+    for path in root.rglob("*.py"):
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                names = {alias.name for alias in node.names}
+            elif isinstance(node, ast.ImportFrom):
+                names = {node.module or ""}
+            else:
+                continue
+            if any(
+                name == ban or name.startswith(f"{ban}.")
+                for name in names
+                for ban in forbidden
+            ):
+                violations.append(f"{path}:{node.lineno}")
+    assert not violations, f"forbidden portfolio dependencies: {violations}"

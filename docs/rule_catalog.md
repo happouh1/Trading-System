@@ -1,5 +1,15 @@
 # Rule catalog
 
+## Phase 4A portfolio rules
+
+- `PORTFOLIO_CANONICAL_ORDER`: require `(known_at, candidate_id)` input order.
+- `PORTFOLIO_DUPLICATE_SYMBOL`: reject symbols already open or pending.
+- `PORTFOLIO_LIQUIDITY`: reject price, dollar-volume, or participation failures.
+- `PORTFOLIO_EXPOSURE`: reject gross, absolute-net, position, or sector-cap breaches.
+- `PORTFOLIO_STRATEGY_RISK`: reject entry-stop risk above the class budget.
+- `PORTFOLIO_LONG_TERM_RESEARCH_ONLY`: require future fundamentals and use zero automatic budget.
+- `PORTFOLIO_AUTHORITY_LOCK`: keep broker writes and options disabled.
+
 Phase 1 includes deterministic pattern, decision, risk, and simulated-execution rules. None route live
 orders. Pivot rules implement Specification §5.1; structure states implement §5.2; pattern state
 machines implement §§7–12; decisions and simulation implement §§14–17.
