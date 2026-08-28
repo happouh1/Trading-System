@@ -203,6 +203,14 @@ recovery classification, and blocks replay. No official transport or operator co
 operation. Provider collection requires a separately reviewed fault-injection procedure after Cases
 1–5 are approved.
 
+## Case 7 preparation boundary
+
+Case 7 has an offline restart harness that closes and reopens SQLite, loads exact managed ownership
+and protection, then uses only account, stop-detail, and position reads. The disposable fixture is
+one AAPL long share with one unfilled SELL STOP_LOSS/GTC CORE stop at `1.00`, factor one. Provider
+collection remains unavailable until Cases 1–6 are reviewed and an explicit cross-session sandbox
+procedure is approved.
+
 ## 2. Build a redacted capture manually (non-Case-1 cases)
 
 Use this exact top-level JSON shape. The case-specific evidence labels come from `smoke-plan`.

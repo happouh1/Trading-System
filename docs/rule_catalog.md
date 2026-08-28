@@ -217,3 +217,11 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `WEBULL_SMOKE_CASE6_EXPLICIT_RESULT`: capture evidence records the ambiguous write, same-client
   query, and recovery classification without inferring provider status aliases.
 - `WEBULL_SMOKE_CASE6_OFFLINE_ONLY`: no official transport or CLI exposes the injected write.
+- `WEBULL_SMOKE_CASE7_DURABLE_LOAD`: restart ownership must come from the reopened database's exact
+  managed position, latest PROTECTED event, and latest protective-stop version.
+- `WEBULL_SMOKE_CASE7_NO_ADOPTION`: another session, unknown position, unresolved action, quantity
+  mismatch, stop mismatch, or identity mismatch fails rather than adopting broker state.
+- `WEBULL_SMOKE_CASE7_READ_ONLY`: recovery performs account verification, one exact stop-detail read,
+  and position reconciliation without any order method.
+- `WEBULL_SMOKE_CASE7_MATCHED`: the persisted one-share long, active unfilled one-share stop, and
+  authenticated one-share AAPL position must all match exactly.

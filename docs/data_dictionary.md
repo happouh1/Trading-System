@@ -241,3 +241,8 @@ database access.
 client ID. Its evidence is exactly `AMBIGUOUS_WRITE`, `SAME_CLIENT_DETAIL_QUERY`, and
 `RECOVERY_RESULT`. The corresponding append-only operation events are PREPARED, CALL_STARTED,
 EXCEPTION, and RECOVERED; a CALL_STARTED record is the permanent no-replay boundary.
+
+`Case7Result` contains the pending-review restart capture, managed-position ID, and protective
+client-order ID. Evidence is exactly `RESTART_STATE_LOAD`, `EXISTING_STOP_DETAIL`, and
+`POSITION_RECONCILIATION`. The state-load record is derived from reopened SQLite contracts; broker
+evidence is read-only and must match the durable identity and quantity exactly.

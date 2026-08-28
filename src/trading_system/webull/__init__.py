@@ -37,6 +37,7 @@ from trading_system.webull.case6 import (
     exact_case6_order,
     validate_case6_order,
 )
+from trading_system.webull.case7 import Case7Recovery, Case7Result
 from trading_system.webull.config import WebullConfig, load_webull_config
 from trading_system.webull.contracts import (
     AccountVerification,
@@ -146,6 +147,8 @@ __all__ = [
     "Case5EvidenceSet",
     "Case6Result",
     "Case6Runner",
+    "Case7Recovery",
+    "Case7Result",
     "CoreSessionStatus",
     "ExitAuthorization",
     "ExitIntent",

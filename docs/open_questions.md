@@ -347,3 +347,8 @@ No single sequence combining a working partially filled stop and market exit is 
 collecting provider evidence, define which V3 operation is safest for a disposable test, how the
 timeout is injected without hiding a provider response, and which exact detail response proves
 found, rejected, or unresolved while preserving the same client identity.
+
+93. Case 7 proves local restart reconstruction and strict read-only reconciliation with fake broker
+evidence. Provider capture must still establish the V3 active-stop status vocabulary, behavior of
+positions and GTC orders across sandbox sessions, and whether the sandbox preserves deterministic
+client IDs long enough for an operational restart test.

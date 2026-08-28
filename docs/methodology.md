@@ -314,3 +314,10 @@ query using the unchanged deterministic client ID, and classifies recovery only 
 order identity matches exactly. Any successful initial write response, failed query, missing order,
 or identity mismatch remains incomplete or ambiguous. Replay is permanently blocked after the call
 boundary, and no official transport implements the injected write method.
+
+Case 7 exercises a real persistence restart. It loads the immutable managed position, latest
+PROTECTED event, and latest protective-stop version from a reopened SQLite database; rejects
+unresolved action journals; performs read-only account verification; queries the exact stop client
+ID; and reconciles the authenticated position quantity. Its fixed disposable fixture is one AAPL
+long share protected by one SELL STOP_LOSS/GTC CORE stop at raw `1.00`, factor one. Missing,
+conflicting, unknown, or mismatched state fails without adoption or broker writes.

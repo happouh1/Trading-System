@@ -180,6 +180,10 @@ Case 6 adds offline ambiguity injection and exact same-client recovery. It guara
 attempt, one detail query, no retry, explicit recovery evidence, and replay blocking. No official
 ambiguity-test broker operation is available.
 
+Case 7 completes the offline smoke harness with a real SQLite restart, durable managed-position and
+stop loading, exact read-only stop verification, and position reconciliation. It never adopts
+unknown state or invokes a broker write.
+
 ## Development
 
 Requires Python 3.12.
