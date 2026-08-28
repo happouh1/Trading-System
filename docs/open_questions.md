@@ -322,3 +322,8 @@ Inspection of pinned SDK 2.0.17 showed that the exercised `OrderOperationV2` cla
 uses the stock-specific V2 cancel route, while `OrderOperationV3` is the supported surface with the
 generic order cancel route. The isolated Case-1 transport now uses only V3. A fresh disposable
 sandbox run is still required to determine whether this resolves the ambiguous cancel response.
+
+88. Case 2 uses `1.00` to `1.01` only as an offline disposable validation fixture. Before an
+official sandbox write surface is added, confirm the provider's exact V3 replacement request,
+same-client identity behavior, authoritative detail fields, tick metadata, status vocabulary, and
+whether an already-open initial stop must be created by a separate explicitly approved step.

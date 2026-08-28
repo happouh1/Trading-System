@@ -1,5 +1,12 @@
 """Sandbox-only Webull Phase 3C integration."""
 
+from trading_system.webull.case2 import (
+    Case2Result,
+    Case2Runner,
+    case2_client_order_id,
+    exact_case2_order,
+    validate_case2_replacement,
+)
 from trading_system.webull.config import WebullConfig, load_webull_config
 from trading_system.webull.contracts import (
     AccountVerification,
@@ -100,6 +107,8 @@ __all__ = [
     "Case1RecoveryCaptureFinalizer",
     "Case1StatusInspector",
     "Case1StatusResult",
+    "Case2Result",
+    "Case2Runner",
     "CoreSessionStatus",
     "ExitAuthorization",
     "ExitIntent",
@@ -148,11 +157,13 @@ __all__ = [
     "WebullStreamCoordinator",
     "WebullSubmissionEventType",
     "case1_cancel_confirmation",
+    "case2_client_order_id",
     "client_order_id",
     "core_session_status",
     "create_exit_authorization",
     "decode_sdk_history",
     "environment_gate",
+    "exact_case2_order",
     "exit_client_id",
     "load_credentials",
     "load_exit_capabilities",
@@ -167,4 +178,5 @@ __all__ = [
     "reducing_side",
     "smoke_plan",
     "submission_enabled",
+    "validate_case2_replacement",
 ]

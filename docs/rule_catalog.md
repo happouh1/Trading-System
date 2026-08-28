@@ -171,3 +171,11 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   client ID and current AAPL position; absence alone cannot prove cancellation.
 - `WEBULL_CASE1_RECOVERY_CAPTURE_OFFLINE`: package only matching persisted envelopes, the exact
   ambiguous cancel journal, and terminal canceled detail; keep the capture pending review.
+- `WEBULL_SMOKE_CASE2_EXACT`: offline Case 2 fixes AAPL, SELL, quantity one, STOP_LOSS/GTC, CORE,
+  and a one-tick `1.00` to `1.01` replacement under one deterministic client ID.
+- `WEBULL_SMOKE_CASE2_PREFLIGHT`: replacement requires exactly one AAPL long share and exactly one
+  completely matching initial protective stop before crossing a write boundary.
+- `WEBULL_SMOKE_CASE2_NO_RETRY`: persist PREPARED/CALL_STARTED, invoke replacement once, query the
+  same client ID once after ambiguity, halt, and block replay.
+- `WEBULL_SMOKE_CASE2_OFFLINE_ONLY`: the official SDK replacement surface and CLI write command
+  remain absent until reviewed sandbox evidence explicitly authorizes them.

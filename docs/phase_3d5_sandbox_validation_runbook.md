@@ -162,6 +162,15 @@ The exact Case-1 helper is pinned to the SDK's `OrderOperationV3` surface. The S
 `OrderOperationV2` deprecated; do not repeat Case 1 with a build that still routes exact stop calls
 through V2.
 
+## Case 2 preparation boundary
+
+Case 2 has an offline-tested runner but intentionally has no operator command or official SDK write
+transport. Its fixed validation sequence requires one AAPL long share and one exact SELL
+STOP_LOSS/GTC CORE stop at `1.00`, then models a same-client replacement to `1.01`. The prices are
+disposable validation constants, not a stop policy. Do not attempt Case 2 until a fresh V3 Case-1
+capture has been reviewed and a separate change approves the exact initial-stop setup and V3
+replacement request/response contract.
+
 ## 2. Build a redacted capture manually (non-Case-1 cases)
 
 Use this exact top-level JSON shape. The case-specific evidence labels come from `smoke-plan`.

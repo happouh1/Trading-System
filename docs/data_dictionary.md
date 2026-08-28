@@ -214,3 +214,9 @@ is not treated as completed smoke-test evidence.
 `Case1StatusResult` is the read-only terminal-diagnosis projection: deterministic client order ID,
 provider detail status, current AAPL quantity, open-order count, exact-open flag, and assessment. It
 contains no credentials or internal account identifier.
+
+`Case2Result` is the offline same-client replacement result. It contains the pending-review smoke
+capture and deterministic client order ID. Its evidence sequence is exactly
+`STOP_DETAIL_BEFORE`, `STOP_REPLACE`, `STOP_DETAIL_AFTER`; its write journal uses the existing
+`webull_smoke_operation_events` table. The fixed `1.00` and `1.01` raw stops are disposable
+sandbox-validation constants and are not trading thresholds.

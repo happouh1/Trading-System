@@ -279,3 +279,11 @@ The disposable seed established only these provider envelope facts: preview HTTP
 `currency`, `estimated_cost`, and `estimated_transaction_fee`; placement HTTP 200 exposed
 `client_order_id` and `order_id`; a subsequent position read proved one AAPL share. These observations
 do not authorize broader order behavior.
+
+Case 2 now has an offline-only state machine for same-client protective-stop replacement. Its
+disposable validation fixture is exactly one AAPL long share with one AAPL SELL STOP_LOSS/GTC CORE
+order, moving raw stop `1.00` to `1.01` under the same deterministic client ID. These prices are
+test constants, not strategy behavior. The runner requires exact position and open-order identity,
+persists PREPARED/CALL_STARTED before one replacement call, queries the same identity once after
+ambiguity, blocks replay, and produces ordered redacted evidence. No official SDK replacement
+transport or CLI write command is exposed.

@@ -160,6 +160,10 @@ and the exact confirmation phrase for the matching deterministic order. The sepa
 `cancel-case1-order` recovery is fixed to that order, sends at most one cancellation request, and
 remains unable to route general exits. See the runbook for its environment and CLI gates.
 
+Case 2 now has an offline-only, deterministic same-client stop-replacement harness with fake
+transport coverage and append-only evidence. It deliberately exposes no official SDK replacement
+method or CLI broker-write command pending fresh Case-1 review and explicit Case-2 approval.
+
 ## Development
 
 Requires Python 3.12.
