@@ -256,3 +256,18 @@ EXCEPTION, and RECOVERED; a CALL_STARTED record is the permanent no-replay bound
 client-order ID. Evidence is exactly `RESTART_STATE_LOAD`, `EXISTING_STOP_DETAIL`, and
 `POSITION_RECONCILIATION`. The state-load record is derived from reopened SQLite contracts; broker
 evidence is read-only and must match the durable identity and quantity exactly.
+
+## Phase 4B options research
+
+`OptionQuote` is an immutable provider observation with `observed_at`, bid, ask, optional last,
+volume, open interest, optional IV, and optional delta/gamma/theta/vega. Greeks are observations,
+not calculated truth. `OptionSeries` adds contract identity, supplied symbology, underlying,
+expiration, strike, right, multiplier, exercise style, settlement, and standard-contract flag.
+
+`OptionChainSnapshot` is the canonical point-in-time chain with deterministic ID, underlying
+price, source, source revision, and ordered contracts. `OptionScreenRequest` binds an upstream
+candidate to exact `as_of`, horizon, and maximum debit. `OptionScreenResult` stores the selection,
+eligible ordering, aggregate and per-contract reasons, configuration hash, and known-at timestamp.
+
+SQLite tables `option_chain_snapshots`, `option_series_snapshots`, and `option_screen_results`
+retain canonical payloads and hashes. They contain no broker account or order data.

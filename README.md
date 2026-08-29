@@ -195,6 +195,22 @@ Case 7 completes the offline smoke harness with a real SQLite restart, durable m
 stop loading, exact read-only stop verification, and position reconciliation. It never adopts
 unknown state or invokes a broker write.
 
+## Phase 4B options research
+
+Phase 4B screens explicit point-in-time option-chain JSON for standard, 100-share,
+American-style, physically settled equity calls or puts. Its `FORTY_FIVE_DTE` and `LEAPS`
+defaults are tunable, unvalidated research hypotheses; output is a classification, not a
+recommendation.
+
+```text
+trading-system options validate-config --config config/options.phase4b.v1.yaml
+trading-system options screen --config config/options.phase4b.v1.yaml --input chain.json --database research.sqlite
+```
+
+The commands are offline. Options order preview, execution, multi-leg strategies,
+assignment/exercise, and P&L simulation remain unavailable. See
+`docs/proposals/phase_4b_options_research_v1.md` and `docs/phase_4b_review.md`.
+
 ## Development
 
 Requires Python 3.12.

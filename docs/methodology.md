@@ -329,3 +329,18 @@ unresolved action journals; performs read-only account verification; queries the
 ID; and reconciles the authenticated position quantity. Its fixed disposable fixture is one AAPL
 long share protected by one SELL STOP_LOSS/GTC CORE stop at raw `1.00`, factor one. Missing,
 conflicting, unknown, or mismatched state fails without adoption or broker writes.
+
+## Phase 4B options research methodology
+
+Option screening is a downstream, offline research transformation. A request and chain share the
+exact symbol and timestamp; every quote must already be known. The engine does not forward-fill
+chains, synthesize quotes, calculate Greeks, or infer product metadata.
+
+Long candidates map only to calls and short candidates only to puts. Standard-product, freshness,
+liquidity, DTE, delta, and maximum-debit gates preserve all reason codes. Eligible contracts rank
+by target DTE, target absolute delta, relative spread, descending open interest, and contract ID.
+The ordering is deterministic, while threshold values remain tunable hypotheses requiring future
+walk-forward validation with point-in-time option data.
+
+Phase 4B measures screening reproducibility, not profitability. No option return, fill, assignment,
+exercise, volatility-surface, or execution claim is made.

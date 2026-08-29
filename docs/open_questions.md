@@ -367,3 +367,22 @@ found, rejected, or unresolved while preserving the same client identity.
 evidence. Provider capture must still establish the V3 active-stop status vocabulary, behavior of
 positions and GTC orders across sandbox sessions, and whether the sandbox preserves deterministic
 client IDs long enough for an operational restart test.
+
+94. Which licensed provider can supply survivorship-safe, point-in-time option chains with stable
+contract identity, quote timestamps, open interest, volume, IV, Greeks, and source revisions?
+95. Should OCC symbology be parsed internally after formal conformance fixtures exist, or remain an
+opaque provider field? Phase 4B treats contract identity and symbology as supplied facts.
+96. How should adjusted/nonstandard option deliverables and corporate-action transformations be
+modeled? Phase 4B rejects them rather than assuming a 100-share deliverable.
+97. Which point-in-time earnings, dividend, borrow, rate, and early-exercise inputs are required
+before option payoff or assignment research can be credible?
+98. How are provider Greeks versioned and audited across methodology revisions? Phase 4B stores
+them as observations and does not recompute them.
+99. Do the 45-DTE and LEAPS DTE/delta/liquidity defaults survive symbol-, regime-, and era-separated
+walk-forward validation? They are tunable hypotheses, not optimized production parameters.
+100. What historical bid/ask sampling and fill policy is sufficiently conservative for an options
+backtest, including stale markets, crossed quotes, opening gaps, and missing series?
+101. Which later phase should model expiration, exercise, assignment, pin risk, dividends, and
+contract rolls before any options paper-trading work?
+102. Should LEAPS classification use authoritative exchange/OCC series metadata in addition to a
+DTE research window once the selected data provider exposes it?

@@ -1,0 +1,46 @@
+{
+  "options_version": "4B.1.0",
+  "product": {
+    "classification": "EQUITY",
+    "standard_contract_required": true,
+    "required_multiplier": 100,
+    "exercise_style": "AMERICAN",
+    "settlement_type": "PHYSICAL"
+  },
+  "quote": {
+    "maximum_age_seconds": 900,
+    "minimum_bid": 0.05,
+    "minimum_volume": 10,
+    "minimum_open_interest": 100,
+    "maximum_absolute_spread": 0.50,
+    "maximum_relative_spread": 0.15,
+    "require_implied_volatility": true,
+    "require_delta": true
+  },
+  "horizons": {
+    "FORTY_FIVE_DTE": {
+      "minimum_dte": 35,
+      "target_dte": 45,
+      "maximum_dte": 55,
+      "minimum_absolute_delta": 0.55,
+      "target_absolute_delta": 0.65,
+      "maximum_absolute_delta": 0.75
+    },
+    "LEAPS": {
+      "minimum_dte": 365,
+      "target_dte": 730,
+      "maximum_dte": 1095,
+      "minimum_absolute_delta": 0.70,
+      "target_absolute_delta": 0.80,
+      "maximum_absolute_delta": 0.90
+    }
+  },
+  "authority": {
+    "research_only": true,
+    "long_premium_only": true,
+    "broker_writes_enabled": false,
+    "options_execution_enabled": false,
+    "multi_leg_enabled": false,
+    "provider_greeks_are_observations_only": true
+  }
+}

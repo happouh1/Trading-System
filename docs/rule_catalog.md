@@ -235,3 +235,18 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   and position reconciliation without any order method.
 - `WEBULL_SMOKE_CASE7_MATCHED`: the persisted one-share long, active unfilled one-share stop, and
   authenticated one-share AAPL position must all match exactly.
+- `OPTION_CAUSAL_SNAPSHOT`: reject quotes known after chain `as_of`; require exact request/snapshot
+  symbol and timestamp equality; never fill missing chain observations.
+- `OPTION_STANDARD_EQUITY_ONLY`: require standard, multiplier-100, American-style, physically
+  settled equity contracts.
+- `OPTION_DIRECTIONAL_LONG_PREMIUM`: `LONG` maps to calls and `SHORT` maps to puts; reject wrong
+  right or delta sign. Short premium and combinations are prohibited.
+- `OPTION_LIQUIDITY_GATES`: apply versioned quote age, bid, volume, open-interest, absolute-spread,
+  and relative-spread thresholds and preserve every failure reason.
+- `OPTION_HORIZON_GATES`: apply versioned DTE and absolute-delta windows separately for
+  `FORTY_FIVE_DTE` and `LEAPS`.
+- `OPTION_MAXIMUM_DEBIT`: reject when `ask * multiplier` exceeds the request's maximum debit.
+- `OPTION_DETERMINISTIC_RANK`: rank by target-DTE deviation, target-delta deviation, relative
+  spread, descending open interest, and contract ID.
+- `OPTION_RESEARCH_ONLY`: configuration cannot enable broker writes, options execution, multi-leg
+  construction, or theoretical-Greek authority.

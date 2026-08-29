@@ -134,3 +134,31 @@ def test_portfolio_research_has_no_broker_model_or_learning_dependency() -> None
             ):
                 violations.append(f"{path}:{node.lineno}")
     assert not violations, f"forbidden portfolio dependencies: {violations}"
+
+
+def test_options_research_has_no_broker_model_learning_or_decision_dependency() -> None:
+    violations: list[str] = []
+    root = ROOT / "src" / "trading_system" / "options"
+    forbidden = {
+        "trading_system.decisions",
+        "trading_system.learning",
+        "trading_system.modeling",
+        "trading_system.paper",
+        "trading_system.webull",
+    }
+    for path in root.rglob("*.py"):
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                names = {alias.name for alias in node.names}
+            elif isinstance(node, ast.ImportFrom):
+                names = {node.module or ""}
+            else:
+                continue
+            if any(
+                name == ban or name.startswith(f"{ban}.")
+                for name in names
+                for ban in forbidden
+            ):
+                violations.append(f"{path}:{node.lineno}")
+    assert not violations, f"forbidden options dependencies: {violations}"
