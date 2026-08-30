@@ -33,6 +33,9 @@ from trading_system.operations.monitoring import (
     ScheduleDefinition,
 )
 from trading_system.operations.registry import OperationsRegistry
+from trading_system.operations.resilience import OperationsResilienceService
+from trading_system.operations.resilience_config import load_operations_resilience_config
+from trading_system.operations.resilience_registry import OperationsResilienceRegistry
 from trading_system.operations.runner import JobRunRequest, OperationsJobRunner, WorkerAction
 from trading_system.operations.runner_config import (
     OperationsRunnerConfig,
@@ -107,6 +110,20 @@ def configure_operations_parser(
     controlled_run.add_argument("--control-config", required=True)
     controlled_run.add_argument("--input", required=True)
     controlled_run.add_argument("--database", required=True)
+    validate_resilience = actions.add_parser("validate-resilience-config")
+    validate_resilience.add_argument("--config", required=True)
+    backup_database = actions.add_parser("backup-database")
+    backup_database.add_argument("--config", required=True)
+    backup_database.add_argument("--input", required=True)
+    backup_database.add_argument("--database", required=True)
+    verify_restore = actions.add_parser("verify-restore")
+    verify_restore.add_argument("--config", required=True)
+    verify_restore.add_argument("--input", required=True)
+    verify_restore.add_argument("--database", required=True)
+    retention_status = actions.add_parser("retention-status")
+    retention_status.add_argument("--config", required=True)
+    retention_status.add_argument("--database", required=True)
+    retention_status.add_argument("--as-of", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -459,7 +476,85 @@ def _handle_control(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_resilience(args: argparse.Namespace) -> int:
+    config = load_operations_resilience_config(args.config)
+    if args.operations_command == "validate-resilience-config":
+        print(canonical_json({"config_hash": config.config_hash, "valid": True}))
+        return 0
+    registry_path = Path(args.database).resolve()
+    with SQLiteRepository(registry_path) as repository:
+        repository.migrate()
+        registry = OperationsResilienceRegistry(repository, config)
+        if args.operations_command == "retention-status":
+            report = registry.retention_report(_time(args.as_of))
+            registry.insert_retention_report(report)
+            print(
+                canonical_json(
+                    {
+                        "report": report,
+                        "deletion_performed": False,
+                        "network_used": False,
+                        "broker_write_performed": False,
+                    }
+                )
+            )
+            return 0
+        root = _object(
+            json.loads(Path(args.input).read_text(encoding="utf-8")),
+            "resilience input",
+        )
+        service = OperationsResilienceService(config, registry)
+        if args.operations_command == "backup-database":
+            if set(root) != {"source_path", "known_at", "source_revision"}:
+                raise ValueError("backup input fields are invalid")
+            source_path = _string(root["source_path"], "backup source path")
+            source = (config.workspace_root / source_path).resolve()
+            if source == registry_path:
+                raise ValueError("resilience registry must be separate from backup source")
+            manifest = service.create_backup(
+                source_path=source_path,
+                known_at=_time(root["known_at"]),
+                source_revision=_string(root["source_revision"], "backup source revision"),
+            )
+            print(
+                canonical_json(
+                    {
+                        "manifest": manifest,
+                        "source_opened_read_only": True,
+                        "network_used": False,
+                        "broker_write_performed": False,
+                    }
+                )
+            )
+            return 0
+        if set(root) != {"backup_id", "known_at"}:
+            raise ValueError("restore input fields are invalid")
+        verification = service.verify_restore(
+            backup_id=_string(root["backup_id"], "backup ID"),
+            known_at=_time(root["known_at"]),
+        )
+        print(
+            canonical_json(
+                {
+                    "verification": verification,
+                    "isolated_restore_only": True,
+                    "promotion_performed": False,
+                    "network_used": False,
+                    "broker_write_performed": False,
+                }
+            )
+        )
+        return 0
+
+
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-resilience-config",
+        "backup-database",
+        "verify-restore",
+        "retention-status",
+    }:
+        return _handle_resilience(args)
     if args.operations_command in {
         "validate-control-config",
         "prepare-run",

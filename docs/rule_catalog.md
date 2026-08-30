@@ -356,3 +356,21 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `OPERATIONS_CONTROL_LOCAL_ASSERTION_ONLY`: operator IDs are unauthenticated audit assertions;
   remote control, external notification, network, credential, broker, and live-trading authority
   remain unavailable.
+- `OPERATIONS_BACKUP_SOURCE_READ_ONLY`: Phase 5E opens the workspace-contained SQLite source in
+  read-only mode and writes only a separate staged artifact.
+- `OPERATIONS_BACKUP_CONTENT_ADDRESSED`: the verified artifact is published under its SHA-256;
+  existing identical content is reused and conflicting bytes fail closed.
+- `OPERATIONS_BACKUP_INTEGRITY_REQUIRED`: publication requires `quick_check=ok` and zero foreign-key
+  violations.
+- `OPERATIONS_BACKUP_PROVENANCE`: every immutable manifest binds known-at, source revision, package
+  version, resilience config hash, paths, byte count, hash, and check results.
+- `OPERATIONS_RESTORE_ISOLATED`: restore drills copy only to a contained drill directory and cannot
+  replace or promote any operational database.
+- `OPERATIONS_RESTORE_IDENTICAL`: a restore is verified only when expected and actual SHA-256 match,
+  quick check succeeds, and foreign-key violations are zero.
+- `OPERATIONS_RETENTION_REPORT_ONLY`: the tunable minimum partitions protected and review-eligible
+  manifests but never deletes an artifact.
+- `OPERATIONS_RESILIENCE_APPEND_ONLY`: manifests, verifications, and reports use deterministic IDs,
+  canonical payloads, hashes, and conflict rejection.
+- `OPERATIONS_RESILIENCE_NO_AUTHORITY`: encryption, keys, network, offsite transfer, notification,
+  promotion, broker writes, and live trading remain unavailable.

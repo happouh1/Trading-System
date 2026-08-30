@@ -353,3 +353,20 @@ Component kill switches, request cancellation, and internal-alert incident trans
 same append-only evidence model. Operator IDs are recorded assertions, not authenticated
 identities. Phase 5D performs no network access, notification, broker write, or live trading. See
 `docs/proposals/phase_5d_operator_controls_v1.md` and `docs/phase_5d_review.md`.
+
+## Phase 5E offline resilience
+
+Phase 5E creates content-addressed SQLite backup artifacts from workspace-contained read-only
+sources, persists immutable provenance, and verifies a separate restore-drill copy. Retention is
+classification only; no backup can be deleted or promoted by this phase.
+
+```text
+trading-system operations validate-resilience-config --config config/operations.phase5e.v1.yaml
+trading-system operations backup-database --config config/operations.phase5e.v1.yaml --input backup.json --database resilience-registry.sqlite
+trading-system operations verify-restore --config config/operations.phase5e.v1.yaml --input verify.json --database resilience-registry.sqlite
+trading-system operations retention-status --config config/operations.phase5e.v1.yaml --database resilience-registry.sqlite --as-of TIMESTAMP
+```
+
+The registry must differ from the source database. Phase 5E has no encryption, offsite transfer,
+automatic deletion, restore promotion, network, credential, broker-write, or live-trading path.
+See `docs/proposals/phase_5e_resilience_v1.md` and `docs/phase_5e_review.md`.

@@ -1,0 +1,29 @@
+{
+  "resilience_version": "5E.1.0",
+  "authority": {
+    "offline_only": true,
+    "network_enabled": false,
+    "credential_access_enabled": false,
+    "external_notifications_enabled": false,
+    "broker_writes_enabled": false,
+    "restore_promotion_enabled": false,
+    "backup_deletion_enabled": false,
+    "live_trading_enabled": false
+  },
+  "storage": {
+    "workspace_root": "..",
+    "backup_directory": "backups/phase5e",
+    "restore_directory": "restore-drills/phase5e",
+    "content_addressed": true,
+    "overwrite_existing": false
+  },
+  "verification": {
+    "sqlite_quick_check": true,
+    "foreign_key_check": true,
+    "require_identical_artifact_hash": true
+  },
+  "retention": {
+    "minimum_days": 30,
+    "report_only": true
+  }
+}

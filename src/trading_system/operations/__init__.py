@@ -51,6 +51,19 @@ from trading_system.operations.monitoring import (
     SchedulePlan,
 )
 from trading_system.operations.registry import OperationsRegistry
+from trading_system.operations.resilience import OperationsResilienceService
+from trading_system.operations.resilience_config import (
+    OperationsResilienceConfig,
+    OperationsResilienceConfigError,
+    load_operations_resilience_config,
+)
+from trading_system.operations.resilience_contracts import (
+    BackupManifest,
+    IntegrityStatus,
+    RestoreVerification,
+    RetentionReport,
+)
+from trading_system.operations.resilience_registry import OperationsResilienceRegistry
 from trading_system.operations.runner import (
     AttemptStatus,
     JobAttempt,
@@ -73,6 +86,7 @@ __all__ = [
     "ApprovalAction",
     "ApprovalEvent",
     "AttemptStatus",
+    "BackupManifest",
     "CancellationAction",
     "CancellationEvent",
     "ComponentEvidence",
@@ -84,6 +98,7 @@ __all__ = [
     "IncidentAction",
     "IncidentEvent",
     "IncidentState",
+    "IntegrityStatus",
     "InternalAlert",
     "JobAttempt",
     "JobRunRequest",
@@ -102,10 +117,16 @@ __all__ = [
     "OperationsMonitorConfigError",
     "OperationsMonitorEngine",
     "OperationsRegistry",
+    "OperationsResilienceConfig",
+    "OperationsResilienceConfigError",
+    "OperationsResilienceRegistry",
+    "OperationsResilienceService",
     "OperationsRunnerConfig",
     "OperationsRunnerConfigError",
     "OperationsRunnerRegistry",
     "ReadinessStatus",
+    "RestoreVerification",
+    "RetentionReport",
     "ScheduleCursor",
     "ScheduleDefinition",
     "SchedulePlan",
@@ -117,5 +138,6 @@ __all__ = [
     "load_operations_config",
     "load_operations_control_config",
     "load_operations_monitor_config",
+    "load_operations_resilience_config",
     "load_operations_runner_config",
 ]

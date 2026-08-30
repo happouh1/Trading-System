@@ -367,3 +367,18 @@ and configuration hash.
 Migration `025_phase_5d_controls.sql` adds append-only `operations_approval_events`,
 `operations_kill_switch_events`, `operations_cancellation_events`, `operations_incident_events`,
 and `operations_control_snapshots`, each retaining canonical payloads and hashes.
+
+## Phase 5E resilience evidence
+
+`BackupManifest` records a content-addressed SQLite artifact, relative source/artifact paths,
+known-at, artifact SHA-256 and byte count, source revision, package version, resilience config hash,
+and successful SQLite integrity results.
+
+`RestoreVerification` binds one manifest to an isolated restored path, expected and actual hashes,
+`VERIFIED`/`FAILED` status, quick-check results, foreign-key violation count, and the invariant
+`promoted=false`. `RetentionReport` partitions manifest IDs into protected and review-eligible sets
+at an explicit as-of while recording `deletion_performed=false`.
+
+Migration `026_phase_5e_resilience.sql` adds append-only `operations_backup_manifests`,
+`operations_restore_verifications`, and `operations_retention_reports` with canonical payloads and
+hashes.

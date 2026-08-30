@@ -475,3 +475,16 @@ including race handling and durable terminal evidence? Phase 5D cancellation is 
 must be approved before resolved incidents can support operational readiness claims?
 142. Should a later remote control plane exist at all, and if so, what authenticated transport,
 replay defense, secret isolation, network boundary, and independent kill switch are required?
+
+143. Which approved encryption-at-rest algorithm, key manager, rotation schedule, and recovery-key
+procedure should protect backup artifacts? Phase 5E deliberately loads no keys or credentials.
+144. Which offsite or cross-region storage provider, immutability control, replication policy, and
+network boundary are required before a backup can be considered disaster-resilient?
+145. What legal, regulatory, audit, and business requirements replace the initial tunable 30-day
+report-only retention threshold, and who may authorize deletion?
+146. What RPO and RTO targets, recovery sequence, dependency graph, and acceptance drill define
+whole-system recovery rather than one verified SQLite artifact?
+147. How should writes be coordinated across multiple component databases when an atomic
+cross-database recovery point is required? Phase 5E snapshots each SQLite source independently.
+148. Which separately reviewed process may promote a verified restore, and what rollback, operator
+authentication, quorum, and reconciliation evidence must precede that action?

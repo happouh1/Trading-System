@@ -455,3 +455,18 @@ The governed runner persists its authorization snapshot immediately before attem
 packaged worker. The local operator name is audit text and is explicitly unauthenticated. Controls
 cannot interrupt a worker already running, perform network calls, notify an external party, or
 grant brokerage authority.
+
+## Phase 5E offline backup and restore verification
+
+Phase 5E uses SQLite's online backup API with a read-only source connection to create one consistent
+snapshot. It verifies the staged copy before atomically publishing it under its SHA-256 digest. A
+manifest binds the artifact to explicit known-at, source revision, code version, and resilience
+configuration.
+
+Restore verification first re-hashes the recorded artifact, then copies it to an isolated,
+deterministically named drill path. Hash equality, `quick_check=ok`, and zero foreign-key violations
+are all mandatory. A drill never replaces a source or operational database.
+
+Retention partitions manifests causally at an explicit timestamp. Evidence within the tunable
+minimum is protected; older evidence is marked only for human policy review. No artifact deletion,
+encryption, network transfer, failover, or recovery-time objective is inferred.
