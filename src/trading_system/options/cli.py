@@ -22,6 +22,12 @@ from trading_system.options.contracts import (
 )
 from trading_system.options.engine import OptionsScreenEngine
 from trading_system.options.registry import OptionsRegistry
+from trading_system.options.validation import (
+    OptionMark,
+    OptionsValidationEngine,
+    OptionValidationCase,
+)
+from trading_system.options.validation_config import load_options_validation_config
 from trading_system.persistence import SQLiteRepository
 from trading_system.serialization import canonical_json
 
@@ -37,6 +43,12 @@ def configure_options_parser(
     screen.add_argument("--config", required=True)
     screen.add_argument("--input", required=True)
     screen.add_argument("--database")
+    validate_backtest = actions.add_parser("validate-backtest-config")
+    validate_backtest.add_argument("--config", required=True)
+    backtest = actions.add_parser("backtest")
+    backtest.add_argument("--config", required=True)
+    backtest.add_argument("--input", required=True)
+    backtest.add_argument("--database")
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -212,18 +224,101 @@ def _parse_input(path: str) -> tuple[OptionScreenRequest, OptionChainSnapshot]:
     return request, snapshot
 
 
+def _mark(raw: object, name: str) -> OptionMark:
+    item = _object(raw, name)
+    _exact_keys(
+        item,
+        {"snapshot_id", "as_of", "source", "source_revision", "contract"},
+        name,
+    )
+    return OptionMark(
+        str(item["snapshot_id"]),
+        _time(item["as_of"], f"{name}.as_of"),
+        str(item["source"]),
+        str(item["source_revision"]),
+        _series(item["contract"]),
+    )
+
+
+def _validation_case(raw: object) -> OptionValidationCase:
+    item = _object(raw, "case")
+    _exact_keys(
+        item,
+        {
+            "screen_result_id",
+            "screen_known_at",
+            "selected_contract_id",
+            "horizon",
+            "direction",
+            "quantity",
+            "entry",
+            "exit",
+            "exit_reason",
+            "source_revision",
+        },
+        "case",
+    )
+    return OptionValidationCase.create(
+        screen_result_id=str(item["screen_result_id"]),
+        screen_known_at=_time(item["screen_known_at"], "case.screen_known_at"),
+        selected_contract_id=str(item["selected_contract_id"]),
+        horizon=OptionHorizon(str(item["horizon"])),
+        direction=Direction(str(item["direction"])),
+        quantity=_integer(item["quantity"], "case.quantity"),
+        entry=_mark(item["entry"], "case.entry"),
+        exit=_mark(item["exit"], "case.exit"),
+        exit_reason=str(item["exit_reason"]),
+        source_revision=str(item["source_revision"]),
+    )
+
+
+def _parse_backtest_input(path: str) -> tuple[str, tuple[OptionValidationCase, ...]]:
+    root = _object(json.loads(Path(path).read_text(encoding="utf-8")), "backtest input")
+    _exact_keys(root, {"source_revision", "cases"}, "backtest input")
+    raw_cases = root["cases"]
+    if not isinstance(raw_cases, list) or not raw_cases:
+        raise ValueError("backtest cases must be a nonempty array")
+    cases = tuple(_validation_case(item) for item in raw_cases)
+    if len({item.case_id for item in cases}) != len(cases):
+        raise ValueError("backtest case identities must be unique")
+    source_revision = str(root["source_revision"])
+    if not source_revision:
+        raise ValueError("backtest source revision is required")
+    return source_revision, cases
+
+
 def handle_options(args: argparse.Namespace) -> int:
-    config = load_options_config(args.config)
     if args.options_command == "validate-config":
+        config = load_options_config(args.config)
         print(canonical_json({"config_hash": config.config_hash, "valid": True}))
         return 0
-    request, snapshot = _parse_input(args.input)
-    result = OptionsScreenEngine(config).screen(request, snapshot)
+    if args.options_command == "screen":
+        config = load_options_config(args.config)
+        request, snapshot = _parse_input(args.input)
+        screen_result = OptionsScreenEngine(config).screen(request, snapshot)
+        if args.database:
+            with SQLiteRepository(args.database) as repository:
+                repository.migrate()
+                registry = OptionsRegistry(repository)
+                registry.insert_snapshot(snapshot)
+                registry.insert_result(screen_result)
+        print(screen_result.to_json())
+        return 0
+    validation_config = load_options_validation_config(args.config)
+    if args.options_command == "validate-backtest-config":
+        print(canonical_json({"config_hash": validation_config.config_hash, "valid": True}))
+        return 0
+    source_revision, cases = _parse_backtest_input(args.input)
+    engine = OptionsValidationEngine(validation_config)
+    results = tuple(engine.evaluate(case) for case in cases)
+    report = engine.report(results, source_revision=source_revision)
     if args.database:
         with SQLiteRepository(args.database) as repository:
             repository.migrate()
             registry = OptionsRegistry(repository)
-            registry.insert_snapshot(snapshot)
-            registry.insert_result(result)
-    print(result.to_json())
+            for case, validation_result in zip(cases, results, strict=True):
+                registry.insert_validation_case(case)
+                registry.insert_validation_result(validation_result)
+            registry.insert_backtest_report(report)
+    print(canonical_json({"report": report, "results": results}))
     return 0

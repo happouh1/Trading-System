@@ -386,3 +386,20 @@ backtest, including stale markets, crossed quotes, opening gaps, and missing ser
 contract rolls before any options paper-trading work?
 102. Should LEAPS classification use authoritative exchange/OCC series metadata in addition to a
 DTE research window once the selected data provider exposes it?
+
+103. What externally defined exit schedules should be evaluated for 45-DTE and LEAPS research, and
+how will they be selected without optimizing on the untouched test period?
+104. Which licensed historical source provides executable NBBO-quality bid/ask observations and
+stable contract revisions at both entry and exit timestamps?
+105. Is fixed premium-point slippage sufficiently conservative across price levels and liquidity
+regimes, or should a future approved model use spread fractions and size-aware impact?
+106. Which commission, exchange, regulatory, and contract fees should replace the Phase 4C zero-fee
+tunable baseline for each broker and historical era?
+107. How should missing exit quotes, halted markets, delistings, and contracts that become
+nonstandard after entry be resolved without survivorship bias? Phase 4C excludes unresolved data.
+108. What exercise, assignment, ex-dividend, expiration, and physical-delivery model is required
+before holding through expiration can be tested?
+109. How should overlapping option cases share finite capital, buying power, and risk limits before
+portfolio CAGR, Sharpe, exposure, or drawdown percentages are reported?
+110. Should later validation record quote size and enforce quantity executable at displayed size?
+Phase 4C has no quote-size field and makes no capacity claim.

@@ -1,4 +1,4 @@
-"""Phase 4B research-only options analysis."""
+"""Phase 4B/4C research-only options analysis and validation."""
 
 from trading_system.options.config import OptionsConfig, OptionsConfigError, load_options_config
 from trading_system.options.contracts import (
@@ -15,21 +15,45 @@ from trading_system.options.contracts import (
 )
 from trading_system.options.engine import OptionsScreenEngine
 from trading_system.options.registry import OptionsRegistry
+from trading_system.options.validation import (
+    OptionBacktestMetrics,
+    OptionBacktestReport,
+    OptionMark,
+    OptionsValidationEngine,
+    OptionValidationCase,
+    OptionValidationResult,
+    OptionValidationStatus,
+)
+from trading_system.options.validation_config import (
+    OptionsValidationConfig,
+    OptionsValidationConfigError,
+    load_options_validation_config,
+)
 
 __all__ = [
     "ExerciseStyle",
+    "OptionBacktestMetrics",
+    "OptionBacktestReport",
     "OptionChainSnapshot",
     "OptionHorizon",
+    "OptionMark",
     "OptionQuote",
     "OptionRight",
     "OptionScreenRequest",
     "OptionScreenResult",
     "OptionSeries",
+    "OptionValidationCase",
+    "OptionValidationResult",
+    "OptionValidationStatus",
     "OptionsConfig",
     "OptionsConfigError",
     "OptionsRegistry",
     "OptionsScreenEngine",
+    "OptionsValidationConfig",
+    "OptionsValidationConfigError",
+    "OptionsValidationEngine",
     "ScreeningAction",
     "SettlementType",
     "load_options_config",
+    "load_options_validation_config",
 ]

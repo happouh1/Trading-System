@@ -344,3 +344,18 @@ walk-forward validation with point-in-time option data.
 
 Phase 4B measures screening reproducibility, not profitability. No option return, fill, assignment,
 exercise, volatility-surface, or execution claim is made.
+
+## Phase 4C options validation methodology
+
+Phase 4C evaluates only externally bounded cases. It requires a post-signal quote for entry and a
+strictly later quote for exit, with both known no later than their marks. Contract metadata must be
+identical. Expiration-day cases are rejected because physical delivery and exercise are not modeled.
+
+Entry uses ask plus configured premium slippage; exit uses bid minus slippage with a zero floor.
+This incorporates the observed spread without claiming a particular queue position or midpoint
+fill. Stale quotes are excluded rather than carried forward. A valid zero bid is retained as a full
+premium loss. Fees and slippage are versioned tunable research assumptions.
+
+Metrics order cases by exit known-at and deterministic result ID. They describe the supplied cases,
+not a funded portfolio: overlapping exposure, buying power, margin, assignment, and capital
+allocation are absent and must not be inferred.

@@ -207,9 +207,21 @@ trading-system options validate-config --config config/options.phase4b.v1.yaml
 trading-system options screen --config config/options.phase4b.v1.yaml --input chain.json --database research.sqlite
 ```
 
-The commands are offline. Options order preview, execution, multi-leg strategies,
-assignment/exercise, and P&L simulation remain unavailable. See
+The Phase 4B commands are offline. Options order preview, execution, multi-leg strategies,
+assignment/exercise, and P&L simulation are unavailable at that boundary. See
 `docs/proposals/phase_4b_options_research_v1.md` and `docs/phase_4b_review.md`.
+
+Phase 4C adds conservative validation against later point-in-time quotes. Entry and exit timing are
+supplied by the research dataset; the system does not manufacture an options strategy exit.
+
+```text
+trading-system options validate-backtest-config --config config/options.phase4c.v1.yaml
+trading-system options backtest --config config/options.phase4c.v1.yaml --input option-cases.json --database research.sqlite
+```
+
+Long premium enters at ask plus configured slippage and exits at bid minus slippage. Stale quotes
+are excluded, zero bids realize a full debit loss, and expiration-day cases are unsupported. See
+`docs/proposals/phase_4c_options_validation_v1.md` and `docs/phase_4c_review.md`.
 
 ## Development
 

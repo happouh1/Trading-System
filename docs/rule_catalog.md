@@ -250,3 +250,17 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   spread, descending open interest, and contract ID.
 - `OPTION_RESEARCH_ONLY`: configuration cannot enable broker writes, options execution, multi-leg
   construction, or theoretical-Greek authority.
+- `OPTION_VALIDATION_EXTERNAL_EXIT`: entry and exit boundaries come from the versioned research
+  dataset; Phase 4C generates no exit signal.
+- `OPTION_VALIDATION_CAUSAL`: require post-signal entry observation, post-entry exit observation,
+  and quote timestamps no later than their marks.
+- `OPTION_VALIDATION_SAME_CONTRACT`: entry and exit IDs, symbols, expiration, strike, right,
+  multiplier, exercise style, settlement, and standard flag must match exactly.
+- `OPTION_VALIDATION_PRE_EXPIRY`: expiration-day and later marks are rejected because exercise,
+  assignment, and physical delivery are not modeled.
+- `OPTION_VALIDATION_CONSERVATIVE_FILL`: long premium enters at `ask + slippage` and exits at
+  `max(0, bid - slippage)`; midpoint is never an executable fill.
+- `OPTION_VALIDATION_STALE_EXCLUDE`: stale marks produce explicit exclusions with null P&L rather
+  than forward-filled prices.
+- `OPTION_VALIDATION_APPEND_ONLY`: cases, results, and reports use deterministic IDs and conflicting
+  payloads cannot overwrite prior research evidence.

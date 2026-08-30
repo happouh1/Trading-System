@@ -271,3 +271,18 @@ eligible ordering, aggregate and per-contract reasons, configuration hash, and k
 
 SQLite tables `option_chain_snapshots`, `option_series_snapshots`, and `option_screen_results`
 retain canonical payloads and hashes. They contain no broker account or order data.
+
+## Phase 4C option validation
+
+`OptionMark` binds one immutable `OptionSeries` quote to a snapshot ID, timestamp, source, and
+revision. `OptionValidationCase` joins a Phase 4B result to strictly later entry and exit marks,
+quantity, direction, horizon, external exit reason, and dataset revision.
+
+`OptionValidationResult` is `COMPLETED` with conservative fills, debit, gross/net P&L, fees, return
+on debit, and holding seconds, or `EXCLUDED` with reason codes and null calculated values.
+`OptionBacktestMetrics` aggregates completed and excluded counts, win/loss/breakeven, win rate,
+P&L, return statistics, and chronological maximum drawdown. `OptionBacktestReport` stores the
+ordered result IDs, metrics, config hash, source revision, and latest known-at timestamp.
+
+SQLite tables `option_validation_cases`, `option_validation_results`, and
+`option_backtest_reports` store append-only canonical payloads and hashes.

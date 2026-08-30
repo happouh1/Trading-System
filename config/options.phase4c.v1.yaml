@@ -1,0 +1,24 @@
+{
+  "validation_version": "4C.1.0",
+  "fills": {
+    "entry_side": "ASK",
+    "exit_side": "BID",
+    "slippage_per_share_per_side": 0.01,
+    "fee_per_contract_per_side": 0.00
+  },
+  "data_quality": {
+    "maximum_quote_age_seconds": 900,
+    "require_post_signal_entry_quote": true,
+    "require_post_entry_exit_quote": true,
+    "disallow_expiration_day": true,
+    "missing_or_stale_quote_policy": "EXCLUDE"
+  },
+  "authority": {
+    "research_only": true,
+    "externally_supplied_exit_only": true,
+    "broker_writes_enabled": false,
+    "options_execution_enabled": false,
+    "exercise_assignment_model_enabled": false,
+    "theoretical_pricing_enabled": false
+  }
+}
