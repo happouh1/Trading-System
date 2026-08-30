@@ -437,3 +437,21 @@ configured exponential backoff, but no daemon sleeps or automatically retries.
 The first worker actions are `EVIDENCE_NOOP` and `SQLITE_QUICK_CHECK`. The latter resolves a
 canonical relative target inside the configured workspace and opens SQLite in read-only/query-only
 mode. Neither action retrieves market data, changes strategy state, or crosses a broker boundary.
+
+## Phase 5D local operator controls
+
+Phase 5D separates request preparation from governed execution. The control engine reconstructs
+state using only append-only evidence known at the requested snapshot timestamp. The global switch
+defaults to engaged; component switches default to released. An exact request requires the
+configured number of distinct, unexpired local approval assertions and must have no active
+cancellation.
+
+Approval revocation, switch changes, cancellation clearing, acknowledgment, resolution, and
+reopening are new events rather than updates. Incident transitions are strict. Derived snapshots
+sort operator, incident, component, and reason identities before hashing, making restart and input
+order irrelevant to the result.
+
+The governed runner persists its authorization snapshot immediately before attempting a Phase 5C
+packaged worker. The local operator name is audit text and is explicitly unauthenticated. Controls
+cannot interrupt a worker already running, perform network calls, notify an external party, or
+grant brokerage authority.

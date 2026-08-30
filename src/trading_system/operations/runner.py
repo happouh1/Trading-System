@@ -143,6 +143,10 @@ class WorkerTransport(Protocol):
     def invoke(self, request: JobRunRequest, target: Path | None) -> WorkerInvocation: ...
 
 
+class ExecutionControlGate(Protocol):
+    def authorize(self, request: JobRunRequest, at: datetime) -> object: ...
+
+
 class SubprocessWorkerTransport:
     def __init__(self, config: OperationsRunnerConfig) -> None:
         self.config = config
@@ -216,11 +220,13 @@ class OperationsJobRunner:
         *,
         transport: WorkerTransport | None = None,
         clock: Callable[[], datetime] | None = None,
+        control_gate: ExecutionControlGate | None = None,
     ) -> None:
         self.config = config
         self.registry = registry
         self.transport = transport or SubprocessWorkerTransport(config)
         self.clock = clock or (lambda: datetime.now(UTC))
+        self.control_gate = control_gate
 
     def _target(self, request: JobRunRequest) -> Path | None:
         if request.target is None:
@@ -248,6 +254,8 @@ class OperationsJobRunner:
         _aware(started_at, "runner clock")
         if started_at < request.requested_at:
             raise ValueError("run request is not yet eligible")
+        if self.control_gate is not None:
+            self.control_gate.authorize(request, started_at)
         if prior and prior[-1].next_retry_at is not None and started_at < prior[-1].next_retry_at:
             raise ValueError("run request retry is not yet eligible")
         lease_expires = started_at + timedelta(

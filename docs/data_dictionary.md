@@ -351,3 +351,19 @@ Migration `024_phase_5c_runner.sql` adds append-only `operations_run_requests` a
 `operations_run_attempts`. `operations_run_leases` is explicitly ephemeral coordination state: one
 row per scheduled job is acquired, replaced only after expiration, and removed on normal completion.
 It is not historical evidence and does not replace the immutable attempt journal.
+
+## Phase 5D operator controls
+
+`ApprovalEvent` records a request-scoped `GRANT` or `REVOKE`, asserted local operator ID,
+known-at timestamp, optional expiry, reasons, and control configuration hash. `KillSwitchEvent`
+records global or component `ENGAGE`/`RELEASE` evidence. `CancellationEvent` records request-scoped
+`REQUEST`/`CLEAR` evidence.
+
+`IncidentEvent` binds an existing internal alert to `ACKNOWLEDGE`, `RESOLVE`, or `REOPEN`.
+`ControlSnapshot` records `HALTED`, `ATTENTION`, or `READY`, switch states, active approval
+operators, cancellation state, incident partitions, reasons, request identity, as-of timestamp,
+and configuration hash.
+
+Migration `025_phase_5d_controls.sql` adds append-only `operations_approval_events`,
+`operations_kill_switch_events`, `operations_cancellation_events`, `operations_incident_events`,
+and `operations_control_snapshots`, each retaining canonical payloads and hashes.

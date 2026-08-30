@@ -10,6 +10,18 @@ from pathlib import Path
 from trading_system import PACKAGE_VERSION
 from trading_system.operations.config import load_operations_config
 from trading_system.operations.contracts import OperationsManifest
+from trading_system.operations.control_config import load_operations_control_config
+from trading_system.operations.control_registry import OperationsControlRegistry
+from trading_system.operations.controls import (
+    ApprovalAction,
+    ApprovalEvent,
+    CancellationAction,
+    CancellationEvent,
+    IncidentAction,
+    IncidentEvent,
+    KillSwitchEvent,
+    SwitchAction,
+)
 from trading_system.operations.inspection import inspect_component
 from trading_system.operations.monitor_config import load_operations_monitor_config
 from trading_system.operations.monitoring import (
@@ -22,7 +34,10 @@ from trading_system.operations.monitoring import (
 )
 from trading_system.operations.registry import OperationsRegistry
 from trading_system.operations.runner import JobRunRequest, OperationsJobRunner, WorkerAction
-from trading_system.operations.runner_config import load_operations_runner_config
+from trading_system.operations.runner_config import (
+    OperationsRunnerConfig,
+    load_operations_runner_config,
+)
 from trading_system.operations.runner_registry import OperationsRunnerRegistry
 from trading_system.persistence import SQLiteRepository
 from trading_system.serialization import canonical_json
@@ -60,6 +75,38 @@ def configure_operations_parser(
     run_status = actions.add_parser("run-status")
     run_status.add_argument("--database", required=True)
     run_status.add_argument("--request-id", required=True)
+    validate_control = actions.add_parser("validate-control-config")
+    validate_control.add_argument("--config", required=True)
+    prepare_run = actions.add_parser("prepare-run")
+    prepare_run.add_argument("--runner-config", required=True)
+    prepare_run.add_argument("--input", required=True)
+    prepare_run.add_argument("--database", required=True)
+    approval = actions.add_parser("approval")
+    approval.add_argument("--config", required=True)
+    approval.add_argument("--input", required=True)
+    approval.add_argument("--database", required=True)
+    kill_switch = actions.add_parser("kill-switch")
+    kill_switch.add_argument("--config", required=True)
+    kill_switch.add_argument("--input", required=True)
+    kill_switch.add_argument("--database", required=True)
+    cancellation = actions.add_parser("cancellation")
+    cancellation.add_argument("--config", required=True)
+    cancellation.add_argument("--input", required=True)
+    cancellation.add_argument("--database", required=True)
+    incident = actions.add_parser("incident")
+    incident.add_argument("--config", required=True)
+    incident.add_argument("--input", required=True)
+    incident.add_argument("--database", required=True)
+    control_status = actions.add_parser("control-status")
+    control_status.add_argument("--config", required=True)
+    control_status.add_argument("--database", required=True)
+    control_status.add_argument("--as-of", required=True)
+    control_status.add_argument("--request-id")
+    controlled_run = actions.add_parser("controlled-run")
+    controlled_run.add_argument("--runner-config", required=True)
+    controlled_run.add_argument("--control-config", required=True)
+    controlled_run.add_argument("--input", required=True)
+    controlled_run.add_argument("--database", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -205,27 +252,11 @@ def _handle_monitor(args: argparse.Namespace) -> int:
     return 0
 
 
-def _handle_runner(args: argparse.Namespace) -> int:
-    if args.operations_command == "validate-runner-config":
-        config = load_operations_runner_config(args.config)
-        print(canonical_json({"config_hash": config.config_hash, "valid": True}))
-        return 0
-    if args.operations_command == "run-status":
-        with SQLiteRepository(args.database) as repository:
-            repository.migrate()
-            payload, attempts = OperationsRunnerRegistry(repository).status(args.request_id)
-        print(
-            canonical_json(
-                {
-                    "request": json.loads(payload),
-                    "attempts": attempts,
-                    "attempt_count": len(attempts),
-                }
-            )
-        )
-        return 0
-    config = load_operations_runner_config(args.config)
-    root = _object(json.loads(Path(args.input).read_text(encoding="utf-8")), "run input")
+def _load_run_request(
+    config_path: str, input_path: str
+) -> tuple[OperationsRunnerConfig, JobRunRequest]:
+    config = load_operations_runner_config(config_path)
+    root = _object(json.loads(Path(input_path).read_text(encoding="utf-8")), "run input")
     if set(root) != {
         "schedule_plan_id",
         "schedule_job_id",
@@ -249,6 +280,29 @@ def _handle_runner(args: argparse.Namespace) -> int:
         source_revision=_string(root["source_revision"], "run source revision"),
         config_hash=config.config_hash,
     )
+    return config, request
+
+
+def _handle_runner(args: argparse.Namespace) -> int:
+    if args.operations_command == "validate-runner-config":
+        config = load_operations_runner_config(args.config)
+        print(canonical_json({"config_hash": config.config_hash, "valid": True}))
+        return 0
+    if args.operations_command == "run-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            payload, attempts = OperationsRunnerRegistry(repository).status(args.request_id)
+        print(
+            canonical_json(
+                {
+                    "request": json.loads(payload),
+                    "attempts": attempts,
+                    "attempt_count": len(attempts),
+                }
+            )
+        )
+        return 0
+    config, request = _load_run_request(args.config, args.input)
     with SQLiteRepository(args.database) as repository:
         repository.migrate()
         registry = OperationsRunnerRegistry(repository)
@@ -269,7 +323,154 @@ def _handle_runner(args: argparse.Namespace) -> int:
     return 0
 
 
+def _control_input(path: str, expected: set[str]) -> dict[str, object]:
+    root = _object(json.loads(Path(path).read_text(encoding="utf-8")), "control input")
+    if set(root) != expected:
+        raise ValueError("control input fields are invalid")
+    return root
+
+
+def _handle_control(args: argparse.Namespace) -> int:
+    if args.operations_command == "validate-control-config":
+        config = load_operations_control_config(args.config)
+        print(canonical_json({"config_hash": config.config_hash, "valid": True}))
+        return 0
+    if args.operations_command == "prepare-run":
+        _, request = _load_run_request(args.runner_config, args.input)
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = OperationsRunnerRegistry(repository)
+            registry.validate_due_request(request)
+            registry.insert_run_request(request)
+        print(canonical_json({"request": request, "prepared": True, "worker_invoked": False}))
+        return 0
+    control_path = args.config if hasattr(args, "config") else args.control_config
+    config = load_operations_control_config(control_path)
+    if args.operations_command == "control-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            control_registry = OperationsControlRegistry(repository, config)
+            snapshot = control_registry.snapshot(
+                as_of=_time(args.as_of),
+                request_id=args.request_id,
+            )
+            control_registry.insert_snapshot(snapshot)
+        print(canonical_json({"snapshot": snapshot, "remote_control_used": False}))
+        return 0
+    if args.operations_command == "controlled-run":
+        runner_config, request = _load_run_request(args.runner_config, args.input)
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            control = OperationsControlRegistry(repository, config)
+            attempt = OperationsJobRunner(
+                runner_config,
+                OperationsRunnerRegistry(repository),
+                control_gate=control,
+            ).run_once(request)
+        print(
+            canonical_json(
+                {
+                    "request": request,
+                    "attempt": attempt,
+                    "control_enforced": True,
+                    "remote_control_used": False,
+                    "broker_write_performed": False,
+                }
+            )
+        )
+        return 0
+    root = _control_input(
+        args.input,
+        {
+            "request_id",
+            "operator_id",
+            "action",
+            "known_at",
+            "expires_at",
+            "reasons",
+        }
+        if args.operations_command == "approval"
+        else {"component", "operator_id", "action", "known_at", "reasons"}
+        if args.operations_command == "kill-switch"
+        else {"request_id", "operator_id", "action", "known_at", "reasons"}
+        if args.operations_command == "cancellation"
+        else {"alert_id", "operator_id", "action", "known_at", "reasons"},
+    )
+    reasons = _string_tuple(root["reasons"], "control reasons")
+    operator_id = _string(root["operator_id"], "operator ID")
+    known_at = _time(root["known_at"])
+    with SQLiteRepository(args.database) as repository:
+        repository.migrate()
+        control_registry = OperationsControlRegistry(repository, config)
+        if args.operations_command == "approval":
+            expires = root["expires_at"]
+            approval_event = ApprovalEvent.create(
+                request_id=_string(root["request_id"], "request ID"),
+                operator_id=operator_id,
+                action=ApprovalAction(_string(root["action"], "approval action")),
+                known_at=known_at,
+                expires_at=None if expires is None else _time(expires),
+                reasons=reasons,
+                config=config,
+            )
+            control_registry.insert_approval(approval_event)
+            output_event: object = approval_event
+        elif args.operations_command == "kill-switch":
+            component = root["component"]
+            if component is not None and (not isinstance(component, str) or not component):
+                raise ValueError("kill switch component must be null or nonempty")
+            switch_event = KillSwitchEvent.create(
+                component=component,
+                action=SwitchAction(_string(root["action"], "switch action")),
+                known_at=known_at,
+                operator_id=operator_id,
+                reasons=reasons,
+                config=config,
+            )
+            control_registry.insert_kill_switch(switch_event)
+            output_event = switch_event
+        elif args.operations_command == "cancellation":
+            cancellation_event = CancellationEvent.create(
+                request_id=_string(root["request_id"], "request ID"),
+                action=CancellationAction(_string(root["action"], "cancellation action")),
+                known_at=known_at,
+                operator_id=operator_id,
+                reasons=reasons,
+                config=config,
+            )
+            control_registry.insert_cancellation(cancellation_event)
+            output_event = cancellation_event
+        else:
+            incident_event = IncidentEvent.create(
+                alert_id=_string(root["alert_id"], "alert ID"),
+                action=IncidentAction(_string(root["action"], "incident action")),
+                known_at=known_at,
+                operator_id=operator_id,
+                reasons=reasons,
+                config=config,
+            )
+            control_registry.insert_incident(incident_event)
+            output_event = incident_event
+    print(
+        canonical_json(
+            {"event": output_event, "recorded": True, "operator_authenticated": False}
+        )
+    )
+    return 0
+
+
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-control-config",
+        "prepare-run",
+        "approval",
+        "kill-switch",
+        "cancellation",
+        "incident",
+        "control-status",
+        "controlled-run",
+    }:
+        return _handle_control(args)
     if args.operations_command in {
         "validate-runner-config",
         "run-job",

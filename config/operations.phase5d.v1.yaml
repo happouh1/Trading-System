@@ -1,0 +1,24 @@
+{
+  "control_version": "5D.1.0",
+  "authority": {
+    "offline_only": true,
+    "local_operator_evidence_only": true,
+    "remote_control_enabled": false,
+    "identity_authentication_enabled": false,
+    "network_enabled": false,
+    "external_notifications_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  },
+  "approvals": {
+    "required_distinct_operators": 1,
+    "maximum_lifetime_seconds": 86400
+  },
+  "kill_switches": {
+    "default_global_state": "ENGAGED",
+    "component_switches_enabled": true
+  },
+  "cancellation": {
+    "pre_execution_only": true
+  }
+}

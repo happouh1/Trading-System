@@ -333,3 +333,23 @@ Phase 1E integration is in progress under
 explained decisions, next-open replay execution, completed trades, and deferred
 outcome labels. It does not add brokerage connectivity, live trading, options,
 machine learning, or new trading rules.
+
+## Phase 5D offline operator controls
+
+Phase 5D adds a local, fail-closed control gate around Phase 5C packaged workers. The global kill
+switch starts engaged. A run must be prepared, receive an unexpired local approval, and receive an
+explicit global release before `controlled-run` can invoke one packaged worker attempt.
+
+```text
+trading-system operations validate-control-config --config config/operations.phase5d.v1.yaml
+trading-system operations prepare-run --runner-config config/operations.phase5c.v1.yaml --input run-job.json --database operations.sqlite
+trading-system operations approval --config config/operations.phase5d.v1.yaml --input approval.json --database operations.sqlite
+trading-system operations kill-switch --config config/operations.phase5d.v1.yaml --input release.json --database operations.sqlite
+trading-system operations control-status --config config/operations.phase5d.v1.yaml --database operations.sqlite --as-of TIMESTAMP --request-id REQUEST_ID
+trading-system operations controlled-run --runner-config config/operations.phase5c.v1.yaml --control-config config/operations.phase5d.v1.yaml --input run-job.json --database operations.sqlite
+```
+
+Component kill switches, request cancellation, and internal-alert incident transitions use the
+same append-only evidence model. Operator IDs are recorded assertions, not authenticated
+identities. Phase 5D performs no network access, notification, broker write, or live trading. See
+`docs/proposals/phase_5d_operator_controls_v1.md` and `docs/phase_5d_review.md`.

@@ -464,3 +464,14 @@ uses one shared bounded policy and performs no automatic retry loop.
 136. What retention and redaction policy should govern worker result payloads and output hashes?
 137. Should later workers run in an operating-system sandbox or isolated container with explicit
 CPU, memory, filesystem, and network controls?
+
+138. Which identity provider, MFA policy, signing mechanism, and RBAC model are required before a
+stored operator ID can become authenticated authority? Phase 5D labels it unauthenticated.
+139. Which actions require multiple distinct approvers, separation of duties, or time-bounded
+break-glass policy beyond the initial tunable one-operator offline baseline?
+140. What safe subprocess-control mechanism should implement cancellation after an attempt starts,
+including race handling and durable terminal evidence? Phase 5D cancellation is pre-execution only.
+141. What incident severity, ownership, evidence, SLA, escalation, retention, and postmortem rules
+must be approved before resolved incidents can support operational readiness claims?
+142. Should a later remote control plane exist at all, and if so, what authenticated transport,
+replay defense, secret isolation, network boundary, and independent kill switch are required?

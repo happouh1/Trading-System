@@ -337,3 +337,22 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   and payload hashes; only ephemeral lease rows are mutable coordination state.
 - `OPERATIONS_RUN_NO_TRADING_AUTHORITY`: packaged actions cannot access networks, credentials,
   notifications, strategy decisions, broker writes, or live trading.
+- `OPERATIONS_CONTROL_DEFAULT_HALT`: Phase 5D begins with the global kill switch engaged when no
+  release evidence exists.
+- `OPERATIONS_CONTROL_EXACT_REQUEST`: approvals and cancellations bind one immutable Phase 5C
+  request and cannot authorize another schedule boundary.
+- `OPERATIONS_CONTROL_EXPIRING_APPROVAL`: authorization requires the configured number of distinct
+  unexpired approval assertions; missing, expired, or revoked assertions halt.
+- `OPERATIONS_CONTROL_LAYERED_KILL`: either the global switch or the request component switch halts
+  execution, regardless of approval state.
+- `OPERATIONS_CONTROL_PRE_EXECUTION_CANCEL`: an active request cancellation prevents a later
+  attempt; Phase 5D makes no claim to interrupt an attempt already running.
+- `OPERATIONS_INCIDENT_STRICT_LIFECYCLE`: internal alerts transition only from open to acknowledged,
+  acknowledged to resolved, and resolved to reopened.
+- `OPERATIONS_CONTROL_ASOF_CAUSAL`: derived status uses only events known no later than its explicit
+  as-of timestamp and preserves canonical reasons.
+- `OPERATIONS_CONTROL_APPEND_ONLY`: control events and authorization snapshots use deterministic
+  identities, canonical payloads, and hashes; conflicting evidence cannot overwrite history.
+- `OPERATIONS_CONTROL_LOCAL_ASSERTION_ONLY`: operator IDs are unauthenticated audit assertions;
+  remote control, external notification, network, credential, broker, and live-trading authority
+  remain unavailable.
