@@ -486,3 +486,21 @@ drop evidence. Identical inputs are idempotent across restart.
 The bundle always discloses that freshness is unassessed, only persisted offline evidence was
 examined, and no broker, live-trading, or production-readiness authority exists. Phase 5F adds no
 market, pattern, scoring, allocation, execution, networking, notification, or recovery behavior.
+
+## Phase 6A offline shadow-validation campaigns
+
+A Phase 6A campaign is a caller-declared bounded period containing one or more unique observation
+windows. Each window has an explicit ID, exact timezone-aware expected timestamp, and either a
+Phase 5F bundle ID or `null`. Input order is normalized by expected timestamp and window ID;
+duplicate IDs or timestamps and windows outside the declared bounds fail closed.
+
+For each observed bundle, Phase 6A verifies the stored canonical payload hash, exact as-of,
+`COMPLETE` status, current package version, identity, and mandatory Phase 5F disclosures. It then
+compares the bundle's six source hashes against the currently persisted Phase 5A-E records and
+records monitoring, latest attempt, control, and restore statuses. Missing rows, changed hashes,
+invalid status, future evidence, or corrupt JSON makes the window non-complete.
+
+Campaign metrics are counts, not performance estimates: expected/observed windows, each window
+classification, and source-status counts. No cadence, observation duration, target completion
+rate, freshness service level, statistical confidence, production suitability, or trading edge is
+inferred. Reports and window evidence are immutable and idempotent across restart.

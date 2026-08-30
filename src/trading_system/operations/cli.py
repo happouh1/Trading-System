@@ -8,6 +8,9 @@ from datetime import datetime
 from pathlib import Path
 
 from trading_system import PACKAGE_VERSION
+from trading_system.operations.campaign_config import load_operations_campaign_config
+from trading_system.operations.campaign_contracts import CampaignWindowRequest
+from trading_system.operations.campaign_registry import OperationsCampaignRegistry
 from trading_system.operations.config import load_operations_config
 from trading_system.operations.contracts import OperationsManifest
 from trading_system.operations.control_config import load_operations_control_config
@@ -135,6 +138,15 @@ def configure_operations_parser(
     release_status = actions.add_parser("release-status")
     release_status.add_argument("--database", required=True)
     release_status.add_argument("--bundle-id", required=True)
+    validate_campaign = actions.add_parser("validate-campaign-config")
+    validate_campaign.add_argument("--config", required=True)
+    shadow_campaign = actions.add_parser("shadow-campaign")
+    shadow_campaign.add_argument("--config", required=True)
+    shadow_campaign.add_argument("--input", required=True)
+    shadow_campaign.add_argument("--database", required=True)
+    campaign_status = actions.add_parser("campaign-status")
+    campaign_status.add_argument("--database", required=True)
+    campaign_status.add_argument("--report-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -643,7 +655,115 @@ def _handle_release(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_campaign(args: argparse.Namespace) -> int:
+    if args.operations_command == "campaign-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            row = repository.connection.execute(
+                """SELECT status, payload_json FROM operations_shadow_campaign_reports
+                   WHERE report_id = ?""",
+                (args.report_id,),
+            ).fetchone()
+            if row is None:
+                raise ValueError("unknown shadow campaign report")
+            count_row = repository.connection.execute(
+                """SELECT COUNT(*) FROM operations_shadow_campaign_windows
+                   WHERE report_id = ?""",
+                (args.report_id,),
+            ).fetchone()
+        print(
+            canonical_json(
+                {
+                    "report_id": args.report_id,
+                    "status": str(row[0]),
+                    "window_count": 0 if count_row is None else int(count_row[0]),
+                    "report": json.loads(str(row[1])),
+                    "production_readiness_claim": False,
+                    "automatic_promotion_performed": False,
+                    "network_used": False,
+                    "broker_write_performed": False,
+                    "live_trading_enabled": False,
+                }
+            )
+        )
+        return 0
+    config = load_operations_campaign_config(args.config)
+    if args.operations_command == "validate-campaign-config":
+        print(
+            canonical_json(
+                {
+                    "config_hash": config.config_hash,
+                    "valid": True,
+                    "production_readiness_claim": False,
+                    "automatic_promotion_enabled": False,
+                }
+            )
+        )
+        return 0
+    root = _control_input(
+        args.input,
+        {
+            "campaign_name",
+            "start_at",
+            "end_at",
+            "evaluated_at",
+            "windows",
+            "source_revision",
+        },
+    )
+    raw_windows = root["windows"]
+    if not isinstance(raw_windows, list) or not raw_windows:
+        raise ValueError("shadow campaign windows must be a nonempty array")
+    requests: list[CampaignWindowRequest] = []
+    for raw_window in raw_windows:
+        window = _object(raw_window, "shadow campaign window")
+        if set(window) != {"window_id", "expected_as_of", "bundle_id"}:
+            raise ValueError("shadow campaign window fields are invalid")
+        raw_bundle_id = window["bundle_id"]
+        if raw_bundle_id is not None and not isinstance(raw_bundle_id, str):
+            raise ValueError("shadow campaign bundle ID must be a string or null")
+        requests.append(
+            CampaignWindowRequest(
+                _string(window["window_id"], "shadow campaign window ID"),
+                _time(window["expected_as_of"]),
+                raw_bundle_id,
+            )
+        )
+    with SQLiteRepository(args.database) as repository:
+        repository.migrate()
+        registry = OperationsCampaignRegistry(repository, config)
+        report = registry.evaluate(
+            campaign_name=_string(root["campaign_name"], "campaign name"),
+            start_at=_time(root["start_at"]),
+            end_at=_time(root["end_at"]),
+            evaluated_at=_time(root["evaluated_at"]),
+            requests=tuple(requests),
+            source_revision=_string(root["source_revision"], "source revision"),
+        )
+        inserted = registry.insert(report)
+    print(
+        canonical_json(
+            {
+                "report": report,
+                "inserted": inserted,
+                "production_readiness_claim": False,
+                "automatic_promotion_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
+    return 0
+
+
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-campaign-config",
+        "shadow-campaign",
+        "campaign-status",
+    }:
+        return _handle_campaign(args)
     if args.operations_command in {
         "validate-release-config",
         "release-evidence",

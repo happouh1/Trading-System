@@ -501,3 +501,16 @@ written SQLite component databases without inventing cross-database consistency?
 are required before anyone may make a production-readiness claim?
 154. Should an independent external auditor or verification service attest evidence hashes, and if
 so, how can that authority remain isolated from trading and release execution?
+
+155. What authoritative process declares Phase 6A observation windows and proves that missing
+windows were not selectively omitted after their outcomes became known?
+156. What minimum observation duration, number of windows, completion rate, and confidence bounds
+must be preregistered before campaign counts may support an operational reliability statement?
+157. How should holidays, planned maintenance, data-vendor outages, and operator-approved pauses be
+represented without retrospectively changing campaign denominators?
+158. Which source-status breakdowns, incident rates, recovery drills, and failure classes require
+separate denominators before comparison across campaigns is meaningful?
+159. What retention, signing, independent review, and supersession policy should govern campaign
+reports while preserving every earlier immutable result?
+160. Which authenticated governance body may interpret a future validated campaign, and what
+additional security, freshness, capital, and sandbox evidence is required before any transition?

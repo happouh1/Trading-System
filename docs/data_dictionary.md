@@ -394,3 +394,19 @@ source revision, package version, and release configuration hash.
 Migration `027_phase_5f_release_evidence.sql` adds the append-only
 `operations_release_evidence_bundles` table. The row preserves canonical payload JSON and its hash;
 source records remain in their original immutable Phase 5A-E tables.
+
+## Phase 6A shadow-validation campaigns
+
+`CampaignWindowRequest` declares a unique window ID, exact expected as-of, and optional Phase 5F
+bundle ID. `CampaignWindow` records `COMPLETE`, `INCOMPLETE`, `MISSING`, or `CORRUPT`, the observed
+monitor/attempt/control/restore statuses, canonical reasons, and source evidence hashes.
+
+`ShadowCampaignReport` binds campaign name and bounds, evaluation timestamp, canonical windows,
+count-only metrics, `COMPLETE`/`INCOMPLETE`, disclosures, source revision, package version, and
+configuration hash. Its ID includes the complete evaluated result.
+
+Migration `028_phase_6a_shadow_campaign.sql` adds append-only
+`operations_shadow_campaign_reports` and `operations_shadow_campaign_windows`. Window rows are
+unique by both `(report_id, window_id)` and `(report_id, expected_as_of)`. `bundle_id` deliberately
+has no foreign key so an explicitly requested but absent Phase 5F identity remains persistable as
+missing evidence.

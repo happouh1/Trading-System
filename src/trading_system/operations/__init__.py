@@ -1,5 +1,18 @@
 """Phase 5 offline inspection, schedule planning, and internal monitoring."""
 
+from trading_system.operations.campaign_config import (
+    OperationsCampaignConfig,
+    OperationsCampaignConfigError,
+    load_operations_campaign_config,
+)
+from trading_system.operations.campaign_contracts import (
+    CampaignStatus,
+    CampaignWindow,
+    CampaignWindowRequest,
+    ShadowCampaignReport,
+    WindowStatus,
+)
+from trading_system.operations.campaign_registry import OperationsCampaignRegistry
 from trading_system.operations.config import (
     OperationsConfig,
     OperationsConfigError,
@@ -97,6 +110,9 @@ __all__ = [
     "ApprovalEvent",
     "AttemptStatus",
     "BackupManifest",
+    "CampaignStatus",
+    "CampaignWindow",
+    "CampaignWindowRequest",
     "CancellationAction",
     "CancellationEvent",
     "ComponentEvidence",
@@ -116,6 +132,9 @@ __all__ = [
     "MonitorReport",
     "MonitorStatus",
     "OperationalMode",
+    "OperationsCampaignConfig",
+    "OperationsCampaignConfigError",
+    "OperationsCampaignRegistry",
     "OperationsConfig",
     "OperationsConfigError",
     "OperationsControlConfig",
@@ -145,11 +164,14 @@ __all__ = [
     "ScheduleCursor",
     "ScheduleDefinition",
     "SchedulePlan",
+    "ShadowCampaignReport",
     "SubprocessWorkerTransport",
     "SwitchAction",
+    "WindowStatus",
     "WorkerAction",
     "WorkerInvocation",
     "inspect_component",
+    "load_operations_campaign_config",
     "load_operations_config",
     "load_operations_control_config",
     "load_operations_monitor_config",

@@ -389,3 +389,21 @@ supplied timestamp. Freshness is not assessed, and the result is explicitly not 
 readiness claim. Phase 5F performs no network access, notification, credential loading, broker
 write, or live trading. See `docs/proposals/phase_5f_release_evidence_v1.md` and
 `docs/phase_5f_review.md`.
+
+## Phase 6A offline shadow-validation campaigns
+
+Phase 6A aggregates explicitly declared Phase 5F evidence windows into one deterministic campaign
+report. It verifies every release-bundle payload hash, exact window timestamp, package version,
+mandatory disclosure, and referenced Phase 5A-E source hash before counting a window as complete.
+
+```text
+trading-system operations validate-campaign-config --config config/operations.phase6a.v1.yaml
+trading-system operations shadow-campaign --config config/operations.phase6a.v1.yaml --input campaign.json --database operations.sqlite
+trading-system operations campaign-status --database operations.sqlite --report-id REPORT_ID
+```
+
+The caller declares each expected window and either supplies its Phase 5F bundle ID or records it
+as missing with `null`. Phase 6A does not infer cadence, fill missing windows, define a minimum
+observation period, establish a success-rate threshold, or promote the system. `COMPLETE` remains
+an offline structural-evidence result, not a production-readiness or trading authorization claim.
+See `docs/proposals/phase_6a_shadow_validation_campaign_v1.md` and `docs/phase_6a_review.md`.

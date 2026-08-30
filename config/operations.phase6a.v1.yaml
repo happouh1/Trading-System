@@ -1,0 +1,28 @@
+{
+  "shadow_campaign_version": "6A.1.0",
+  "authority": {
+    "offline_only": true,
+    "evidence_only": true,
+    "automatic_promotion_enabled": false,
+    "production_readiness_claim_enabled": false,
+    "network_enabled": false,
+    "credentials_enabled": false,
+    "external_notifications_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  },
+  "validation": {
+    "require_complete_release_bundle": true,
+    "require_exact_window_timestamp": true,
+    "verify_release_payload_hash": true,
+    "verify_source_evidence_hashes": true,
+    "require_current_code_version": true,
+    "reject_future_evidence": true,
+    "normalize_window_order": true
+  },
+  "freshness": {
+    "service_level_assessed": false,
+    "minimum_observation_period_defined": false,
+    "minimum_success_rate_defined": false
+  }
+}

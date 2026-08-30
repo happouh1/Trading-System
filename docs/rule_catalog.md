@@ -391,3 +391,19 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `OPERATIONS_RELEASE_NO_PRODUCTION_CLAIM`: `COMPLETE` describes only internal completeness of
   named offline evidence; freshness, production readiness, brokerage, and live authority remain
   explicitly unassessed or disabled.
+- `SHADOW_CAMPAIGN_EXPLICIT_WINDOWS`: Phase 6A evaluates only caller-declared unique windows within
+  explicit campaign bounds; it never infers cadence or forward-fills missing evidence.
+- `SHADOW_CAMPAIGN_CANONICAL_ORDER`: window input order is normalized by exact expected as-of and
+  window ID, while duplicate IDs or timestamps fail closed.
+- `SHADOW_CAMPAIGN_RELEASE_INTEGRITY`: an observed window requires an intact `COMPLETE` Phase 5F
+  bundle with exact timestamp, current code version, identity, hash, and mandatory disclosures.
+- `SHADOW_CAMPAIGN_SOURCE_REVALIDATION`: all six Phase 5F source hashes are compared with current
+  persisted Phase 5A-E evidence before a window can remain complete.
+- `SHADOW_CAMPAIGN_MISSING_EXPLICIT`: a declared `null` bundle, unknown bundle ID, or absent source
+  row is recorded as missing or incomplete and never silently omitted.
+- `SHADOW_CAMPAIGN_COUNTS_ONLY`: campaign metrics are evidence counts and status counts; they are
+  not returns, probabilities, reliability estimates, service levels, or calibrated readiness.
+- `SHADOW_CAMPAIGN_APPEND_ONLY`: reports and windows use deterministic identities, canonical JSON,
+  payload hashes, transactional insertion, conflict rejection, and restart-safe idempotency.
+- `SHADOW_CAMPAIGN_NO_AUTHORITY`: Phase 6A cannot access networks or credentials, notify externally,
+  promote releases, write to brokers, enable live trading, or claim production readiness.
