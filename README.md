@@ -370,3 +370,22 @@ trading-system operations retention-status --config config/operations.phase5e.v1
 The registry must differ from the source database. Phase 5E has no encryption, offsite transfer,
 automatic deletion, restore promotion, network, credential, broker-write, or live-trading path.
 See `docs/proposals/phase_5e_resilience_v1.md` and `docs/phase_5e_review.md`.
+
+## Phase 5F offline release evidence
+
+Phase 5F creates one immutable evidence bundle that cross-checks persisted Phase 5A readiness,
+Phase 5B monitoring, Phase 5C execution, Phase 5D controls, and Phase 5E backup/restore evidence.
+It validates exact links, expected statuses, causal timestamps, canonical payload hashes, and the
+current package version where available.
+
+```text
+trading-system operations validate-release-config --config config/operations.phase5f.v1.yaml
+trading-system operations release-evidence --config config/operations.phase5f.v1.yaml --input release.json --database operations.sqlite
+trading-system operations release-status --database operations.sqlite --bundle-id BUNDLE_ID
+```
+
+`COMPLETE` means only that the named offline persisted evidence is internally complete at the
+supplied timestamp. Freshness is not assessed, and the result is explicitly not a production
+readiness claim. Phase 5F performs no network access, notification, credential loading, broker
+write, or live trading. See `docs/proposals/phase_5f_release_evidence_v1.md` and
+`docs/phase_5f_review.md`.

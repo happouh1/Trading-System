@@ -1,0 +1,29 @@
+{
+  "release_evidence_version": "5F.1.0",
+  "authority": {
+    "offline_only": true,
+    "evidence_only": true,
+    "production_readiness_claim_enabled": false,
+    "network_enabled": false,
+    "credentials_enabled": false,
+    "external_notifications_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  },
+  "required_statuses": {
+    "readiness_manifest": "READY",
+    "monitor_report": "READY",
+    "control_snapshot": "READY",
+    "run_attempt": "SUCCEEDED",
+    "restore_verification": "VERIFIED"
+  },
+  "consistency": {
+    "control_and_attempt_same_request": true,
+    "restore_and_manifest_same_backup": true,
+    "require_current_code_version": true,
+    "reject_future_evidence": true
+  },
+  "freshness": {
+    "assessed": false
+  }
+}

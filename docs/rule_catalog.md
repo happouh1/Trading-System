@@ -374,3 +374,20 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   canonical payloads, hashes, and conflict rejection.
 - `OPERATIONS_RESILIENCE_NO_AUTHORITY`: encryption, keys, network, offsite transfer, notification,
   promotion, broker writes, and live trading remain unavailable.
+- `OPERATIONS_RELEASE_EXACT_EVIDENCE`: Phase 5F evaluates only explicitly named persisted Phase
+  5A-E identities and the latest attempt for the exact named request.
+- `OPERATIONS_RELEASE_CAUSAL_ASOF`: every evidence timestamp must be no later than the supplied
+  timezone-aware as-of; future evidence produces `INCOMPLETE`.
+- `OPERATIONS_RELEASE_STATUS_REQUIRED`: readiness, monitoring, control, execution, and restore
+  records must have their fixed reviewed statuses or produce explicit reason codes.
+- `OPERATIONS_RELEASE_LINK_CONSISTENCY`: the control snapshot and attempt must bind the exact run
+  request, and the restore verification must bind the exact backup manifest.
+- `OPERATIONS_RELEASE_HASH_VERIFIED`: each source payload is canonically re-hashed and compared
+  with its stored digest before the bundle can be `COMPLETE`.
+- `OPERATIONS_RELEASE_CURRENT_CODE`: readiness and backup evidence must record the current package
+  version; mismatches are incomplete rather than silently accepted.
+- `OPERATIONS_RELEASE_APPEND_ONLY`: deterministic bundle identity, canonical payloads, hashes, and
+  conflict rejection make repeated evaluation idempotent across restart.
+- `OPERATIONS_RELEASE_NO_PRODUCTION_CLAIM`: `COMPLETE` describes only internal completeness of
+  named offline evidence; freshness, production readiness, brokerage, and live authority remain
+  explicitly unassessed or disabled.

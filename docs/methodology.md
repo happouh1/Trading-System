@@ -470,3 +470,19 @@ are all mandatory. A drill never replaces a source or operational database.
 Retention partitions manifests causally at an explicit timestamp. Evidence within the tunable
 minimum is protected; older evidence is marked only for human policy review. No artifact deletion,
 encryption, network transfer, failover, or recovery-time objective is inferred.
+
+## Phase 5F offline release-evidence qualification
+
+Phase 5F evaluates caller-named persisted records at an explicit timezone-aware `as_of`. It
+requires a `READY` Phase 5A manifest, `READY` Phase 5B monitor report, `READY` Phase 5D control
+snapshot linked to the exact Phase 5C request, the latest `SUCCEEDED` attempt for that request, a
+current-code Phase 5E backup manifest, and a `VERIFIED` restore linked to that exact backup.
+
+Every referenced payload is parsed and canonically re-hashed. Evidence timestamped after `as_of`,
+status mismatches, link mismatches, code-version mismatches, missing rows, or hash mismatches produce
+an immutable `INCOMPLETE` bundle with explicit reasons. They do not crash evaluation or silently
+drop evidence. Identical inputs are idempotent across restart.
+
+The bundle always discloses that freshness is unassessed, only persisted offline evidence was
+examined, and no broker, live-trading, or production-readiness authority exists. Phase 5F adds no
+market, pattern, scoring, allocation, execution, networking, notification, or recovery behavior.

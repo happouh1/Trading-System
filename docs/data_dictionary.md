@@ -382,3 +382,15 @@ at an explicit as-of while recording `deletion_performed=false`.
 Migration `026_phase_5e_resilience.sql` adds append-only `operations_backup_manifests`,
 `operations_restore_verifications`, and `operations_retention_reports` with canonical payloads and
 hashes.
+
+## Phase 5F release evidence
+
+`ReleaseEvidenceBundle` binds an explicit as-of timestamp to one Phase 5A readiness manifest, one
+Phase 5B monitor report, one Phase 5D control snapshot, one Phase 5C request and its latest attempt,
+one Phase 5E backup manifest, and one restore verification. It stores `COMPLETE` or `INCOMPLETE`,
+canonical evidence-name/hash pairs, canonical reason codes, mandatory non-authority disclosures,
+source revision, package version, and release configuration hash.
+
+Migration `027_phase_5f_release_evidence.sql` adds the append-only
+`operations_release_evidence_bundles` table. The row preserves canonical payload JSON and its hash;
+source records remain in their original immutable Phase 5A-E tables.

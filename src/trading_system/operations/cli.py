@@ -33,6 +33,8 @@ from trading_system.operations.monitoring import (
     ScheduleDefinition,
 )
 from trading_system.operations.registry import OperationsRegistry
+from trading_system.operations.release_config import load_operations_release_config
+from trading_system.operations.release_registry import OperationsReleaseRegistry
 from trading_system.operations.resilience import OperationsResilienceService
 from trading_system.operations.resilience_config import load_operations_resilience_config
 from trading_system.operations.resilience_registry import OperationsResilienceRegistry
@@ -124,6 +126,15 @@ def configure_operations_parser(
     retention_status.add_argument("--config", required=True)
     retention_status.add_argument("--database", required=True)
     retention_status.add_argument("--as-of", required=True)
+    validate_release = actions.add_parser("validate-release-config")
+    validate_release.add_argument("--config", required=True)
+    release_evidence = actions.add_parser("release-evidence")
+    release_evidence.add_argument("--config", required=True)
+    release_evidence.add_argument("--input", required=True)
+    release_evidence.add_argument("--database", required=True)
+    release_status = actions.add_parser("release-status")
+    release_status.add_argument("--database", required=True)
+    release_status.add_argument("--bundle-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -547,7 +558,98 @@ def _handle_resilience(args: argparse.Namespace) -> int:
         return 0
 
 
+def _handle_release(args: argparse.Namespace) -> int:
+    if args.operations_command == "release-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            row = repository.connection.execute(
+                """SELECT status, payload_json
+                   FROM operations_release_evidence_bundles WHERE bundle_id = ?""",
+                (args.bundle_id,),
+            ).fetchone()
+            if row is None:
+                raise ValueError("unknown release evidence bundle")
+        print(
+            canonical_json(
+                {
+                    "bundle_id": args.bundle_id,
+                    "status": str(row[0]),
+                    "bundle": json.loads(str(row[1])),
+                    "production_readiness_claim": False,
+                    "network_used": False,
+                    "broker_write_performed": False,
+                    "live_trading_enabled": False,
+                }
+            )
+        )
+        return 0
+    config = load_operations_release_config(args.config)
+    if args.operations_command == "validate-release-config":
+        print(
+            canonical_json(
+                {
+                    "config_hash": config.config_hash,
+                    "valid": True,
+                    "production_readiness_claim": False,
+                }
+            )
+        )
+        return 0
+    root = _control_input(
+        args.input,
+        {
+            "as_of",
+            "readiness_manifest_id",
+            "monitor_report_id",
+            "control_snapshot_id",
+            "run_request_id",
+            "backup_id",
+            "restore_verification_id",
+            "source_revision",
+        },
+    )
+    with SQLiteRepository(args.database) as repository:
+        repository.migrate()
+        registry = OperationsReleaseRegistry(repository, config)
+        bundle = registry.evaluate(
+            as_of=_time(root["as_of"]),
+            readiness_manifest_id=_string(
+                root["readiness_manifest_id"], "readiness manifest ID"
+            ),
+            monitor_report_id=_string(root["monitor_report_id"], "monitor report ID"),
+            control_snapshot_id=_string(
+                root["control_snapshot_id"], "control snapshot ID"
+            ),
+            run_request_id=_string(root["run_request_id"], "run request ID"),
+            backup_id=_string(root["backup_id"], "backup ID"),
+            restore_verification_id=_string(
+                root["restore_verification_id"], "restore verification ID"
+            ),
+            source_revision=_string(root["source_revision"], "source revision"),
+        )
+        inserted = registry.insert(bundle)
+    print(
+        canonical_json(
+            {
+                "bundle": bundle,
+                "inserted": inserted,
+                "production_readiness_claim": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
+    return 0
+
+
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-release-config",
+        "release-evidence",
+        "release-status",
+    }:
+        return _handle_release(args)
     if args.operations_command in {
         "validate-resilience-config",
         "backup-database",

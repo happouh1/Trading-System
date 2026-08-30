@@ -488,3 +488,16 @@ whole-system recovery rather than one verified SQLite artifact?
 cross-database recovery point is required? Phase 5E snapshots each SQLite source independently.
 148. Which separately reviewed process may promote a verified restore, and what rollback, operator
 authentication, quorum, and reconciliation evidence must precede that action?
+
+149. Which component-specific freshness objectives and clock-skew allowance are required before a
+Phase 5F evidence bundle may support any operational service-level claim?
+150. Who or what may consume a `COMPLETE` evidence bundle, and which authenticated approval process
+must remain separate from evidence generation?
+151. Which CI provenance, dependency attestations, signatures, SBOM, vulnerability policy, and
+artifact reproducibility checks are required for a future software release qualification?
+152. How should a future release bundle establish one atomic recovery point across independently
+written SQLite component databases without inventing cross-database consistency?
+153. What separately reviewed criteria, accountable owners, rollback evidence, and operating period
+are required before anyone may make a production-readiness claim?
+154. Should an independent external auditor or verification service attest evidence hashes, and if
+so, how can that authority remain isolated from trading and release execution?

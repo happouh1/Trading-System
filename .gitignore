@@ -18,3 +18,5 @@ tests/.tmp-phase3d-*/
 .codex-test-tmp-*/
 .tmp-pytest-*/
 .tmp-phase5d-*/
+.tmp-phase5f-*/
+.tmp/

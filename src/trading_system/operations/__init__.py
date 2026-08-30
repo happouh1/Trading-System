@@ -51,6 +51,16 @@ from trading_system.operations.monitoring import (
     SchedulePlan,
 )
 from trading_system.operations.registry import OperationsRegistry
+from trading_system.operations.release_config import (
+    OperationsReleaseConfig,
+    OperationsReleaseConfigError,
+    load_operations_release_config,
+)
+from trading_system.operations.release_contracts import (
+    ReleaseEvidenceBundle,
+    ReleaseEvidenceStatus,
+)
+from trading_system.operations.release_registry import OperationsReleaseRegistry
 from trading_system.operations.resilience import OperationsResilienceService
 from trading_system.operations.resilience_config import (
     OperationsResilienceConfig,
@@ -117,6 +127,9 @@ __all__ = [
     "OperationsMonitorConfigError",
     "OperationsMonitorEngine",
     "OperationsRegistry",
+    "OperationsReleaseConfig",
+    "OperationsReleaseConfigError",
+    "OperationsReleaseRegistry",
     "OperationsResilienceConfig",
     "OperationsResilienceConfigError",
     "OperationsResilienceRegistry",
@@ -125,6 +138,8 @@ __all__ = [
     "OperationsRunnerConfigError",
     "OperationsRunnerRegistry",
     "ReadinessStatus",
+    "ReleaseEvidenceBundle",
+    "ReleaseEvidenceStatus",
     "RestoreVerification",
     "RetentionReport",
     "ScheduleCursor",
@@ -138,6 +153,7 @@ __all__ = [
     "load_operations_config",
     "load_operations_control_config",
     "load_operations_monitor_config",
+    "load_operations_release_config",
     "load_operations_resilience_config",
     "load_operations_runner_config",
 ]
