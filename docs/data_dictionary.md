@@ -312,3 +312,13 @@ concurrency, counts, ordered event IDs, both configuration hashes, revision, and
 
 Migration `021_phase_4e_option_capital.sql` adds append-only `option_capital_runs`,
 `option_capital_events`, and `option_capital_reports` tables with canonical payload hashes.
+
+## Phase 5A unified operations
+
+`ComponentEvidence` stores component name, database label, inspection timestamp, readiness status,
+canonical table counts, failure reasons, and an evidence fingerprint. `OperationsManifest` binds
+exactly seven evidence IDs to configuration hash, code version, source revision, overall status,
+namespaced reasons, and authority disclosures.
+
+Migration `022_phase_5a_operations.sql` adds append-only `operations_manifests` and
+`operations_component_evidence` tables. Source database paths are runtime inputs and are not stored.

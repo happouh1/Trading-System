@@ -384,3 +384,14 @@ same timestamp. Exact cash and deployed balances are recorded after every event.
 
 Because no intermediate option marks exist, the output is a funding-feasibility ledger, not a
 mark-to-market portfolio backtest. Drawdown, CAGR, Sharpe, margin, and scalability are not claimed.
+
+## Phase 5A unified operations inspection
+
+Phase 5A reads explicit SQLite component bindings in read-only mode. Required table existence and
+nonempty row counts form minimum evidence; count and maximum-rowid markers make append-only changes
+visible in the evidence fingerprint. Missing databases, missing schema, empty required tables, and
+unmatched latest paper or Webull reconciliations produce `NOT_READY`.
+
+The manifest requires all seven components and contains no action callback. Its output describes
+persisted evidence at a supplied timestamp, not market freshness, profitability, live suitability,
+or authorization to execute any workflow.

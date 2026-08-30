@@ -1,0 +1,25 @@
+{
+  "operations_version": "5A.1.0",
+  "authority": {
+    "inspection_only": true,
+    "workflow_execution_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false,
+    "automatic_promotion_enabled": false
+  },
+  "components": {
+    "CORE_RESEARCH": ["runs", "candles", "feature_snapshots", "decisions"],
+    "RESEARCH_EVALUATION": ["experiments", "experiment_reports"],
+    "MODELING": ["model_experiments", "model_reports"],
+    "PAPER": ["paper_sessions", "paper_reconciliations"],
+    "WEBULL_SANDBOX": ["webull_connection_verifications", "webull_reconciliations"],
+    "PORTFOLIO": ["portfolio_states", "portfolio_assessments"],
+    "OPTIONS": ["option_validation_results", "option_experiment_transitions", "option_capital_reports"]
+  },
+  "policy": {
+    "missing_database": "NOT_READY",
+    "missing_table": "NOT_READY",
+    "empty_required_table": "NOT_READY",
+    "all_components_required": true
+  }
+}

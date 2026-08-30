@@ -252,6 +252,20 @@ trading-system options capital-status --database research.sqlite --run-id OPTION
 The ledger does not optimize allocations or report mark-to-market portfolio metrics. See
 `docs/proposals/phase_4e_option_capital_feasibility_v1.md` and `docs/phase_4e_review.md`.
 
+Phase 5A adds an offline unified readiness manifest over the existing system. Each component is
+bound to an explicit SQLite database in an input JSON file; source databases are inspected
+read-only and the resulting audit evidence is stored in a separate registry database.
+
+```text
+trading-system operations validate-config --config config/operations.phase5a.v1.yaml
+trading-system operations inspect --config config/operations.phase5a.v1.yaml --input operations.json --registry-database operations.sqlite
+trading-system operations status --registry-database operations.sqlite --manifest-id MANIFEST_ID
+```
+
+`READY` means only that every configured component has minimum persisted evidence and the latest
+paper/Webull reconciliations match. It grants no workflow or trading authority. See
+`docs/proposals/phase_5a_unified_operations_v1.md` and `docs/phase_5a_review.md`.
+
 ## Development
 
 Requires Python 3.12.

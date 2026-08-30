@@ -288,3 +288,15 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   volatility, margin-utilization, and portfolio-return claims.
 - `OPTION_CAPITAL_RESEARCH_ONLY`: no allocation optimization, quantity resizing, broker write,
   options execution, or automatic strategy promotion can be enabled.
+- `OPERATIONS_INSPECTION_ONLY`: Phase 5A can read declared SQLite evidence and persist an audit
+  manifest, but cannot invoke workflows, load credentials, or cross a broker boundary.
+- `OPERATIONS_ALL_COMPONENTS_REQUIRED`: core research, evaluation, modeling, paper, Webull Sandbox,
+  portfolio, and options evidence must each appear exactly once.
+- `OPERATIONS_FAIL_CLOSED`: missing databases, missing tables, empty required tables, and unmatched
+  latest paper or Webull reconciliations produce `NOT_READY` with explicit reasons.
+- `OPERATIONS_SOURCE_READ_ONLY`: component databases use SQLite read-only mode; only the separately
+  declared registry database receives append-only manifest evidence.
+- `OPERATIONS_DETERMINISTIC`: supplied timestamp, code/config/revision identity, canonical component
+  ordering, and evidence fingerprints determine immutable IDs independent of input object ordering.
+- `OPERATIONS_NO_AUTHORITY_INFERENCE`: `READY` describes minimum durable evidence and never implies
+  profitability, live suitability, capital approval, model promotion, or order authority.

@@ -162,3 +162,35 @@ def test_options_research_has_no_broker_model_learning_or_decision_dependency() 
             ):
                 violations.append(f"{path}:{node.lineno}")
     assert not violations, f"forbidden options dependencies: {violations}"
+
+
+def test_operations_control_plane_has_no_strategy_or_broker_dependency() -> None:
+    violations: list[str] = []
+    root = ROOT / "src" / "trading_system" / "operations"
+    forbidden = {
+        "trading_system.decisions",
+        "trading_system.execution_sim",
+        "trading_system.learning",
+        "trading_system.modeling",
+        "trading_system.options",
+        "trading_system.paper",
+        "trading_system.portfolio",
+        "trading_system.risk",
+        "trading_system.webull",
+    }
+    for path in root.rglob("*.py"):
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                names = {alias.name for alias in node.names}
+            elif isinstance(node, ast.ImportFrom):
+                names = {node.module or ""}
+            else:
+                continue
+            if any(
+                name == ban or name.startswith(f"{ban}.")
+                for name in names
+                for ban in forbidden
+            ):
+                violations.append(f"{path}:{node.lineno}")
+    assert not violations, f"forbidden operations dependencies: {violations}"

@@ -428,3 +428,14 @@ those metrics.
 whole-batch rejection without introducing score-based optimization or case-ID favoritism?
 120. Should future capital research model quote-size capacity and partial allocation only after an
 authoritative historical NBBO-size source is selected?
+
+121. Which freshness service-level objectives should eventually supplement Phase 5A row-presence
+checks for market data, model artifacts, paper heartbeats, reconciliations, and option snapshots?
+122. Should operational readiness remain a manual snapshot or later gain a separately authorized
+scheduler and alert transport? Phase 5A starts no process and sends no notification.
+123. What explicit human approvals and evidence are required before a future control plane may
+transition any subsystem from research to shadow, simulated paper, or broker sandbox operation?
+124. How should resolved incidents be represented so readiness can distinguish historical incidents
+from active hazards without assuming that a later successful reconciliation resolves every cause?
+125. Which backup, restore, retention, encryption, and database-integrity policies are required
+before the readiness registry can be treated as production operational evidence?

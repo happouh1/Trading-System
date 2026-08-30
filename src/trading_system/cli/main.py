@@ -14,6 +14,7 @@ from trading_system.config import load_config
 from trading_system.learning import write_observations
 from trading_system.market_data import XNYSCalendar, read_ohlcv
 from trading_system.modeling.cli import configure_model_parser, handle_model
+from trading_system.operations.cli import configure_operations_parser, handle_operations
 from trading_system.options.cli import configure_options_parser, handle_options
 from trading_system.paper.cli import configure_paper_parser, handle_paper
 from trading_system.persistence import RunRecord, SQLiteRepository
@@ -52,6 +53,7 @@ def _parser() -> argparse.ArgumentParser:
     configure_webull_parser(commands)
     configure_portfolio_parser(commands)
     configure_options_parser(commands)
+    configure_operations_parser(commands)
     return parser
 
 
@@ -157,6 +159,7 @@ def main(argv: list[str] | None = None) -> int:
         "webull": handle_webull,
         "portfolio": handle_portfolio,
         "options": handle_options,
+        "operations": handle_operations,
     }
     return handlers[args.command](args)
 
