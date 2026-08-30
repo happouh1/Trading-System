@@ -21,6 +21,14 @@ from trading_system.options.contracts import (
     SettlementType,
 )
 from trading_system.options.engine import OptionsScreenEngine
+from trading_system.options.experiment_config import load_options_experiment_config
+from trading_system.options.experiments import (
+    OptionExperimentDefinition,
+    OptionExperimentPartition,
+    OptionExperimentStage,
+    OptionExperimentTransition,
+    OptionsExperimentEngine,
+)
 from trading_system.options.registry import OptionsRegistry
 from trading_system.options.validation import (
     OptionMark,
@@ -49,6 +57,23 @@ def configure_options_parser(
     backtest.add_argument("--config", required=True)
     backtest.add_argument("--input", required=True)
     backtest.add_argument("--database")
+    validate_experiment = actions.add_parser("validate-experiment-config")
+    validate_experiment.add_argument("--config", required=True)
+    for name in (
+        "experiment-define",
+        "experiment-development",
+        "experiment-freeze",
+        "experiment-test",
+        "experiment-complete",
+    ):
+        command = actions.add_parser(name)
+        command.add_argument("--config", required=True)
+        command.add_argument("--backtest-config", required=True)
+        command.add_argument("--input", required=True)
+        command.add_argument("--database", required=True)
+    status = actions.add_parser("experiment-status")
+    status.add_argument("--database", required=True)
+    status.add_argument("--experiment-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -287,7 +312,204 @@ def _parse_backtest_input(path: str) -> tuple[str, tuple[OptionValidationCase, .
     return source_revision, cases
 
 
+def _parse_experiment_input(
+    path: str,
+) -> tuple[str, tuple[date, ...], tuple[OptionValidationCase, ...]]:
+    root = _object(json.loads(Path(path).read_text(encoding="utf-8")), "experiment input")
+    _exact_keys(root, {"source_revision", "sessions", "cases"}, "experiment input")
+    raw_sessions = root["sessions"]
+    raw_cases = root["cases"]
+    if not isinstance(raw_sessions, list) or not raw_sessions:
+        raise ValueError("experiment sessions must be a nonempty array")
+    sessions = tuple(_date(item, "experiment session") for item in raw_sessions)
+    if tuple(sorted(set(sessions))) != sessions:
+        raise ValueError("experiment sessions must be unique and strictly increasing")
+    if not isinstance(raw_cases, list) or not raw_cases:
+        raise ValueError("experiment cases must be a nonempty array")
+    cases = tuple(_validation_case(item) for item in raw_cases)
+    if len({item.case_id for item in cases}) != len(cases):
+        raise ValueError("experiment case identities must be unique")
+    source_revision = str(root["source_revision"])
+    if not source_revision:
+        raise ValueError("experiment source revision is required")
+    return source_revision, sessions, cases
+
+
+def _experiment_engine(
+    config_path: str,
+    backtest_config_path: str,
+) -> OptionsExperimentEngine:
+    return OptionsExperimentEngine(
+        load_options_experiment_config(config_path),
+        OptionsValidationEngine(load_options_validation_config(backtest_config_path)),
+    )
+
+
+def _experiment_definition(
+    engine: OptionsExperimentEngine,
+    path: str,
+) -> tuple[OptionExperimentDefinition, tuple[OptionValidationCase, ...]]:
+    source_revision, sessions, cases = _parse_experiment_input(path)
+    return engine.define(source_revision=source_revision, sessions=sessions, cases=cases), cases
+
+
+def _handle_experiment(args: argparse.Namespace) -> int:
+    if args.options_command == "validate-experiment-config":
+        config = load_options_experiment_config(args.config)
+        print(canonical_json({"config_hash": config.config_hash, "valid": True}))
+        return 0
+    if args.options_command == "experiment-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = OptionsRegistry(repository)
+            stage = registry.experiment_stage(args.experiment_id)
+            status_payloads = registry.experiment_evaluation_payloads(args.experiment_id)
+        print(
+            canonical_json(
+                {
+                    "experiment_id": args.experiment_id,
+                    "stage": stage,
+                    "evaluation_count": len(status_payloads),
+                }
+            )
+        )
+        return 0
+    engine = _experiment_engine(args.config, args.backtest_config)
+    definition, cases = _experiment_definition(engine, args.input)
+    folds = engine.folds(definition)
+    with SQLiteRepository(args.database) as repository:
+        repository.migrate()
+        registry = OptionsRegistry(repository)
+        registry.insert_experiment(definition)
+        for fold in folds:
+            registry.insert_experiment_fold(fold)
+        stage = registry.experiment_stage(definition.experiment_id)
+        if args.options_command == "experiment-define":
+            print(canonical_json({"definition": definition, "folds": folds, "stage": stage}))
+            return 0
+        if args.options_command == "experiment-development":
+            if stage is not OptionExperimentStage.DEFINED:
+                raise ValueError("development evaluation requires DEFINED stage")
+            results = {case.case_id: engine.validation_engine.evaluate(case) for case in cases}
+            for case in cases:
+                registry.insert_validation_case(case)
+                registry.insert_validation_result(results[case.case_id])
+            development_evaluations = []
+            for fold in folds:
+                for assignment in engine.assignments(definition, fold, cases):
+                    registry.insert_experiment_assignment(assignment)
+                for partition in (
+                    OptionExperimentPartition.TRAIN,
+                    OptionExperimentPartition.VALIDATION,
+                ):
+                    evaluation = engine.evaluate_partition(definition, fold, partition, cases)
+                    registry.insert_fold_evaluation(evaluation)
+                    development_evaluations.append(evaluation)
+            registry.insert_experiment_transition(
+                OptionExperimentTransition.create(
+                    definition.experiment_id,
+                    OptionExperimentStage.DEFINED,
+                    OptionExperimentStage.DEVELOPMENT_EVALUATED,
+                )
+            )
+            print(
+                canonical_json(
+                    {
+                        "experiment_id": definition.experiment_id,
+                        "evaluations": development_evaluations,
+                    }
+                )
+            )
+            return 0
+        development = tuple(
+            engine.evaluate_partition(definition, fold, partition, cases)
+            for fold in folds
+            for partition in (
+                OptionExperimentPartition.TRAIN,
+                OptionExperimentPartition.VALIDATION,
+            )
+        )
+        frozen_hash = engine.frozen_definition_hash(definition, folds, development)
+        if args.options_command == "experiment-freeze":
+            if stage is not OptionExperimentStage.DEVELOPMENT_EVALUATED:
+                raise ValueError("freeze requires DEVELOPMENT_EVALUATED stage")
+            registry.insert_experiment_transition(
+                OptionExperimentTransition.create(
+                    definition.experiment_id,
+                    OptionExperimentStage.DEVELOPMENT_EVALUATED,
+                    OptionExperimentStage.FROZEN,
+                    frozen_hash,
+                )
+            )
+            print(
+                canonical_json(
+                    {
+                        "experiment_id": definition.experiment_id,
+                        "frozen_definition_hash": frozen_hash,
+                    }
+                )
+            )
+            return 0
+        if args.options_command == "experiment-test":
+            if stage is not OptionExperimentStage.FROZEN:
+                raise ValueError("test evaluation requires FROZEN stage")
+            if registry.frozen_definition_hash(definition.experiment_id) != frozen_hash:
+                raise ValueError(
+                    "frozen options experiment definition does not match active inputs"
+                )
+            test_evaluations = tuple(
+                engine.evaluate_partition(
+                    definition,
+                    fold,
+                    OptionExperimentPartition.TEST,
+                    cases,
+                )
+                for fold in folds
+            )
+            for evaluation in test_evaluations:
+                registry.insert_fold_evaluation(evaluation)
+            registry.insert_experiment_transition(
+                OptionExperimentTransition.create(
+                    definition.experiment_id,
+                    OptionExperimentStage.FROZEN,
+                    OptionExperimentStage.TEST_EVALUATED,
+                )
+            )
+            print(
+                canonical_json(
+                    {
+                        "experiment_id": definition.experiment_id,
+                        "evaluations": test_evaluations,
+                    }
+                )
+            )
+            return 0
+        if stage is not OptionExperimentStage.TEST_EVALUATED:
+            raise ValueError("completion requires TEST_EVALUATED stage")
+        registry.insert_experiment_transition(
+            OptionExperimentTransition.create(
+                definition.experiment_id,
+                OptionExperimentStage.TEST_EVALUATED,
+                OptionExperimentStage.COMPLETE,
+            )
+        )
+        print(
+            canonical_json(
+                {
+                    "experiment_id": definition.experiment_id,
+                    "stage": OptionExperimentStage.COMPLETE,
+                }
+            )
+        )
+        return 0
+
+
 def handle_options(args: argparse.Namespace) -> int:
+    if (
+        args.options_command.startswith("experiment-")
+        or args.options_command == "validate-experiment-config"
+    ):
+        return _handle_experiment(args)
     if args.options_command == "validate-config":
         config = load_options_config(args.config)
         print(canonical_json({"config_hash": config.config_hash, "valid": True}))

@@ -1,0 +1,23 @@
+{
+  "experiment_version": "4D.1.0",
+  "authority": {
+    "research_only": true,
+    "automatic_optimization_enabled": false,
+    "options_execution_enabled": false,
+    "portfolio_performance_claims_enabled": false
+  },
+  "folds": {
+    "minimum_train_sessions": 504,
+    "validation_sessions": 63,
+    "test_sessions": 63,
+    "step_sessions": 63,
+    "embargo_sessions": 5
+  },
+  "evaluation": {
+    "assignment_timestamp": "SCREEN_KNOWN_AT",
+    "label_available_timestamp": "EXIT_AS_OF",
+    "require_freeze_before_test": true,
+    "minimum_partition_sample": 30,
+    "overlapping_cases_policy": "CASE_LEVEL_DISCLOSURE_ONLY"
+  }
+}

@@ -264,3 +264,15 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   than forward-filled prices.
 - `OPTION_VALIDATION_APPEND_ONLY`: cases, results, and reports use deterministic IDs and conflicting
   payloads cannot overwrite prior research evidence.
+- `OPTION_EXPERIMENT_CHRONOLOGICAL`: assign by UTC screening date to expanding, embargoed folds;
+  random or shuffled time splits are unavailable.
+- `OPTION_EXPERIMENT_LABEL_ASOF`: an exit mark is eligible only when its UTC date is no later than
+  the assigned partition cutoff; otherwise exclude it as `LABEL_UNAVAILABLE_AT_CUTOFF`.
+- `OPTION_EXPERIMENT_FREEZE_BEFORE_TEST`: persist development evaluation, then bind definition,
+  folds, and development IDs in an immutable hash before test evaluation.
+- `OPTION_EXPERIMENT_NO_OPTIMIZATION`: no command searches thresholds, chooses configurations,
+  calibrates results, or promotes an options strategy.
+- `OPTION_EXPERIMENT_CASE_LEVEL_ONLY`: metrics disclose overlapping cases, absent capital
+  allocation, and insufficient samples; no portfolio-performance claim is permitted.
+- `OPTION_EXPERIMENT_APPEND_ONLY`: definitions, folds, assignments, evaluations, and transitions
+  are content-addressed; identical replays are idempotent and conflicts fail.

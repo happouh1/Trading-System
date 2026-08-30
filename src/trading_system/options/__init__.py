@@ -14,6 +14,21 @@ from trading_system.options.contracts import (
     SettlementType,
 )
 from trading_system.options.engine import OptionsScreenEngine
+from trading_system.options.experiment_config import (
+    OptionsExperimentConfig,
+    OptionsExperimentConfigError,
+    load_options_experiment_config,
+)
+from trading_system.options.experiments import (
+    OptionExperimentAssignment,
+    OptionExperimentDefinition,
+    OptionExperimentFold,
+    OptionExperimentPartition,
+    OptionExperimentStage,
+    OptionExperimentTransition,
+    OptionFoldEvaluation,
+    OptionsExperimentEngine,
+)
 from trading_system.options.registry import OptionsRegistry
 from trading_system.options.validation import (
     OptionBacktestMetrics,
@@ -35,6 +50,13 @@ __all__ = [
     "OptionBacktestMetrics",
     "OptionBacktestReport",
     "OptionChainSnapshot",
+    "OptionExperimentAssignment",
+    "OptionExperimentDefinition",
+    "OptionExperimentFold",
+    "OptionExperimentPartition",
+    "OptionExperimentStage",
+    "OptionExperimentTransition",
+    "OptionFoldEvaluation",
     "OptionHorizon",
     "OptionMark",
     "OptionQuote",
@@ -47,6 +69,9 @@ __all__ = [
     "OptionValidationStatus",
     "OptionsConfig",
     "OptionsConfigError",
+    "OptionsExperimentConfig",
+    "OptionsExperimentConfigError",
+    "OptionsExperimentEngine",
     "OptionsRegistry",
     "OptionsScreenEngine",
     "OptionsValidationConfig",
@@ -55,5 +80,6 @@ __all__ = [
     "ScreeningAction",
     "SettlementType",
     "load_options_config",
+    "load_options_experiment_config",
     "load_options_validation_config",
 ]

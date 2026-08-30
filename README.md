@@ -7,7 +7,8 @@ ingestion, XNYS session validation, deterministic 1H/4H/Daily/Weekly aggregation
 features, confirmed structure, structural zones, pattern state machines, causal multi-timeframe
 scoring, explained decisions, structural plans, simulated trade lifecycle events, deterministic
 replay checkpoints, versioned outcomes, metrics, and bias-disclosed reports. It intentionally contains
-no brokerage connectivity, live trading, options, or machine-learning authority.
+no live-money authority or machine-learning authority. Later isolated packages add sandbox broker
+validation and research-only options analysis without changing Phase 1 decisions.
 
 Phase 4A adds a separate deterministic portfolio-research layer. It classifies planned holding
 horizons, applies versioned liquidity/exposure/risk gates, simulates accepted equity candidates,
@@ -222,6 +223,22 @@ trading-system options backtest --config config/options.phase4c.v1.yaml --input 
 Long premium enters at ask plus configured slippage and exits at bid minus slippage. Stale quotes
 are excluded, zero bids realize a full debit loss, and expiration-day cases are unsupported. See
 `docs/proposals/phase_4c_options_validation_v1.md` and `docs/phase_4c_review.md`.
+
+Phase 4D adds expanding chronological options experiments with embargoed train, validation, and
+test partitions. Exit labels must be available by the partition cutoff, development is frozen
+before test evaluation, and all metrics remain case-level with overlapping-capital disclosures.
+
+```text
+trading-system options validate-experiment-config --config config/options.phase4d.v1.yaml
+trading-system options experiment-define --config config/options.phase4d.v1.yaml --backtest-config config/options.phase4c.v1.yaml --input experiment.json --database research.sqlite
+trading-system options experiment-development --config config/options.phase4d.v1.yaml --backtest-config config/options.phase4c.v1.yaml --input experiment.json --database research.sqlite
+trading-system options experiment-freeze --config config/options.phase4d.v1.yaml --backtest-config config/options.phase4c.v1.yaml --input experiment.json --database research.sqlite
+trading-system options experiment-test --config config/options.phase4d.v1.yaml --backtest-config config/options.phase4c.v1.yaml --input experiment.json --database research.sqlite
+trading-system options experiment-complete --config config/options.phase4d.v1.yaml --backtest-config config/options.phase4c.v1.yaml --input experiment.json --database research.sqlite
+```
+
+Phase 4D performs no optimization and exposes no options execution. See
+`docs/proposals/phase_4d_options_walk_forward_v1.md` and `docs/phase_4d_review.md`.
 
 ## Development
 

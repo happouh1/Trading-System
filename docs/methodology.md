@@ -359,3 +359,15 @@ premium loss. Fees and slippage are versioned tunable research assumptions.
 Metrics order cases by exit known-at and deterministic result ID. They describe the supplied cases,
 not a funded portfolio: overlapping exposure, buying power, margin, assignment, and capital
 allocation are absent and must not be inferred.
+
+## Phase 4D chronological options experiments
+
+Phase 4D assigns each immutable Phase 4C case by the UTC date of its screening timestamp. Training
+windows expand; validation and test windows are disjoint and preceded by configured embargoes. A
+case's exit mark is usable only when its UTC date is no later than the assigned partition cutoff.
+Later labels are excluded rather than moved backward, filled, or treated as losses.
+
+Development evaluation covers training and validation partitions only. The freeze hash commits the
+definition, folds, and development evaluation IDs before test metrics can be persisted. The engine
+does not search configurations or select a winner. Every fold result remains a case-level
+description and discloses overlapping timing, absent capital allocation, and insufficient samples.

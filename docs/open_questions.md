@@ -403,3 +403,17 @@ before holding through expiration can be tested?
 portfolio CAGR, Sharpe, exposure, or drawdown percentages are reported?
 110. Should later validation record quote size and enforce quantity executable at displayed size?
 Phase 4C has no quote-size field and makes no capacity claim.
+
+111. Which licensed source supplies the authoritative historical exchange-session sequence and
+point-in-time option cases used by Phase 4D? The current input requires an explicit revision and
+does not infer missing sessions.
+112. Which predeclared alternative exit schedules may become separate experiment versions without
+turning validation or test data into an optimization surface?
+113. What minimum completed-case counts are required by horizon, direction, symbol, regime, and era
+before any comparative statement is allowed? The initial per-partition value of 30 is tunable.
+114. How should symbol-held-out options diagnostics handle sparse underlyings and changing contract
+availability without leaking test composition into development choices?
+115. What finite-capital allocation and overlapping-position policy is required before aggregated
+option P&L or drawdown can be interpreted as portfolio performance?
+116. Which governance process decides whether a frozen Phase 4D result can justify a new research
+proposal? Phase 4D itself has no automatic promotion authority.

@@ -286,3 +286,19 @@ ordered result IDs, metrics, config hash, source revision, and latest known-at t
 
 SQLite tables `option_validation_cases`, `option_validation_results`, and
 `option_backtest_reports` store append-only canonical payloads and hashes.
+
+## Phase 4D option experiments
+
+`OptionExperimentDefinition` binds the dataset revision, strictly increasing session dates,
+canonical case IDs, and Phase 4C/4D configuration hashes. `OptionExperimentFold` stores expanding
+train, validation, and test boundaries. `OptionExperimentAssignment` records `TRAIN`, `VALIDATION`,
+`TEST`, or `EXCLUDED` plus its causal reason.
+
+`OptionFoldEvaluation` stores one partition cutoff, ordered Phase 4C result IDs, case-level metrics,
+sample-sufficiency flag, mandatory disclosures, and both configuration hashes.
+`OptionExperimentTransition` records the append-only lifecycle and the freeze hash when entering
+`FROZEN`.
+
+Migration `020_phase_4d_option_experiments.sql` adds `option_experiments`,
+`option_experiment_folds`, `option_experiment_assignments`, `option_fold_evaluations`, and
+`option_experiment_transitions`.

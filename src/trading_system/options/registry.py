@@ -5,6 +5,14 @@ from __future__ import annotations
 from datetime import UTC, datetime
 
 from trading_system.options.contracts import OptionChainSnapshot, OptionScreenResult
+from trading_system.options.experiments import (
+    OptionExperimentAssignment,
+    OptionExperimentDefinition,
+    OptionExperimentFold,
+    OptionExperimentStage,
+    OptionExperimentTransition,
+    OptionFoldEvaluation,
+)
 from trading_system.options.validation import (
     OptionBacktestReport,
     OptionValidationCase,
@@ -166,6 +174,173 @@ class OptionsRegistry:
                ORDER BY known_at, result_id"""
         ).fetchall()
         return tuple(str(row[0]) for row in rows)
+
+    def insert_experiment(self, experiment: OptionExperimentDefinition) -> bool:
+        return self._insert_experiment(
+            "option_experiments",
+            "experiment_id",
+            experiment.experiment_id,
+            (
+                "source_revision",
+                "phase4c_config_hash",
+                "phase4d_config_hash",
+                "definition_hash",
+            ),
+            (
+                experiment.source_revision,
+                experiment.phase4c_config_hash,
+                experiment.phase4d_config_hash,
+                experiment.definition_hash,
+            ),
+            experiment,
+        )
+
+    def insert_experiment_fold(self, fold: OptionExperimentFold) -> bool:
+        return self._insert_experiment(
+            "option_experiment_folds",
+            "fold_id",
+            fold.fold_id,
+            ("experiment_id", "ordinal", "test_end"),
+            (fold.experiment_id, fold.ordinal, fold.test_end.isoformat()),
+            fold,
+        )
+
+    def insert_experiment_assignment(self, assignment: OptionExperimentAssignment) -> bool:
+        return self._insert_experiment(
+            "option_experiment_assignments",
+            "assignment_id",
+            assignment.assignment_id,
+            ("experiment_id", "fold_id", "case_id", "partition", "reason"),
+            (
+                assignment.experiment_id,
+                assignment.fold_id,
+                assignment.case_id,
+                assignment.partition.value,
+                assignment.reason,
+            ),
+            assignment,
+        )
+
+    def insert_fold_evaluation(self, evaluation: OptionFoldEvaluation) -> bool:
+        return self._insert_experiment(
+            "option_fold_evaluations",
+            "evaluation_id",
+            evaluation.evaluation_id,
+            (
+                "experiment_id",
+                "fold_id",
+                "partition",
+                "cutoff",
+                "phase4c_config_hash",
+                "phase4d_config_hash",
+            ),
+            (
+                evaluation.experiment_id,
+                evaluation.fold_id,
+                evaluation.partition.value,
+                evaluation.cutoff.isoformat(),
+                evaluation.phase4c_config_hash,
+                evaluation.phase4d_config_hash,
+            ),
+            evaluation,
+        )
+
+    def insert_experiment_transition(self, transition: OptionExperimentTransition) -> bool:
+        sequence = {
+            OptionExperimentStage.DEVELOPMENT_EVALUATED: 1,
+            OptionExperimentStage.FROZEN: 2,
+            OptionExperimentStage.TEST_EVALUATED: 3,
+            OptionExperimentStage.COMPLETE: 4,
+        }[transition.new_stage]
+        return self._insert_experiment(
+            "option_experiment_transitions",
+            "transition_id",
+            transition.transition_id,
+            (
+                "experiment_id",
+                "sequence",
+                "prior_stage",
+                "new_stage",
+                "frozen_definition_hash",
+            ),
+            (
+                transition.experiment_id,
+                sequence,
+                transition.prior_stage.value,
+                transition.new_stage.value,
+                transition.frozen_definition_hash,
+            ),
+            transition,
+        )
+
+    def experiment_stage(self, experiment_id: str) -> OptionExperimentStage:
+        row = self.repository.connection.execute(
+            """SELECT new_stage FROM option_experiment_transitions
+               WHERE experiment_id = ? ORDER BY sequence DESC LIMIT 1""",
+            (experiment_id,),
+        ).fetchone()
+        if row is None:
+            exists = self.repository.connection.execute(
+                "SELECT 1 FROM option_experiments WHERE experiment_id = ?",
+                (experiment_id,),
+            ).fetchone()
+            if exists is None:
+                raise ValueError("options experiment is not defined")
+            return OptionExperimentStage.DEFINED
+        return OptionExperimentStage(str(row[0]))
+
+    def frozen_definition_hash(self, experiment_id: str) -> str | None:
+        row = self.repository.connection.execute(
+            """SELECT frozen_definition_hash FROM option_experiment_transitions
+               WHERE experiment_id = ? AND new_stage = 'FROZEN'""",
+            (experiment_id,),
+        ).fetchone()
+        return None if row is None else str(row[0])
+
+    def experiment_evaluation_payloads(self, experiment_id: str) -> tuple[str, ...]:
+        rows = self.repository.connection.execute(
+            """SELECT payload_json FROM option_fold_evaluations
+               WHERE experiment_id = ? ORDER BY cutoff, fold_id, partition""",
+            (experiment_id,),
+        ).fetchall()
+        return tuple(str(row[0]) for row in rows)
+
+    def _insert_experiment(
+        self,
+        table: str,
+        identity_column: str,
+        identity: str,
+        columns: tuple[str, ...],
+        values: tuple[object, ...],
+        payload: object,
+    ) -> bool:
+        allowed = {
+            "option_experiments",
+            "option_experiment_folds",
+            "option_experiment_assignments",
+            "option_fold_evaluations",
+            "option_experiment_transitions",
+        }
+        if table not in allowed:
+            raise ValueError("unsupported options experiment registry table")
+        payload_json = canonical_json(payload)
+        payload_hash = canonical_hash(payload)
+        column_sql = ", ".join((identity_column, *columns, "payload_json", "payload_hash"))
+        placeholders = ", ".join("?" for _ in range(len(values) + 3))
+        cursor = self.repository.connection.execute(
+            f"INSERT OR IGNORE INTO {table} ({column_sql}) VALUES ({placeholders})",
+            (identity, *values, payload_json, payload_hash),
+        )
+        if cursor.rowcount == 0:
+            stored = self.repository.connection.execute(
+                f"SELECT payload_hash FROM {table} WHERE {identity_column} = ?",
+                (identity,),
+            ).fetchone()
+            if stored != (payload_hash,):
+                raise ValueError(f"conflicting {table} payload")
+            return False
+        self.repository.connection.commit()
+        return True
 
     def _insert_validation(
         self,
