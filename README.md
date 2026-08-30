@@ -280,6 +280,22 @@ trading-system operations monitor-status --database operations.sqlite --report-i
 notification delivery, credential loading, network access, or brokerage activity. See
 `docs/proposals/phase_5b_schedule_monitoring_v1.md` and `docs/phase_5b_review.md`.
 
+Phase 5C adds a controlled runner for exact due jobs already persisted by Phase 5B. It accepts no
+shell text or executable path. The only initial packaged actions are deterministic no-op evidence
+and a read-only SQLite `quick_check` within the configured workspace.
+
+```text
+trading-system operations validate-runner-config --config config/operations.phase5c.v1.yaml
+trading-system operations run-job --config config/operations.phase5c.v1.yaml --input run-job.json --database operations.sqlite
+trading-system operations run-status --database operations.sqlite --request-id REQUEST_ID
+```
+
+Each invocation performs at most one attempt. Failures and hard timeouts are journaled with a
+future retry-eligible timestamp; a later invocation performs the retry. SQLite leases prevent two
+runners from handling the same scheduled job concurrently and expire for crash recovery. Phase 5C
+still has no network, credential, notification, broker-write, or live-trading authority. See
+`docs/proposals/phase_5c_controlled_runner_v1.md` and `docs/phase_5c_review.md`.
+
 ## Development
 
 Requires Python 3.12.

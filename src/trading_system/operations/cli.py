@@ -21,6 +21,9 @@ from trading_system.operations.monitoring import (
     ScheduleDefinition,
 )
 from trading_system.operations.registry import OperationsRegistry
+from trading_system.operations.runner import JobRunRequest, OperationsJobRunner, WorkerAction
+from trading_system.operations.runner_config import load_operations_runner_config
+from trading_system.operations.runner_registry import OperationsRunnerRegistry
 from trading_system.persistence import SQLiteRepository
 from trading_system.serialization import canonical_json
 
@@ -48,6 +51,15 @@ def configure_operations_parser(
     monitor_status = actions.add_parser("monitor-status")
     monitor_status.add_argument("--database", required=True)
     monitor_status.add_argument("--report-id", required=True)
+    validate_runner = actions.add_parser("validate-runner-config")
+    validate_runner.add_argument("--config", required=True)
+    run_job = actions.add_parser("run-job")
+    run_job.add_argument("--config", required=True)
+    run_job.add_argument("--input", required=True)
+    run_job.add_argument("--database", required=True)
+    run_status = actions.add_parser("run-status")
+    run_status.add_argument("--database", required=True)
+    run_status.add_argument("--request-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -193,7 +205,77 @@ def _handle_monitor(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_runner(args: argparse.Namespace) -> int:
+    if args.operations_command == "validate-runner-config":
+        config = load_operations_runner_config(args.config)
+        print(canonical_json({"config_hash": config.config_hash, "valid": True}))
+        return 0
+    if args.operations_command == "run-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            payload, attempts = OperationsRunnerRegistry(repository).status(args.request_id)
+        print(
+            canonical_json(
+                {
+                    "request": json.loads(payload),
+                    "attempts": attempts,
+                    "attempt_count": len(attempts),
+                }
+            )
+        )
+        return 0
+    config = load_operations_runner_config(args.config)
+    root = _object(json.loads(Path(args.input).read_text(encoding="utf-8")), "run input")
+    if set(root) != {
+        "schedule_plan_id",
+        "schedule_job_id",
+        "due_at",
+        "requested_at",
+        "action",
+        "target",
+        "source_revision",
+    }:
+        raise ValueError("run input fields are invalid")
+    target = root["target"]
+    if target is not None and (not isinstance(target, str) or not target):
+        raise ValueError("run target must be null or a nonempty string")
+    request = JobRunRequest.create(
+        schedule_plan_id=_string(root["schedule_plan_id"], "schedule plan ID"),
+        schedule_job_id=_string(root["schedule_job_id"], "schedule job ID"),
+        due_at=_time(root["due_at"]),
+        requested_at=_time(root["requested_at"]),
+        action=WorkerAction(_string(root["action"], "worker action")),
+        target=target,
+        source_revision=_string(root["source_revision"], "run source revision"),
+        config_hash=config.config_hash,
+    )
+    with SQLiteRepository(args.database) as repository:
+        repository.migrate()
+        registry = OperationsRunnerRegistry(repository)
+        attempt = OperationsJobRunner(config, registry).run_once(request)
+    print(
+        canonical_json(
+            {
+                "request": request,
+                "attempt": attempt,
+                "packaged_worker_only": True,
+                "shell_used": False,
+                "network_used": False,
+                "credential_accessed": False,
+                "broker_write_performed": False,
+            }
+        )
+    )
+    return 0
+
+
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-runner-config",
+        "run-job",
+        "run-status",
+    }:
+        return _handle_runner(args)
     if args.operations_command in {
         "validate-monitor-config",
         "monitor",

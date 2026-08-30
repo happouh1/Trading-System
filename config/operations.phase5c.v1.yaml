@@ -1,0 +1,26 @@
+{
+  "runner_version": "5C.1.0",
+  "authority": {
+    "offline_shadow_only": true,
+    "packaged_workers_only": true,
+    "shell_enabled": false,
+    "arbitrary_executables_enabled": false,
+    "network_enabled": false,
+    "credentials_enabled": false,
+    "external_notifications_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  },
+  "worker": {
+    "allowed_actions": [
+      "EVIDENCE_NOOP",
+      "SQLITE_QUICK_CHECK"
+    ],
+    "timeout_seconds": 30,
+    "lease_grace_seconds": 15,
+    "maximum_attempts": 3,
+    "retry_backoff_seconds": 60,
+    "maximum_output_bytes": 65536,
+    "workspace_root": ".."
+  }
+}

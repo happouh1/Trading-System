@@ -317,3 +317,23 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   external notification transport.
 - `OPERATIONS_MONITOR_DETERMINISTIC`: canonical input ordering, exact timestamps, config hash, and
   source revision determine immutable schedule, alert, and report identifiers.
+- `OPERATIONS_RUN_EXACT_DUE_ONLY`: Phase 5C requires an existing schedule and an exact job-ID plus
+  due-timestamp match in a persisted Phase 5B plan.
+- `OPERATIONS_RUN_BOUNDARY_IDEMPOTENT`: scheduled job ID plus due timestamp forms the request ID;
+  redefining any other request field for that boundary conflicts instead of executing twice.
+- `OPERATIONS_PACKAGED_WORKER_ONLY`: the runner builds a fixed Python module invocation from an
+  enumerated action; arbitrary executables, shell text, and user argument vectors are absent.
+- `OPERATIONS_RUN_TARGET_CONTAINED`: file targets are canonical relative paths resolved beneath the
+  configured workspace root; absolute paths and parent traversal are rejected.
+- `OPERATIONS_RUN_ENVIRONMENT_SCRUBBED`: workers receive only required operating-system variables
+  and never inherit Webull, broker, API, or other credential variables.
+- `OPERATIONS_RUN_SINGLE_INSTANCE`: an immediate SQLite lease permits one active runner per schedule
+  job; unexpired leases reject concurrency and expired leases permit crash recovery.
+- `OPERATIONS_RUN_ONE_ATTEMPT`: one CLI invocation executes at most one attempt. Retry eligibility is
+  persisted with bounded exponential backoff; Phase 5C has no sleeping daemon or automatic loop.
+- `OPERATIONS_RUN_HARD_TIMEOUT`: packaged subprocesses exceeding the configured timeout are killed
+  by the process API and journaled as `TIMED_OUT`.
+- `OPERATIONS_RUN_APPEND_ONLY`: requests and attempts use deterministic identities, canonical JSON,
+  and payload hashes; only ephemeral lease rows are mutable coordination state.
+- `OPERATIONS_RUN_NO_TRADING_AUTHORITY`: packaged actions cannot access networks, credentials,
+  notifications, strategy decisions, broker writes, or live trading.

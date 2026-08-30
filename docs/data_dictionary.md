@@ -339,3 +339,15 @@ ordered alert identities, source revision, and non-authority disclosures.
 Migration `023_phase_5b_monitoring.sql` adds append-only `operations_schedules`,
 `operations_schedule_plans`, `operations_health_observations`, `operations_internal_alerts`, and
 `operations_monitor_reports` tables with canonical payload hashes.
+
+## Phase 5C controlled runner
+
+`JobRunRequest` binds one exact Phase 5B due job to an enumerated `WorkerAction`, canonical relative
+target, request time, source revision, and runner configuration hash. `JobAttempt` records attempt
+number, actual start/finish timestamps, `SUCCEEDED`, `FAILED`, or `TIMED_OUT`, exit code, structured
+result, hashes of standard output/error, and optional next-retry timestamp.
+
+Migration `024_phase_5c_runner.sql` adds append-only `operations_run_requests` and
+`operations_run_attempts`. `operations_run_leases` is explicitly ephemeral coordination state: one
+row per scheduled job is acquired, replaced only after expiration, and removed on normal completion.
+It is not historical evidence and does not replace the immutable attempt journal.

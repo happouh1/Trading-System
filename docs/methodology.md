@@ -412,3 +412,28 @@ Health observations are evidence supplied by the caller. The monitor performs no
 does not load credentials. Alerts are append-only internal records; no email, message, webhook, or
 other notification is emitted. Schedule plans contain identities and due timestamps, never commands
 or callables, and no process is started when a job becomes due.
+
+## Phase 5C controlled packaged workers
+
+Phase 5C converts one exact due-job record into at most one packaged-worker attempt. A request must
+reference an existing Phase 5B schedule and schedule plan, and its job ID plus due timestamp must
+match one plan entry exactly. The runner configuration hash, requested timestamp, action, target,
+and source revision form an immutable request identity.
+The durable request ID is keyed only by scheduled job and due timestamp. Therefore changing a plan,
+action, target, request time, revision, or runner configuration for the same boundary conflicts
+rather than creating a second execution identity.
+
+The subprocess vector is constructed internally from the active Python executable, the fixed
+`trading_system.operations.worker` module, and an enumerated action. User-supplied shell text,
+executables, arguments, environment variables, URLs, and credentials are unavailable. `shell=False`
+is mandatory. The child receives only a small operating-system environment allowlist.
+
+Each invocation claims a SQLite lease in an immediate transaction. An unexpired lease rejects a
+second runner; an expired lease can be replaced after a crash. Leases are mutable coordination
+state, while requests and attempts remain append-only hashed evidence. A hard subprocess timeout
+produces `TIMED_OUT`; other bounded worker errors produce `FAILED`. A future retry timestamp uses
+configured exponential backoff, but no daemon sleeps or automatically retries.
+
+The first worker actions are `EVIDENCE_NOOP` and `SQLITE_QUICK_CHECK`. The latter resolves a
+canonical relative target inside the configured workspace and opens SQLite in read-only/query-only
+mode. Neither action retrieves market data, changes strategy state, or crosses a broker boundary.

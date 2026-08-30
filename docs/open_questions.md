@@ -452,3 +452,15 @@ to internal alerts without rewriting immutable alert evidence?
 future separately authorized phase? Phase 5B sends no notification and loads no credential.
 131. Should missed cadence boundaries be represented individually, or is the current latest-boundary
 due record sufficient for operational review?
+
+132. Which additional packaged offline actions should be proposed, reviewed, and individually
+tested before joining the Phase 5C allowlist? Arbitrary CLI passthrough remains prohibited.
+133. Should production leases use PostgreSQL advisory locks, a dedicated queue, or another
+coordination service once a multi-host deployment is authorized?
+134. What operator identity and approval evidence should be added to run requests before actions
+beyond read-only integrity checks are considered?
+135. Which retry classes are genuinely safe and idempotent for future packaged actions? Phase 5C
+uses one shared bounded policy and performs no automatic retry loop.
+136. What retention and redaction policy should govern worker result payloads and output hashes?
+137. Should later workers run in an operating-system sandbox or isolated container with explicit
+CPU, memory, filesystem, and network controls?
