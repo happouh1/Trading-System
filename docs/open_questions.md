@@ -417,3 +417,14 @@ availability without leaking test composition into development choices?
 option P&L or drawdown can be interpreted as portfolio performance?
 116. Which governance process decides whether a frozen Phase 4D result can justify a new research
 proposal? Phase 4D itself has no automatic promotion authority.
+
+117. What authoritative account model should eventually define option buying power, settlement
+timing, margin, leverage, assignment reserves, and multi-leg collateral? Phase 4E supports only
+fully funded long-premium debit cases.
+118. Which point-in-time option marks and valuation policy are required before portfolio drawdown,
+CAGR, Sharpe, volatility, or exposure percentages may be reported? Phase 4E deliberately omits
+those metrics.
+119. If simultaneous entry batches exceed cash, what preregistered allocation rule could replace
+whole-batch rejection without introducing score-based optimization or case-ID favoritism?
+120. Should future capital research model quote-size capacity and partial allocation only after an
+authoritative historical NBBO-size source is selected?

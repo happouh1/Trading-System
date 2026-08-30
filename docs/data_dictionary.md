@@ -302,3 +302,13 @@ sample-sufficiency flag, mandatory disclosures, and both configuration hashes.
 Migration `020_phase_4d_option_experiments.sql` adds `option_experiments`,
 `option_experiment_folds`, `option_experiment_assignments`, `option_fold_evaluations`, and
 `option_experiment_transitions`.
+
+## Phase 4E option capital feasibility
+
+`OptionCapitalEvent` records an accepted entry, rejected entry, credited exit, or excluded case,
+with exact before/change/after cash and deployed balances plus reason codes. `OptionCapitalReport`
+binds a deterministic run to starting/ending cash, realized net P&L, maximum deployed cash, peak
+concurrency, counts, ordered event IDs, both configuration hashes, revision, and disclosures.
+
+Migration `021_phase_4e_option_capital.sql` adds append-only `option_capital_runs`,
+`option_capital_events`, and `option_capital_reports` tables with canonical payload hashes.

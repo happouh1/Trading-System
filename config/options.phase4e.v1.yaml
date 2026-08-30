@@ -1,0 +1,16 @@
+{
+  "capital_version": "4E.1.0",
+  "authority": {
+    "research_only": true,
+    "automatic_allocation_enabled": false,
+    "quantity_resizing_enabled": false,
+    "options_execution_enabled": false,
+    "portfolio_performance_claims_enabled": false
+  },
+  "ledger": {
+    "same_timestamp_policy": "ENTRY_BATCH_BEFORE_EXIT",
+    "insufficient_batch_policy": "REJECT_ENTIRE_ENTRY_BATCH",
+    "excluded_case_policy": "RECORD_ONLY",
+    "intermediate_valuation": "UNAVAILABLE"
+  }
+}

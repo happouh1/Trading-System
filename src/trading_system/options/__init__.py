@@ -1,5 +1,16 @@
 """Phase 4B/4C research-only options analysis and validation."""
 
+from trading_system.options.capital import (
+    OptionCapitalEvent,
+    OptionCapitalEventType,
+    OptionCapitalReport,
+    OptionsCapitalEngine,
+)
+from trading_system.options.capital_config import (
+    OptionsCapitalConfig,
+    OptionsCapitalConfigError,
+    load_options_capital_config,
+)
 from trading_system.options.config import OptionsConfig, OptionsConfigError, load_options_config
 from trading_system.options.contracts import (
     ExerciseStyle,
@@ -49,6 +60,9 @@ __all__ = [
     "ExerciseStyle",
     "OptionBacktestMetrics",
     "OptionBacktestReport",
+    "OptionCapitalEvent",
+    "OptionCapitalEventType",
+    "OptionCapitalReport",
     "OptionChainSnapshot",
     "OptionExperimentAssignment",
     "OptionExperimentDefinition",
@@ -67,6 +81,9 @@ __all__ = [
     "OptionValidationCase",
     "OptionValidationResult",
     "OptionValidationStatus",
+    "OptionsCapitalConfig",
+    "OptionsCapitalConfigError",
+    "OptionsCapitalEngine",
     "OptionsConfig",
     "OptionsConfigError",
     "OptionsExperimentConfig",
@@ -79,6 +96,7 @@ __all__ = [
     "OptionsValidationEngine",
     "ScreeningAction",
     "SettlementType",
+    "load_options_capital_config",
     "load_options_config",
     "load_options_experiment_config",
     "load_options_validation_config",

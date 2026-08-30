@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
+from trading_system.options.capital import OptionCapitalEvent, OptionCapitalReport
 from trading_system.options.contracts import OptionChainSnapshot, OptionScreenResult
 from trading_system.options.experiments import (
     OptionExperimentAssignment,
@@ -175,6 +176,59 @@ class OptionsRegistry:
         ).fetchall()
         return tuple(str(row[0]) for row in rows)
 
+    def insert_capital_run(self, report: OptionCapitalReport) -> bool:
+        return self._insert_capital(
+            "option_capital_runs",
+            "run_id",
+            report.run_id,
+            (
+                "starting_cash",
+                "source_revision",
+                "phase4c_config_hash",
+                "phase4e_config_hash",
+            ),
+            (
+                format(report.starting_cash, "f"),
+                report.source_revision,
+                report.phase4c_config_hash,
+                report.phase4e_config_hash,
+            ),
+            report,
+        )
+
+    def insert_capital_event(self, event: OptionCapitalEvent) -> bool:
+        return self._insert_capital(
+            "option_capital_events",
+            "event_id",
+            event.event_id,
+            ("run_id", "case_id", "occurred_at", "event_type"),
+            (event.run_id, event.case_id, _time(event.occurred_at), event.event_type.value),
+            event,
+        )
+
+    def insert_capital_report(self, report: OptionCapitalReport) -> bool:
+        return self._insert_capital(
+            "option_capital_reports",
+            "report_id",
+            report.report_id,
+            ("run_id", "known_at", "ending_cash", "realized_net_pnl"),
+            (
+                report.run_id,
+                _time(report.known_at),
+                format(report.ending_cash, "f"),
+                format(report.realized_net_pnl, "f"),
+            ),
+            report,
+        )
+
+    def capital_event_payloads(self, run_id: str) -> tuple[str, ...]:
+        rows = self.repository.connection.execute(
+            """SELECT payload_json FROM option_capital_events
+               WHERE run_id = ? ORDER BY occurred_at, event_id""",
+            (run_id,),
+        ).fetchall()
+        return tuple(str(row[0]) for row in rows)
+
     def insert_experiment(self, experiment: OptionExperimentDefinition) -> bool:
         return self._insert_experiment(
             "option_experiments",
@@ -323,6 +377,37 @@ class OptionsRegistry:
         }
         if table not in allowed:
             raise ValueError("unsupported options experiment registry table")
+        payload_json = canonical_json(payload)
+        payload_hash = canonical_hash(payload)
+        column_sql = ", ".join((identity_column, *columns, "payload_json", "payload_hash"))
+        placeholders = ", ".join("?" for _ in range(len(values) + 3))
+        cursor = self.repository.connection.execute(
+            f"INSERT OR IGNORE INTO {table} ({column_sql}) VALUES ({placeholders})",
+            (identity, *values, payload_json, payload_hash),
+        )
+        if cursor.rowcount == 0:
+            stored = self.repository.connection.execute(
+                f"SELECT payload_hash FROM {table} WHERE {identity_column} = ?",
+                (identity,),
+            ).fetchone()
+            if stored != (payload_hash,):
+                raise ValueError(f"conflicting {table} payload")
+            return False
+        self.repository.connection.commit()
+        return True
+
+    def _insert_capital(
+        self,
+        table: str,
+        identity_column: str,
+        identity: str,
+        columns: tuple[str, ...],
+        values: tuple[object, ...],
+        payload: object,
+    ) -> bool:
+        allowed = {"option_capital_runs", "option_capital_events", "option_capital_reports"}
+        if table not in allowed:
+            raise ValueError("unsupported option capital registry table")
         payload_json = canonical_json(payload)
         payload_hash = canonical_hash(payload)
         column_sql = ", ".join((identity_column, *columns, "payload_json", "payload_hash"))

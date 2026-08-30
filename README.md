@@ -240,6 +240,18 @@ trading-system options experiment-complete --config config/options.phase4d.v1.ya
 Phase 4D performs no optimization and exposes no options execution. See
 `docs/proposals/phase_4d_options_walk_forward_v1.md` and `docs/phase_4d_review.md`.
 
+Phase 4E adds an offline, fixed-quantity cash-feasibility ledger for completed Phase 4C cases.
+Simultaneous entries are accepted or rejected as one batch, and same-time exits cannot fund them.
+
+```text
+trading-system options validate-capital-config --config config/options.phase4e.v1.yaml
+trading-system options capital-feasibility --config config/options.phase4e.v1.yaml --backtest-config config/options.phase4c.v1.yaml --input capital-cases.json --database research.sqlite
+trading-system options capital-status --database research.sqlite --run-id OPTION_CAPITAL_RUN_ID
+```
+
+The ledger does not optimize allocations or report mark-to-market portfolio metrics. See
+`docs/proposals/phase_4e_option_capital_feasibility_v1.md` and `docs/phase_4e_review.md`.
+
 ## Development
 
 Requires Python 3.12.

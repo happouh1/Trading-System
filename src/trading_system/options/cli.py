@@ -9,6 +9,8 @@ from decimal import Decimal
 from pathlib import Path
 
 from trading_system.domain import Direction
+from trading_system.options.capital import OptionsCapitalEngine
+from trading_system.options.capital_config import load_options_capital_config
 from trading_system.options.config import load_options_config
 from trading_system.options.contracts import (
     ExerciseStyle,
@@ -74,6 +76,16 @@ def configure_options_parser(
     status = actions.add_parser("experiment-status")
     status.add_argument("--database", required=True)
     status.add_argument("--experiment-id", required=True)
+    validate_capital = actions.add_parser("validate-capital-config")
+    validate_capital.add_argument("--config", required=True)
+    capital = actions.add_parser("capital-feasibility")
+    capital.add_argument("--config", required=True)
+    capital.add_argument("--backtest-config", required=True)
+    capital.add_argument("--input", required=True)
+    capital.add_argument("--database")
+    capital_status = actions.add_parser("capital-status")
+    capital_status.add_argument("--database", required=True)
+    capital_status.add_argument("--run-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -312,6 +324,61 @@ def _parse_backtest_input(path: str) -> tuple[str, tuple[OptionValidationCase, .
     return source_revision, cases
 
 
+def _parse_capital_input(
+    path: str,
+) -> tuple[str, Decimal, tuple[OptionValidationCase, ...]]:
+    root = _object(json.loads(Path(path).read_text(encoding="utf-8")), "capital input")
+    _exact_keys(root, {"source_revision", "starting_cash", "cases"}, "capital input")
+    raw_cases = root["cases"]
+    if not isinstance(raw_cases, list) or not raw_cases:
+        raise ValueError("capital cases must be a nonempty array")
+    cases = tuple(_validation_case(item) for item in raw_cases)
+    if len({item.case_id for item in cases}) != len(cases):
+        raise ValueError("capital case identities must be unique")
+    source_revision = str(root["source_revision"])
+    if not source_revision:
+        raise ValueError("capital source revision is required")
+    starting_cash = _required_decimal(root["starting_cash"], "starting_cash")
+    return source_revision, starting_cash, cases
+
+
+def _handle_capital(args: argparse.Namespace) -> int:
+    if args.options_command == "validate-capital-config":
+        config = load_options_capital_config(args.config)
+        print(canonical_json({"config_hash": config.config_hash, "valid": True}))
+        return 0
+    if args.options_command == "capital-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            payloads = OptionsRegistry(repository).capital_event_payloads(args.run_id)
+        print(canonical_json({"run_id": args.run_id, "event_count": len(payloads)}))
+        return 0
+    source_revision, starting_cash, cases = _parse_capital_input(args.input)
+    validation_engine = OptionsValidationEngine(
+        load_options_validation_config(args.backtest_config)
+    )
+    results = tuple(validation_engine.evaluate(case) for case in cases)
+    report, events = OptionsCapitalEngine(load_options_capital_config(args.config)).evaluate(
+        cases,
+        results,
+        starting_cash=starting_cash,
+        source_revision=source_revision,
+    )
+    if args.database:
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = OptionsRegistry(repository)
+            for case, result in zip(cases, results, strict=True):
+                registry.insert_validation_case(case)
+                registry.insert_validation_result(result)
+            registry.insert_capital_run(report)
+            for event in events:
+                registry.insert_capital_event(event)
+            registry.insert_capital_report(report)
+    print(canonical_json({"report": report, "events": events}))
+    return 0
+
+
 def _parse_experiment_input(
     path: str,
 ) -> tuple[str, tuple[date, ...], tuple[OptionValidationCase, ...]]:
@@ -505,6 +572,12 @@ def _handle_experiment(args: argparse.Namespace) -> int:
 
 
 def handle_options(args: argparse.Namespace) -> int:
+    if args.options_command in {
+        "validate-capital-config",
+        "capital-feasibility",
+        "capital-status",
+    }:
+        return _handle_capital(args)
     if (
         args.options_command.startswith("experiment-")
         or args.options_command == "validate-experiment-config"

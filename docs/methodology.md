@@ -371,3 +371,16 @@ Development evaluation covers training and validation partitions only. The freez
 definition, folds, and development evaluation IDs before test metrics can be persisted. The engine
 does not search configurations or select a winner. Every fold result remains a case-level
 description and discloses overlapping timing, absent capital allocation, and insufficient samples.
+
+## Phase 4E option capital feasibility
+
+Phase 4E replays immutable Phase 4C economics against externally supplied positive starting cash.
+It preserves case quantities. Entry cost is debit plus the entry-side half of total configured fees;
+exit credit is entry cost plus net P&L. Exclusions are recorded without capital use.
+
+All entries at one timestamp are an indivisible batch. An unaffordable batch is rejected entirely,
+preventing input order from becoming an allocation rule. Entries are evaluated before exits at the
+same timestamp. Exact cash and deployed balances are recorded after every event.
+
+Because no intermediate option marks exist, the output is a funding-feasibility ledger, not a
+mark-to-market portfolio backtest. Drawdown, CAGR, Sharpe, margin, and scalability are not claimed.

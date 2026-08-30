@@ -276,3 +276,15 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   allocation, and insufficient samples; no portfolio-performance claim is permitted.
 - `OPTION_EXPERIMENT_APPEND_ONLY`: definitions, folds, assignments, evaluations, and transitions
   are content-addressed; identical replays are idempotent and conflicts fail.
+- `OPTION_CAPITAL_FIXED_QUANTITY`: Phase 4E preserves supplied case quantities and never resizes,
+  ranks, or selects an affordable subset.
+- `OPTION_CAPITAL_BATCH_ATOMIC`: all entries at one timestamp are accepted together or rejected
+  together when their aggregate entry cost exceeds available cash.
+- `OPTION_CAPITAL_CAUSAL_ORDER`: entry batches are evaluated before exit credits at the same exact
+  timestamp, so ambiguous same-time proceeds cannot finance new entries.
+- `OPTION_CAPITAL_EXACT_LEDGER`: exact Decimal cash and deployed balances reconcile after every
+  event and cannot become negative.
+- `OPTION_CAPITAL_NO_MTM`: absent intermediate option marks prohibit drawdown, CAGR, Sharpe,
+  volatility, margin-utilization, and portfolio-return claims.
+- `OPTION_CAPITAL_RESEARCH_ONLY`: no allocation optimization, quantity resizing, broker write,
+  options execution, or automatic strategy promotion can be enabled.
