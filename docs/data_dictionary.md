@@ -322,3 +322,20 @@ namespaced reasons, and authority disclosures.
 
 Migration `022_phase_5a_operations.sql` adds append-only `operations_manifests` and
 `operations_component_evidence` tables. Source database paths are runtime inputs and are not stored.
+
+## Phase 5B schedule monitoring
+
+`ScheduleDefinition` identifies an `OFFLINE` or `SHADOW` job by component, first due timestamp,
+cadence, and configuration hash. It deliberately contains no command. `ScheduleCursor` supplies an
+optional last-completed timestamp. `SchedulePlan` records latest due boundaries and next boundaries
+at a caller-supplied `as_of`.
+
+`HealthObservation` stores component, observed timestamp, `HEALTHY`, `DEGRADED`, or `FAILED`
+status, canonical reasons, an evidence fingerprint, and configuration hash. `InternalAlert` stores
+`SCHEDULE_OVERDUE`, `HEALTH_STALE`, `COMPONENT_DEGRADED`, or `COMPONENT_FAILED` evidence with
+warning or critical severity. `MonitorReport` binds the plan, exactly seven health observations,
+ordered alert identities, source revision, and non-authority disclosures.
+
+Migration `023_phase_5b_monitoring.sql` adds append-only `operations_schedules`,
+`operations_schedule_plans`, `operations_health_observations`, `operations_internal_alerts`, and
+`operations_monitor_reports` tables with canonical payload hashes.

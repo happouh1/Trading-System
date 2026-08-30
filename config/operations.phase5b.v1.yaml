@@ -1,0 +1,22 @@
+{
+  "monitor_version": "5B.1.0",
+  "authority": {
+    "offline_shadow_only": true,
+    "process_execution_enabled": false,
+    "network_enabled": false,
+    "external_notifications_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  },
+  "scheduler": {
+    "minimum_cadence_seconds": 60,
+    "maximum_cadence_seconds": 604800,
+    "overdue_grace_seconds": 300,
+    "maximum_jobs": 64
+  },
+  "health": {
+    "maximum_age_seconds": 900,
+    "require_all_phase5a_components": true,
+    "future_observation_policy": "REJECT"
+  }
+}

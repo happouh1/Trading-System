@@ -395,3 +395,20 @@ unmatched latest paper or Webull reconciliations produce `NOT_READY`.
 The manifest requires all seven components and contains no action callback. Its output describes
 persisted evidence at a supplied timestamp, not market freshness, profitability, live suitability,
 or authorization to execute any workflow.
+
+## Phase 5B deterministic schedule and health monitoring
+
+Phase 5B accepts an explicit timezone-aware `as_of`, immutable recurring schedule definitions,
+optional completion cursors, and one supplied health observation for every Phase 5A component. A
+schedule is due when its latest cadence boundary is newer than its last completed timestamp. A due
+job becomes overdue only when its age is strictly greater than the configured grace interval.
+
+The engine sorts schedules, health observations, and internal alerts before deriving identifiers,
+so input permutation cannot change the report. Future health or completion timestamps, missing
+component health, duplicate identities, configuration mismatches, and cadences outside configured
+bounds fail closed.
+
+Health observations are evidence supplied by the caller. The monitor performs no network probe and
+does not load credentials. Alerts are append-only internal records; no email, message, webhook, or
+other notification is emitted. Schedule plans contain identities and due timestamps, never commands
+or callables, and no process is started when a job becomes due.

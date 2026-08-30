@@ -1,4 +1,4 @@
-"""Phase 5A inspection-only operations commands."""
+"""Offline Phase 5 operations inspection and monitor planning commands."""
 
 from __future__ import annotations
 
@@ -11,6 +11,15 @@ from trading_system import PACKAGE_VERSION
 from trading_system.operations.config import load_operations_config
 from trading_system.operations.contracts import OperationsManifest
 from trading_system.operations.inspection import inspect_component
+from trading_system.operations.monitor_config import load_operations_monitor_config
+from trading_system.operations.monitoring import (
+    HealthObservation,
+    HealthStatus,
+    OperationalMode,
+    OperationsMonitorEngine,
+    ScheduleCursor,
+    ScheduleDefinition,
+)
 from trading_system.operations.registry import OperationsRegistry
 from trading_system.persistence import SQLiteRepository
 from trading_system.serialization import canonical_json
@@ -30,6 +39,15 @@ def configure_operations_parser(
     status = actions.add_parser("status")
     status.add_argument("--registry-database", required=True)
     status.add_argument("--manifest-id", required=True)
+    validate_monitor = actions.add_parser("validate-monitor-config")
+    validate_monitor.add_argument("--config", required=True)
+    monitor = actions.add_parser("monitor")
+    monitor.add_argument("--config", required=True)
+    monitor.add_argument("--input", required=True)
+    monitor.add_argument("--database", required=True)
+    monitor_status = actions.add_parser("monitor-status")
+    monitor_status.add_argument("--database", required=True)
+    monitor_status.add_argument("--report-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -47,7 +65,141 @@ def _time(value: object) -> datetime:
     return result
 
 
+def _string_tuple(value: object, name: str) -> tuple[str, ...]:
+    if not isinstance(value, list) or not all(isinstance(item, str) and item for item in value):
+        raise ValueError(f"{name} must be an array of nonempty strings")
+    if len(set(value)) != len(value):
+        raise ValueError(f"{name} must not contain duplicates")
+    return tuple(value)
+
+
+def _string(value: object, name: str) -> str:
+    if not isinstance(value, str) or not value:
+        raise ValueError(f"{name} must be a nonempty string")
+    return value
+
+
+def _handle_monitor(args: argparse.Namespace) -> int:
+    if args.operations_command == "validate-monitor-config":
+        config = load_operations_monitor_config(args.config)
+        print(canonical_json({"config_hash": config.config_hash, "valid": True}))
+        return 0
+    if args.operations_command == "monitor-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            payload, status, count = OperationsRegistry(repository).monitor_status(args.report_id)
+        print(
+            canonical_json(
+                {
+                    "report_id": args.report_id,
+                    "status": status,
+                    "alert_count": count,
+                    "report": json.loads(payload),
+                }
+            )
+        )
+        return 0
+    config = load_operations_monitor_config(args.config)
+    root = _object(
+        json.loads(Path(args.input).read_text(encoding="utf-8")),
+        "monitor input",
+    )
+    if set(root) != {"as_of", "source_revision", "jobs", "health"}:
+        raise ValueError("monitor input fields are invalid")
+    as_of = _time(root["as_of"])
+    source_revision = root["source_revision"]
+    if not isinstance(source_revision, str) or not source_revision:
+        raise ValueError("monitor source revision is required")
+    raw_jobs = root["jobs"]
+    if not isinstance(raw_jobs, list):
+        raise ValueError("monitor jobs must be an array")
+    schedules = []
+    cursors = []
+    for raw in raw_jobs:
+        job = _object(raw, "monitor job")
+        if set(job) != {
+            "name",
+            "component",
+            "mode",
+            "first_due_at",
+            "cadence_seconds",
+            "last_completed_at",
+        }:
+            raise ValueError("monitor job fields are invalid")
+        cadence = job["cadence_seconds"]
+        if not isinstance(cadence, int) or isinstance(cadence, bool):
+            raise ValueError("monitor job cadence_seconds must be an integer")
+        definition = ScheduleDefinition.create(
+            name=_string(job["name"], "monitor job name"),
+            component=_string(job["component"], "monitor job component"),
+            mode=OperationalMode(_string(job["mode"], "monitor job mode")),
+            first_due_at=_time(job["first_due_at"]),
+            cadence_seconds=cadence,
+            config_hash=config.config_hash,
+        )
+        schedules.append(definition)
+        last_completed = job["last_completed_at"]
+        cursors.append(
+            ScheduleCursor(
+                definition.job_id,
+                None if last_completed is None else _time(last_completed),
+            )
+        )
+    raw_health = root["health"]
+    if not isinstance(raw_health, list):
+        raise ValueError("monitor health must be an array")
+    health = []
+    for raw in raw_health:
+        item = _object(raw, "health observation")
+        if set(item) != {
+            "component",
+            "observed_at",
+            "status",
+            "reasons",
+            "evidence_fingerprint",
+        }:
+            raise ValueError("health observation fields are invalid")
+        health.append(
+            HealthObservation.create(
+                component=_string(item["component"], "health component"),
+                observed_at=_time(item["observed_at"]),
+                status=HealthStatus(_string(item["status"], "health status")),
+                reasons=_string_tuple(item["reasons"], "health reasons"),
+                evidence_fingerprint=_string(
+                    item["evidence_fingerprint"], "health evidence fingerprint"
+                ),
+                config_hash=config.config_hash,
+            )
+        )
+    report, plan, alerts = OperationsMonitorEngine(config).evaluate(
+        as_of=as_of,
+        schedules=tuple(schedules),
+        cursors=tuple(cursors),
+        health=tuple(health),
+        source_revision=source_revision,
+    )
+    with SQLiteRepository(args.database) as repository:
+        repository.migrate()
+        registry = OperationsRegistry(repository)
+        for schedule in schedules:
+            registry.insert_schedule(schedule)
+        registry.insert_schedule_plan(plan)
+        for observation in health:
+            registry.insert_health(observation)
+        for alert in alerts:
+            registry.insert_alert(alert)
+        registry.insert_monitor_report(report)
+    print(canonical_json({"report": report, "plan": plan, "alerts": alerts}))
+    return 0
+
+
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-monitor-config",
+        "monitor",
+        "monitor-status",
+    }:
+        return _handle_monitor(args)
     if args.operations_command == "validate-config":
         config = load_operations_config(args.config)
         print(canonical_json({"config_hash": config.config_hash, "valid": True}))

@@ -266,6 +266,20 @@ trading-system operations status --registry-database operations.sqlite --manifes
 paper/Webull reconciliations match. It grants no workflow or trading authority. See
 `docs/proposals/phase_5a_unified_operations_v1.md` and `docs/phase_5a_review.md`.
 
+Phase 5B adds deterministic offline/shadow schedule planning and internal health-alert journaling.
+The monitor consumes explicit timestamps and health evidence; it neither discovers health over the
+network nor launches a due job.
+
+```text
+trading-system operations validate-monitor-config --config config/operations.phase5b.v1.yaml
+trading-system operations monitor --config config/operations.phase5b.v1.yaml --input monitor.json --database operations.sqlite
+trading-system operations monitor-status --database operations.sqlite --report-id REPORT_ID
+```
+
+`ATTENTION` means a job is due or internal alert evidence exists. It does not authorize execution,
+notification delivery, credential loading, network access, or brokerage activity. See
+`docs/proposals/phase_5b_schedule_monitoring_v1.md` and `docs/phase_5b_review.md`.
+
 ## Development
 
 Requires Python 3.12.

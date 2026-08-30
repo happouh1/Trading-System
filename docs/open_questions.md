@@ -439,3 +439,16 @@ transition any subsystem from research to shadow, simulated paper, or broker san
 from active hazards without assuming that a later successful reconciliation resolves every cause?
 125. Which backup, restore, retention, encryption, and database-integrity policies are required
 before the readiness registry can be treated as production operational evidence?
+
+126. Which separately authorized service, if any, should execute Phase 5B due plans? The current
+engine deliberately produces evidence only and has no process launcher.
+127. What clock source and clock-skew tolerance are required before supplied operational timestamps
+can be treated as production-grade evidence?
+128. Which component-specific freshness objectives should replace the initial shared 900-second
+health-age default after measured operating data exists?
+129. What acknowledgment, ownership, escalation, resolution, and retention lifecycle should apply
+to internal alerts without rewriting immutable alert evidence?
+130. Which external notification transports and secret-storage controls could be proposed in a
+future separately authorized phase? Phase 5B sends no notification and loads no credential.
+131. Should missed cadence boundaries be represented individually, or is the current latest-boundary
+due record sufficient for operational review?

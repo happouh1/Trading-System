@@ -300,3 +300,20 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   ordering, and evidence fingerprints determine immutable IDs independent of input object ordering.
 - `OPERATIONS_NO_AUTHORITY_INFERENCE`: `READY` describes minimum durable evidence and never implies
   profitability, live suitability, capital approval, model promotion, or order authority.
+- `OPERATIONS_SCHEDULE_PLANNING_ONLY`: Phase 5B computes due and next-due boundaries but stores no
+  command, starts no process, and grants no authority to execute a due job.
+- `OPERATIONS_OFFLINE_SHADOW_ONLY`: schedule definitions permit only `OFFLINE` and `SHADOW`; the
+  configuration locks network, credential, notification, broker-write, and live-trading authority
+  off.
+- `OPERATIONS_EXPLICIT_CLOCK`: callers supply timezone-aware `as_of`, first-due, completion, and
+  health timestamps; future completion or health evidence is rejected.
+- `OPERATIONS_DUE_BOUNDARY`: latest due is the greatest completed cadence boundary no later than
+  `as_of`; completion at that boundary satisfies it, while an older or absent cursor leaves it due.
+- `OPERATIONS_OVERDUE_GRACE`: a due job creates `SCHEDULE_OVERDUE` only when overdue seconds are
+  strictly greater than the tunable grace threshold.
+- `OPERATIONS_HEALTH_COMPLETE`: exactly one health observation for every Phase 5A component is
+  mandatory; stale, degraded, and failed evidence produces distinct internal alerts.
+- `OPERATIONS_INTERNAL_ALERT_ONLY`: alerts are append-only SQLite evidence and never trigger an
+  external notification transport.
+- `OPERATIONS_MONITOR_DETERMINISTIC`: canonical input ordering, exact timestamps, config hash, and
+  source revision determine immutable schedule, alert, and report identifiers.
