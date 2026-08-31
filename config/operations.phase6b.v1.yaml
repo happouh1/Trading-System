@@ -1,0 +1,36 @@
+{
+  "observation_plan_version": "6B.1.0",
+  "authority": {
+    "offline_only": true,
+    "evidence_only": true,
+    "automatic_promotion_enabled": false,
+    "production_readiness_claim_enabled": false,
+    "network_enabled": false,
+    "credentials_enabled": false,
+    "external_notifications_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  },
+  "registration": {
+    "require_registration_before_first_window": true,
+    "require_exact_campaign_identity": true,
+    "require_exact_campaign_bounds": true,
+    "require_exact_window_set": true,
+    "require_unique_window_ids": true,
+    "require_unique_window_timestamps": true,
+    "normalize_window_order": true,
+    "immutable_after_registration": true
+  },
+  "reconciliation": {
+    "verify_plan_payload_hash": true,
+    "verify_campaign_payload_hash": true,
+    "verify_campaign_window_hashes": true,
+    "require_current_code_version": true,
+    "retain_incomplete_campaign_status": true
+  },
+  "thresholds": {
+    "minimum_observation_period_defined": false,
+    "minimum_success_rate_defined": false,
+    "freshness_service_level_defined": false
+  }
+}

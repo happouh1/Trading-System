@@ -514,3 +514,16 @@ separate denominators before comparison across campaigns is meaningful?
 reports while preserving every earlier immutable result?
 160. Which authenticated governance body may interpret a future validated campaign, and what
 additional security, freshness, capital, and sandbox evidence is required before any transition?
+
+161. What authenticated signer, trusted timestamp source, and independent witness should attest a
+future observation plan beyond the current local append-only database evidence?
+162. What separately reviewed minimum duration, window count, completion-rate threshold, and
+confidence method may eventually support an operational reliability statement?
+163. How should planned maintenance, exchange holidays, vendor outages, and force-majeure events be
+preregistered without allowing retrospective denominator changes?
+164. May a plan ever be superseded, and if so, what immutable parent link, reason, approval quorum,
+and effective-before-first-window rule must apply?
+165. Which campaign failure classes need stratified denominators before cross-campaign comparison,
+and who owns that taxonomy?
+166. What authorization and security evidence must remain separate from a matched plan before any
+future production or capital decision is considered?

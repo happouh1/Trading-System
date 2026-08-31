@@ -504,3 +504,21 @@ Campaign metrics are counts, not performance estimates: expected/observed window
 classification, and source-status counts. No cadence, observation duration, target completion
 rate, freshness service level, statistical confidence, production suitability, or trading edge is
 inferred. Reports and window evidence are immutable and idempotent across restart.
+
+## Phase 6B preregistered observation plans
+
+Phase 6B closes the principal denominator-selection gap in Phase 6A. A plan must be persisted at a
+strictly earlier timestamp than its first expected window. It binds the exact campaign name,
+bounds, unique window IDs, and unique expected timestamps. Input order is normalized, but the
+registered content cannot be changed or superseded in place.
+
+Reconciliation re-hashes the plan, Phase 6A report, and each persisted campaign-window payload. It
+then compares campaign identity, bounds, and the complete `(window_id, expected_as_of)` set. Missing
+reports, corrupt payloads, omitted preregistered windows, added unregistered windows, and changed
+timestamps receive separate immutable classifications or reason codes.
+
+Schedule adherence and campaign completeness are intentionally orthogonal. An `INCOMPLETE` Phase
+6A report can be `MATCHED` when it faithfully includes all preregistered windows, including windows
+whose evidence was missing. This prevents missing evidence from being concealed by changing the
+denominator. No minimum duration, completion threshold, statistical inference, freshness target,
+production claim, or promotion rule is defined.

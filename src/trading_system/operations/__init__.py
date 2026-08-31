@@ -63,6 +63,19 @@ from trading_system.operations.monitoring import (
     ScheduleDefinition,
     SchedulePlan,
 )
+from trading_system.operations.observation_config import (
+    ObservationPlanConfig,
+    ObservationPlanConfigError,
+    load_observation_plan_config,
+)
+from trading_system.operations.observation_contracts import (
+    ObservationPlan,
+    ObservationPlanReconciliation,
+    ObservationPlanStatus,
+    ObservationPlanWindow,
+    ReconciliationStatus,
+)
+from trading_system.operations.observation_registry import ObservationPlanRegistry
 from trading_system.operations.registry import OperationsRegistry
 from trading_system.operations.release_config import (
     OperationsReleaseConfig,
@@ -131,6 +144,13 @@ __all__ = [
     "KillSwitchEvent",
     "MonitorReport",
     "MonitorStatus",
+    "ObservationPlan",
+    "ObservationPlanConfig",
+    "ObservationPlanConfigError",
+    "ObservationPlanReconciliation",
+    "ObservationPlanRegistry",
+    "ObservationPlanStatus",
+    "ObservationPlanWindow",
     "OperationalMode",
     "OperationsCampaignConfig",
     "OperationsCampaignConfigError",
@@ -157,6 +177,7 @@ __all__ = [
     "OperationsRunnerConfigError",
     "OperationsRunnerRegistry",
     "ReadinessStatus",
+    "ReconciliationStatus",
     "ReleaseEvidenceBundle",
     "ReleaseEvidenceStatus",
     "RestoreVerification",
@@ -171,6 +192,7 @@ __all__ = [
     "WorkerAction",
     "WorkerInvocation",
     "inspect_component",
+    "load_observation_plan_config",
     "load_operations_campaign_config",
     "load_operations_config",
     "load_operations_control_config",

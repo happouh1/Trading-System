@@ -410,3 +410,20 @@ Migration `028_phase_6a_shadow_campaign.sql` adds append-only
 unique by both `(report_id, window_id)` and `(report_id, expected_as_of)`. `bundle_id` deliberately
 has no foreign key so an explicitly requested but absent Phase 5F identity remains persistable as
 missing evidence.
+
+## Phase 6B preregistered observation plans
+
+`ObservationPlanWindow` contains one immutable `window_id` and timezone-aware `expected_as_of`.
+`ObservationPlan` contains `plan_id`, campaign identity and bounds, `registered_at`, canonical
+windows, `REGISTERED` status, disclosures, source revision, package version, and configuration
+hash. `registered_at` must be strictly earlier than the first expected window.
+
+`ObservationPlanReconciliation` binds one plan ID to one requested Phase 6A report ID at
+`reconciled_at`. Status is `MATCHED`, `DEVIATION`, `MISSING`, or `CORRUPT`; the Phase 6A campaign
+status is retained independently. Canonical reasons, plan/report hashes, disclosures, source
+revision, code version, and config hash make the interpretation auditable.
+
+Migration `029_phase_6b_observation_plans.sql` adds append-only
+`operations_observation_plans`, `operations_observation_plan_windows`, and
+`operations_observation_plan_reconciliations`. The campaign report ID deliberately has no foreign
+key so a requested absent report remains persistable as `MISSING` evidence.

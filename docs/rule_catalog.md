@@ -407,3 +407,19 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   payload hashes, transactional insertion, conflict rejection, and restart-safe idempotency.
 - `SHADOW_CAMPAIGN_NO_AUTHORITY`: Phase 6A cannot access networks or credentials, notify externally,
   promote releases, write to brokers, enable live trading, or claim production readiness.
+- `OBSERVATION_PLAN_BEFORE_FIRST_WINDOW`: registration must be strictly earlier than the first
+  expected timestamp; equal or retrospective registration fails closed.
+- `OBSERVATION_PLAN_EXACT_DENOMINATOR`: campaign name, bounds, unique window IDs, and unique exact
+  timestamps are frozen in one immutable plan.
+- `OBSERVATION_PLAN_CANONICAL_ORDER`: plan window order is normalized by expected timestamp and ID;
+  duplicates and out-of-bounds windows are rejected.
+- `OBSERVATION_PLAN_HASH_VERIFIED`: stored plan, campaign report, and campaign-window payload hashes
+  are verified before reconciliation.
+- `OBSERVATION_PLAN_EXACT_RECONCILIATION`: omitted, added, or timestamp-changed windows are explicit
+  deviations and can never be silently normalized into a match.
+- `OBSERVATION_PLAN_COMPLETENESS_ORTHOGONAL`: a campaign's `COMPLETE`/`INCOMPLETE` status is retained
+  separately; `MATCHED` means schedule adherence only.
+- `OBSERVATION_PLAN_APPEND_ONLY`: deterministic IDs, canonical payloads, transactional plan/window
+  insertion, conflict rejection, and immutable reconciliations make restart behavior idempotent.
+- `OBSERVATION_PLAN_NO_AUTHORITY`: Phase 6B defines no success threshold and cannot schedule work,
+  access networks or credentials, notify, promote, write to a broker, or enable live trading.

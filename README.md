@@ -407,3 +407,23 @@ as missing with `null`. Phase 6A does not infer cadence, fill missing windows, d
 observation period, establish a success-rate threshold, or promote the system. `COMPLETE` remains
 an offline structural-evidence result, not a production-readiness or trading authorization claim.
 See `docs/proposals/phase_6a_shadow_validation_campaign_v1.md` and `docs/phase_6a_review.md`.
+
+## Phase 6B preregistered observation plans
+
+Phase 6B freezes the campaign identity, bounds, and exact expected window set before the first
+window occurs. A later reconciliation compares a persisted Phase 6A report with that immutable
+plan and classifies exact adherence, deviation, missing evidence, or corrupt evidence.
+
+```text
+trading-system operations validate-observation-plan-config --config config/operations.phase6b.v1.yaml
+trading-system operations register-observation-plan --config config/operations.phase6b.v1.yaml --input plan.json --database operations.sqlite
+trading-system operations observation-plan-status --database operations.sqlite --plan-id PLAN_ID
+trading-system operations reconcile-observation-plan --config config/operations.phase6b.v1.yaml --input reconciliation.json --database operations.sqlite
+trading-system operations observation-reconciliation-status --database operations.sqlite --reconciliation-id RECONCILIATION_ID
+```
+
+`MATCHED` means the report used the exact preregistered campaign definition. It does not mean the
+campaign was complete, successful, statistically sufficient, fresh, production-ready, or
+authorized to trade. Phase 6B performs no scheduling, network access, credential loading,
+notification, promotion, broker write, or live trading. See
+`docs/proposals/phase_6b_preregistered_observation_plans_v1.md` and `docs/phase_6b_review.md`.

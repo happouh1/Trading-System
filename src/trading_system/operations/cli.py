@@ -35,6 +35,9 @@ from trading_system.operations.monitoring import (
     ScheduleCursor,
     ScheduleDefinition,
 )
+from trading_system.operations.observation_config import load_observation_plan_config
+from trading_system.operations.observation_contracts import ObservationPlanWindow
+from trading_system.operations.observation_registry import ObservationPlanRegistry
 from trading_system.operations.registry import OperationsRegistry
 from trading_system.operations.release_config import load_operations_release_config
 from trading_system.operations.release_registry import OperationsReleaseRegistry
@@ -147,6 +150,22 @@ def configure_operations_parser(
     campaign_status = actions.add_parser("campaign-status")
     campaign_status.add_argument("--database", required=True)
     campaign_status.add_argument("--report-id", required=True)
+    validate_observation = actions.add_parser("validate-observation-plan-config")
+    validate_observation.add_argument("--config", required=True)
+    register_observation = actions.add_parser("register-observation-plan")
+    register_observation.add_argument("--config", required=True)
+    register_observation.add_argument("--input", required=True)
+    register_observation.add_argument("--database", required=True)
+    observation_status = actions.add_parser("observation-plan-status")
+    observation_status.add_argument("--database", required=True)
+    observation_status.add_argument("--plan-id", required=True)
+    reconcile_observation = actions.add_parser("reconcile-observation-plan")
+    reconcile_observation.add_argument("--config", required=True)
+    reconcile_observation.add_argument("--input", required=True)
+    reconcile_observation.add_argument("--database", required=True)
+    reconciliation_status = actions.add_parser("observation-reconciliation-status")
+    reconciliation_status.add_argument("--database", required=True)
+    reconciliation_status.add_argument("--reconciliation-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -757,7 +776,166 @@ def _handle_campaign(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_observation_plan(args: argparse.Namespace) -> int:
+    if args.operations_command == "observation-plan-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            row = repository.connection.execute(
+                "SELECT status, payload_json FROM operations_observation_plans WHERE plan_id = ?",
+                (args.plan_id,),
+            ).fetchone()
+            if row is None:
+                raise ValueError("unknown observation plan")
+            count = repository.connection.execute(
+                "SELECT COUNT(*) FROM operations_observation_plan_windows WHERE plan_id = ?",
+                (args.plan_id,),
+            ).fetchone()
+        print(
+            canonical_json(
+                {
+                    "plan_id": args.plan_id,
+                    "status": str(row[0]),
+                    "window_count": 0 if count is None else int(count[0]),
+                    "plan": json.loads(str(row[1])),
+                    "production_readiness_claim": False,
+                    "automatic_promotion_performed": False,
+                    "network_used": False,
+                    "broker_write_performed": False,
+                    "live_trading_enabled": False,
+                }
+            )
+        )
+        return 0
+    if args.operations_command == "observation-reconciliation-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            row = repository.connection.execute(
+                """SELECT status, payload_json
+                   FROM operations_observation_plan_reconciliations
+                   WHERE reconciliation_id = ?""",
+                (args.reconciliation_id,),
+            ).fetchone()
+        if row is None:
+            raise ValueError("unknown observation plan reconciliation")
+        print(
+            canonical_json(
+                {
+                    "reconciliation_id": args.reconciliation_id,
+                    "status": str(row[0]),
+                    "reconciliation": json.loads(str(row[1])),
+                    "production_readiness_claim": False,
+                    "automatic_promotion_performed": False,
+                    "network_used": False,
+                    "broker_write_performed": False,
+                    "live_trading_enabled": False,
+                }
+            )
+        )
+        return 0
+    config = load_observation_plan_config(args.config)
+    if args.operations_command == "validate-observation-plan-config":
+        print(
+            canonical_json(
+                {
+                    "config_hash": config.config_hash,
+                    "valid": True,
+                    "production_readiness_claim": False,
+                    "automatic_promotion_enabled": False,
+                }
+            )
+        )
+        return 0
+    if args.operations_command == "register-observation-plan":
+        root = _control_input(
+            args.input,
+            {
+                "campaign_name",
+                "registered_at",
+                "start_at",
+                "end_at",
+                "windows",
+                "source_revision",
+            },
+        )
+        raw_windows = root["windows"]
+        if not isinstance(raw_windows, list) or not raw_windows:
+            raise ValueError("observation plan windows must be a nonempty array")
+        windows: list[ObservationPlanWindow] = []
+        for raw_window in raw_windows:
+            window = _object(raw_window, "observation plan window")
+            if set(window) != {"window_id", "expected_as_of"}:
+                raise ValueError("observation plan window fields are invalid")
+            windows.append(
+                ObservationPlanWindow(
+                    _string(window["window_id"], "observation plan window ID"),
+                    _time(window["expected_as_of"]),
+                )
+            )
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = ObservationPlanRegistry(repository, config)
+            plan = registry.create_plan(
+                campaign_name=_string(root["campaign_name"], "campaign name"),
+                registered_at=_time(root["registered_at"]),
+                start_at=_time(root["start_at"]),
+                end_at=_time(root["end_at"]),
+                windows=tuple(windows),
+                source_revision=_string(root["source_revision"], "source revision"),
+            )
+            inserted = registry.insert_plan(plan)
+        print(
+            canonical_json(
+                {
+                    "plan": plan,
+                    "inserted": inserted,
+                    "production_readiness_claim": False,
+                    "automatic_promotion_performed": False,
+                    "network_used": False,
+                    "broker_write_performed": False,
+                    "live_trading_enabled": False,
+                }
+            )
+        )
+        return 0
+    root = _control_input(
+        args.input,
+        {"plan_id", "campaign_report_id", "reconciled_at", "source_revision"},
+    )
+    with SQLiteRepository(args.database) as repository:
+        repository.migrate()
+        registry = ObservationPlanRegistry(repository, config)
+        reconciliation = registry.reconcile(
+            plan_id=_string(root["plan_id"], "observation plan ID"),
+            campaign_report_id=_string(root["campaign_report_id"], "campaign report ID"),
+            reconciled_at=_time(root["reconciled_at"]),
+            source_revision=_string(root["source_revision"], "source revision"),
+        )
+        inserted = registry.insert_reconciliation(reconciliation)
+    print(
+        canonical_json(
+            {
+                "reconciliation": reconciliation,
+                "inserted": inserted,
+                "production_readiness_claim": False,
+                "automatic_promotion_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
+    return 0
+
+
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-observation-plan-config",
+        "register-observation-plan",
+        "observation-plan-status",
+        "reconcile-observation-plan",
+        "observation-reconciliation-status",
+    }:
+        return _handle_observation_plan(args)
     if args.operations_command in {
         "validate-campaign-config",
         "shadow-campaign",
