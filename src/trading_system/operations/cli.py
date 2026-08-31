@@ -8,6 +8,8 @@ from datetime import datetime
 from pathlib import Path
 
 from trading_system import PACKAGE_VERSION
+from trading_system.operations.audit_config import load_observation_audit_config
+from trading_system.operations.audit_registry import ObservationAuditRegistry
 from trading_system.operations.campaign_config import load_operations_campaign_config
 from trading_system.operations.campaign_contracts import CampaignWindowRequest
 from trading_system.operations.campaign_registry import OperationsCampaignRegistry
@@ -166,6 +168,15 @@ def configure_operations_parser(
     reconciliation_status = actions.add_parser("observation-reconciliation-status")
     reconciliation_status.add_argument("--database", required=True)
     reconciliation_status.add_argument("--reconciliation-id", required=True)
+    validate_audit = actions.add_parser("validate-observation-audit-config")
+    validate_audit.add_argument("--config", required=True)
+    audit_packet = actions.add_parser("observation-audit-packet")
+    audit_packet.add_argument("--config", required=True)
+    audit_packet.add_argument("--input", required=True)
+    audit_packet.add_argument("--database", required=True)
+    audit_status = actions.add_parser("observation-audit-status")
+    audit_status.add_argument("--database", required=True)
+    audit_status.add_argument("--packet-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -927,7 +938,90 @@ def _handle_observation_plan(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_observation_audit(args: argparse.Namespace) -> int:
+    if args.operations_command == "observation-audit-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            row = repository.connection.execute(
+                """SELECT status, payload_json FROM operations_observation_audit_packets
+                   WHERE packet_id = ?""",
+                (args.packet_id,),
+            ).fetchone()
+            if row is None:
+                raise ValueError("unknown observation audit packet")
+            count = repository.connection.execute(
+                """SELECT COUNT(*) FROM operations_observation_audit_artifacts
+                   WHERE packet_id = ?""",
+                (args.packet_id,),
+            ).fetchone()
+        print(
+            canonical_json(
+                {
+                    "packet_id": args.packet_id,
+                    "status": str(row[0]),
+                    "artifact_count": 0 if count is None else int(count[0]),
+                    "packet": json.loads(str(row[1])),
+                    "production_readiness_claim": False,
+                    "automatic_promotion_performed": False,
+                    "external_attestation_performed": False,
+                    "network_used": False,
+                    "broker_write_performed": False,
+                    "live_trading_enabled": False,
+                }
+            )
+        )
+        return 0
+    config = load_observation_audit_config(args.config)
+    if args.operations_command == "validate-observation-audit-config":
+        print(
+            canonical_json(
+                {
+                    "config_hash": config.config_hash,
+                    "valid": True,
+                    "production_readiness_claim": False,
+                    "automatic_promotion_enabled": False,
+                    "external_attestation_enabled": False,
+                }
+            )
+        )
+        return 0
+    root = _control_input(
+        args.input,
+        {"reconciliation_id", "created_at", "source_revision"},
+    )
+    with SQLiteRepository(args.database) as repository:
+        repository.migrate()
+        registry = ObservationAuditRegistry(repository, config)
+        packet = registry.create(
+            reconciliation_id=_string(root["reconciliation_id"], "reconciliation ID"),
+            created_at=_time(root["created_at"]),
+            source_revision=_string(root["source_revision"], "source revision"),
+        )
+        inserted = registry.insert(packet)
+    print(
+        canonical_json(
+            {
+                "packet": packet,
+                "inserted": inserted,
+                "production_readiness_claim": False,
+                "automatic_promotion_performed": False,
+                "external_attestation_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
+    return 0
+
+
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-observation-audit-config",
+        "observation-audit-packet",
+        "observation-audit-status",
+    }:
+        return _handle_observation_audit(args)
     if args.operations_command in {
         "validate-observation-plan-config",
         "register-observation-plan",

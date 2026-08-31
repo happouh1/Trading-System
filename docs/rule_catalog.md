@@ -423,3 +423,20 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   insertion, conflict rejection, and immutable reconciliations make restart behavior idempotent.
 - `OBSERVATION_PLAN_NO_AUTHORITY`: Phase 6B defines no success threshold and cannot schedule work,
   access networks or credentials, notify, promote, write to a broker, or enable live trading.
+- `OBSERVATION_AUDIT_EXACT_SOURCE`: a packet starts from one persisted Phase 6B reconciliation and
+  derives its plan and campaign identities rather than accepting substitute source identities.
+- `OBSERVATION_AUDIT_CANONICAL_ARTIFACTS`: every included artifact must be canonical JSON whose
+  content hash equals the stored source digest; corrupt artifacts are excluded and classified.
+- `OBSERVATION_AUDIT_CHILD_INTEGRITY`: plan and campaign child-window counts, payloads, hashes, and
+  parent representations are verified before packet completeness.
+- `OBSERVATION_AUDIT_LINK_INTEGRITY`: reconciliation plan/report links and recorded plan/report
+  hashes must agree with the retrieved source evidence.
+- `OBSERVATION_AUDIT_CAUSAL_TIMESTAMP`: packet creation cannot predate its reconciliation.
+- `OBSERVATION_AUDIT_ROOT_HASH`: canonical artifact order and the complete name/hash sequence are
+  bound into one deterministic artifact-root digest.
+- `OBSERVATION_AUDIT_STATUS_ORTHOGONAL`: packet completeness never changes or upgrades retained
+  reconciliation and campaign statuses.
+- `OBSERVATION_AUDIT_APPEND_ONLY`: packets and artifact rows use deterministic identities,
+  transactional insertion, conflict rejection, canonical payloads, and restart-safe idempotency.
+- `OBSERVATION_AUDIT_NO_AUTHORITY`: Phase 6C has no thresholds, signing key, external attestation,
+  network, notification, promotion, broker-write, production, or live-trading authority.

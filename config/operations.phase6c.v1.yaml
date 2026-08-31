@@ -1,0 +1,31 @@
+{
+  "audit_packet_version": "6C.1.0",
+  "authority": {
+    "offline_only": true,
+    "evidence_only": true,
+    "automatic_promotion_enabled": false,
+    "production_readiness_claim_enabled": false,
+    "network_enabled": false,
+    "credentials_enabled": false,
+    "external_notifications_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  },
+  "validation": {
+    "verify_plan_payload_hash": true,
+    "verify_reconciliation_payload_hash": true,
+    "verify_campaign_payload_hash": true,
+    "verify_all_child_payload_hashes": true,
+    "verify_cross_record_links": true,
+    "require_current_code_version": true,
+    "require_causal_packet_timestamp": true,
+    "normalize_artifact_order": true,
+    "retain_source_statuses": true
+  },
+  "thresholds": {
+    "minimum_observation_period_defined": false,
+    "minimum_success_rate_defined": false,
+    "freshness_service_level_defined": false,
+    "promotion_threshold_defined": false
+  }
+}

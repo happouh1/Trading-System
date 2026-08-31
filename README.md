@@ -427,3 +427,22 @@ campaign was complete, successful, statistically sufficient, fresh, production-r
 authorized to trade. Phase 6B performs no scheduling, network access, credential loading,
 notification, promotion, broker write, or live trading. See
 `docs/proposals/phase_6b_preregistered_observation_plans_v1.md` and `docs/phase_6b_review.md`.
+
+## Phase 6C offline observation audit packets
+
+Phase 6C creates one immutable, self-verifying packet from a Phase 6B plan and reconciliation plus
+the exact Phase 6A report and child-window payloads that remain available. Each included artifact
+retains its canonical JSON and stored digest; the packet binds the sorted artifact names and hashes
+into a deterministic root hash.
+
+```text
+trading-system operations validate-observation-audit-config --config config/operations.phase6c.v1.yaml
+trading-system operations observation-audit-packet --config config/operations.phase6c.v1.yaml --input audit.json --database operations.sqlite
+trading-system operations observation-audit-status --database operations.sqlite --packet-id PACKET_ID
+```
+
+Packet `COMPLETE` means all expected source payloads are present, canonically intact, linked, and
+current-code. It deliberately preserves reconciliation and campaign statuses separately and is not
+a success threshold, external attestation, signature, production-readiness claim, promotion, or
+trading authorization. See `docs/proposals/phase_6c_observation_audit_packets_v1.md` and
+`docs/phase_6c_review.md`.

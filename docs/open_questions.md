@@ -527,3 +527,16 @@ and effective-before-first-window rule must apply?
 and who owns that taxonomy?
 166. What authorization and security evidence must remain separate from a matched plan before any
 future production or capital decision is considered?
+
+167. Which external verifier, if any, should consume Phase 6C packets, and what authenticated,
+read-only transport can preserve confidentiality without granting system or trading authority?
+168. Which digital-signature algorithm, trust root, key custody, rotation, revocation, and trusted
+timestamp policy are required before a packet can become externally attested?
+169. What canonical archive format, compression rule, retention period, and media-integrity checks
+should govern portable audit exports beyond the local SQLite registry?
+170. Which privacy, redaction, and least-disclosure rules apply if future packets contain operator
+identities, incident narratives, or vendor-derived evidence?
+171. Should independent reviewers append verdicts, and what schema keeps those verdicts separate
+from immutable source evidence and prevents them from becoming trading authority?
+172. What disaster-recovery and cross-database snapshot rule is needed before an audit packet can
+claim one atomic system-wide evidence point rather than linked local records?

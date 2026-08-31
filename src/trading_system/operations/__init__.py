@@ -1,5 +1,16 @@
 """Phase 5 offline inspection, schedule planning, and internal monitoring."""
 
+from trading_system.operations.audit_config import (
+    ObservationAuditConfig,
+    ObservationAuditConfigError,
+    load_observation_audit_config,
+)
+from trading_system.operations.audit_contracts import (
+    AuditArtifact,
+    AuditPacketStatus,
+    ObservationAuditPacket,
+)
+from trading_system.operations.audit_registry import ObservationAuditRegistry
 from trading_system.operations.campaign_config import (
     OperationsCampaignConfig,
     OperationsCampaignConfigError,
@@ -122,6 +133,8 @@ __all__ = [
     "ApprovalAction",
     "ApprovalEvent",
     "AttemptStatus",
+    "AuditArtifact",
+    "AuditPacketStatus",
     "BackupManifest",
     "CampaignStatus",
     "CampaignWindow",
@@ -144,6 +157,10 @@ __all__ = [
     "KillSwitchEvent",
     "MonitorReport",
     "MonitorStatus",
+    "ObservationAuditConfig",
+    "ObservationAuditConfigError",
+    "ObservationAuditPacket",
+    "ObservationAuditRegistry",
     "ObservationPlan",
     "ObservationPlanConfig",
     "ObservationPlanConfigError",
@@ -192,6 +209,7 @@ __all__ = [
     "WorkerAction",
     "WorkerInvocation",
     "inspect_component",
+    "load_observation_audit_config",
     "load_observation_plan_config",
     "load_operations_campaign_config",
     "load_operations_config",

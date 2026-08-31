@@ -522,3 +522,20 @@ Schedule adherence and campaign completeness are intentionally orthogonal. An `I
 whose evidence was missing. This prevents missing evidence from being concealed by changing the
 denominator. No minimum duration, completion threshold, statistical inference, freshness target,
 production claim, or promotion rule is defined.
+
+## Phase 6C offline observation audit packets
+
+Phase 6C packages the complete locally available Phase 6A/6B evidence chain without recalculating
+or reinterpreting any source result. Assembly starts from one persisted reconciliation, derives its
+plan and campaign identities, verifies every canonical payload digest, checks parent-child and
+cross-record links, and requires the packet timestamp to be no earlier than reconciliation.
+
+Every valid source payload becomes an `AuditArtifact` containing its canonical JSON and stored
+hash. Artifact order is normalized by name, and the ordered `(name, payload_hash)` sequence is
+content-hashed into one artifact root. Corrupt artifacts are excluded and named in canonical
+reasons; absent campaign evidence remains an explicit incomplete packet rather than disappearing.
+
+Audit-packet completeness is strictly structural. A packet may be `COMPLETE` while retaining a
+reconciliation `DEVIATION` or campaign `INCOMPLETE`, because those outcomes are evidence, not
+packet-integrity failures. The phase defines no threshold, external signature, trusted timestamp,
+promotion, production decision, or broker authority.

@@ -427,3 +427,20 @@ Migration `029_phase_6b_observation_plans.sql` adds append-only
 `operations_observation_plans`, `operations_observation_plan_windows`, and
 `operations_observation_plan_reconciliations`. The campaign report ID deliberately has no foreign
 key so a requested absent report remains persistable as `MISSING` evidence.
+
+## Phase 6C observation audit packets
+
+`AuditArtifact` contains a canonical artifact name, source record ID, exact canonical payload JSON,
+and verified payload hash. Artifact names distinguish the observation plan, each plan window, the
+reconciliation, the shadow campaign report, and each campaign window.
+
+`ObservationAuditPacket` binds packet, plan, reconciliation, and campaign identities; creation
+timestamp; `COMPLETE`/`INCOMPLETE`; retained reconciliation and campaign statuses; canonical
+artifacts; artifact-root hash; reasons; disclosures; source revision; package version; and strict
+configuration hash. Packet completeness concerns only presence, integrity, linkage, and current
+code—it does not modify source statuses.
+
+Migration `030_phase_6c_observation_audit.sql` adds append-only
+`operations_observation_audit_packets` and `operations_observation_audit_artifacts`. Packet rows
+reference their plan and reconciliation; campaign IDs remain textual so missing campaign evidence
+can be represented by an incomplete packet.
