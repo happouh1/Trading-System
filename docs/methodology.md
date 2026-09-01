@@ -539,3 +539,16 @@ Audit-packet completeness is strictly structural. A packet may be `COMPLETE` whi
 reconciliation `DEVIATION` or campaign `INCOMPLETE`, because those outcomes are evidence, not
 packet-integrity failures. The phase defines no threshold, external signature, trusted timestamp,
 promotion, production decision, or broker authority.
+
+## Phase 6D portable offline audit exports
+
+Phase 6D revalidates a persisted Phase 6C packet and artifact rows before constructing one
+canonical JSON envelope. The envelope contains parsed source payloads, retained source statuses,
+and the packet/artifact hashes needed for verification. It contains no export wall-clock metadata,
+so unchanged evidence always has identical bytes and a content-derived filename.
+
+Publication is constrained to a fixed directory beside the file-backed registry. It uses a flushed
+temporary file and atomic replace; an existing content path is accepted only when its bytes are
+identical. Verification is read-only and appends a result after checking containment, file identity,
+canonical encoding, schema, packet digest, artifact digests, root, and count. Hash verification is
+an integrity mechanism, not authentication or confidentiality.

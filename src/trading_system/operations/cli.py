@@ -9,6 +9,9 @@ from pathlib import Path
 
 from trading_system import PACKAGE_VERSION
 from trading_system.operations.audit_config import load_observation_audit_config
+from trading_system.operations.audit_export import ObservationAuditExportService
+from trading_system.operations.audit_export_config import load_observation_audit_export_config
+from trading_system.operations.audit_export_registry import ObservationAuditExportRegistry
 from trading_system.operations.audit_registry import ObservationAuditRegistry
 from trading_system.operations.campaign_config import load_operations_campaign_config
 from trading_system.operations.campaign_contracts import CampaignWindowRequest
@@ -177,6 +180,20 @@ def configure_operations_parser(
     audit_status = actions.add_parser("observation-audit-status")
     audit_status.add_argument("--database", required=True)
     audit_status.add_argument("--packet-id", required=True)
+    validate_audit_export = actions.add_parser("validate-observation-audit-export-config")
+    validate_audit_export.add_argument("--config", required=True)
+    audit_export = actions.add_parser("observation-audit-export")
+    audit_export.add_argument("--config", required=True)
+    audit_export.add_argument("--input", required=True)
+    audit_export.add_argument("--database", required=True)
+    verify_audit_export = actions.add_parser("verify-observation-audit-export")
+    verify_audit_export.add_argument("--config", required=True)
+    verify_audit_export.add_argument("--input", required=True)
+    verify_audit_export.add_argument("--database", required=True)
+    audit_export_status = actions.add_parser("observation-audit-export-status")
+    audit_export_status.add_argument("--config", required=True)
+    audit_export_status.add_argument("--database", required=True)
+    audit_export_status.add_argument("--export-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -1015,7 +1032,98 @@ def _handle_observation_audit(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_observation_audit_export(args: argparse.Namespace) -> int:
+    config = load_observation_audit_export_config(args.config)
+    if args.operations_command == "validate-observation-audit-export-config":
+        print(
+            canonical_json(
+                {
+                    "config_hash": config.config_hash,
+                    "valid": True,
+                    "production_readiness_claim": False,
+                    "automatic_promotion_enabled": False,
+                    "signing_enabled": False,
+                    "encryption_enabled": False,
+                    "network_enabled": False,
+                }
+            )
+        )
+        return 0
+    if args.operations_command == "observation-audit-export-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            manifest, latest_status, verification_count = ObservationAuditExportRegistry(
+                repository, config
+            ).status(args.export_id)
+        print(
+            canonical_json(
+                {
+                    "manifest": manifest,
+                    "latest_verification_status": latest_status,
+                    "verification_count": verification_count,
+                    "production_readiness_claim": False,
+                    "automatic_promotion_performed": False,
+                    "external_signature_performed": False,
+                    "encryption_performed": False,
+                    "network_used": False,
+                    "broker_write_performed": False,
+                    "live_trading_enabled": False,
+                }
+            )
+        )
+        return 0
+    if args.operations_command == "observation-audit-export":
+        root = _control_input(
+            args.input,
+            {"packet_id", "exported_at", "source_revision"},
+        )
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = ObservationAuditExportRegistry(repository, config)
+            manifest = ObservationAuditExportService(config, registry).export(
+                packet_id=_string(root["packet_id"], "audit packet ID"),
+                exported_at=_time(root["exported_at"]),
+                source_revision=_string(root["source_revision"], "source revision"),
+            )
+        payload: object = manifest
+    else:
+        root = _control_input(
+            args.input,
+            {"export_id", "verified_at", "source_revision"},
+        )
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = ObservationAuditExportRegistry(repository, config)
+            payload = ObservationAuditExportService(config, registry).verify(
+                export_id=_string(root["export_id"], "audit export ID"),
+                verified_at=_time(root["verified_at"]),
+                source_revision=_string(root["source_revision"], "source revision"),
+            )
+    print(
+        canonical_json(
+            {
+                "evidence": payload,
+                "production_readiness_claim": False,
+                "automatic_promotion_performed": False,
+                "external_signature_performed": False,
+                "encryption_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
+    return 0
+
+
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-observation-audit-export-config",
+        "observation-audit-export",
+        "verify-observation-audit-export",
+        "observation-audit-export-status",
+    }:
+        return _handle_observation_audit_export(args)
     if args.operations_command in {
         "validate-observation-audit-config",
         "observation-audit-packet",

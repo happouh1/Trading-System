@@ -446,3 +446,22 @@ current-code. It deliberately preserves reconciliation and campaign statuses sep
 a success threshold, external attestation, signature, production-readiness claim, promotion, or
 trading authorization. See `docs/proposals/phase_6c_observation_audit_packets_v1.md` and
 `docs/phase_6c_review.md`.
+
+## Phase 6D portable offline audit exports
+
+Phase 6D serializes one persisted Phase 6C packet and its source artifacts to deterministic,
+content-addressed canonical JSON beside the registry database. A separate read-only command checks
+the exact bytes, envelope, packet, artifact hashes, root, and count and appends `VERIFIED` or
+`FAILED` evidence.
+
+```text
+trading-system operations validate-observation-audit-export-config --config config/operations.phase6d.v1.yaml
+trading-system operations observation-audit-export --config config/operations.phase6d.v1.yaml --input export.json --database operations.sqlite
+trading-system operations verify-observation-audit-export --config config/operations.phase6d.v1.yaml --input verify.json --database operations.sqlite
+trading-system operations observation-audit-export-status --config config/operations.phase6d.v1.yaml --database operations.sqlite --export-id EXPORT_ID
+```
+
+Exports are local, unencrypted, and unsigned. A matching SHA-256 proves byte integrity only; it is
+not an external attestation, trusted timestamp, production-readiness claim, promotion, or trading
+authorization. See `docs/proposals/phase_6d_portable_audit_exports_v1.md` and
+`docs/phase_6d_review.md`.

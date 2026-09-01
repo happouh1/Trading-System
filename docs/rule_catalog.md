@@ -440,3 +440,21 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   transactional insertion, conflict rejection, canonical payloads, and restart-safe idempotency.
 - `OBSERVATION_AUDIT_NO_AUTHORITY`: Phase 6C has no thresholds, signing key, external attestation,
   network, notification, promotion, broker-write, production, or live-trading authority.
+- `AUDIT_EXPORT_EXACT_SOURCE`: Phase 6D exports exactly one persisted Phase 6C packet and its
+  persisted artifact rows after canonical hash and current-code validation.
+- `AUDIT_EXPORT_CANONICAL_BYTES`: the envelope uses canonical UTF-8 JSON without export-time
+  metadata, making unchanged source evidence byte-identical across exports.
+- `AUDIT_EXPORT_CONTENT_ADDRESS`: the destination filename is the SHA-256 of exact file bytes;
+  existing conflicting bytes and symlinks fail closed.
+- `AUDIT_EXPORT_CONTAINED_PATH`: export and verification paths must remain relative inside the
+  configured directory beside the file-backed registry database.
+- `AUDIT_EXPORT_ATOMIC_PUBLICATION`: publication flushes a same-directory temporary file before
+  atomic replacement of a previously absent content path.
+- `AUDIT_EXPORT_INDEPENDENT_VERIFICATION`: read-only verification checks file hash/size, canonical
+  envelope, packet hash, every artifact hash, artifact root, and count.
+- `AUDIT_EXPORT_STATUS_ORTHOGONAL`: exports preserve reconciliation and campaign statuses without
+  upgrading or interpreting them.
+- `AUDIT_EXPORT_APPEND_ONLY`: manifests and successful or failed verifications use deterministic
+  identities, canonical payloads, hashes, conflict rejection, and restart-safe persistence.
+- `AUDIT_EXPORT_NO_AUTHORITY`: Phase 6D has no signing, encryption, external transport, threshold,
+  notification, promotion, production, broker-write, or live-trading authority.

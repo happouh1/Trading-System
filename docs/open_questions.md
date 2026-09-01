@@ -540,3 +540,20 @@ identities, incident narratives, or vendor-derived evidence?
 from immutable source evidence and prevents them from becoming trading authority?
 172. What disaster-recovery and cross-database snapshot rule is needed before an audit packet can
 claim one atomic system-wide evidence point rather than linked local records?
+
+173. Which approved signature algorithm, signer identity, hardware-backed key custody, revocation,
+and trusted timestamp policy should authenticate a future export beyond content integrity?
+174. Which encryption format, recipients, key rotation, recovery procedure, and metadata policy
+should protect portable evidence at rest and in transit?
+175. What canonical archive and compression format should package multiple exports without
+introducing nondeterministic timestamps, permissions, or file ordering?
+176. Which authenticated, read-only transport and receiving verifier may exchange an export while
+remaining isolated from trading, credentials, promotion, and system-control authority?
+177. What retention, legal hold, deletion authorization, and removable-media integrity policy
+should apply to exported files and their append-only manifests?
+178. Should independent reviewer verdicts be portable, and what separate schema prevents those
+opinions from changing immutable source evidence or becoming production authority?
+179. What coordinated snapshot or transaction boundary can prove that evidence drawn from multiple
+databases represents one atomic system-wide point rather than linked local records?
+180. Which redaction review is required before an export containing future operator identities,
+incident text, or vendor evidence may leave the local registry directory?

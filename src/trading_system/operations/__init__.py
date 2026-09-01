@@ -10,6 +10,18 @@ from trading_system.operations.audit_contracts import (
     AuditPacketStatus,
     ObservationAuditPacket,
 )
+from trading_system.operations.audit_export import ObservationAuditExportService
+from trading_system.operations.audit_export_config import (
+    ObservationAuditExportConfig,
+    ObservationAuditExportConfigError,
+    load_observation_audit_export_config,
+)
+from trading_system.operations.audit_export_contracts import (
+    AuditExportManifest,
+    AuditExportVerification,
+    AuditExportVerificationStatus,
+)
+from trading_system.operations.audit_export_registry import ObservationAuditExportRegistry
 from trading_system.operations.audit_registry import ObservationAuditRegistry
 from trading_system.operations.campaign_config import (
     OperationsCampaignConfig,
@@ -134,6 +146,9 @@ __all__ = [
     "ApprovalEvent",
     "AttemptStatus",
     "AuditArtifact",
+    "AuditExportManifest",
+    "AuditExportVerification",
+    "AuditExportVerificationStatus",
     "AuditPacketStatus",
     "BackupManifest",
     "CampaignStatus",
@@ -159,6 +174,10 @@ __all__ = [
     "MonitorStatus",
     "ObservationAuditConfig",
     "ObservationAuditConfigError",
+    "ObservationAuditExportConfig",
+    "ObservationAuditExportConfigError",
+    "ObservationAuditExportRegistry",
+    "ObservationAuditExportService",
     "ObservationAuditPacket",
     "ObservationAuditRegistry",
     "ObservationPlan",
@@ -210,6 +229,7 @@ __all__ = [
     "WorkerInvocation",
     "inspect_component",
     "load_observation_audit_config",
+    "load_observation_audit_export_config",
     "load_observation_plan_config",
     "load_operations_campaign_config",
     "load_operations_config",

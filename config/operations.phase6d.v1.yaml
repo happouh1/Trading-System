@@ -1,0 +1,43 @@
+{
+  "audit_export_version": "6D.1.0",
+  "authority": {
+    "offline_only": true,
+    "evidence_only": true,
+    "automatic_promotion_enabled": false,
+    "production_readiness_claim_enabled": false,
+    "network_enabled": false,
+    "credentials_enabled": false,
+    "external_notifications_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false,
+    "signing_enabled": false,
+    "encryption_enabled": false
+  },
+  "export": {
+    "directory": "observation_audit_exports",
+    "canonical_json_required": true,
+    "content_addressed_filename_required": true,
+    "atomic_write_required": true,
+    "conflicting_overwrite_forbidden": true,
+    "source_packet_hash_required": true,
+    "source_artifact_hashes_required": true,
+    "source_artifact_root_required": true,
+    "current_code_version_required": true,
+    "relative_contained_paths_required": true
+  },
+  "verification": {
+    "read_only": true,
+    "file_hash_required": true,
+    "canonical_envelope_required": true,
+    "embedded_packet_hash_required": true,
+    "embedded_artifact_hashes_required": true,
+    "embedded_artifact_root_required": true,
+    "source_statuses_retained": true
+  },
+  "thresholds": {
+    "minimum_observation_period_defined": false,
+    "minimum_success_rate_defined": false,
+    "freshness_service_level_defined": false,
+    "promotion_threshold_defined": false
+  }
+}

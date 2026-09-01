@@ -444,3 +444,19 @@ Migration `030_phase_6c_observation_audit.sql` adds append-only
 `operations_observation_audit_packets` and `operations_observation_audit_artifacts`. Packet rows
 reference their plan and reconciliation; campaign IDs remain textual so missing campaign evidence
 can be represented by an incomplete packet.
+
+## Phase 6D portable audit exports
+
+`AuditExportManifest` records export ID, source packet ID, export timestamp, contained relative
+artifact path, byte SHA-256 and count, packet payload hash, artifact-root hash and count, retained
+reconciliation/campaign statuses, source revision, package version, disclosures, and config hash.
+
+`AuditExportVerification` records verification ID, export ID, timestamp, `VERIFIED`/`FAILED`,
+expected and actual hashes, canonical failure reasons, `promoted=false`, source revision, package
+version, and config hash. A missing or unsafe file has no actual hash.
+
+The export envelope is canonical JSON with schema `6D-AUDIT-EXPORT.1.0`, the complete parsed Phase
+6C packet, and canonical artifacts containing name, source record ID, parsed payload, and payload
+hash. Migration `031_phase_6d_observation_audit_exports.sql` adds append-only
+`operations_observation_audit_exports` and
+`operations_observation_audit_export_verifications`.
