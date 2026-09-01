@@ -1,0 +1,45 @@
+{
+  "review_export_version": "6F.1.0",
+  "authority": {
+    "offline_only": true,
+    "evidence_only": true,
+    "reviewer_authentication_enabled": false,
+    "consensus_enabled": false,
+    "automatic_promotion_enabled": false,
+    "production_readiness_claim_enabled": false,
+    "network_enabled": false,
+    "credentials_enabled": false,
+    "external_notifications_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false,
+    "signing_enabled": false,
+    "encryption_enabled": false
+  },
+  "export": {
+    "directory": "observation_audit_review_bundles",
+    "canonical_json_required": true,
+    "content_addressed_filename_required": true,
+    "atomic_write_required": true,
+    "conflicting_overwrite_forbidden": true,
+    "complete_review_history_required": true,
+    "source_hashes_required": true,
+    "current_code_version_required": true,
+    "relative_contained_paths_required": true
+  },
+  "verification": {
+    "read_only": true,
+    "file_hash_required": true,
+    "canonical_envelope_required": true,
+    "embedded_source_hashes_required": true,
+    "embedded_review_hashes_required": true,
+    "embedded_review_root_required": true,
+    "supersession_history_retained": true,
+    "consensus_forbidden": true
+  },
+  "thresholds": {
+    "minimum_reviewer_count_defined": false,
+    "consensus_threshold_defined": false,
+    "production_threshold_defined": false,
+    "promotion_threshold_defined": false
+  }
+}

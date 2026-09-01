@@ -476,3 +476,22 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   independence, quorum, consensus, or success threshold is inferred.
 - `AUDIT_REVIEW_NO_AUTHORITY`: assertions never alter source evidence and cannot access networks,
   credentials, notifications, promotion, production, brokers, or live trading.
+- `REVIEW_BUNDLE_EXACT_SOURCE`: Phase 6F requires one exact current-code Phase 6D export and its
+  exact intact `VERIFIED` verification with matching artifact hashes.
+- `REVIEW_BUNDLE_COMPLETE_HISTORY`: every persisted Phase 6E review for the export must be included
+  and must link the selected verification and exact source hashes.
+- `REVIEW_BUNDLE_RETAIN_SUPERSEDED`: superseded assertions remain embedded; active counts are
+  derived without deleting or overwriting prior opinions.
+- `REVIEW_BUNDLE_ROOT_HASH`: canonical review-ID/hash pairs are bound into one deterministic root.
+- `REVIEW_BUNDLE_CANONICAL_BYTES`: canonical source and review payloads omit bundle-time metadata,
+  making unchanged evidence byte-identical and content-addressed.
+- `REVIEW_BUNDLE_CONTAINED_ATOMIC_WRITE`: relative paths stay inside the configured local directory
+  and publication uses conflicting-write rejection and atomic replacement.
+- `REVIEW_BUNDLE_INDEPENDENT_VERIFICATION`: read-only verification checks bytes, source hashes,
+  reviews, supersession history, root, and descriptive counts.
+- `REVIEW_BUNDLE_NO_CONSENSUS`: active and eligible counts are descriptive; asserted reviewer
+  identity, qualification, independence, quorum, and consensus remain unassessed.
+- `REVIEW_BUNDLE_APPEND_ONLY`: manifests and verifications use deterministic identities, canonical
+  payloads, hashes, conflict rejection, and restart-safe persistence.
+- `REVIEW_BUNDLE_NO_AUTHORITY`: Phase 6F cannot sign, encrypt, transport, notify, promote, claim
+  production readiness, write to brokers, or enable live trading.

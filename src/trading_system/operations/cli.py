@@ -15,6 +15,13 @@ from trading_system.operations.audit_export_registry import ObservationAuditExpo
 from trading_system.operations.audit_registry import ObservationAuditRegistry
 from trading_system.operations.audit_review_config import load_observation_audit_review_config
 from trading_system.operations.audit_review_contracts import AuditReviewVerdict
+from trading_system.operations.audit_review_export import ObservationAuditReviewExportService
+from trading_system.operations.audit_review_export_config import (
+    load_observation_audit_review_export_config,
+)
+from trading_system.operations.audit_review_export_registry import (
+    ObservationAuditReviewExportRegistry,
+)
 from trading_system.operations.audit_review_registry import ObservationAuditReviewRegistry
 from trading_system.operations.campaign_config import load_operations_campaign_config
 from trading_system.operations.campaign_contracts import CampaignWindowRequest
@@ -207,6 +214,22 @@ def configure_operations_parser(
     audit_review_status.add_argument("--config", required=True)
     audit_review_status.add_argument("--database", required=True)
     audit_review_status.add_argument("--export-id", required=True)
+    validate_review_export = actions.add_parser(
+        "validate-observation-audit-review-export-config"
+    )
+    validate_review_export.add_argument("--config", required=True)
+    review_export = actions.add_parser("observation-audit-review-export")
+    review_export.add_argument("--config", required=True)
+    review_export.add_argument("--input", required=True)
+    review_export.add_argument("--database", required=True)
+    verify_review_export = actions.add_parser("verify-observation-audit-review-export")
+    verify_review_export.add_argument("--config", required=True)
+    verify_review_export.add_argument("--input", required=True)
+    verify_review_export.add_argument("--database", required=True)
+    review_export_status = actions.add_parser("observation-audit-review-export-status")
+    review_export_status.add_argument("--config", required=True)
+    review_export_status.add_argument("--database", required=True)
+    review_export_status.add_argument("--bundle-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -1222,7 +1245,112 @@ def _handle_observation_audit_review(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_observation_audit_review_export(args: argparse.Namespace) -> int:
+    config = load_observation_audit_review_export_config(args.config)
+    if args.operations_command == "validate-observation-audit-review-export-config":
+        print(
+            canonical_json(
+                {
+                    "config_hash": config.config_hash,
+                    "valid": True,
+                    "reviewers_authenticated": False,
+                    "consensus_enabled": False,
+                    "signing_enabled": False,
+                    "encryption_enabled": False,
+                    "network_enabled": False,
+                    "production_readiness_claim": False,
+                }
+            )
+        )
+        return 0
+    if args.operations_command == "observation-audit-review-export-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            manifest, latest_status, verification_count = (
+                ObservationAuditReviewExportRegistry(repository, config).status(
+                    args.bundle_id
+                )
+            )
+        print(
+            canonical_json(
+                {
+                    "manifest": manifest,
+                    "latest_verification_status": latest_status,
+                    "verification_count": verification_count,
+                    "consensus_calculated": False,
+                    "reviewers_authenticated": False,
+                    "external_signature_performed": False,
+                    "encryption_performed": False,
+                    "production_readiness_claim": False,
+                    "automatic_promotion_performed": False,
+                    "network_used": False,
+                    "broker_write_performed": False,
+                    "live_trading_enabled": False,
+                }
+            )
+        )
+        return 0
+    if args.operations_command == "observation-audit-review-export":
+        root = _control_input(
+            args.input,
+            {
+                "export_id",
+                "source_verification_id",
+                "bundled_at",
+                "source_revision",
+            },
+        )
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = ObservationAuditReviewExportRegistry(repository, config)
+            payload: object = ObservationAuditReviewExportService(config, registry).export(
+                export_id=_string(root["export_id"], "audit export ID"),
+                source_verification_id=_string(
+                    root["source_verification_id"], "source verification ID"
+                ),
+                bundled_at=_time(root["bundled_at"]),
+                source_revision=_string(root["source_revision"], "source revision"),
+            )
+    else:
+        root = _control_input(
+            args.input,
+            {"bundle_id", "verified_at", "source_revision"},
+        )
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = ObservationAuditReviewExportRegistry(repository, config)
+            payload = ObservationAuditReviewExportService(config, registry).verify(
+                bundle_id=_string(root["bundle_id"], "review bundle ID"),
+                verified_at=_time(root["verified_at"]),
+                source_revision=_string(root["source_revision"], "source revision"),
+            )
+    print(
+        canonical_json(
+            {
+                "evidence": payload,
+                "consensus_calculated": False,
+                "reviewers_authenticated": False,
+                "external_signature_performed": False,
+                "encryption_performed": False,
+                "production_readiness_claim": False,
+                "automatic_promotion_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
+    return 0
+
+
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-observation-audit-review-export-config",
+        "observation-audit-review-export",
+        "verify-observation-audit-review-export",
+        "observation-audit-review-export-status",
+    }:
+        return _handle_observation_audit_review_export(args)
     if args.operations_command in {
         "validate-observation-audit-review-config",
         "observation-audit-review",

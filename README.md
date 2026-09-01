@@ -484,3 +484,22 @@ the immutable history but are excluded from summary-eligible counts. Reviewer ID
 not authenticated; no quorum or consensus is computed. Reviews never modify source evidence and
 grant no production, promotion, brokerage, or live-trading authority. See
 `docs/proposals/phase_6e_independent_audit_reviews_v1.md` and `docs/phase_6e_review.md`.
+
+## Phase 6F portable offline review-history bundles
+
+Phase 6F serializes one exact verified Phase 6D export, its exact verification, and the complete
+Phase 6E review history tied to that verification into deterministic content-addressed JSON. A
+separate read-only command checks the bytes, source hashes, every review hash, supersession
+history, review root, and descriptive counts.
+
+```text
+trading-system operations validate-observation-audit-review-export-config --config config/operations.phase6f.v1.yaml
+trading-system operations observation-audit-review-export --config config/operations.phase6f.v1.yaml --input bundle.json --database operations.sqlite
+trading-system operations verify-observation-audit-review-export --config config/operations.phase6f.v1.yaml --input verify.json --database operations.sqlite
+trading-system operations observation-audit-review-export-status --config config/operations.phase6f.v1.yaml --database operations.sqlite --bundle-id BUNDLE_ID
+```
+
+Bundles are local, unsigned, unencrypted, and require at least one review. They preserve asserted,
+unauthenticated reviewer identities and compute no consensus. A verified bundle proves local byte
+integrity only and grants no production, promotion, brokerage, or trading authority. See
+`docs/proposals/phase_6f_portable_review_bundles_v1.md` and `docs/phase_6f_review.md`.

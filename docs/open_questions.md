@@ -575,3 +575,16 @@ to reviewer identities, notes, and assertions?
 188. What separately authenticated governance process may consume review outcomes, and what
 additional security, reliability, capital, sandbox, and rollback evidence must remain mandatory
 before any production or trading decision?
+
+189. How should one portable bundle represent reviews of the same export that cite different valid
+verification records without implying that those verification events are interchangeable?
+190. Should a future review bundle use chronological review ordering instead of deterministic ID
+ordering, and what tie-break rule preserves canonical bytes for identical timestamps?
+191. Which signature algorithm, authenticated reviewer directory, trusted timestamp, key custody,
+revocation, and independent witness could turn an unsigned bundle into an attested artifact?
+192. Which encryption, recipient, external transport, legal hold, retention, and deletion policies
+are required before review bundles may leave the local registry directory?
+193. What consumer may calculate consensus from portable assertions, and how must its versioned
+policy, quorum, conflicts, abstentions, and result remain separate from the immutable bundle?
+194. What privacy and redaction policy applies to reviewer IDs, reason codes, and free-text notes
+before any future external distribution?

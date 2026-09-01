@@ -474,3 +474,19 @@ Migration `032_phase_6e_observation_audit_reviews.sql` adds append-only
 `operations_observation_audit_reviews`. Foreign keys bind the export, verification, and optional
 prior review. Canonical payload JSON and payload hash preserve the complete assertion; status
 derives active and summary-eligible counts without mutating rows.
+
+## Phase 6F portable review-history bundles
+
+`ReviewBundleManifest` records bundle ID, Phase 6D export ID and exact source verification ID,
+bundle timestamp, contained artifact path/hash/bytes, export-manifest and source-verification
+hashes, review-root hash, total/active/summary-eligible counts, provenance, disclosures, package
+version, and strict configuration hash.
+
+`ReviewBundleVerification` records verification ID, bundle ID, verification timestamp,
+`VERIFIED`/`FAILED`, expected and actual hashes, canonical reasons, `promoted=false`, provenance,
+package version, and config hash. The envelope uses schema `6F-REVIEW-BUNDLE.1.0` and embeds parsed
+source manifest, source verification, and canonical review payloads with their hashes.
+
+Migration `033_phase_6f_observation_audit_review_bundles.sql` adds append-only
+`operations_observation_audit_review_bundles` and
+`operations_observation_audit_review_bundle_verifications`.

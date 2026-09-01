@@ -570,3 +570,21 @@ Status retains the complete history while computing active counts by excluding r
 by a later supersession. `UNCERTAIN` remains active when not superseded but is never summary
 eligible. Counts are descriptive only: reviewer identity is unauthenticated, no independence,
 qualification, quorum, consensus, threshold, or production interpretation is inferred.
+
+## Phase 6F portable offline review-history bundles
+
+Phase 6F selects one Phase 6D export, one exact `VERIFIED` verification, and every Phase 6E review
+for that export. Export and verification payloads and each review payload are canonically re-hashed
+and required to carry the current package version. Every included review must link the selected
+verification and its exact source hashes; mixed-verification review histories fail closed.
+
+Reviews are ordered by deterministic ID and bound as `(review_id, payload_hash)` pairs into a
+review-root hash. Superseded reviews remain present. Active and summary-eligible counts are derived
+without consensus: prior IDs referenced by valid same-reviewer supersessions are inactive, and an
+active `UNCERTAIN` assertion remains excluded from summary eligibility.
+
+The canonical envelope excludes bundle wall-clock metadata, so unchanged source evidence yields
+identical bytes and a content-derived filename. Publication is contained beside the registry and
+atomic. Read-only verification checks byte hash/size, canonical encoding, exact source evidence,
+every review, supersession lineage, root, and counts. It does not authenticate reviewers, sign,
+encrypt, transport, promote, or interpret evidence.
