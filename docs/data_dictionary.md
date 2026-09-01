@@ -460,3 +460,17 @@ The export envelope is canonical JSON with schema `6D-AUDIT-EXPORT.1.0`, the com
 hash. Migration `031_phase_6d_observation_audit_exports.sql` adds append-only
 `operations_observation_audit_exports` and
 `operations_observation_audit_export_verifications`.
+
+## Phase 6E observation audit reviews
+
+`ObservationAuditReview` binds `review_id`, one Phase 6D `export_id`, one exact
+`verification_id`, asserted `reviewer_id`, timezone-aware `reviewed_at`, and a verdict of
+`CONFIRMED`, `REJECTED`, `PARTIAL`, or `UNCERTAIN`. It also stores canonical reason codes, notes,
+an optional `supersedes_review_id`, exact export-manifest and verification-payload hashes,
+summary eligibility, fixed `reviewer_authenticated=false` and `promoted=false`, disclosures,
+source revision, package version, and configuration hash.
+
+Migration `032_phase_6e_observation_audit_reviews.sql` adds append-only
+`operations_observation_audit_reviews`. Foreign keys bind the export, verification, and optional
+prior review. Canonical payload JSON and payload hash preserve the complete assertion; status
+derives active and summary-eligible counts without mutating rows.

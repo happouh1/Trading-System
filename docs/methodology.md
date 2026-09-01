@@ -552,3 +552,21 @@ temporary file and atomic replace; an existing content path is accepted only whe
 identical. Verification is read-only and appends a result after checking containment, file identity,
 canonical encoding, schema, packet digest, artifact digests, root, and count. Hash verification is
 an integrity mechanism, not authentication or confidentiality.
+
+## Phase 6E offline audit review assertions
+
+Phase 6E starts from one explicit Phase 6D export and one explicit verification. Both persisted
+payloads are parsed, reserialized canonically, and re-hashed. Their identities, hashes, link,
+`VERIFIED` status, empty verification reasons, matching expected/actual artifact hash,
+`promoted=false`, and current package version must all agree before a review can be created.
+
+Each review records a timezone-aware timestamp no earlier than verification, an asserted reviewer
+identity, one fixed verdict, canonical reason codes, notes, exact source hashes, provenance, and
+mandatory non-authority disclosures. Deterministic identity and append-only insertion make an
+identical assertion idempotent across restart. Supersession is a new immutable row and is permitted
+only for the same export and asserted reviewer at a later timestamp.
+
+Status retains the complete history while computing active counts by excluding reviews referenced
+by a later supersession. `UNCERTAIN` remains active when not superseded but is never summary
+eligible. Counts are descriptive only: reviewer identity is unauthenticated, no independence,
+qualification, quorum, consensus, threshold, or production interpretation is inferred.

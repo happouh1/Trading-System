@@ -557,3 +557,21 @@ opinions from changing immutable source evidence or becoming production authorit
 databases represents one atomic system-wide point rather than linked local records?
 180. Which redaction review is required before an export containing future operator identities,
 incident text, or vendor evidence may leave the local registry directory?
+
+181. Which identity provider, authentication factors, reviewer qualification records, and
+revocation process are required before a reviewer ID may be treated as authenticated?
+182. What independence and conflict-of-interest rules distinguish an external reviewer from a
+system operator, developer, evidence producer, or capital decision-maker?
+183. What preregistered quorum, weighting, disagreement, abstention, and consensus policy may
+interpret multiple review assertions without rewriting their immutable history?
+184. Which controlled reason-code taxonomy, note redaction, privacy review, and retention policy
+should replace the current caller-supplied reason codes and plain local notes?
+185. Should review assertions be included in a separately signed portable bundle, and what trust
+root, timestamp, encryption, and receiving-verifier policy would govern that bundle?
+186. May supersession branch, be withdrawn, or cite multiple prior assertions, and what immutable
+lineage and authorization rules would prevent selective history presentation?
+187. Which legal hold, records-retention, discovery, and deletion-authorization requirements apply
+to reviewer identities, notes, and assertions?
+188. What separately authenticated governance process may consume review outcomes, and what
+additional security, reliability, capital, sandbox, and rollback evidence must remain mandatory
+before any production or trading decision?

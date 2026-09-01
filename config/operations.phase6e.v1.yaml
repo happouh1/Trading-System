@@ -1,0 +1,36 @@
+{
+  "audit_review_version": "6E.1.0",
+  "authority": {
+    "offline_only": true,
+    "evidence_only": true,
+    "reviewer_authentication_enabled": false,
+    "consensus_enabled": false,
+    "automatic_promotion_enabled": false,
+    "production_readiness_claim_enabled": false,
+    "network_enabled": false,
+    "credentials_enabled": false,
+    "external_notifications_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  },
+  "validation": {
+    "require_verified_export": true,
+    "require_exact_verification_link": true,
+    "verify_manifest_payload_hash": true,
+    "verify_verification_payload_hash": true,
+    "require_current_code_version": true,
+    "require_causal_review_timestamp": true,
+    "canonical_reason_order": true,
+    "append_only": true,
+    "retain_all_prior_reviews": true,
+    "supersession_same_export_reviewer": true,
+    "reviewer_identity_is_asserted": true,
+    "uncertain_excluded_from_summary": true
+  },
+  "thresholds": {
+    "minimum_reviewer_count_defined": false,
+    "consensus_threshold_defined": false,
+    "minimum_observation_period_defined": false,
+    "production_threshold_defined": false
+  }
+}

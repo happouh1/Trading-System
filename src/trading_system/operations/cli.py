@@ -13,6 +13,9 @@ from trading_system.operations.audit_export import ObservationAuditExportService
 from trading_system.operations.audit_export_config import load_observation_audit_export_config
 from trading_system.operations.audit_export_registry import ObservationAuditExportRegistry
 from trading_system.operations.audit_registry import ObservationAuditRegistry
+from trading_system.operations.audit_review_config import load_observation_audit_review_config
+from trading_system.operations.audit_review_contracts import AuditReviewVerdict
+from trading_system.operations.audit_review_registry import ObservationAuditReviewRegistry
 from trading_system.operations.campaign_config import load_operations_campaign_config
 from trading_system.operations.campaign_contracts import CampaignWindowRequest
 from trading_system.operations.campaign_registry import OperationsCampaignRegistry
@@ -194,6 +197,16 @@ def configure_operations_parser(
     audit_export_status.add_argument("--config", required=True)
     audit_export_status.add_argument("--database", required=True)
     audit_export_status.add_argument("--export-id", required=True)
+    validate_audit_review = actions.add_parser("validate-observation-audit-review-config")
+    validate_audit_review.add_argument("--config", required=True)
+    audit_review = actions.add_parser("observation-audit-review")
+    audit_review.add_argument("--config", required=True)
+    audit_review.add_argument("--input", required=True)
+    audit_review.add_argument("--database", required=True)
+    audit_review_status = actions.add_parser("observation-audit-review-status")
+    audit_review_status.add_argument("--config", required=True)
+    audit_review_status.add_argument("--database", required=True)
+    audit_review_status.add_argument("--export-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -1116,7 +1129,106 @@ def _handle_observation_audit_export(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_observation_audit_review(args: argparse.Namespace) -> int:
+    config = load_observation_audit_review_config(args.config)
+    if args.operations_command == "validate-observation-audit-review-config":
+        print(
+            canonical_json(
+                {
+                    "config_hash": config.config_hash,
+                    "valid": True,
+                    "reviewer_authentication_enabled": False,
+                    "consensus_enabled": False,
+                    "production_readiness_claim": False,
+                    "automatic_promotion_enabled": False,
+                    "network_enabled": False,
+                }
+            )
+        )
+        return 0
+    if args.operations_command == "observation-audit-review-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            reviews, counts = ObservationAuditReviewRegistry(repository, config).status(
+                args.export_id
+            )
+        print(
+            canonical_json(
+                {
+                    "export_id": args.export_id,
+                    "reviews": reviews,
+                    "counts": counts,
+                    "consensus_calculated": False,
+                    "reviewers_authenticated": False,
+                    "production_readiness_claim": False,
+                    "automatic_promotion_performed": False,
+                    "network_used": False,
+                    "broker_write_performed": False,
+                    "live_trading_enabled": False,
+                }
+            )
+        )
+        return 0
+    root = _control_input(
+        args.input,
+        {
+            "export_id",
+            "verification_id",
+            "reviewer_id",
+            "reviewed_at",
+            "verdict",
+            "reason_codes",
+            "notes",
+            "supersedes_review_id",
+            "source_revision",
+        },
+    )
+    notes = root["notes"]
+    supersedes = root["supersedes_review_id"]
+    if not isinstance(notes, str):
+        raise ValueError("audit review notes must be a string")
+    if supersedes is not None and (not isinstance(supersedes, str) or not supersedes):
+        raise ValueError("superseded audit review ID must be null or a nonempty string")
+    with SQLiteRepository(args.database) as repository:
+        repository.migrate()
+        registry = ObservationAuditReviewRegistry(repository, config)
+        review = registry.create(
+            export_id=_string(root["export_id"], "audit export ID"),
+            verification_id=_string(root["verification_id"], "audit verification ID"),
+            reviewer_id=_string(root["reviewer_id"], "reviewer ID"),
+            reviewed_at=_time(root["reviewed_at"]),
+            verdict=AuditReviewVerdict(_string(root["verdict"], "audit review verdict")),
+            reason_codes=_string_tuple(root["reason_codes"], "audit review reason codes"),
+            notes=notes,
+            supersedes_review_id=supersedes,
+            source_revision=_string(root["source_revision"], "source revision"),
+        )
+        inserted = registry.insert(review)
+    print(
+        canonical_json(
+            {
+                "review": review,
+                "inserted": inserted,
+                "consensus_calculated": False,
+                "reviewer_authenticated": False,
+                "production_readiness_claim": False,
+                "automatic_promotion_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
+    return 0
+
+
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-observation-audit-review-config",
+        "observation-audit-review",
+        "observation-audit-review-status",
+    }:
+        return _handle_observation_audit_review(args)
     if args.operations_command in {
         "validate-observation-audit-export-config",
         "observation-audit-export",

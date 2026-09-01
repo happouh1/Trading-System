@@ -458,3 +458,21 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   identities, canonical payloads, hashes, conflict rejection, and restart-safe persistence.
 - `AUDIT_EXPORT_NO_AUTHORITY`: Phase 6D has no signing, encryption, external transport, threshold,
   notification, promotion, production, broker-write, or live-trading authority.
+- `AUDIT_REVIEW_EXACT_VERIFIED_SOURCE`: Phase 6E requires one exact Phase 6D export and its exact
+  `VERIFIED` verification record with matching canonical hashes and artifact identity.
+- `AUDIT_REVIEW_CURRENT_CODE`: both source records must carry the current package version before
+  an assertion can be appended.
+- `AUDIT_REVIEW_CAUSAL_TIMESTAMP`: review time must be timezone-aware and no earlier than source
+  verification; superseding assertions must be later than the prior assertion.
+- `AUDIT_REVIEW_FIXED_VERDICTS`: verdicts are limited to `CONFIRMED`, `REJECTED`, `PARTIAL`, and
+  `UNCERTAIN`; reason codes and disclosures are canonicalized.
+- `AUDIT_REVIEW_UNCERTAIN_EXCLUDED`: an active `UNCERTAIN` assertion remains visible but cannot
+  enter summary-eligible counts.
+- `AUDIT_REVIEW_SUPERSESSION_SCOPED`: supersession appends a new row and can reference only a prior
+  assertion for the same export and asserted reviewer.
+- `AUDIT_REVIEW_APPEND_ONLY`: deterministic IDs, canonical payloads, hashes, conflict rejection,
+  and retained prior assertions provide restart-safe immutable history.
+- `AUDIT_REVIEW_NO_CONSENSUS`: reviewer IDs are unauthenticated assertions; no qualification,
+  independence, quorum, consensus, or success threshold is inferred.
+- `AUDIT_REVIEW_NO_AUTHORITY`: assertions never alter source evidence and cannot access networks,
+  credentials, notifications, promotion, production, brokers, or live trading.

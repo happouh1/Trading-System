@@ -23,6 +23,16 @@ from trading_system.operations.audit_export_contracts import (
 )
 from trading_system.operations.audit_export_registry import ObservationAuditExportRegistry
 from trading_system.operations.audit_registry import ObservationAuditRegistry
+from trading_system.operations.audit_review_config import (
+    ObservationAuditReviewConfig,
+    ObservationAuditReviewConfigError,
+    load_observation_audit_review_config,
+)
+from trading_system.operations.audit_review_contracts import (
+    AuditReviewVerdict,
+    ObservationAuditReview,
+)
+from trading_system.operations.audit_review_registry import ObservationAuditReviewRegistry
 from trading_system.operations.campaign_config import (
     OperationsCampaignConfig,
     OperationsCampaignConfigError,
@@ -150,6 +160,7 @@ __all__ = [
     "AuditExportVerification",
     "AuditExportVerificationStatus",
     "AuditPacketStatus",
+    "AuditReviewVerdict",
     "BackupManifest",
     "CampaignStatus",
     "CampaignWindow",
@@ -180,6 +191,10 @@ __all__ = [
     "ObservationAuditExportService",
     "ObservationAuditPacket",
     "ObservationAuditRegistry",
+    "ObservationAuditReview",
+    "ObservationAuditReviewConfig",
+    "ObservationAuditReviewConfigError",
+    "ObservationAuditReviewRegistry",
     "ObservationPlan",
     "ObservationPlanConfig",
     "ObservationPlanConfigError",
@@ -230,6 +245,7 @@ __all__ = [
     "inspect_component",
     "load_observation_audit_config",
     "load_observation_audit_export_config",
+    "load_observation_audit_review_config",
     "load_observation_plan_config",
     "load_operations_campaign_config",
     "load_operations_config",

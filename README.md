@@ -465,3 +465,22 @@ Exports are local, unencrypted, and unsigned. A matching SHA-256 proves byte int
 not an external attestation, trusted timestamp, production-readiness claim, promotion, or trading
 authorization. See `docs/proposals/phase_6d_portable_audit_exports_v1.md` and
 `docs/phase_6d_review.md`.
+
+## Phase 6E offline audit review assertions
+
+Phase 6E appends reviewer assertions to an exact `VERIFIED` Phase 6D export. It revalidates the
+canonical export manifest and verification records, requires current-code provenance and a causal
+review timestamp, and preserves every prior assertion. A later assertion may supersede only an
+earlier assertion by the same asserted reviewer for the same export.
+
+```text
+trading-system operations validate-observation-audit-review-config --config config/operations.phase6e.v1.yaml
+trading-system operations observation-audit-review --config config/operations.phase6e.v1.yaml --input review.json --database operations.sqlite
+trading-system operations observation-audit-review-status --config config/operations.phase6e.v1.yaml --database operations.sqlite --export-id EXPORT_ID
+```
+
+Verdicts are `CONFIRMED`, `REJECTED`, `PARTIAL`, or `UNCERTAIN`. `UNCERTAIN` assertions remain in
+the immutable history but are excluded from summary-eligible counts. Reviewer IDs are asserted,
+not authenticated; no quorum or consensus is computed. Reviews never modify source evidence and
+grant no production, promotion, brokerage, or live-trading authority. See
+`docs/proposals/phase_6e_independent_audit_reviews_v1.md` and `docs/phase_6e_review.md`.
