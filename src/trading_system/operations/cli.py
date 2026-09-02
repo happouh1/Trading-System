@@ -9,6 +9,12 @@ from pathlib import Path
 
 from trading_system import PACKAGE_VERSION
 from trading_system.operations.artifact_trust_config import load_artifact_trust_config
+from trading_system.operations.artifact_trust_policy_proposal_config import (
+    load_artifact_trust_policy_proposal_config,
+)
+from trading_system.operations.artifact_trust_policy_proposal_registry import (
+    ArtifactTrustPolicyProposalRegistry,
+)
 from trading_system.operations.artifact_trust_registry import ArtifactTrustRegistry
 from trading_system.operations.artifact_trust_review_export import (
     ArtifactTrustReviewExportService,
@@ -543,6 +549,18 @@ def configure_operations_parser(
     trust_review_status.add_argument("--config", required=True)
     trust_review_status.add_argument("--database", required=True)
     trust_review_status.add_argument("--export-id", required=True)
+    validate_trust_proposal = actions.add_parser("validate-artifact-trust-policy-proposal-config")
+    validate_trust_proposal.add_argument("--config", required=True)
+    register_trust_proposal = actions.add_parser("register-artifact-trust-policy-proposal")
+    register_trust_proposal.add_argument("--config", required=True)
+    register_trust_proposal.add_argument("--review-config", required=True)
+    register_trust_proposal.add_argument("--input", required=True)
+    register_trust_proposal.add_argument("--database", required=True)
+    trust_proposal_status = actions.add_parser("artifact-trust-policy-proposal-status")
+    trust_proposal_status.add_argument("--config", required=True)
+    trust_proposal_status.add_argument("--review-config", required=True)
+    trust_proposal_status.add_argument("--database", required=True)
+    trust_proposal_status.add_argument("--proposal-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -2263,6 +2281,84 @@ def _handle_prospective_review_bundle_chain_export(args: argparse.Namespace) -> 
     return 0
 
 
+def _handle_artifact_trust_policy_proposal(args: argparse.Namespace) -> int:
+    config = load_artifact_trust_policy_proposal_config(args.config)
+    if args.operations_command == "validate-artifact-trust-policy-proposal-config":
+        payload: object = {"config_hash": config.config_hash, "valid": True}
+    else:
+        review_config = load_artifact_trust_review_export_config(args.review_config)
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = ArtifactTrustPolicyProposalRegistry(
+                repository,
+                config,
+                ArtifactTrustReviewExportRegistry(repository, review_config),
+            )
+            if args.operations_command == "artifact-trust-policy-proposal-status":
+                payload = registry.proposal(args.proposal_id)
+            else:
+                root = _control_input(
+                    args.input,
+                    {
+                        "review_export_id",
+                        "review_verification_id",
+                        "proposed_at",
+                        "signature_algorithm",
+                        "key_custody",
+                        "signer_identity",
+                        "trusted_timestamp_provider",
+                        "revocation_policy",
+                        "receiving_verifier",
+                        "source_revision",
+                    },
+                )
+                proposal = registry.create(
+                    review_export_id=_string(root["review_export_id"], "review export ID"),
+                    review_verification_id=_string(
+                        root["review_verification_id"], "review verification ID"
+                    ),
+                    proposed_at=_time(root["proposed_at"]),
+                    signature_algorithm=_string(
+                        root["signature_algorithm"], "signature algorithm"
+                    ),
+                    key_custody=_string(root["key_custody"], "key custody"),
+                    signer_identity=_string(root["signer_identity"], "signer identity"),
+                    trusted_timestamp_provider=_string(
+                        root["trusted_timestamp_provider"], "trusted timestamp provider"
+                    ),
+                    revocation_policy=_string(
+                        root["revocation_policy"], "revocation policy"
+                    ),
+                    receiving_verifier=_string(
+                        root["receiving_verifier"], "receiving verifier"
+                    ),
+                    source_revision=_string(root["source_revision"], "source revision"),
+                )
+                payload = {"proposal": proposal, "inserted": registry.insert(proposal)}
+    print(
+        canonical_json(
+            {
+                "evidence": payload,
+                "policy_activated": False,
+                "signed": False,
+                "encrypted": False,
+                "trusted_timestamped": False,
+                "key_material_used": False,
+                "credentials_used": False,
+                "external_transport_used": False,
+                "reviewers_authenticated": False,
+                "consensus_calculated": False,
+                "production_readiness_claim": False,
+                "automatic_promotion_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
+    return 0
+
+
 def _handle_artifact_trust_review_export(args: argparse.Namespace) -> int:
     config = load_artifact_trust_review_export_config(args.config)
     if args.operations_command == "validate-artifact-trust-review-export-config":
@@ -2603,6 +2699,12 @@ def _handle_prospective_chain_export(args: argparse.Namespace) -> int:
 
 
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-artifact-trust-policy-proposal-config",
+        "register-artifact-trust-policy-proposal",
+        "artifact-trust-policy-proposal-status",
+    }:
+        return _handle_artifact_trust_policy_proposal(args)
     if args.operations_command in {
         "validate-artifact-trust-review-export-config",
         "artifact-trust-review-export",

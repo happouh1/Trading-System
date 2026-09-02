@@ -11,6 +11,18 @@ from trading_system.operations.artifact_trust_contracts import (
     ArtifactTrustPolicy,
     ArtifactTrustPolicyStatus,
 )
+from trading_system.operations.artifact_trust_policy_proposal_config import (
+    ArtifactTrustPolicyProposalConfig,
+    ArtifactTrustPolicyProposalConfigError,
+    load_artifact_trust_policy_proposal_config,
+)
+from trading_system.operations.artifact_trust_policy_proposal_contracts import (
+    ArtifactTrustPolicyProposal,
+    ArtifactTrustPolicyProposalStatus,
+)
+from trading_system.operations.artifact_trust_policy_proposal_registry import (
+    ArtifactTrustPolicyProposalRegistry,
+)
 from trading_system.operations.artifact_trust_registry import ArtifactTrustRegistry
 from trading_system.operations.artifact_trust_review_export import (
     ArtifactTrustReviewExportService,
@@ -355,6 +367,11 @@ __all__ = [
     "ArtifactTrustConfig",
     "ArtifactTrustConfigError",
     "ArtifactTrustPolicy",
+    "ArtifactTrustPolicyProposal",
+    "ArtifactTrustPolicyProposalConfig",
+    "ArtifactTrustPolicyProposalConfigError",
+    "ArtifactTrustPolicyProposalRegistry",
+    "ArtifactTrustPolicyProposalStatus",
     "ArtifactTrustPolicyStatus",
     "ArtifactTrustRegistry",
     "ArtifactTrustReviewExportConfig",
@@ -531,6 +548,7 @@ __all__ = [
     "WorkerInvocation",
     "inspect_component",
     "load_artifact_trust_config",
+    "load_artifact_trust_policy_proposal_config",
     "load_artifact_trust_review_export_config",
     "load_observation_audit_config",
     "load_observation_audit_export_config",

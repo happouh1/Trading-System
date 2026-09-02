@@ -752,3 +752,19 @@ trading-system operations artifact-trust-review-export-status --config config/op
 The packet remains unsigned, unencrypted, local evidence and grants no review, readiness,
 promotion, brokerage, or trading authority. See
 `docs/proposals/phase_6t_artifact_trust_review_exports_v1.md` and `docs/phase_6t_review.md`.
+
+## Phase 6U unauthenticated artifact-trust policy proposals
+
+Phase 6U records candidate answers to all six Phase 6S blockers against an exact independently
+verified Phase 6T packet. Records remain `PROPOSED_UNAUTHENTICATED`; they do not activate policy.
+
+```text
+trading-system operations validate-artifact-trust-policy-proposal-config --config config/operations.phase6u.v1.yaml
+trading-system operations register-artifact-trust-policy-proposal --config config/operations.phase6u.v1.yaml --review-config config/operations.phase6t.v1.yaml --input proposal.json --database operations.sqlite
+trading-system operations artifact-trust-policy-proposal-status --config config/operations.phase6u.v1.yaml --review-config config/operations.phase6t.v1.yaml --database operations.sqlite --proposal-id ID
+```
+
+Phase 6U authenticates no proposer, calculates no consensus, handles no secrets, and grants no
+readiness, promotion, brokerage, or trading authority. See
+`docs/proposals/phase_6u_unauthenticated_artifact_trust_policy_proposals_v1.md` and
+`docs/phase_6u_review.md`.

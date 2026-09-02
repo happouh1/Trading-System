@@ -1,0 +1,6 @@
+{
+  "artifact_trust_policy_proposal_version": "6U.1.0",
+  "authority": {"offline_only": true, "evidence_only": true, "proposal_only": true, "policy_activation_enabled": false, "signing_enabled": false, "encryption_enabled": false, "key_access_enabled": false, "trusted_timestamp_enabled": false, "external_transport_enabled": false, "reviewer_authentication_enabled": false, "consensus_enabled": false, "automatic_promotion_enabled": false, "production_readiness_claim_enabled": false, "network_enabled": false, "credentials_enabled": false, "broker_writes_enabled": false, "live_trading_enabled": false},
+  "proposal": {"exact_verified_phase6t_export_required": true, "all_six_policy_answers_required": true, "unresolved_answer_forbidden": true, "secret_and_key_material_forbidden": true, "causal_proposal_time_required": true, "canonical_payload_required": true, "append_only": true, "status": "PROPOSED_UNAUTHENTICATED"},
+  "thresholds": {"reviewer_count_defined": false, "approval_threshold_defined": false, "consensus_threshold_defined": false, "production_threshold_defined": false}
+}

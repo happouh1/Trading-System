@@ -782,3 +782,14 @@ Read-only verification hashes the bytes, validates the envelope and source hashe
 the root, and checks cross-record identity and status relationships. It never recomputes against
 revised source data or promotes a result. This provides portable integrity evidence for review,
 not signer identity, trusted time, confidentiality, policy approval, or operational authority.
+
+## Phase 6U unauthenticated artifact-trust policy proposals
+
+Phase 6U binds six candidate policy references to one exact verified Phase 6T packet. It validates
+the source manifest and verification, preserves both payload hashes plus the packet artifact and
+chain hashes, and requires proposal time to follow verification. Retrieval reconstructs the
+deterministic record from current immutable sources.
+
+Candidate content is stored without interpretation, ranking, or endorsement. Explicit status and
+disclosures prevent a proposal from being mistaken for authenticated review or active policy.
+Secret-like material is rejected, and no external system, credential, key, or trading path is used.

@@ -689,3 +689,17 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `ARTIFACT_TRUST_REVIEW_NO_AUTHORITY`: a verified packet remains unsigned and unencrypted and
   grants no authentication, consensus, approval, readiness, promotion, brokerage, or trading
   authority.
+
+## Phase 6U artifact-trust policy-proposal rules
+
+- `ARTIFACT_TRUST_PROPOSAL_EXACT_PHASE6T_SOURCE`: proposal creation requires one successful,
+  nonpromoted Phase 6T verification matching its manifest artifact hash.
+- `ARTIFACT_TRUST_PROPOSAL_ALL_BLOCKERS`: all six Phase 6S policy questions require nonempty
+  candidate answers; `UNRESOLVED` remains invalid as a proposed answer.
+- `ARTIFACT_TRUST_PROPOSAL_SECRET_FREE`: recognizable private-key and credential material is
+  prohibited from proposal fields.
+- `ARTIFACT_TRUST_PROPOSAL_CAUSAL`: proposal time cannot predate Phase 6T verification.
+- `ARTIFACT_TRUST_PROPOSAL_APPEND_ONLY`: deterministic exact retries are idempotent and prior
+  proposals are never rewritten.
+- `ARTIFACT_TRUST_PROPOSAL_NO_AUTHORITY`: `PROPOSED_UNAUTHENTICATED` is not review, approval,
+  active policy, consensus, readiness, promotion, brokerage, or trading authority.

@@ -757,3 +757,12 @@ letting unauthenticated local assertions become policy or approval?
 for Phase 6R, Phase 6S, and Phase 6T artifacts across code versions?
 270. Should security-review responses be signed and trusted-timestamped independently of the
 artifact they discuss, and which conflict, dissent, supersession, and revocation rules apply?
+
+271. Which identity and authentication system may attribute a Phase 6U proposal to a qualified
+security reviewer without treating caller-supplied text as proof?
+272. What independence, conflict-of-interest, evidence-quality, abstention, dissent, quorum, and
+approval rules could compare multiple Phase 6U proposals?
+273. How may an approved policy supersede an earlier policy while preserving proposals, dissent,
+revocations, effective intervals, and historical verification?
+274. Which separately secured implementation process may translate an approved policy into key
+handling and interoperable signing code without exposing secrets to this evidence registry?

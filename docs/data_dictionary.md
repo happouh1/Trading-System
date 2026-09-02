@@ -668,3 +668,13 @@ and count, source revision, package version, disclosures, and config hash.
 expected and optional actual hashes, canonical reasons, fixed `promoted=false`, provenance,
 package version, and config hash. Migration `047_phase_6t_artifact_trust_review_exports.sql` adds
 append-only export and verification tables and restricts each request to one persisted export.
+
+## Phase 6U artifact-trust policy proposals
+
+`ArtifactTrustPolicyProposal` stores its deterministic proposal ID, Phase 6T export and verification
+IDs, proposal time, fixed `PROPOSED_UNAUTHENTICATED` status, six candidate policy references,
+review artifact and chain hashes, review manifest and verification payload hashes, source revision,
+package version, canonical disclosures, and config hash.
+
+Migration `048_phase_6u_artifact_trust_policy_proposals.sql` adds the append-only proposal table
+with foreign keys to exact Phase 6T manifest and verification evidence.
