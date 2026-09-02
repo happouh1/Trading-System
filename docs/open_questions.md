@@ -614,3 +614,16 @@ and effective-time constraints would prevent retrospective denominator changes?
 rules would prevent repeated favorable presentations of the same planned evidence?
 206. Which external governance process may assess completeness or selection bias while remaining
 separate from reviewer authentication, consensus, promotion, brokerage, and live trading?
+
+207. What semantic identity should a future slot carry beyond caller-supplied text so it proves the
+intended campaign, window, evidence type, and review population without revealing future content?
+208. What early/late tolerance and explicit missed-window policy should apply to `expected_as_of`
+without inventing retrospective exceptions?
+209. Must bundle verification occur after the slot timestamp as well as after registration, and how
+should legitimate early completion be represented?
+210. What authenticated signer and trusted timestamp can prove that registration was not locally
+backdated or rewritten before database inspection?
+211. How should a complete Phase 6I plan deterministically produce or reconcile a Phase 6G catalog
+without introducing a second caller-selected transformation?
+212. May an erroneous slot remain permanently unbound, or can it be superseded through separately
+authorized immutable lineage without weakening the original denominator?

@@ -61,6 +61,10 @@ from trading_system.operations.monitoring import (
 from trading_system.operations.observation_config import load_observation_plan_config
 from trading_system.operations.observation_contracts import ObservationPlanWindow
 from trading_system.operations.observation_registry import ObservationPlanRegistry
+from trading_system.operations.prospective_review_config import (
+    load_prospective_review_plan_config,
+)
+from trading_system.operations.prospective_review_registry import ProspectiveReviewPlanRegistry
 from trading_system.operations.registry import OperationsRegistry
 from trading_system.operations.release_config import load_operations_release_config
 from trading_system.operations.release_registry import OperationsReleaseRegistry
@@ -222,9 +226,7 @@ def configure_operations_parser(
     audit_review_status.add_argument("--config", required=True)
     audit_review_status.add_argument("--database", required=True)
     audit_review_status.add_argument("--export-id", required=True)
-    validate_review_export = actions.add_parser(
-        "validate-observation-audit-review-export-config"
-    )
+    validate_review_export = actions.add_parser("validate-observation-audit-review-export-config")
     validate_review_export.add_argument("--config", required=True)
     review_export = actions.add_parser("observation-audit-review-export")
     review_export.add_argument("--config", required=True)
@@ -238,9 +240,7 @@ def configure_operations_parser(
     review_export_status.add_argument("--config", required=True)
     review_export_status.add_argument("--database", required=True)
     review_export_status.add_argument("--bundle-id", required=True)
-    validate_review_catalog = actions.add_parser(
-        "validate-observation-audit-review-catalog-config"
-    )
+    validate_review_catalog = actions.add_parser("validate-observation-audit-review-catalog-config")
     validate_review_catalog.add_argument("--config", required=True)
     review_catalog = actions.add_parser("observation-audit-review-catalog")
     review_catalog.add_argument("--config", required=True)
@@ -268,6 +268,20 @@ def configure_operations_parser(
     review_reconciliation_status.add_argument("--config", required=True)
     review_reconciliation_status.add_argument("--database", required=True)
     review_reconciliation_status.add_argument("--reconciliation-id", required=True)
+    validate_prospective = actions.add_parser("validate-prospective-review-plan-config")
+    validate_prospective.add_argument("--config", required=True)
+    register_prospective = actions.add_parser("register-prospective-review-plan")
+    register_prospective.add_argument("--config", required=True)
+    register_prospective.add_argument("--input", required=True)
+    register_prospective.add_argument("--database", required=True)
+    bind_prospective = actions.add_parser("bind-prospective-review-slot")
+    bind_prospective.add_argument("--config", required=True)
+    bind_prospective.add_argument("--input", required=True)
+    bind_prospective.add_argument("--database", required=True)
+    prospective_status = actions.add_parser("prospective-review-plan-status")
+    prospective_status.add_argument("--config", required=True)
+    prospective_status.add_argument("--database", required=True)
+    prospective_status.add_argument("--plan-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -613,9 +627,7 @@ def _handle_control(args: argparse.Namespace) -> int:
             control_registry.insert_incident(incident_event)
             output_event = incident_event
     print(
-        canonical_json(
-            {"event": output_event, "recorded": True, "operator_authenticated": False}
-        )
+        canonical_json({"event": output_event, "recorded": True, "operator_authenticated": False})
     )
     return 0
 
@@ -746,13 +758,9 @@ def _handle_release(args: argparse.Namespace) -> int:
         registry = OperationsReleaseRegistry(repository, config)
         bundle = registry.evaluate(
             as_of=_time(root["as_of"]),
-            readiness_manifest_id=_string(
-                root["readiness_manifest_id"], "readiness manifest ID"
-            ),
+            readiness_manifest_id=_string(root["readiness_manifest_id"], "readiness manifest ID"),
             monitor_report_id=_string(root["monitor_report_id"], "monitor report ID"),
-            control_snapshot_id=_string(
-                root["control_snapshot_id"], "control snapshot ID"
-            ),
+            control_snapshot_id=_string(root["control_snapshot_id"], "control snapshot ID"),
             run_request_id=_string(root["run_request_id"], "run request ID"),
             backup_id=_string(root["backup_id"], "backup ID"),
             restore_verification_id=_string(
@@ -1304,11 +1312,9 @@ def _handle_observation_audit_review_export(args: argparse.Namespace) -> int:
     if args.operations_command == "observation-audit-review-export-status":
         with SQLiteRepository(args.database) as repository:
             repository.migrate()
-            manifest, latest_status, verification_count = (
-                ObservationAuditReviewExportRegistry(repository, config).status(
-                    args.bundle_id
-                )
-            )
+            manifest, latest_status, verification_count = ObservationAuditReviewExportRegistry(
+                repository, config
+            ).status(args.bundle_id)
         print(
             canonical_json(
                 {
@@ -1559,7 +1565,82 @@ def _handle_review_catalog_plan(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_prospective_review_plan(args: argparse.Namespace) -> int:
+    config = load_prospective_review_plan_config(args.config)
+    if args.operations_command == "validate-prospective-review-plan-config":
+        payload: object = {"config_hash": config.config_hash, "valid": True}
+    elif args.operations_command == "prospective-review-plan-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            payload = ProspectiveReviewPlanRegistry(repository, config).status(args.plan_id)
+    elif args.operations_command == "register-prospective-review-plan":
+        root = _control_input(
+            args.input, {"catalog_name", "registered_at", "slots", "source_revision"}
+        )
+        raw_slots = root["slots"]
+        if not isinstance(raw_slots, list) or not raw_slots:
+            raise ValueError("prospective review slots must be a nonempty array")
+        slots: list[tuple[str, datetime]] = []
+        for raw_slot in raw_slots:
+            slot = _object(raw_slot, "prospective review slot")
+            if set(slot) != {"slot_id", "expected_as_of"}:
+                raise ValueError("prospective review slot fields are invalid")
+            slots.append((_string(slot["slot_id"], "slot ID"), _time(slot["expected_as_of"])))
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = ProspectiveReviewPlanRegistry(repository, config)
+            plan = registry.create_plan(
+                catalog_name=_string(root["catalog_name"], "catalog name"),
+                registered_at=_time(root["registered_at"]),
+                slots=tuple(slots),
+                source_revision=_string(root["source_revision"], "source revision"),
+            )
+            inserted = registry.insert_plan(plan)
+        payload = {"plan": plan, "inserted": inserted}
+    else:
+        root = _control_input(
+            args.input,
+            {"plan_id", "slot_id", "bundle_id", "verification_id", "bound_at", "source_revision"},
+        )
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = ProspectiveReviewPlanRegistry(repository, config)
+            binding = registry.bind(
+                plan_id=_string(root["plan_id"], "plan ID"),
+                slot_id=_string(root["slot_id"], "slot ID"),
+                bundle_id=_string(root["bundle_id"], "bundle ID"),
+                verification_id=_string(root["verification_id"], "verification ID"),
+                bound_at=_time(root["bound_at"]),
+                source_revision=_string(root["source_revision"], "source revision"),
+            )
+            inserted = registry.insert_binding(binding)
+        payload = {"binding": binding, "inserted": inserted}
+    print(
+        canonical_json(
+            {
+                "evidence": payload,
+                "selection_unbiased_claim": False,
+                "consensus_calculated": False,
+                "reviewers_authenticated": False,
+                "production_readiness_claim": False,
+                "automatic_promotion_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
+    return 0
+
+
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-prospective-review-plan-config",
+        "register-prospective-review-plan",
+        "bind-prospective-review-slot",
+        "prospective-review-plan-status",
+    }:
+        return _handle_prospective_review_plan(args)
     if args.operations_command in {
         "validate-review-catalog-plan-config",
         "register-review-catalog-plan",

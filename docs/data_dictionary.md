@@ -523,3 +523,18 @@ Migration `035_phase_6h_review_catalog_plans.sql` adds append-only
 `operations_review_catalog_plans`, `operations_review_catalog_plan_sources`, and
 `operations_review_catalog_plan_reconciliations`. Catalog IDs deliberately have no foreign key in
 the reconciliation table so an expected but absent catalog remains persistable as `MISSING`.
+
+## Phase 6I prospective review slots
+
+`ProspectiveReviewSlot` contains a stable slot ID and unique timezone-aware `expected_as_of`.
+`ProspectiveReviewPlan` binds an exact future catalog name, registration timestamp, canonical slots,
+slot-root hash, provenance, disclosures, package version, and configuration hash.
+
+`ProspectiveReviewBinding` binds exactly one plan slot to one exact Phase 6F bundle and verification.
+It retains binding and bundle-verification timestamps, provenance, disclosures, code version, and
+configuration hash. The original plan and slot are never updated.
+
+Migration `036_phase_6i_prospective_review_slots.sql` adds append-only
+`operations_prospective_review_plans`, `operations_prospective_review_slots`, and
+`operations_prospective_review_bindings`; uniqueness constraints prevent slot rebinding and bundle
+reuse within a plan.

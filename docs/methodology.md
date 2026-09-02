@@ -626,3 +626,19 @@ The causal boundary is intentionally narrow. A plan can be registered after its 
 already known, and bundle IDs themselves can encode that history. Therefore `MATCHED` establishes
 only adherence of the later catalog to the frozen denominator; it does not prove unbiased initial
 selection, completeness, reviewer independence, consensus, statistical sufficiency, or readiness.
+
+## Phase 6I prospective review-slot plans
+
+Phase 6I replaces unknowable content IDs at registration with stable caller-declared slot IDs and
+unique future expected timestamps. Registration must strictly precede every slot. Canonical order,
+unique IDs and timestamps, and a slot-root hash freeze the denominator before later evidence exists.
+
+A binding is permitted only for a declared slot and exact current-code Phase 6F bundle verification
+with `VERIFIED` status, empty reasons, correct bundle linkage, and a verification timestamp no
+earlier than plan registration. Binding time cannot predate verification. Slot and bundle uniqueness
+make substitution or double use within one plan fail closed; prior bindings are immutable.
+
+Status revalidates plan, child slots, bindings, canonical hashes, and provenance, then reports exact
+resolved and pending counts and IDs. `complete=true` means only that every registered slot has one
+valid binding. No timing tolerance, evidence-quality threshold, reviewer independence, consensus,
+statistical interpretation, or operational authority is inferred.

@@ -147,6 +147,17 @@ from trading_system.operations.observation_contracts import (
     ReconciliationStatus,
 )
 from trading_system.operations.observation_registry import ObservationPlanRegistry
+from trading_system.operations.prospective_review_config import (
+    ProspectiveReviewPlanConfig,
+    ProspectiveReviewPlanConfigError,
+    load_prospective_review_plan_config,
+)
+from trading_system.operations.prospective_review_contracts import (
+    ProspectiveReviewBinding,
+    ProspectiveReviewPlan,
+    ProspectiveReviewSlot,
+)
+from trading_system.operations.prospective_review_registry import ProspectiveReviewPlanRegistry
 from trading_system.operations.registry import OperationsRegistry
 from trading_system.operations.release_config import (
     OperationsReleaseConfig,
@@ -272,6 +283,12 @@ __all__ = [
     "OperationsRunnerConfig",
     "OperationsRunnerConfigError",
     "OperationsRunnerRegistry",
+    "ProspectiveReviewBinding",
+    "ProspectiveReviewPlan",
+    "ProspectiveReviewPlanConfig",
+    "ProspectiveReviewPlanConfigError",
+    "ProspectiveReviewPlanRegistry",
+    "ProspectiveReviewSlot",
     "ReadinessStatus",
     "ReconciliationStatus",
     "ReleaseEvidenceBundle",
@@ -313,5 +330,6 @@ __all__ = [
     "load_operations_release_config",
     "load_operations_resilience_config",
     "load_operations_runner_config",
+    "load_prospective_review_plan_config",
     "load_review_catalog_plan_config",
 ]

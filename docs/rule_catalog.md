@@ -530,3 +530,17 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `REVIEW_CATALOG_PLAN_NO_AUTHORITY`: Phase 6H authenticates no reviewers, computes no consensus,
   and cannot access networks, credentials, notifications, promotion, production, brokers, or live
   trading.
+- `PROSPECTIVE_REVIEW_FUTURE_SLOTS`: Phase 6I registers stable slot IDs and expected timestamps
+  before content-derived review-bundle identities exist.
+- `PROSPECTIVE_REVIEW_CAUSAL_REGISTRATION`: registration must strictly precede every expected slot,
+  and bound bundle verification cannot predate registration.
+- `PROSPECTIVE_REVIEW_UNIQUE_DENOMINATOR`: slot IDs and expected times are unique and canonical;
+  one bundle cannot satisfy multiple slots in the same plan.
+- `PROSPECTIVE_REVIEW_EXACT_VERIFIED_BINDING`: each binding requires one exact current-code Phase 6F
+  `VERIFIED` record with empty reasons and correct bundle linkage.
+- `PROSPECTIVE_REVIEW_PENDING_VISIBLE`: unresolved registered slots remain explicit in status and
+  cannot be removed by changing the denominator.
+- `PROSPECTIVE_REVIEW_APPEND_ONLY`: plans, slots, and bindings use deterministic IDs, canonical
+  payloads, hashes, conflict rejection, transactional insertion, and restart idempotency.
+- `PROSPECTIVE_REVIEW_NO_AUTHORITY`: completion is descriptive and grants no authentication,
+  consensus, threshold, promotion, production, brokerage, or trading authority.

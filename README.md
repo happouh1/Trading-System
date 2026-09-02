@@ -542,3 +542,23 @@ bundle identities can encode already-known review history, Phase 6H does not est
 initial selection was complete or unbiased. It authenticates no reviewers, computes no consensus,
 and grants no promotion, production, brokerage, or trading authority. See
 `docs/proposals/phase_6h_preregistered_review_catalog_plans_v1.md` and `docs/phase_6h_review.md`.
+
+## Phase 6I prospective review-slot plans
+
+Phase 6I preregisters stable slot IDs and unique future expected timestamps before content-derived
+bundle identities exist. Each slot may later bind exactly once to exact verified Phase 6F evidence;
+the same bundle cannot fill two slots in one plan. Status retains unresolved slots as explicit
+pending evidence.
+
+```text
+trading-system operations validate-prospective-review-plan-config --config config/operations.phase6i.v1.yaml
+trading-system operations register-prospective-review-plan --config config/operations.phase6i.v1.yaml --input plan.json --database operations.sqlite
+trading-system operations bind-prospective-review-slot --config config/operations.phase6i.v1.yaml --input binding.json --database operations.sqlite
+trading-system operations prospective-review-plan-status --config config/operations.phase6i.v1.yaml --database operations.sqlite --plan-id PLAN_ID
+```
+
+Bindings require current-code `VERIFIED` bundle evidence whose verification does not predate plan
+registration. Completion is descriptive only: Phase 6I defines no timing tolerance, selection-
+quality claim, reviewer authentication, consensus, promotion, production, brokerage, or trading
+authority. See `docs/proposals/phase_6i_prospective_review_slots_v1.md` and
+`docs/phase_6i_review.md`.
