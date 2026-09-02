@@ -694,3 +694,15 @@ Sorted review IDs and payload hashes form a distinct review root while the Phase
 retained unchanged. Canonical bytes determine a contained local filename and are published using a
 flushed same-directory temporary file and atomic replacement. Read-only verification records
 explicit success or failure without modifying the source chain or review assertions.
+
+## Phase 6N verified prospective-review catalogs
+
+Phase 6N accepts an explicit list of exact Phase 6M bundle-verification pairs and normalizes them
+into canonical bundle-ID order. Each source must have canonical stored payloads, an exact successful
+verification, matching current-code provenance, intact chain and review roots, a contained local
+artifact, and bytes that rehash to the recorded content address. Catalog time cannot predate any
+cited verification.
+
+The ordered entry identity and hash tuples form a deterministic catalog root. Counts sum the
+retained review observations only. They do not establish a denominator, consensus, quality, or
+readiness because membership is caller-declared and reviewer identities are unauthenticated.

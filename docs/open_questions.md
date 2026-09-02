@@ -680,3 +680,16 @@ reason codes, notes, and prospective slot metadata embedded in a bundle?
 and deduplication policy would prevent repeated favorable presentation?
 236. What separately versioned governance consumer may interpret multiple bundles, and how must
 quorum, conflicts, abstentions, selection bias, and dissent remain outside immutable evidence?
+
+237. What preregistered, externally timestamped process should establish a complete Phase 6N
+catalog denominator before membership can support any completeness claim?
+238. May multiple verified bundles representing the same underlying prospective chain appear in
+one catalog, and what governed deduplication identity should prevent repeated presentation?
+239. Which authenticated reviewer directory, independence policy, revocation process, and conflict
+rules are required before descriptive assertion counts can support governance decisions?
+240. What separately versioned policy may calculate quorum, consensus, dissent, or quality without
+modifying Phase 6N evidence or inheriting brokerage and trading authority?
+241. Should a future catalog be a signed portable artifact, and what trusted timestamp,
+encryption, transport, recipient, redaction, retention, and receiving-verifier controls apply?
+242. What additional prospective performance, reliability, security, capital, rollback, and human
+approval evidence is mandatory before any production-readiness or trading decision?

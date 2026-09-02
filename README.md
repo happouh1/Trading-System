@@ -630,3 +630,20 @@ The bundle is unsigned, unencrypted, and local. It retains asserted reviewer ide
 computes no consensus or readiness result. See
 `docs/proposals/phase_6m_portable_prospective_chain_review_bundles_v1.md` and
 `docs/phase_6m_review.md`.
+
+## Phase 6N verified prospective-review catalogs
+
+Phase 6N records a caller-declared collection of exact independently verified Phase 6M bundles as
+one deterministic, append-only local catalog. Every source manifest, verification, artifact hash,
+chain root, and review root is revalidated before inclusion.
+
+```text
+trading-system operations validate-prospective-chain-review-catalog-config --config config/operations.phase6n.v1.yaml
+trading-system operations prospective-chain-review-catalog --config config/operations.phase6n.v1.yaml --input catalog.json --database operations.sqlite
+trading-system operations prospective-chain-review-catalog-status --config config/operations.phase6n.v1.yaml --database operations.sqlite --catalog-id ID
+```
+
+Membership remains caller-selected and counts remain descriptive. The catalog computes no ranking
+or consensus and grants no promotion, production, brokerage, or trading authority. See
+`docs/proposals/phase_6n_verified_prospective_review_catalogs_v1.md` and
+`docs/phase_6n_review.md`.

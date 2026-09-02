@@ -587,3 +587,14 @@ disclosures; and configuration hash.
 
 Migration `040_phase_6m_prospective_chain_review_bundles.sql` adds append-only bundle and
 verification tables.
+
+## Phase 6N prospective-chain review catalogs
+
+`ProspectiveChainReviewCatalogEntry` records exact Phase 6M bundle and verification IDs; artifact,
+manifest-payload, verification-payload, chain-root, and review-root hashes; total, active, and
+summary-eligible review counts; and verification time.
+
+`ProspectiveChainReviewCatalog` records catalog identity/name/time, canonical entries, catalog root,
+bundle and aggregate review counts, provenance, package version, disclosures, and configuration
+hash. Migration `041_phase_6n_prospective_chain_review_catalogs.sql` adds append-only parent and
+child-entry tables.

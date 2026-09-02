@@ -1,0 +1,36 @@
+{
+  "prospective_review_catalog_version": "6N.1.0",
+  "authority": {
+    "offline_only": true,
+    "evidence_only": true,
+    "reviewer_authentication_enabled": false,
+    "consensus_enabled": false,
+    "ranking_enabled": false,
+    "automatic_promotion_enabled": false,
+    "production_readiness_claim_enabled": false,
+    "network_enabled": false,
+    "credentials_enabled": false,
+    "external_notifications_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  },
+  "validation": {
+    "source_directory": "prospective_chain_review_bundles",
+    "explicit_bundle_selection_required": true,
+    "exact_verified_link_required": true,
+    "canonical_source_payloads_required": true,
+    "chain_and_review_roots_required": true,
+    "current_code_version_required": true,
+    "local_artifact_rehash_required": true,
+    "causal_catalog_timestamp_required": true,
+    "unique_bundle_ids_required": true,
+    "canonical_bundle_order_required": true,
+    "append_only": true
+  },
+  "thresholds": {
+    "minimum_bundle_count_defined": false,
+    "minimum_reviewer_count_defined": false,
+    "consensus_threshold_defined": false,
+    "production_threshold_defined": false
+  }
+}

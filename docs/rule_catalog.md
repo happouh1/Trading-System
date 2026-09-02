@@ -599,3 +599,16 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   identities, canonical payloads, conflict rejection, and restart-safe persistence.
 - `PROSPECTIVE_REVIEW_BUNDLE_NO_AUTHORITY`: unsigned, unencrypted local bundles authenticate no
   reviewer and grant no consensus, readiness, promotion, brokerage, or trading authority.
+- `PROSPECTIVE_REVIEW_CATALOG_VERIFIED_ONLY`: Phase 6N accepts exact successful Phase 6M
+  bundle-verification links with canonical source payloads and current code provenance.
+- `PROSPECTIVE_REVIEW_CATALOG_LOCAL_REHASH`: every selected content-addressed artifact must be a
+  contained regular non-symlink file whose bytes match its manifest hash.
+- `PROSPECTIVE_REVIEW_CATALOG_DUAL_ROOT`: each entry retains the prospective chain root and review
+  root without combining their meanings.
+- `PROSPECTIVE_REVIEW_CATALOG_CANONICAL`: unique caller-selected sources normalize to bundle-ID
+  order and form a deterministic ordered catalog root.
+- `PROSPECTIVE_REVIEW_CATALOG_CAUSAL`: catalog time cannot predate any cited bundle verification.
+- `PROSPECTIVE_REVIEW_CATALOG_APPEND_ONLY`: deterministic identities, atomic parent-child inserts,
+  idempotency, conflict rejection, and restart validation preserve catalog evidence.
+- `PROSPECTIVE_REVIEW_CATALOG_NO_AUTHORITY`: membership and counts are descriptive, with no
+  reviewer authentication, consensus, ranking, readiness, promotion, brokerage, or trading power.
