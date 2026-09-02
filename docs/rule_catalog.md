@@ -558,3 +558,17 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   entries, exact membership, roots, canonical hashes, and current provenance.
 - `PROSPECTIVE_CATALOG_NO_AUTHORITY`: materialization cannot authenticate reviewers or timestamps,
   calculate consensus, assess quality, promote, access brokers, or authorize trading.
+- `PROSPECTIVE_CHAIN_EXACT_SOURCE`: Phase 6K exports one revalidated Phase 6J materialization and its
+  complete Phase 6I plan/slot/binding and Phase 6G catalog/entry chain.
+- `PROSPECTIVE_CHAIN_CANONICAL_ROOT`: unique canonical source names and exact payload hashes form one
+  deterministic ordered chain root.
+- `PROSPECTIVE_CHAIN_CONTENT_ADDRESS`: canonical UTF-8 bytes determine the local filename and
+  conflicting existing content fails closed.
+- `PROSPECTIVE_CHAIN_CONTAINED_ATOMIC_WRITE`: paths remain inside the configured registry-adjacent
+  directory and publication uses a flushed same-directory staging file.
+- `PROSPECTIVE_CHAIN_INDEPENDENT_VERIFICATION`: read-only verification checks bytes, size, schema,
+  every payload hash, code provenance, ordering, count, identity, and root.
+- `PROSPECTIVE_CHAIN_APPEND_ONLY`: manifests and verification results use deterministic identities,
+  canonical payloads, conflict rejection, and restart-safe persistence.
+- `PROSPECTIVE_CHAIN_NO_AUTHORITY`: exports are unsigned, unencrypted local evidence and grant no
+  authentication, consensus, readiness, promotion, brokerage, or trading authority.

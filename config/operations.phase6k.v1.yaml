@@ -1,0 +1,22 @@
+{
+  "prospective_chain_export_version": "6K.1.0",
+  "export_directory": "prospective_review_chains",
+  "authority": {
+    "offline_only": true, "evidence_only": true, "signing_enabled": false,
+    "encryption_enabled": false, "external_transport_enabled": false,
+    "reviewer_authentication_enabled": false, "consensus_enabled": false,
+    "automatic_promotion_enabled": false, "production_readiness_claim_enabled": false,
+    "network_enabled": false, "credentials_enabled": false,
+    "external_notifications_enabled": false, "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  },
+  "validation": {
+    "exact_source_chain_required": true, "canonical_bytes_required": true,
+    "content_addressed_path_required": true, "contained_path_required": true,
+    "atomic_publication_required": true, "independent_verification_required": true,
+    "canonical_payload_hashes_required": true, "current_code_version_required": true,
+    "append_only": true
+  },
+  "thresholds": {"quality_threshold_defined": false, "consensus_threshold_defined": false,
+    "production_threshold_defined": false}
+}

@@ -158,6 +158,20 @@ from trading_system.operations.prospective_catalog_contracts import (
 from trading_system.operations.prospective_catalog_registry import (
     ProspectiveCatalogMaterializationRegistry,
 )
+from trading_system.operations.prospective_chain_export import ProspectiveChainExportService
+from trading_system.operations.prospective_chain_export_config import (
+    ProspectiveChainExportConfig,
+    ProspectiveChainExportConfigError,
+    load_prospective_chain_export_config,
+)
+from trading_system.operations.prospective_chain_export_contracts import (
+    ProspectiveChainExportManifest,
+    ProspectiveChainExportVerification,
+    ProspectiveChainVerificationStatus,
+)
+from trading_system.operations.prospective_chain_export_registry import (
+    ProspectiveChainExportRegistry,
+)
 from trading_system.operations.prospective_review_config import (
     ProspectiveReviewPlanConfig,
     ProspectiveReviewPlanConfigError,
@@ -298,6 +312,13 @@ __all__ = [
     "ProspectiveCatalogMaterializationConfig",
     "ProspectiveCatalogMaterializationConfigError",
     "ProspectiveCatalogMaterializationRegistry",
+    "ProspectiveChainExportConfig",
+    "ProspectiveChainExportConfigError",
+    "ProspectiveChainExportManifest",
+    "ProspectiveChainExportRegistry",
+    "ProspectiveChainExportService",
+    "ProspectiveChainExportVerification",
+    "ProspectiveChainVerificationStatus",
     "ProspectiveReviewBinding",
     "ProspectiveReviewPlan",
     "ProspectiveReviewPlanConfig",
@@ -346,6 +367,7 @@ __all__ = [
     "load_operations_resilience_config",
     "load_operations_runner_config",
     "load_prospective_catalog_materialization_config",
+    "load_prospective_chain_export_config",
     "load_prospective_review_plan_config",
     "load_review_catalog_plan_config",
 ]

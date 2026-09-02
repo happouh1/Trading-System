@@ -579,3 +579,21 @@ Incomplete plans fail, one plan produces at most one catalog, and status revalid
 evidence. Materialization does not authenticate reviewers or timestamps, compute consensus, assess
 quality, promote evidence, or authorize production or trading. See
 `docs/proposals/phase_6j_deterministic_catalog_materialization_v1.md` and `docs/phase_6j_review.md`.
+
+## Phase 6K portable prospective-chain exports
+
+Phase 6K writes the complete Phase 6I/6J/6G prospective-selection chain as canonical,
+content-addressed JSON. The envelope contains the plan, child slots, bindings, materialization,
+catalog, and catalog entries with their stored hashes and one deterministic chain root.
+
+```text
+trading-system operations validate-prospective-chain-export-config --config config/operations.phase6k.v1.yaml
+trading-system operations prospective-chain-export --config config/operations.phase6k.v1.yaml --prospective-config config/operations.phase6i.v1.yaml --catalog-config config/operations.phase6g.v1.yaml --materialization-config config/operations.phase6j.v1.yaml --input export.json --database operations.sqlite
+trading-system operations verify-prospective-chain-export --config config/operations.phase6k.v1.yaml --prospective-config config/operations.phase6i.v1.yaml --catalog-config config/operations.phase6g.v1.yaml --materialization-config config/operations.phase6j.v1.yaml --input verify.json --database operations.sqlite
+trading-system operations prospective-chain-export-status --config config/operations.phase6k.v1.yaml --database operations.sqlite --export-id ID
+```
+
+Publication is local, atomic, and conflict rejecting. Verification is read-only and records
+`VERIFIED` or `FAILED`. The artifact is unsigned and unencrypted; integrity is not authentication,
+consensus, production readiness, promotion, or trading authority. See
+`docs/proposals/phase_6k_portable_prospective_chain_exports_v1.md` and `docs/phase_6k_review.md`.

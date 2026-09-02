@@ -548,3 +548,17 @@ slot count, provenance, code version, mandatory disclosures, and configuration h
 Migration `037_phase_6j_prospective_catalog_materializations.sql` adds append-only
 `operations_prospective_catalog_materializations`. Unique plan and catalog constraints prevent a
 second materialization from presenting a different transformation.
+
+## Phase 6K prospective-chain exports
+
+`ProspectiveChainExportManifest` records export and materialization IDs, export timestamp, contained
+artifact path, artifact hash and bytes, chain-root hash, source count, provenance, package version,
+disclosures, and configuration hash.
+
+`ProspectiveChainExportVerification` records verification and export IDs, timestamp,
+`VERIFIED`/`FAILED`, expected and actual hashes, canonical reasons, fixed `promoted=false`,
+provenance, package version, and configuration hash.
+
+Migration `038_phase_6k_prospective_chain_exports.sql` adds append-only
+`operations_prospective_chain_exports` and
+`operations_prospective_chain_export_verifications`.

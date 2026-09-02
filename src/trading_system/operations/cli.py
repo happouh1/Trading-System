@@ -67,6 +67,13 @@ from trading_system.operations.prospective_catalog_config import (
 from trading_system.operations.prospective_catalog_registry import (
     ProspectiveCatalogMaterializationRegistry,
 )
+from trading_system.operations.prospective_chain_export import ProspectiveChainExportService
+from trading_system.operations.prospective_chain_export_config import (
+    load_prospective_chain_export_config,
+)
+from trading_system.operations.prospective_chain_export_registry import (
+    ProspectiveChainExportRegistry,
+)
 from trading_system.operations.prospective_review_config import (
     load_prospective_review_plan_config,
 )
@@ -304,6 +311,20 @@ def configure_operations_parser(
     materialization_status.add_argument("--catalog-config", required=True)
     materialization_status.add_argument("--database", required=True)
     materialization_status.add_argument("--materialization-id", required=True)
+    validate_chain_export = actions.add_parser("validate-prospective-chain-export-config")
+    validate_chain_export.add_argument("--config", required=True)
+    for command in ("prospective-chain-export", "verify-prospective-chain-export"):
+        parser = actions.add_parser(command)
+        parser.add_argument("--config", required=True)
+        parser.add_argument("--prospective-config", required=True)
+        parser.add_argument("--catalog-config", required=True)
+        parser.add_argument("--materialization-config", required=True)
+        parser.add_argument("--input", required=True)
+        parser.add_argument("--database", required=True)
+    chain_status = actions.add_parser("prospective-chain-export-status")
+    chain_status.add_argument("--config", required=True)
+    chain_status.add_argument("--database", required=True)
+    chain_status.add_argument("--export-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -1670,9 +1691,7 @@ def _handle_prospective_catalog_materialization(args: argparse.Namespace) -> int
             if args.operations_command == "prospective-catalog-materialization-status":
                 payload = registry.status(args.materialization_id)
             else:
-                root = _control_input(
-                    args.input, {"plan_id", "materialized_at", "source_revision"}
-                )
+                root = _control_input(args.input, {"plan_id", "materialized_at", "source_revision"})
                 evidence = registry.materialize(
                     plan_id=_string(root["plan_id"], "prospective plan ID"),
                     materialized_at=_time(root["materialized_at"]),
@@ -1680,16 +1699,98 @@ def _handle_prospective_catalog_materialization(args: argparse.Namespace) -> int
                 )
                 inserted = registry.insert(evidence)
                 payload = {"materialization": evidence, "inserted": inserted}
-    print(canonical_json({
-        "evidence": payload, "caller_membership_override_used": False,
-        "consensus_calculated": False, "reviewers_authenticated": False,
-        "production_readiness_claim": False, "automatic_promotion_performed": False,
-        "network_used": False, "broker_write_performed": False, "live_trading_enabled": False,
-    }))
+    print(
+        canonical_json(
+            {
+                "evidence": payload,
+                "caller_membership_override_used": False,
+                "consensus_calculated": False,
+                "reviewers_authenticated": False,
+                "production_readiness_claim": False,
+                "automatic_promotion_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
+    return 0
+
+
+def _handle_prospective_chain_export(args: argparse.Namespace) -> int:
+    config = load_prospective_chain_export_config(args.config)
+    if args.operations_command == "validate-prospective-chain-export-config":
+        payload: object = {"config_hash": config.config_hash, "valid": True}
+    elif args.operations_command == "prospective-chain-export-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            manifest, latest, count = ProspectiveChainExportRegistry(repository, config).status(
+                args.export_id
+            )
+        payload = {
+            "manifest": manifest,
+            "latest_verification_status": latest,
+            "verification_count": count,
+        }
+    else:
+        prospective_config = load_prospective_review_plan_config(args.prospective_config)
+        catalog_config = load_observation_audit_review_catalog_config(args.catalog_config)
+        materialization_config = load_prospective_catalog_materialization_config(
+            args.materialization_config
+        )
+        expected = (
+            {"materialization_id", "exported_at", "source_revision"}
+            if args.operations_command == "prospective-chain-export"
+            else {"export_id", "verified_at", "source_revision"}
+        )
+        root = _control_input(args.input, expected)
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            export_registry = ProspectiveChainExportRegistry(repository, config)
+            materializations = ProspectiveCatalogMaterializationRegistry(
+                repository, materialization_config, prospective_config, catalog_config
+            )
+            service = ProspectiveChainExportService(config, export_registry, materializations)
+            if args.operations_command == "prospective-chain-export":
+                payload = service.export(
+                    materialization_id=_string(root["materialization_id"], "materialization ID"),
+                    exported_at=_time(root["exported_at"]),
+                    source_revision=_string(root["source_revision"], "source revision"),
+                )
+            else:
+                payload = service.verify(
+                    export_id=_string(root["export_id"], "prospective chain export ID"),
+                    verified_at=_time(root["verified_at"]),
+                    source_revision=_string(root["source_revision"], "source revision"),
+                )
+    print(
+        canonical_json(
+            {
+                "evidence": payload,
+                "signed": False,
+                "encrypted": False,
+                "external_transport_used": False,
+                "reviewers_authenticated": False,
+                "consensus_calculated": False,
+                "production_readiness_claim": False,
+                "automatic_promotion_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
     return 0
 
 
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-prospective-chain-export-config",
+        "prospective-chain-export",
+        "verify-prospective-chain-export",
+        "prospective-chain-export-status",
+    }:
+        return _handle_prospective_chain_export(args)
     if args.operations_command in {
         "validate-prospective-catalog-materialization-config",
         "materialize-prospective-review-catalog",

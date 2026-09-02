@@ -640,3 +640,16 @@ its local files existed at the recorded time?
 would preserve the invalid original without allowing denominator shopping?
 218. Which separately versioned consumer may interpret multiple materialized catalogs without
 turning descriptive completeness into consensus, readiness, or trading authority?
+
+219. Which signature algorithm, signer identity, hardware-backed key custody, revocation, and
+trusted timestamp should authenticate a future prospective-chain export?
+220. What encryption format, recipients, key rotation, and recovery controls are required before
+these artifacts may leave the local registry directory?
+221. Which receiving verifier and authenticated read-only transport may exchange an export without
+gaining promotion, system-control, brokerage, or trading authority?
+222. What retention, legal hold, deletion authorization, and removable-media policy should govern
+portable prospective-selection evidence?
+223. Should verification re-query an external trusted timestamp or transparency log, and how can
+that evidence remain append-only and deterministic?
+224. What privacy and redaction review is required if future slot names, reviewer identities, or
+provenance fields contain sensitive operational information?

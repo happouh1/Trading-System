@@ -656,3 +656,17 @@ layers and exact catalog membership after restart.
 
 This removes a manual denominator transformation but does not establish trustworthy slot semantics,
 timestamps, reviewer identity, independence, consensus, evidence quality, or readiness.
+
+## Phase 6K portable prospective-chain exports
+
+Phase 6K first revalidates the Phase 6J materialization and all linked Phase 6I and Phase 6G
+evidence. It then embeds every canonical parent and child payload with its stored hash. Source names
+are unique and sorted; the ordered name/hash sequence forms a deterministic chain-root digest.
+
+Canonical UTF-8 JSON excludes export wall-clock metadata, so unchanged evidence yields identical
+bytes and a content-derived filename. Publication uses a same-directory flushed temporary file and
+atomic replacement. Existing paths are accepted only for byte-identical content.
+
+Read-only verification checks containment, file type, bytes, size, canonical schema, every embedded
+payload hash, current code provenance where applicable, source ordering, source count,
+materialization identity, and chain root. The local unsigned artifact proves integrity only.
