@@ -741,3 +741,19 @@ version, and configuration provenance.
 This removes a manual membership handoff. It does not make slot timestamps trusted, evaluate
 expected-time compliance, authenticate reviewers, calculate consensus, establish selection quality
 or readiness, or authorize promotion, networking, brokerage, or trading.
+
+## Phase 6R portable review-bundle materialization chains
+
+Phase 6R invokes Phase 6Q restart validation and then embeds the exact Phase 6P parent and child
+records, Phase 6O parent and child records, Phase 6N parent and child records, and Phase 6Q record.
+Every stored payload must be canonical and match its persisted hash. Unique lexically sorted names
+bind the payload hashes into a separate Phase 6R chain root.
+
+The canonical envelope bytes determine a contained local content address and are published
+atomically. Read-only verification rehashes the file, validates its schema and every embedded
+payload hash, reconstructs the chain root, and compares source count and materialization identity
+to the immutable manifest. Verification never consults revised source rows and never promotes.
+
+Export cannot predate the Phase 6N catalog time. Local timestamps are not trusted timestamps, and
+the unsigned hash chain provides integrity rather than identity, nonrepudiation, consensus,
+readiness, or trading authority.

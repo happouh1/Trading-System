@@ -724,3 +724,12 @@ registration, bindings, and Phase 6Q materialization rather than trusting local 
 supersession without allowing catalog denominator shopping?
 256. What portable envelope, signing, encryption, transport, retention, and receiving-verifier
 controls should cover the complete Phase 6P/6O/6N/6Q evidence chain?
+
+257. Which cryptographic signature algorithm, key-custody boundary, signer role, rotation policy,
+and revocation record may authenticate a Phase 6R artifact without granting governance authority?
+258. Which external trusted timestamp or transparency service can attest publication time, and how
+are outages, delayed receipts, duplicate submissions, and receipt verification represented?
+259. What encryption, redaction, retention, recipient authorization, and deletion policy applies
+before a Phase 6R artifact may leave its local evidence registry?
+260. Which separately versioned receiving verifier may validate signatures and trusted timestamps,
+and what immutable compatibility and failure semantics apply across software versions?

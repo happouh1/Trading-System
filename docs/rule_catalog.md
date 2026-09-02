@@ -648,3 +648,15 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   membership, child rows, local artifacts, canonical hashes, roots, code, and configuration.
 - `PROSPECTIVE_REVIEW_BUNDLE_MATERIALIZATION_NO_AUTHORITY`: materialization grants no timing,
   consensus, quality, readiness, promotion, brokerage, or trading authority.
+- `REVIEW_BUNDLE_CHAIN_EXPORT_EXACT_SOURCE`: Phase 6R first revalidates one exact Phase 6Q chain
+  and embeds all Phase 6P, Phase 6O, Phase 6N, and Phase 6Q parent and child records.
+- `REVIEW_BUNDLE_CHAIN_EXPORT_CANONICAL`: unique sorted source names, canonical payload hashes,
+  and the ordered name/hash root determine canonical envelope bytes.
+- `REVIEW_BUNDLE_CHAIN_EXPORT_CONTAINED_ATOMIC`: the SHA-256 content address is constrained to one
+  configured local directory and is published atomically without conflicting overwrite.
+- `REVIEW_BUNDLE_CHAIN_EXPORT_CAUSAL`: export cannot predate the derived Phase 6N catalog time and
+  verification cannot predate export.
+- `REVIEW_BUNDLE_CHAIN_EXPORT_INDEPENDENT_VERIFY`: read-only verification rehashes bytes, validates
+  embedded source hashes and chain root, and checks exact manifest identity and counts.
+- `REVIEW_BUNDLE_CHAIN_EXPORT_NO_AUTHORITY`: local unsigned verification authenticates no signer
+  or timestamp and grants no consensus, readiness, promotion, brokerage, or trading authority.

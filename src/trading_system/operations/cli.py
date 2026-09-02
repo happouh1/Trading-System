@@ -104,6 +104,15 @@ from trading_system.operations.prospective_chain_review_contracts import (
 from trading_system.operations.prospective_chain_review_registry import (
     ProspectiveChainReviewRegistry,
 )
+from trading_system.operations.prospective_review_bundle_chain_export import (
+    ProspectiveReviewBundleChainExportService,
+)
+from trading_system.operations.prospective_review_bundle_chain_export_config import (
+    load_prospective_review_bundle_chain_export_config,
+)
+from trading_system.operations.prospective_review_bundle_chain_export_registry import (
+    ProspectiveReviewBundleChainExportRegistry,
+)
 from trading_system.operations.prospective_review_bundle_materialization_config import (
     load_prospective_review_bundle_materialization_config,
 )
@@ -468,6 +477,26 @@ def configure_operations_parser(
             parser.add_argument("--input", required=True)
         else:
             parser.add_argument("--materialization-id", required=True)
+    validate_bundle_chain_export = actions.add_parser(
+        "validate-prospective-review-bundle-chain-export-config"
+    )
+    validate_bundle_chain_export.add_argument("--config", required=True)
+    for command in (
+        "prospective-review-bundle-chain-export",
+        "verify-prospective-review-bundle-chain-export",
+    ):
+        parser = actions.add_parser(command)
+        parser.add_argument("--config", required=True)
+        parser.add_argument("--materialization-config", required=True)
+        parser.add_argument("--plan-config", required=True)
+        parser.add_argument("--catalog-plan-config", required=True)
+        parser.add_argument("--catalog-config", required=True)
+        parser.add_argument("--input", required=True)
+        parser.add_argument("--database", required=True)
+    bundle_chain_export_status = actions.add_parser("prospective-review-bundle-chain-export-status")
+    bundle_chain_export_status.add_argument("--config", required=True)
+    bundle_chain_export_status.add_argument("--database", required=True)
+    bundle_chain_export_status.add_argument("--export-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -2115,6 +2144,79 @@ def _handle_prospective_review_bundle_materialization(args: argparse.Namespace) 
     return 0
 
 
+def _handle_prospective_review_bundle_chain_export(args: argparse.Namespace) -> int:
+    config = load_prospective_review_bundle_chain_export_config(args.config)
+    if args.operations_command == "validate-prospective-review-bundle-chain-export-config":
+        payload: object = {"config_hash": config.config_hash, "valid": True}
+    elif args.operations_command == "prospective-review-bundle-chain-export-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            manifest, latest, count = ProspectiveReviewBundleChainExportRegistry(
+                repository, config
+            ).status(args.export_id)
+        payload = {
+            "manifest": manifest,
+            "latest_verification_status": latest,
+            "verification_count": count,
+        }
+    else:
+        materialization_config = load_prospective_review_bundle_materialization_config(
+            args.materialization_config
+        )
+        plan_config = load_prospective_review_bundle_plan_config(args.plan_config)
+        catalog_plan_config = load_prospective_chain_review_catalog_plan_config(
+            args.catalog_plan_config
+        )
+        catalog_config = load_prospective_chain_review_catalog_config(args.catalog_config)
+        expected = (
+            {"materialization_id", "exported_at", "source_revision"}
+            if args.operations_command == "prospective-review-bundle-chain-export"
+            else {"export_id", "verified_at", "source_revision"}
+        )
+        root = _control_input(args.input, expected)
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = ProspectiveReviewBundleChainExportRegistry(repository, config)
+            materializations = ProspectiveReviewBundleMaterializationRegistry(
+                repository,
+                materialization_config,
+                plan_config,
+                catalog_plan_config,
+                catalog_config,
+            )
+            service = ProspectiveReviewBundleChainExportService(config, registry, materializations)
+            if args.operations_command == "prospective-review-bundle-chain-export":
+                payload = service.export(
+                    materialization_id=_string(root["materialization_id"], "materialization ID"),
+                    exported_at=_time(root["exported_at"]),
+                    source_revision=_string(root["source_revision"], "source revision"),
+                )
+            else:
+                payload = service.verify(
+                    export_id=_string(root["export_id"], "chain export ID"),
+                    verified_at=_time(root["verified_at"]),
+                    source_revision=_string(root["source_revision"], "source revision"),
+                )
+    print(
+        canonical_json(
+            {
+                "evidence": payload,
+                "signed": False,
+                "encrypted": False,
+                "external_transport_used": False,
+                "reviewers_authenticated": False,
+                "consensus_calculated": False,
+                "production_readiness_claim": False,
+                "automatic_promotion_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
+    return 0
+
+
 def _handle_prospective_chain_review_bundle(args: argparse.Namespace) -> int:
     config = load_prospective_chain_review_bundle_config(args.config)
     if args.operations_command == "validate-prospective-chain-review-bundle-config":
@@ -2314,6 +2416,13 @@ def _handle_prospective_chain_export(args: argparse.Namespace) -> int:
 
 
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-prospective-review-bundle-chain-export-config",
+        "prospective-review-bundle-chain-export",
+        "verify-prospective-review-bundle-chain-export",
+        "prospective-review-bundle-chain-export-status",
+    }:
+        return _handle_prospective_review_bundle_chain_export(args)
     if args.operations_command in {
         "validate-prospective-review-bundle-materialization-config",
         "materialize-prospective-review-bundle-catalog",

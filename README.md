@@ -697,3 +697,21 @@ Status revalidates exact membership and root provenance after restart. Materiali
 descriptive evidence and grants no consensus, readiness, promotion, brokerage, or trading
 authority. See `docs/proposals/phase_6q_deterministic_review_bundle_materialization_v1.md` and
 `docs/phase_6q_review.md`.
+
+## Phase 6R portable review-bundle materialization chains
+
+Phase 6R packages the exact revalidated Phase 6P plan/slots/bindings, derived Phase 6O
+plan/sources, derived Phase 6N catalog/entries, and Phase 6Q materialization into one canonical,
+content-addressed local JSON envelope and records independent read-only verification.
+
+```text
+trading-system operations validate-prospective-review-bundle-chain-export-config --config config/operations.phase6r.v1.yaml
+trading-system operations prospective-review-bundle-chain-export --config config/operations.phase6r.v1.yaml --materialization-config config/operations.phase6q.v1.yaml --plan-config config/operations.phase6p.v1.yaml --catalog-plan-config config/operations.phase6o.v1.yaml --catalog-config config/operations.phase6n.v1.yaml --input export.json --database operations.sqlite
+trading-system operations verify-prospective-review-bundle-chain-export --config config/operations.phase6r.v1.yaml --materialization-config config/operations.phase6q.v1.yaml --plan-config config/operations.phase6p.v1.yaml --catalog-plan-config config/operations.phase6o.v1.yaml --catalog-config config/operations.phase6n.v1.yaml --input verify.json --database operations.sqlite
+trading-system operations prospective-review-bundle-chain-export-status --config config/operations.phase6r.v1.yaml --database operations.sqlite --export-id ID
+```
+
+The envelope is unsigned, unencrypted, local evidence. Hash verification does not authenticate a
+signer or timestamp and grants no consensus, readiness, promotion, brokerage, or trading authority.
+See `docs/proposals/phase_6r_portable_review_bundle_materialization_chains_v1.md` and
+`docs/phase_6r_review.md`.

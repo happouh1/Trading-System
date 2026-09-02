@@ -629,3 +629,18 @@ package version; mandatory disclosures; and configuration hash.
 Migration `044_phase_6q_review_bundle_materializations.sql` adds the append-only
 `operations_prospective_review_bundle_materializations` table. Unique source-plan, catalog-plan,
 and catalog constraints prevent a second persisted transformation.
+
+## Phase 6R review-bundle materialization-chain exports
+
+`ProspectiveReviewBundleChainExportManifest` stores export and Phase 6Q materialization IDs,
+export time, contained artifact path, artifact hash and byte count, embedded chain root and source
+count, source revision, package version, canonical disclosures, and config hash.
+
+`ProspectiveReviewBundleChainExportVerification` stores verification identity and time,
+`VERIFIED`/`FAILED`, expected and optional actual artifact hashes, canonical reasons, fixed
+`promoted=false`, provenance, package version, and config hash.
+
+The envelope contains named canonical source payloads and hashes for the Phase 6P plan, slots, and
+bindings; Phase 6O plan and sources; Phase 6N catalog and entries; and Phase 6Q materialization.
+Migration `045_phase_6r_review_bundle_chain_exports.sql` adds append-only manifest and verification
+tables.
