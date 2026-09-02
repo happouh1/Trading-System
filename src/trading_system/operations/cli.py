@@ -10,6 +10,15 @@ from pathlib import Path
 from trading_system import PACKAGE_VERSION
 from trading_system.operations.artifact_trust_config import load_artifact_trust_config
 from trading_system.operations.artifact_trust_registry import ArtifactTrustRegistry
+from trading_system.operations.artifact_trust_review_export import (
+    ArtifactTrustReviewExportService,
+)
+from trading_system.operations.artifact_trust_review_export_config import (
+    load_artifact_trust_review_export_config,
+)
+from trading_system.operations.artifact_trust_review_export_registry import (
+    ArtifactTrustReviewExportRegistry,
+)
 from trading_system.operations.audit_config import load_observation_audit_config
 from trading_system.operations.audit_export import ObservationAuditExportService
 from trading_system.operations.audit_export_config import load_observation_audit_export_config
@@ -521,6 +530,19 @@ def configure_operations_parser(
     artifact_signing_status.add_argument("--export-config", required=True)
     artifact_signing_status.add_argument("--database", required=True)
     artifact_signing_status.add_argument("--request-id", required=True)
+    validate_trust_review = actions.add_parser("validate-artifact-trust-review-export-config")
+    validate_trust_review.add_argument("--config", required=True)
+    for command in ("artifact-trust-review-export", "verify-artifact-trust-review-export"):
+        parser = actions.add_parser(command)
+        parser.add_argument("--config", required=True)
+        parser.add_argument("--trust-config", required=True)
+        parser.add_argument("--phase6r-config", required=True)
+        parser.add_argument("--input", required=True)
+        parser.add_argument("--database", required=True)
+    trust_review_status = actions.add_parser("artifact-trust-review-export-status")
+    trust_review_status.add_argument("--config", required=True)
+    trust_review_status.add_argument("--database", required=True)
+    trust_review_status.add_argument("--export-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -2241,6 +2263,77 @@ def _handle_prospective_review_bundle_chain_export(args: argparse.Namespace) -> 
     return 0
 
 
+def _handle_artifact_trust_review_export(args: argparse.Namespace) -> int:
+    config = load_artifact_trust_review_export_config(args.config)
+    if args.operations_command == "validate-artifact-trust-review-export-config":
+        payload: object = {"config_hash": config.config_hash, "valid": True}
+    elif args.operations_command == "artifact-trust-review-export-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            manifest, latest, count = ArtifactTrustReviewExportRegistry(
+                repository, config
+            ).status(args.export_id)
+        payload = {
+            "manifest": manifest,
+            "latest_verification_status": latest,
+            "verification_count": count,
+        }
+    else:
+        expected = (
+            {"signing_request_id", "exported_at", "source_revision"}
+            if args.operations_command == "artifact-trust-review-export"
+            else {"export_id", "verified_at", "source_revision"}
+        )
+        root = _control_input(args.input, expected)
+        trust_config = load_artifact_trust_config(args.trust_config)
+        phase6r_config = load_prospective_review_bundle_chain_export_config(
+            args.phase6r_config
+        )
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = ArtifactTrustReviewExportRegistry(repository, config)
+            service = ArtifactTrustReviewExportService(
+                config,
+                registry,
+                ArtifactTrustRegistry(repository, trust_config, phase6r_config),
+            )
+            if args.operations_command == "artifact-trust-review-export":
+                payload = service.export(
+                    signing_request_id=_string(
+                        root["signing_request_id"], "signing request ID"
+                    ),
+                    exported_at=_time(root["exported_at"]),
+                    source_revision=_string(root["source_revision"], "source revision"),
+                )
+            else:
+                payload = service.verify(
+                    export_id=_string(root["export_id"], "export ID"),
+                    verified_at=_time(root["verified_at"]),
+                    source_revision=_string(root["source_revision"], "source revision"),
+                )
+    print(
+        canonical_json(
+            {
+                "evidence": payload,
+                "signed": False,
+                "encrypted": False,
+                "trusted_timestamped": False,
+                "key_material_used": False,
+                "credentials_used": False,
+                "external_transport_used": False,
+                "reviewers_authenticated": False,
+                "consensus_calculated": False,
+                "production_readiness_claim": False,
+                "automatic_promotion_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
+    return 0
+
+
 def _handle_artifact_trust(args: argparse.Namespace) -> int:
     config = load_artifact_trust_config(args.config)
     if args.operations_command == "validate-artifact-trust-config":
@@ -2510,6 +2603,13 @@ def _handle_prospective_chain_export(args: argparse.Namespace) -> int:
 
 
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-artifact-trust-review-export-config",
+        "artifact-trust-review-export",
+        "verify-artifact-trust-review-export",
+        "artifact-trust-review-export-status",
+    }:
+        return _handle_artifact_trust_review_export(args)
     if args.operations_command in {
         "validate-artifact-trust-config",
         "register-artifact-trust-policy",

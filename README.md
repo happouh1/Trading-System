@@ -735,3 +735,20 @@ No command accepts keys or credentials or performs cryptography, network access,
 broker writes, or live trading. See
 `docs/proposals/phase_6s_unresolved_artifact_trust_foundation_v1.md` and
 `docs/phase_6s_review.md`.
+
+## Phase 6T artifact-trust security-review exports
+
+Phase 6T packages the exact Phase 6R export and verification plus the Phase 6S unresolved policy
+and blocked request into one canonical, content-addressed local review packet. Verification checks
+the file, every embedded source hash, the chain root, and all cross-record lineage.
+
+```text
+trading-system operations validate-artifact-trust-review-export-config --config config/operations.phase6t.v1.yaml
+trading-system operations artifact-trust-review-export --config config/operations.phase6t.v1.yaml --trust-config config/operations.phase6s.v1.yaml --phase6r-config config/operations.phase6r.v1.yaml --input export.json --database operations.sqlite
+trading-system operations verify-artifact-trust-review-export --config config/operations.phase6t.v1.yaml --trust-config config/operations.phase6s.v1.yaml --phase6r-config config/operations.phase6r.v1.yaml --input verify.json --database operations.sqlite
+trading-system operations artifact-trust-review-export-status --config config/operations.phase6t.v1.yaml --database operations.sqlite --export-id ID
+```
+
+The packet remains unsigned, unencrypted, local evidence and grants no review, readiness,
+promotion, brokerage, or trading authority. See
+`docs/proposals/phase_6t_artifact_trust_review_exports_v1.md` and `docs/phase_6t_review.md`.

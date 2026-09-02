@@ -770,3 +770,15 @@ The policy and request deliberately remain `BLOCKED_UNCONFIGURED`. Six policy ch
 unresolved: signature algorithm, key custody, signer identity, trusted timestamp provider,
 revocation policy, and receiving verifier. Consequently Phase 6S never handles key material,
 creates signatures, contacts a provider, or changes any readiness or trading state.
+
+## Phase 6T artifact-trust security-review exports
+
+Phase 6T first replays Phase 6S request validation, then reads the exact canonical payloads and
+persisted payload hashes for the Phase 6R export/verification and Phase 6S policy/request. The four
+sources are ordered lexically and bound into a separate root before canonical envelope bytes are
+written atomically to a local content address.
+
+Read-only verification hashes the bytes, validates the envelope and source hashes, reconstructs
+the root, and checks cross-record identity and status relationships. It never recomputes against
+revised source data or promotes a result. This provides portable integrity evidence for review,
+not signer identity, trusted time, confidentiality, policy approval, or operational authority.

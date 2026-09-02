@@ -673,3 +673,19 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   append-only request.
 - `ARTIFACT_SIGNING_BLOCKED_UNSIGNED`: every request is `BLOCKED_UNCONFIGURED`, unsigned, and not
   trusted-timestamped and grants no operational, promotion, brokerage, or trading authority.
+
+## Phase 6T artifact-trust review-export rules
+
+- `ARTIFACT_TRUST_REVIEW_EXACT_SOURCE`: the packet contains exactly the Phase 6R manifest and
+  successful verification plus the Phase 6S unresolved policy and blocked request.
+- `ARTIFACT_TRUST_REVIEW_CANONICAL`: lexical source order, canonical source payloads and hashes,
+  and a reconstructed root determine canonical envelope bytes.
+- `ARTIFACT_TRUST_REVIEW_CAUSAL`: export cannot predate the source signing request and verification
+  cannot predate export.
+- `ARTIFACT_TRUST_REVIEW_CONTAINED_ATOMIC`: one safe local directory, content-addressed filename,
+  atomic publication, and conflicting-overwrite rejection are mandatory.
+- `ARTIFACT_TRUST_REVIEW_INDEPENDENT_VERIFY`: verification rehashes the artifact, validates all
+  sources and lineage, and records explicit failure reasons without mutation.
+- `ARTIFACT_TRUST_REVIEW_NO_AUTHORITY`: a verified packet remains unsigned and unencrypted and
+  grants no authentication, consensus, approval, readiness, promotion, brokerage, or trading
+  authority.

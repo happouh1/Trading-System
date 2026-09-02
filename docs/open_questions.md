@@ -745,6 +745,15 @@ outage behavior, retry policy, and independent verification process are acceptab
 265. Which receiving verifier and compatibility contract will validate artifact bytes, signature,
 certificate chain, revocation evidence, and trusted timestamp without gaining promotion or trading
 authority?
-266. After questions 261–265 are governed, should a separate Phase 6T implement real signing, and
-what fixtures, cross-implementation vectors, threat model, secret-handling review, and rollback
+266. After questions 261–265 are governed, should a separate post-6T phase implement real signing,
+and what fixtures, cross-implementation vectors, threat model, secret-handling review, and rollback
 criteria must pass first?
+
+267. Which authenticated security-review workflow may receive a Phase 6T packet, and what
+recipient authorization, confidentiality, retention, deletion, and legal-hold policy applies?
+268. How should independent reviewers submit proposed answers to the six Phase 6S blockers without
+letting unauthenticated local assertions become policy or approval?
+269. Which schema and compatibility test vectors must a future external receiving verifier support
+for Phase 6R, Phase 6S, and Phase 6T artifacts across code versions?
+270. Should security-review responses be signed and trusted-timestamped independently of the
+artifact they discuss, and which conflict, dissent, supersession, and revocation rules apply?

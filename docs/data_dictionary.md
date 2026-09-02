@@ -657,3 +657,14 @@ Phase 6R export, and Phase 6R verification tuple. It retains `requested_at`, art
 root, both upstream payload hashes, canonical blockers, false `signed` and
 `trusted_timestamped` flags, source revision, code version, configuration hash, canonical payload,
 and payload hash. The tuple is unique and all referenced rows are foreign-key constrained.
+
+## Phase 6T artifact-trust review exports
+
+`ArtifactTrustReviewExportManifest` stores its deterministic export ID, source Phase 6S signing
+request, export time, contained artifact path, artifact hash and byte count, four-source chain root
+and count, source revision, package version, disclosures, and config hash.
+
+`ArtifactTrustReviewExportVerification` stores verification ID/time, `VERIFIED` or `FAILED`,
+expected and optional actual hashes, canonical reasons, fixed `promoted=false`, provenance,
+package version, and config hash. Migration `047_phase_6t_artifact_trust_review_exports.sql` adds
+append-only export and verification tables and restricts each request to one persisted export.
