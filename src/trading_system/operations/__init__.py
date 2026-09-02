@@ -23,6 +23,19 @@ from trading_system.operations.artifact_trust_policy_proposal_contracts import (
 from trading_system.operations.artifact_trust_policy_proposal_registry import (
     ArtifactTrustPolicyProposalRegistry,
 )
+from trading_system.operations.artifact_trust_proposal_catalog_config import (
+    ArtifactTrustProposalCatalogConfig,
+    ArtifactTrustProposalCatalogConfigError,
+    load_artifact_trust_proposal_catalog_config,
+)
+from trading_system.operations.artifact_trust_proposal_catalog_contracts import (
+    ArtifactTrustProposalCatalog,
+    ArtifactTrustProposalCatalogStatus,
+    PolicyFieldComparison,
+)
+from trading_system.operations.artifact_trust_proposal_catalog_registry import (
+    ArtifactTrustProposalCatalogRegistry,
+)
 from trading_system.operations.artifact_trust_registry import ArtifactTrustRegistry
 from trading_system.operations.artifact_trust_review_export import (
     ArtifactTrustReviewExportService,
@@ -373,6 +386,11 @@ __all__ = [
     "ArtifactTrustPolicyProposalRegistry",
     "ArtifactTrustPolicyProposalStatus",
     "ArtifactTrustPolicyStatus",
+    "ArtifactTrustProposalCatalog",
+    "ArtifactTrustProposalCatalogConfig",
+    "ArtifactTrustProposalCatalogConfigError",
+    "ArtifactTrustProposalCatalogRegistry",
+    "ArtifactTrustProposalCatalogStatus",
     "ArtifactTrustRegistry",
     "ArtifactTrustReviewExportConfig",
     "ArtifactTrustReviewExportConfigError",
@@ -461,6 +479,7 @@ __all__ = [
     "OperationsRunnerConfig",
     "OperationsRunnerConfigError",
     "OperationsRunnerRegistry",
+    "PolicyFieldComparison",
     "ProspectiveCatalogMaterialization",
     "ProspectiveCatalogMaterializationConfig",
     "ProspectiveCatalogMaterializationConfigError",
@@ -549,6 +568,7 @@ __all__ = [
     "inspect_component",
     "load_artifact_trust_config",
     "load_artifact_trust_policy_proposal_config",
+    "load_artifact_trust_proposal_catalog_config",
     "load_artifact_trust_review_export_config",
     "load_observation_audit_config",
     "load_observation_audit_export_config",

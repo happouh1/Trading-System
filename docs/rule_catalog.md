@@ -703,3 +703,16 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   proposals are never rewritten.
 - `ARTIFACT_TRUST_PROPOSAL_NO_AUTHORITY`: `PROPOSED_UNAUTHENTICATED` is not review, approval,
   active policy, consensus, readiness, promotion, brokerage, or trading authority.
+
+## Phase 6V artifact-trust proposal-catalog rules
+
+- `ARTIFACT_TRUST_CATALOG_EXACT_MEMBERSHIP`: proposal IDs are caller-declared, nonempty, sorted,
+  unique, and content-bound by ordered payload hashes.
+- `ARTIFACT_TRUST_CATALOG_SHARED_SOURCE`: every member must revalidate and reference the same exact
+  verified Phase 6T packet.
+- `ARTIFACT_TRUST_CATALOG_CAUSAL`: catalog time cannot predate any member proposal.
+- `ARTIFACT_TRUST_CATALOG_DESCRIPTIVE`: each of six fields retains proposal-to-value attribution;
+  equality and difference are mechanical descriptions only.
+- `ARTIFACT_TRUST_CATALOG_APPEND_ONLY`: exact retries are idempotent and membership is immutable.
+- `ARTIFACT_TRUST_CATALOG_NO_AUTHORITY`: the catalog selects no proposal and establishes no
+  authentication, consensus, approval, policy, readiness, promotion, brokerage, or trading authority.

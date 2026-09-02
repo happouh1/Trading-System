@@ -678,3 +678,13 @@ package version, canonical disclosures, and config hash.
 
 Migration `048_phase_6u_artifact_trust_policy_proposals.sql` adds the append-only proposal table
 with foreign keys to exact Phase 6T manifest and verification evidence.
+
+## Phase 6V artifact-trust proposal catalogs
+
+`PolicyFieldComparison` stores one policy field, canonical `(proposal_id, value)` pairs, and a
+derived equality flag. `ArtifactTrustProposalCatalog` stores its deterministic ID, shared Phase 6T
+export and verification, catalog time, ordered proposal IDs, proposal payload root, six comparisons,
+unauthenticated descriptive status, source revision, code version, disclosures, and config hash.
+
+Migration `049_phase_6v_artifact_trust_proposal_catalogs.sql` adds append-only catalog and ordered
+membership tables with foreign keys to the exact Phase 6U proposals.

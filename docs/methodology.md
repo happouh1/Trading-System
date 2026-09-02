@@ -793,3 +793,13 @@ deterministic record from current immutable sources.
 Candidate content is stored without interpretation, ranking, or endorsement. Explicit status and
 disclosures prevent a proposal from being mistaken for authenticated review or active policy.
 Secret-like material is rejected, and no external system, credential, key, or trading path is used.
+
+## Phase 6V descriptive proposal comparison
+
+Phase 6V accepts only canonical caller-declared proposal IDs, revalidates every Phase 6U payload,
+requires a single shared verified Phase 6T source, and binds ordered proposal payload hashes into a
+root. Six comparisons preserve proposal-to-value attribution and derive equality mechanically.
+
+The labels `ALL_VALUES_IDENTICAL_UNAUTHENTICATED` and `VALUES_DIFFER_UNAUTHENTICATED` describe only
+the selected records. They do not infer catalog completeness, reviewer identity, independence,
+consensus, approval, or policy validity, and they cannot affect operational or trading state.

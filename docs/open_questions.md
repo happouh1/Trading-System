@@ -766,3 +766,12 @@ approval rules could compare multiple Phase 6U proposals?
 revocations, effective intervals, and historical verification?
 274. Which separately secured implementation process may translate an approved policy into key
 handling and interoperable signing code without exposing secrets to this evidence registry?
+
+275. Which authenticated source determines the complete proposal population for a governance
+decision, rather than relying on a caller-declared Phase 6V catalog denominator?
+276. What rules prevent identical unauthenticated values from being mistaken for independent
+reviewer consensus, including copied proposals, common authorship, and conflicts of interest?
+277. Which independently governed process may rank or select proposals, record dissent and
+abstention, and prove quorum without modifying Phase 6V evidence?
+278. What approval, effective-date, supersession, rollback, and revocation controls are required
+before any selected proposal can become active artifact-trust policy?

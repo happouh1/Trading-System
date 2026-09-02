@@ -15,6 +15,12 @@ from trading_system.operations.artifact_trust_policy_proposal_config import (
 from trading_system.operations.artifact_trust_policy_proposal_registry import (
     ArtifactTrustPolicyProposalRegistry,
 )
+from trading_system.operations.artifact_trust_proposal_catalog_config import (
+    load_artifact_trust_proposal_catalog_config,
+)
+from trading_system.operations.artifact_trust_proposal_catalog_registry import (
+    ArtifactTrustProposalCatalogRegistry,
+)
 from trading_system.operations.artifact_trust_registry import ArtifactTrustRegistry
 from trading_system.operations.artifact_trust_review_export import (
     ArtifactTrustReviewExportService,
@@ -561,6 +567,22 @@ def configure_operations_parser(
     trust_proposal_status.add_argument("--review-config", required=True)
     trust_proposal_status.add_argument("--database", required=True)
     trust_proposal_status.add_argument("--proposal-id", required=True)
+    validate_proposal_catalog = actions.add_parser(
+        "validate-artifact-trust-proposal-catalog-config"
+    )
+    validate_proposal_catalog.add_argument("--config", required=True)
+    create_proposal_catalog = actions.add_parser("create-artifact-trust-proposal-catalog")
+    create_proposal_catalog.add_argument("--config", required=True)
+    create_proposal_catalog.add_argument("--proposal-config", required=True)
+    create_proposal_catalog.add_argument("--review-config", required=True)
+    create_proposal_catalog.add_argument("--input", required=True)
+    create_proposal_catalog.add_argument("--database", required=True)
+    proposal_catalog_status = actions.add_parser("artifact-trust-proposal-catalog-status")
+    proposal_catalog_status.add_argument("--config", required=True)
+    proposal_catalog_status.add_argument("--proposal-config", required=True)
+    proposal_catalog_status.add_argument("--review-config", required=True)
+    proposal_catalog_status.add_argument("--database", required=True)
+    proposal_catalog_status.add_argument("--catalog-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -2359,6 +2381,55 @@ def _handle_artifact_trust_policy_proposal(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_artifact_trust_proposal_catalog(args: argparse.Namespace) -> int:
+    config = load_artifact_trust_proposal_catalog_config(args.config)
+    if args.operations_command == "validate-artifact-trust-proposal-catalog-config":
+        payload: object = {"config_hash": config.config_hash, "valid": True}
+    else:
+        proposal_config = load_artifact_trust_policy_proposal_config(args.proposal_config)
+        review_config = load_artifact_trust_review_export_config(args.review_config)
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            proposals = ArtifactTrustPolicyProposalRegistry(
+                repository,
+                proposal_config,
+                ArtifactTrustReviewExportRegistry(repository, review_config),
+            )
+            registry = ArtifactTrustProposalCatalogRegistry(repository, config, proposals)
+            if args.operations_command == "artifact-trust-proposal-catalog-status":
+                payload = registry.catalog(args.catalog_id)
+            else:
+                root = _control_input(
+                    args.input, {"proposal_ids", "cataloged_at", "source_revision"}
+                )
+                proposal_ids = _string_tuple(root["proposal_ids"], "proposal IDs")
+                catalog = registry.create(
+                    proposal_ids=proposal_ids,
+                    cataloged_at=_time(root["cataloged_at"]),
+                    source_revision=_string(root["source_revision"], "source revision"),
+                )
+                payload = {"catalog": catalog, "inserted": registry.insert(catalog)}
+    print(
+        canonical_json(
+            {
+                "evidence": payload,
+                "proposal_selected": False,
+                "policy_activated": False,
+                "signed": False,
+                "reviewers_authenticated": False,
+                "consensus_calculated": False,
+                "production_readiness_claim": False,
+                "automatic_promotion_performed": False,
+                "network_used": False,
+                "credentials_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
+    return 0
+
+
 def _handle_artifact_trust_review_export(args: argparse.Namespace) -> int:
     config = load_artifact_trust_review_export_config(args.config)
     if args.operations_command == "validate-artifact-trust-review-export-config":
@@ -2699,6 +2770,12 @@ def _handle_prospective_chain_export(args: argparse.Namespace) -> int:
 
 
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-artifact-trust-proposal-catalog-config",
+        "create-artifact-trust-proposal-catalog",
+        "artifact-trust-proposal-catalog-status",
+    }:
+        return _handle_artifact_trust_proposal_catalog(args)
     if args.operations_command in {
         "validate-artifact-trust-policy-proposal-config",
         "register-artifact-trust-policy-proposal",

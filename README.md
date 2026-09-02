@@ -768,3 +768,18 @@ Phase 6U authenticates no proposer, calculates no consensus, handles no secrets,
 readiness, promotion, brokerage, or trading authority. See
 `docs/proposals/phase_6u_unauthenticated_artifact_trust_policy_proposals_v1.md` and
 `docs/phase_6u_review.md`.
+
+## Phase 6V descriptive artifact-trust proposal catalogs
+
+Phase 6V binds an exact sorted set of Phase 6U proposals to their shared verified Phase 6T packet
+and reports field-by-field equality or difference without selecting a winner or activating policy.
+
+```text
+trading-system operations validate-artifact-trust-proposal-catalog-config --config config/operations.phase6v.v1.yaml
+trading-system operations create-artifact-trust-proposal-catalog --config config/operations.phase6v.v1.yaml --proposal-config config/operations.phase6u.v1.yaml --review-config config/operations.phase6t.v1.yaml --input catalog.json --database operations.sqlite
+trading-system operations artifact-trust-proposal-catalog-status --config config/operations.phase6v.v1.yaml --proposal-config config/operations.phase6u.v1.yaml --review-config config/operations.phase6t.v1.yaml --database operations.sqlite --catalog-id ID
+```
+
+Equality is not consensus or approval. Phase 6V authenticates nobody and grants no policy,
+readiness, promotion, brokerage, or trading authority. See
+`docs/proposals/phase_6v_artifact_trust_proposal_catalog_v1.md` and `docs/phase_6v_review.md`.

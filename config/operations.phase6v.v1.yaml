@@ -1,0 +1,6 @@
+{
+  "artifact_trust_proposal_catalog_version": "6V.1.0",
+  "authority": {"offline_only": true, "evidence_only": true, "catalog_only": true, "proposal_selection_enabled": false, "policy_activation_enabled": false, "signing_enabled": false, "reviewer_authentication_enabled": false, "consensus_enabled": false, "automatic_promotion_enabled": false, "production_readiness_claim_enabled": false, "network_enabled": false, "credentials_enabled": false, "broker_writes_enabled": false, "live_trading_enabled": false},
+  "catalog": {"exact_phase6u_proposals_required": true, "same_verified_phase6t_source_required": true, "canonical_sorted_unique_proposal_ids_required": true, "field_by_field_descriptive_comparison": true, "causal_catalog_time_required": true, "canonical_payload_required": true, "append_only": true},
+  "thresholds": {"minimum_proposal_count_defined": false, "quorum_defined": false, "approval_threshold_defined": false, "consensus_threshold_defined": false, "production_threshold_defined": false}
+}
