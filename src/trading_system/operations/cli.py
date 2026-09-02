@@ -61,6 +61,12 @@ from trading_system.operations.monitoring import (
 from trading_system.operations.observation_config import load_observation_plan_config
 from trading_system.operations.observation_contracts import ObservationPlanWindow
 from trading_system.operations.observation_registry import ObservationPlanRegistry
+from trading_system.operations.prospective_catalog_config import (
+    load_prospective_catalog_materialization_config,
+)
+from trading_system.operations.prospective_catalog_registry import (
+    ProspectiveCatalogMaterializationRegistry,
+)
 from trading_system.operations.prospective_review_config import (
     load_prospective_review_plan_config,
 )
@@ -282,6 +288,22 @@ def configure_operations_parser(
     prospective_status.add_argument("--config", required=True)
     prospective_status.add_argument("--database", required=True)
     prospective_status.add_argument("--plan-id", required=True)
+    validate_materialization = actions.add_parser(
+        "validate-prospective-catalog-materialization-config"
+    )
+    validate_materialization.add_argument("--config", required=True)
+    materialize = actions.add_parser("materialize-prospective-review-catalog")
+    materialize.add_argument("--config", required=True)
+    materialize.add_argument("--prospective-config", required=True)
+    materialize.add_argument("--catalog-config", required=True)
+    materialize.add_argument("--input", required=True)
+    materialize.add_argument("--database", required=True)
+    materialization_status = actions.add_parser("prospective-catalog-materialization-status")
+    materialization_status.add_argument("--config", required=True)
+    materialization_status.add_argument("--prospective-config", required=True)
+    materialization_status.add_argument("--catalog-config", required=True)
+    materialization_status.add_argument("--database", required=True)
+    materialization_status.add_argument("--materialization-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -1633,7 +1655,47 @@ def _handle_prospective_review_plan(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_prospective_catalog_materialization(args: argparse.Namespace) -> int:
+    config = load_prospective_catalog_materialization_config(args.config)
+    if args.operations_command == "validate-prospective-catalog-materialization-config":
+        payload: object = {"config_hash": config.config_hash, "valid": True}
+    else:
+        prospective_config = load_prospective_review_plan_config(args.prospective_config)
+        catalog_config = load_observation_audit_review_catalog_config(args.catalog_config)
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = ProspectiveCatalogMaterializationRegistry(
+                repository, config, prospective_config, catalog_config
+            )
+            if args.operations_command == "prospective-catalog-materialization-status":
+                payload = registry.status(args.materialization_id)
+            else:
+                root = _control_input(
+                    args.input, {"plan_id", "materialized_at", "source_revision"}
+                )
+                evidence = registry.materialize(
+                    plan_id=_string(root["plan_id"], "prospective plan ID"),
+                    materialized_at=_time(root["materialized_at"]),
+                    source_revision=_string(root["source_revision"], "source revision"),
+                )
+                inserted = registry.insert(evidence)
+                payload = {"materialization": evidence, "inserted": inserted}
+    print(canonical_json({
+        "evidence": payload, "caller_membership_override_used": False,
+        "consensus_calculated": False, "reviewers_authenticated": False,
+        "production_readiness_claim": False, "automatic_promotion_performed": False,
+        "network_used": False, "broker_write_performed": False, "live_trading_enabled": False,
+    }))
+    return 0
+
+
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-prospective-catalog-materialization-config",
+        "materialize-prospective-review-catalog",
+        "prospective-catalog-materialization-status",
+    }:
+        return _handle_prospective_catalog_materialization(args)
     if args.operations_command in {
         "validate-prospective-review-plan-config",
         "register-prospective-review-plan",

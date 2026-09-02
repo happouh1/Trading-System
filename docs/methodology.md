@@ -642,3 +642,17 @@ Status revalidates plan, child slots, bindings, canonical hashes, and provenance
 resolved and pending counts and IDs. `complete=true` means only that every registered slot has one
 valid binding. No timing tolerance, evidence-quality threshold, reviewer independence, consensus,
 statistical interpretation, or operational authority is inferred.
+
+## Phase 6J deterministic prospective-catalog materialization
+
+Phase 6J requires a structurally complete Phase 6I plan. It reads the exact slot bindings in frozen
+slot order and passes only their bundle-verification pairs plus the plan's catalog name to Phase 6G
+catalog construction. The caller supplies time and provenance but cannot override membership.
+
+A binding-root hash preserves the ordered slot-to-evidence mapping. The immutable materialization
+record binds plan ID and slot root, catalog ID and catalog root, binding root, count, time,
+provenance, code version, disclosures, and strict config hash. Status revalidates all three evidence
+layers and exact catalog membership after restart.
+
+This removes a manual denominator transformation but does not establish trustworthy slot semantics,
+timestamps, reviewer identity, independence, consensus, evidence quality, or readiness.

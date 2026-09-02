@@ -627,3 +627,16 @@ backdated or rewritten before database inspection?
 without introducing a second caller-selected transformation?
 212. May an erroneous slot remain permanently unbound, or can it be superseded through separately
 authorized immutable lineage without weakening the original denominator?
+
+213. Should Phase 6J require materialization only after every slot's expected timestamp, or can a
+fully resolved early plan be cataloged without implying timing compliance?
+214. What authenticated slot taxonomy and campaign linkage would make two materialized catalogs
+comparable without relying on caller-chosen names?
+215. Should the binding-root order remain stable slot-ID order or expected-time order, and what
+governed tie-break would apply if future slot timestamps cease to be unique?
+216. What signed external receipt or trusted timestamp can attest that a materialized catalog and
+its local files existed at the recorded time?
+217. Can an incorrect materialization be superseded, and what append-only authorization and lineage
+would preserve the invalid original without allowing denominator shopping?
+218. Which separately versioned consumer may interpret multiple materialized catalogs without
+turning descriptive completeness into consensus, readiness, or trading authority?

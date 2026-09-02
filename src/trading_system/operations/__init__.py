@@ -147,6 +147,17 @@ from trading_system.operations.observation_contracts import (
     ReconciliationStatus,
 )
 from trading_system.operations.observation_registry import ObservationPlanRegistry
+from trading_system.operations.prospective_catalog_config import (
+    ProspectiveCatalogMaterializationConfig,
+    ProspectiveCatalogMaterializationConfigError,
+    load_prospective_catalog_materialization_config,
+)
+from trading_system.operations.prospective_catalog_contracts import (
+    ProspectiveCatalogMaterialization,
+)
+from trading_system.operations.prospective_catalog_registry import (
+    ProspectiveCatalogMaterializationRegistry,
+)
 from trading_system.operations.prospective_review_config import (
     ProspectiveReviewPlanConfig,
     ProspectiveReviewPlanConfigError,
@@ -283,6 +294,10 @@ __all__ = [
     "OperationsRunnerConfig",
     "OperationsRunnerConfigError",
     "OperationsRunnerRegistry",
+    "ProspectiveCatalogMaterialization",
+    "ProspectiveCatalogMaterializationConfig",
+    "ProspectiveCatalogMaterializationConfigError",
+    "ProspectiveCatalogMaterializationRegistry",
     "ProspectiveReviewBinding",
     "ProspectiveReviewPlan",
     "ProspectiveReviewPlanConfig",
@@ -330,6 +345,7 @@ __all__ = [
     "load_operations_release_config",
     "load_operations_resilience_config",
     "load_operations_runner_config",
+    "load_prospective_catalog_materialization_config",
     "load_prospective_review_plan_config",
     "load_review_catalog_plan_config",
 ]

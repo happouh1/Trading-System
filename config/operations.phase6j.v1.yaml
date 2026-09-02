@@ -1,0 +1,33 @@
+{
+  "prospective_catalog_materialization_version": "6J.1.0",
+  "authority": {
+    "offline_only": true,
+    "evidence_only": true,
+    "caller_membership_override_enabled": false,
+    "reviewer_authentication_enabled": false,
+    "consensus_enabled": false,
+    "automatic_promotion_enabled": false,
+    "production_readiness_claim_enabled": false,
+    "network_enabled": false,
+    "credentials_enabled": false,
+    "external_notifications_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  },
+  "validation": {
+    "complete_plan_required": true,
+    "exact_slot_bindings_required": true,
+    "catalog_name_from_plan_required": true,
+    "catalog_membership_from_bindings_required": true,
+    "canonical_payload_hashes_required": true,
+    "current_code_version_required": true,
+    "single_catalog_per_plan_required": true,
+    "append_only": true
+  },
+  "thresholds": {
+    "minimum_slot_count_defined": false,
+    "review_quality_threshold_defined": false,
+    "consensus_threshold_defined": false,
+    "production_threshold_defined": false
+  }
+}

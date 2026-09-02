@@ -538,3 +538,13 @@ Migration `036_phase_6i_prospective_review_slots.sql` adds append-only
 `operations_prospective_review_plans`, `operations_prospective_review_slots`, and
 `operations_prospective_review_bindings`; uniqueness constraints prevent slot rebinding and bundle
 reuse within a plan.
+
+## Phase 6J prospective-catalog materialization
+
+`ProspectiveCatalogMaterialization` binds one complete Phase 6I plan to one exact Phase 6G catalog.
+It stores materialization ID/time, plan and catalog IDs, slot, binding, and catalog root hashes,
+slot count, provenance, code version, mandatory disclosures, and configuration hash.
+
+Migration `037_phase_6j_prospective_catalog_materializations.sql` adds append-only
+`operations_prospective_catalog_materializations`. Unique plan and catalog constraints prevent a
+second materialization from presenting a different transformation.

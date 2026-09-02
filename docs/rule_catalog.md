@@ -544,3 +544,17 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   payloads, hashes, conflict rejection, transactional insertion, and restart idempotency.
 - `PROSPECTIVE_REVIEW_NO_AUTHORITY`: completion is descriptive and grants no authentication,
   consensus, threshold, promotion, production, brokerage, or trading authority.
+- `PROSPECTIVE_CATALOG_COMPLETE_PLAN_ONLY`: Phase 6J rejects any Phase 6I plan with an unresolved
+  slot.
+- `PROSPECTIVE_CATALOG_NO_MEMBERSHIP_OVERRIDE`: catalog name and membership derive exclusively from
+  the frozen plan and bindings; the materialization request cannot supply sources.
+- `PROSPECTIVE_CATALOG_EXACT_PHASE6G_VALIDATION`: every derived source still passes all Phase 6G
+  verified-bundle, local-file, causal-time, and current-code checks.
+- `PROSPECTIVE_CATALOG_THREE_ROOT_PROVENANCE`: slot, ordered binding, and catalog roots bind the
+  denominator transformation into immutable evidence.
+- `PROSPECTIVE_CATALOG_SINGLE_RESULT`: one plan and one catalog can appear in only one persisted
+  materialization.
+- `PROSPECTIVE_CATALOG_RESTART_REVALIDATION`: status revalidates plan slots, bindings, catalog
+  entries, exact membership, roots, canonical hashes, and current provenance.
+- `PROSPECTIVE_CATALOG_NO_AUTHORITY`: materialization cannot authenticate reviewers or timestamps,
+  calculate consensus, assess quality, promote, access brokers, or authorize trading.

@@ -562,3 +562,20 @@ registration. Completion is descriptive only: Phase 6I defines no timing toleran
 quality claim, reviewer authentication, consensus, promotion, production, brokerage, or trading
 authority. See `docs/proposals/phase_6i_prospective_review_slots_v1.md` and
 `docs/phase_6i_review.md`.
+
+## Phase 6J deterministic prospective-catalog materialization
+
+Phase 6J converts one fully bound Phase 6I plan into a Phase 6G catalog without accepting a new
+membership list. Catalog name comes from the plan; bundle-verification pairs come exclusively from
+immutable slot bindings. A provenance record binds plan, binding, and catalog roots.
+
+```text
+trading-system operations validate-prospective-catalog-materialization-config --config config/operations.phase6j.v1.yaml
+trading-system operations materialize-prospective-review-catalog --config config/operations.phase6j.v1.yaml --prospective-config config/operations.phase6i.v1.yaml --catalog-config config/operations.phase6g.v1.yaml --input materialize.json --database operations.sqlite
+trading-system operations prospective-catalog-materialization-status --config config/operations.phase6j.v1.yaml --prospective-config config/operations.phase6i.v1.yaml --catalog-config config/operations.phase6g.v1.yaml --database operations.sqlite --materialization-id ID
+```
+
+Incomplete plans fail, one plan produces at most one catalog, and status revalidates the full linked
+evidence. Materialization does not authenticate reviewers or timestamps, compute consensus, assess
+quality, promote evidence, or authorize production or trading. See
+`docs/proposals/phase_6j_deterministic_catalog_materialization_v1.md` and `docs/phase_6j_review.md`.
