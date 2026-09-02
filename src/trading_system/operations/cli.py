@@ -28,6 +28,8 @@ from trading_system.operations.audit_review_export_config import (
 from trading_system.operations.audit_review_export_registry import (
     ObservationAuditReviewExportRegistry,
 )
+from trading_system.operations.audit_review_plan_config import load_review_catalog_plan_config
+from trading_system.operations.audit_review_plan_registry import ReviewCatalogPlanRegistry
 from trading_system.operations.audit_review_registry import ObservationAuditReviewRegistry
 from trading_system.operations.campaign_config import load_operations_campaign_config
 from trading_system.operations.campaign_contracts import CampaignWindowRequest
@@ -248,6 +250,24 @@ def configure_operations_parser(
     review_catalog_status.add_argument("--config", required=True)
     review_catalog_status.add_argument("--database", required=True)
     review_catalog_status.add_argument("--catalog-id", required=True)
+    validate_review_plan = actions.add_parser("validate-review-catalog-plan-config")
+    validate_review_plan.add_argument("--config", required=True)
+    register_review_plan = actions.add_parser("register-review-catalog-plan")
+    register_review_plan.add_argument("--config", required=True)
+    register_review_plan.add_argument("--input", required=True)
+    register_review_plan.add_argument("--database", required=True)
+    review_plan_status = actions.add_parser("review-catalog-plan-status")
+    review_plan_status.add_argument("--config", required=True)
+    review_plan_status.add_argument("--database", required=True)
+    review_plan_status.add_argument("--plan-id", required=True)
+    reconcile_review_plan = actions.add_parser("reconcile-review-catalog-plan")
+    reconcile_review_plan.add_argument("--config", required=True)
+    reconcile_review_plan.add_argument("--input", required=True)
+    reconcile_review_plan.add_argument("--database", required=True)
+    review_reconciliation_status = actions.add_parser("review-catalog-reconciliation-status")
+    review_reconciliation_status.add_argument("--config", required=True)
+    review_reconciliation_status.add_argument("--database", required=True)
+    review_reconciliation_status.add_argument("--reconciliation-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -1448,7 +1468,106 @@ def _handle_observation_audit_review_catalog(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_review_catalog_plan(args: argparse.Namespace) -> int:
+    config = load_review_catalog_plan_config(args.config)
+    if args.operations_command == "validate-review-catalog-plan-config":
+        print(
+            canonical_json(
+                {
+                    "config_hash": config.config_hash,
+                    "valid": True,
+                    "selection_unbiased_claim": False,
+                    "consensus_enabled": False,
+                    "production_readiness_claim": False,
+                    "automatic_promotion_enabled": False,
+                    "network_enabled": False,
+                }
+            )
+        )
+        return 0
+    if args.operations_command == "review-catalog-plan-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            payload: object = ReviewCatalogPlanRegistry(repository, config).plan(args.plan_id)
+    elif args.operations_command == "review-catalog-reconciliation-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            payload = ReviewCatalogPlanRegistry(repository, config).reconciliation(
+                args.reconciliation_id
+            )
+    elif args.operations_command == "register-review-catalog-plan":
+        root = _control_input(
+            args.input,
+            {"catalog_name", "registered_at", "sources", "source_revision"},
+        )
+        raw_sources = root["sources"]
+        if not isinstance(raw_sources, list) or not raw_sources:
+            raise ValueError("review catalog plan sources must be a nonempty array")
+        sources: list[tuple[str, str]] = []
+        for raw_source in raw_sources:
+            source = _object(raw_source, "planned review catalog source")
+            if set(source) != {"bundle_id", "verification_id"}:
+                raise ValueError("planned review catalog source fields are invalid")
+            sources.append(
+                (
+                    _string(source["bundle_id"], "planned bundle ID"),
+                    _string(source["verification_id"], "planned verification ID"),
+                )
+            )
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = ReviewCatalogPlanRegistry(repository, config)
+            plan = registry.create_plan(
+                catalog_name=_string(root["catalog_name"], "planned catalog name"),
+                registered_at=_time(root["registered_at"]),
+                sources=tuple(sources),
+                source_revision=_string(root["source_revision"], "source revision"),
+            )
+            inserted = registry.insert_plan(plan)
+        payload = {"plan": plan, "inserted": inserted}
+    else:
+        root = _control_input(
+            args.input,
+            {"plan_id", "catalog_id", "reconciled_at", "source_revision"},
+        )
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = ReviewCatalogPlanRegistry(repository, config)
+            result = registry.reconcile(
+                plan_id=_string(root["plan_id"], "review catalog plan ID"),
+                catalog_id=_string(root["catalog_id"], "review catalog ID"),
+                reconciled_at=_time(root["reconciled_at"]),
+                source_revision=_string(root["source_revision"], "source revision"),
+            )
+            inserted = registry.insert_reconciliation(result)
+        payload = {"reconciliation": result, "inserted": inserted}
+    print(
+        canonical_json(
+            {
+                "evidence": payload,
+                "selection_unbiased_claim": False,
+                "consensus_calculated": False,
+                "reviewers_authenticated": False,
+                "production_readiness_claim": False,
+                "automatic_promotion_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
+    return 0
+
+
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-review-catalog-plan-config",
+        "register-review-catalog-plan",
+        "review-catalog-plan-status",
+        "reconcile-review-catalog-plan",
+        "review-catalog-reconciliation-status",
+    }:
+        return _handle_review_catalog_plan(args)
     if args.operations_command in {
         "validate-observation-audit-review-catalog-config",
         "observation-audit-review-catalog",

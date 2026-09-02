@@ -513,3 +513,20 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   identity, hashes, transactional insertion, conflict rejection, and restart-safe idempotency.
 - `REVIEW_CATALOG_NO_AUTHORITY`: Phase 6G cannot authenticate reviewers, access networks or
   credentials, notify, promote, claim production readiness, write to brokers, or enable trading.
+- `REVIEW_CATALOG_PLAN_EXACT_MEMBERSHIP`: Phase 6H freezes one exact catalog name and exact
+  `(bundle_id, verification_id)` membership before catalog creation.
+- `REVIEW_CATALOG_PLAN_FUTURE_REFERENCES`: planned source identities may be absent at registration
+  so missing later evidence cannot be hidden by narrowing the registered denominator.
+- `REVIEW_CATALOG_PLAN_CANONICAL_ROOT`: unique bundle IDs and canonical source ordering are bound
+  into one deterministic source-root hash.
+- `REVIEW_CATALOG_PLAN_CAUSAL_CATALOG`: the compared catalog must be created strictly after plan
+  registration; an earlier or equal timestamp is classified as corrupt evidence.
+- `REVIEW_CATALOG_PLAN_EXACT_RECONCILIATION`: missing catalogs and changed, omitted, or added source
+  identities receive explicit immutable statuses and reasons.
+- `REVIEW_CATALOG_PLAN_APPEND_ONLY`: plans, sources, and reconciliations use canonical payloads,
+  deterministic identities, transactional insertion, conflict rejection, and restart idempotency.
+- `REVIEW_CATALOG_PLAN_LIMITED_CAUSALITY`: catalog adherence does not prove unbiased selection
+  because the registered bundle identities may encode already-known review history.
+- `REVIEW_CATALOG_PLAN_NO_AUTHORITY`: Phase 6H authenticates no reviewers, computes no consensus,
+  and cannot access networks, credentials, notifications, promotion, production, brokers, or live
+  trading.

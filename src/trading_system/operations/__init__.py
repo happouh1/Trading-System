@@ -58,6 +58,18 @@ from trading_system.operations.audit_review_export_contracts import (
 from trading_system.operations.audit_review_export_registry import (
     ObservationAuditReviewExportRegistry,
 )
+from trading_system.operations.audit_review_plan_config import (
+    ReviewCatalogPlanConfig,
+    ReviewCatalogPlanConfigError,
+    load_review_catalog_plan_config,
+)
+from trading_system.operations.audit_review_plan_contracts import (
+    ReviewCatalogPlan,
+    ReviewCatalogPlanReconciliation,
+    ReviewCatalogPlanSource,
+    ReviewCatalogReconciliationStatus,
+)
+from trading_system.operations.audit_review_plan_registry import ReviewCatalogPlanRegistry
 from trading_system.operations.audit_review_registry import ObservationAuditReviewRegistry
 from trading_system.operations.campaign_config import (
     OperationsCampaignConfig,
@@ -271,6 +283,13 @@ __all__ = [
     "ReviewBundleManifest",
     "ReviewBundleVerification",
     "ReviewBundleVerificationStatus",
+    "ReviewCatalogPlan",
+    "ReviewCatalogPlanConfig",
+    "ReviewCatalogPlanConfigError",
+    "ReviewCatalogPlanReconciliation",
+    "ReviewCatalogPlanRegistry",
+    "ReviewCatalogPlanSource",
+    "ReviewCatalogReconciliationStatus",
     "ScheduleCursor",
     "ScheduleDefinition",
     "SchedulePlan",
@@ -294,4 +313,5 @@ __all__ = [
     "load_operations_release_config",
     "load_operations_resilience_config",
     "load_operations_runner_config",
+    "load_review_catalog_plan_config",
 ]

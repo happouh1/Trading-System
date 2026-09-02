@@ -1,0 +1,34 @@
+{
+  "review_catalog_plan_version": "6H.1.0",
+  "authority": {
+    "offline_only": true,
+    "evidence_only": true,
+    "selection_unbiased_claim_enabled": false,
+    "reviewer_authentication_enabled": false,
+    "consensus_enabled": false,
+    "automatic_promotion_enabled": false,
+    "production_readiness_claim_enabled": false,
+    "network_enabled": false,
+    "credentials_enabled": false,
+    "external_notifications_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  },
+  "validation": {
+    "exact_catalog_name_required": true,
+    "exact_bundle_verification_pairs_required": true,
+    "unique_bundle_ids_required": true,
+    "canonical_source_order_required": true,
+    "registration_before_catalog_required": true,
+    "canonical_payload_hashes_required": true,
+    "current_code_version_required": true,
+    "append_only": true,
+    "missing_and_deviation_explicit": true
+  },
+  "thresholds": {
+    "minimum_bundle_count_defined": false,
+    "minimum_lead_time_defined": false,
+    "consensus_threshold_defined": false,
+    "production_threshold_defined": false
+  }
+}

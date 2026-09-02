@@ -504,3 +504,22 @@ selection/non-authority disclosures, and configuration hash.
 Migration `034_phase_6g_observation_audit_review_catalogs.sql` adds append-only
 `operations_observation_audit_review_catalogs` and child
 `operations_observation_audit_review_catalog_entries` tables with canonical payloads and hashes.
+
+## Phase 6H review-catalog plans
+
+`ReviewCatalogPlanSource` is one exact `bundle_id` and `verification_id` pair. A plan requires
+unique bundle IDs and stores sources in canonical order.
+
+`ReviewCatalogPlan` records `plan_id`, exact future catalog name, timezone-aware registration time,
+canonical sources, source-root hash, provenance, package version, disclosures, and configuration
+hash. Source rows intentionally do not require the bundle or verification to exist at registration.
+
+`ReviewCatalogPlanReconciliation` binds one plan to one requested catalog at a timezone-aware
+reconciliation time. Its status is `MATCHED`, `DEVIATION`, `MISSING`, or `CORRUPT`; canonical
+reasons, exact plan/catalog payload hashes, expected and actual counts, provenance, disclosures,
+package version, and config hash preserve the result.
+
+Migration `035_phase_6h_review_catalog_plans.sql` adds append-only
+`operations_review_catalog_plans`, `operations_review_catalog_plan_sources`, and
+`operations_review_catalog_plan_reconciliations`. Catalog IDs deliberately have no foreign key in
+the reconciliation table so an expected but absent catalog remains persistable as `MISSING`.

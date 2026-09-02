@@ -521,3 +521,24 @@ Input order is normalized and duplicate bundle IDs fail. Catalog counts are not 
 ranking, statistical evidence, or a claim that caller selection is complete or unbiased. Phase 6G
 authenticates no reviewers and grants no production, promotion, brokerage, or trading authority.
 See `docs/proposals/phase_6g_verified_review_catalogs_v1.md` and `docs/phase_6g_review.md`.
+
+## Phase 6H preregistered review-catalog plans
+
+Phase 6H freezes an exact future catalog name and exact `(bundle_id, verification_id)` membership
+before the Phase 6G catalog is created. Plans are immutable, canonically ordered, content-hashed,
+and may deliberately reference bundle identities that are not yet present in the local registry.
+
+```text
+trading-system operations validate-review-catalog-plan-config --config config/operations.phase6h.v1.yaml
+trading-system operations register-review-catalog-plan --config config/operations.phase6h.v1.yaml --input plan.json --database operations.sqlite
+trading-system operations review-catalog-plan-status --config config/operations.phase6h.v1.yaml --database operations.sqlite --plan-id PLAN_ID
+trading-system operations reconcile-review-catalog-plan --config config/operations.phase6h.v1.yaml --input reconcile.json --database operations.sqlite
+trading-system operations review-catalog-reconciliation-status --config config/operations.phase6h.v1.yaml --database operations.sqlite --reconciliation-id RECONCILIATION_ID
+```
+
+Reconciliation returns `MATCHED`, `DEVIATION`, `MISSING`, or `CORRUPT` and preserves exact reason
+codes. `MATCHED` means only that the later catalog used the registered name and membership. Because
+bundle identities can encode already-known review history, Phase 6H does not establish that the
+initial selection was complete or unbiased. It authenticates no reviewers, computes no consensus,
+and grants no promotion, production, brokerage, or trading authority. See
+`docs/proposals/phase_6h_preregistered_review_catalog_plans_v1.md` and `docs/phase_6h_review.md`.

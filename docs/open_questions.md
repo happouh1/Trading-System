@@ -601,3 +601,16 @@ governance rules prevent descriptive count changes from becoming readiness claim
 transport, redaction, retention, and receiving-verifier controls would be required?
 200. Which authenticated governance body may declare a catalog denominator complete, and how must
 that authority remain isolated from evidence creation, brokerage, and live trading?
+
+201. How can catalog membership be preregistered before review outcomes exist when content-derived
+bundle IDs and verification IDs are not knowable until those artifacts are created?
+202. Should a future plan register stable evidence slots, campaign/window identities, and expected
+creation windows that are later resolved to content IDs without permitting selective substitution?
+203. What minimum registration lead time, authenticated signer, trusted timestamp, and independent
+witness are required before a plan may support a claim stronger than local catalog adherence?
+204. May a catalog plan be cancelled or superseded, and what immutable lineage, reason, approval,
+and effective-time constraints would prevent retrospective denominator changes?
+205. May one plan reconcile to multiple catalogs or versions, and what identity and deduplication
+rules would prevent repeated favorable presentations of the same planned evidence?
+206. Which external governance process may assess completeness or selection bias while remaining
+separate from reviewer authentication, consensus, promotion, brokerage, and live trading?

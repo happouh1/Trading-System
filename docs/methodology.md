@@ -605,3 +605,24 @@ A deterministic root binds the ordered source identities and hashes. Totals are 
 only. The caller-selected denominator is disclosed: Phase 6G does not discover bundles, assert
 selection completeness, rank evidence, combine verdicts, calculate consensus, authenticate
 reviewers, or infer production readiness.
+
+## Phase 6H preregistered review-catalog plans
+
+Phase 6H registers a catalog definition before catalog creation. The definition contains one exact
+catalog name and a nonempty, canonically ordered set of unique bundle IDs paired with exact Phase
+6F verification IDs. Source identities are allowed to be absent at registration so a later missing
+artifact cannot be erased by silently narrowing the denominator.
+
+Registration content is immutable and deterministic. A source-root hash binds the complete ordered
+membership. Plan and source rows are inserted transactionally, canonical payloads are re-hashed on
+read, and an identical registration is restart-idempotent while a conflicting identity fails.
+
+Reconciliation revalidates the plan and requested Phase 6G catalog, requires the catalog timestamp
+to be strictly later than registration, and compares exact catalog name and source membership.
+Missing catalogs, changed verification IDs, omitted planned bundles, added unplanned bundles,
+timestamp violations, code-version differences, and corrupt payloads remain explicit evidence.
+
+The causal boundary is intentionally narrow. A plan can be registered after its bundle reviews are
+already known, and bundle IDs themselves can encode that history. Therefore `MATCHED` establishes
+only adherence of the later catalog to the frozen denominator; it does not prove unbiased initial
+selection, completeness, reviewer independence, consensus, statistical sufficiency, or readiness.
