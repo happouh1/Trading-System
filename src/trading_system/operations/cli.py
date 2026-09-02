@@ -13,6 +13,12 @@ from trading_system.operations.audit_export import ObservationAuditExportService
 from trading_system.operations.audit_export_config import load_observation_audit_export_config
 from trading_system.operations.audit_export_registry import ObservationAuditExportRegistry
 from trading_system.operations.audit_registry import ObservationAuditRegistry
+from trading_system.operations.audit_review_catalog_config import (
+    load_observation_audit_review_catalog_config,
+)
+from trading_system.operations.audit_review_catalog_registry import (
+    ObservationAuditReviewCatalogRegistry,
+)
 from trading_system.operations.audit_review_config import load_observation_audit_review_config
 from trading_system.operations.audit_review_contracts import AuditReviewVerdict
 from trading_system.operations.audit_review_export import ObservationAuditReviewExportService
@@ -230,6 +236,18 @@ def configure_operations_parser(
     review_export_status.add_argument("--config", required=True)
     review_export_status.add_argument("--database", required=True)
     review_export_status.add_argument("--bundle-id", required=True)
+    validate_review_catalog = actions.add_parser(
+        "validate-observation-audit-review-catalog-config"
+    )
+    validate_review_catalog.add_argument("--config", required=True)
+    review_catalog = actions.add_parser("observation-audit-review-catalog")
+    review_catalog.add_argument("--config", required=True)
+    review_catalog.add_argument("--input", required=True)
+    review_catalog.add_argument("--database", required=True)
+    review_catalog_status = actions.add_parser("observation-audit-review-catalog-status")
+    review_catalog_status.add_argument("--config", required=True)
+    review_catalog_status.add_argument("--database", required=True)
+    review_catalog_status.add_argument("--catalog-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -1343,7 +1361,100 @@ def _handle_observation_audit_review_export(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_observation_audit_review_catalog(args: argparse.Namespace) -> int:
+    config = load_observation_audit_review_catalog_config(args.config)
+    if args.operations_command == "validate-observation-audit-review-catalog-config":
+        print(
+            canonical_json(
+                {
+                    "config_hash": config.config_hash,
+                    "valid": True,
+                    "consensus_enabled": False,
+                    "ranking_enabled": False,
+                    "reviewers_authenticated": False,
+                    "production_readiness_claim": False,
+                    "automatic_promotion_enabled": False,
+                    "network_enabled": False,
+                }
+            )
+        )
+        return 0
+    if args.operations_command == "observation-audit-review-catalog-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            catalog = ObservationAuditReviewCatalogRegistry(repository, config).status(
+                args.catalog_id
+            )
+        print(
+            canonical_json(
+                {
+                    "catalog": catalog,
+                    "consensus_calculated": False,
+                    "ranking_calculated": False,
+                    "reviewers_authenticated": False,
+                    "production_readiness_claim": False,
+                    "automatic_promotion_performed": False,
+                    "network_used": False,
+                    "broker_write_performed": False,
+                    "live_trading_enabled": False,
+                }
+            )
+        )
+        return 0
+    root = _control_input(
+        args.input,
+        {"catalog_name", "cataloged_at", "sources", "source_revision"},
+    )
+    raw_sources = root["sources"]
+    if not isinstance(raw_sources, list) or not raw_sources:
+        raise ValueError("review catalog sources must be a nonempty array")
+    sources: list[tuple[str, str]] = []
+    for raw_source in raw_sources:
+        source = _object(raw_source, "review catalog source")
+        if set(source) != {"bundle_id", "verification_id"}:
+            raise ValueError("review catalog source fields are invalid")
+        sources.append(
+            (
+                _string(source["bundle_id"], "review bundle ID"),
+                _string(source["verification_id"], "bundle verification ID"),
+            )
+        )
+    with SQLiteRepository(args.database) as repository:
+        repository.migrate()
+        registry = ObservationAuditReviewCatalogRegistry(repository, config)
+        catalog = registry.create(
+            catalog_name=_string(root["catalog_name"], "review catalog name"),
+            cataloged_at=_time(root["cataloged_at"]),
+            sources=tuple(sources),
+            source_revision=_string(root["source_revision"], "source revision"),
+        )
+        inserted = registry.insert(catalog)
+    print(
+        canonical_json(
+            {
+                "catalog": catalog,
+                "inserted": inserted,
+                "consensus_calculated": False,
+                "ranking_calculated": False,
+                "reviewers_authenticated": False,
+                "production_readiness_claim": False,
+                "automatic_promotion_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
+    return 0
+
+
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-observation-audit-review-catalog-config",
+        "observation-audit-review-catalog",
+        "observation-audit-review-catalog-status",
+    }:
+        return _handle_observation_audit_review_catalog(args)
     if args.operations_command in {
         "validate-observation-audit-review-export-config",
         "observation-audit-review-export",

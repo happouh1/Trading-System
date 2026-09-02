@@ -490,3 +490,17 @@ source manifest, source verification, and canonical review payloads with their h
 Migration `033_phase_6f_observation_audit_review_bundles.sql` adds append-only
 `operations_observation_audit_review_bundles` and
 `operations_observation_audit_review_bundle_verifications`.
+
+## Phase 6G verified review-bundle catalogs
+
+`ReviewBundleCatalogEntry` records one exact bundle and verification ID, bundle artifact hash,
+manifest and verification payload hashes, review-root hash, total/active/summary-eligible review
+counts, and verification timestamp.
+
+`ReviewBundleCatalog` records catalog ID/name/timestamp, entries in canonical bundle-ID order,
+catalog-root hash, bundle and summed review counts, source revision, package version, mandatory
+selection/non-authority disclosures, and configuration hash.
+
+Migration `034_phase_6g_observation_audit_review_catalogs.sql` adds append-only
+`operations_observation_audit_review_catalogs` and child
+`operations_observation_audit_review_catalog_entries` tables with canonical payloads and hashes.

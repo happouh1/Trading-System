@@ -588,3 +588,16 @@ are required before review bundles may leave the local registry directory?
 policy, quorum, conflicts, abstentions, and result remain separate from the immutable bundle?
 194. What privacy and redaction policy applies to reviewer IDs, reason codes, and free-text notes
 before any future external distribution?
+
+195. What preregistered process should define the complete expected bundle denominator before a
+catalog can support any statement about missing or selectively omitted review evidence?
+196. Should catalog entries permit multiple verified versions of the same underlying export, and
+what identity and deduplication policy prevents double counting?
+197. Which temporal grouping, campaign linkage, or observation-plan identity should catalogs retain
+without retrospectively selecting favorable review periods?
+198. What separately versioned consumer may compare catalogs over time, and which statistical and
+governance rules prevent descriptive count changes from becoming readiness claims?
+199. Should catalogs become portable artifacts, and what signing, trusted-time, encryption,
+transport, redaction, retention, and receiving-verifier controls would be required?
+200. Which authenticated governance body may declare a catalog denominator complete, and how must
+that authority remain isolated from evidence creation, brokerage, and live trading?

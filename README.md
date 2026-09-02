@@ -503,3 +503,21 @@ Bundles are local, unsigned, unencrypted, and require at least one review. They 
 unauthenticated reviewer identities and compute no consensus. A verified bundle proves local byte
 integrity only and grants no production, promotion, brokerage, or trading authority. See
 `docs/proposals/phase_6f_portable_review_bundles_v1.md` and `docs/phase_6f_review.md`.
+
+## Phase 6G verified review-bundle catalogs
+
+Phase 6G creates an immutable catalog from an explicit caller-supplied set of verified Phase 6F
+bundles. It revalidates every canonical manifest and verification, requires current-code evidence,
+and re-hashes each local bundle artifact at the catalog timestamp before recording exact hashes and
+descriptive review counts.
+
+```text
+trading-system operations validate-observation-audit-review-catalog-config --config config/operations.phase6g.v1.yaml
+trading-system operations observation-audit-review-catalog --config config/operations.phase6g.v1.yaml --input catalog.json --database operations.sqlite
+trading-system operations observation-audit-review-catalog-status --config config/operations.phase6g.v1.yaml --database operations.sqlite --catalog-id CATALOG_ID
+```
+
+Input order is normalized and duplicate bundle IDs fail. Catalog counts are not consensus,
+ranking, statistical evidence, or a claim that caller selection is complete or unbiased. Phase 6G
+authenticates no reviewers and grants no production, promotion, brokerage, or trading authority.
+See `docs/proposals/phase_6g_verified_review_catalogs_v1.md` and `docs/phase_6g_review.md`.

@@ -495,3 +495,21 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   payloads, hashes, conflict rejection, and restart-safe persistence.
 - `REVIEW_BUNDLE_NO_AUTHORITY`: Phase 6F cannot sign, encrypt, transport, notify, promote, claim
   production readiness, write to brokers, or enable live trading.
+- `REVIEW_CATALOG_EXPLICIT_SELECTION`: Phase 6G catalogs only caller-supplied exact bundle and
+  verification identities and discloses that the denominator is not independently complete.
+- `REVIEW_CATALOG_UNIQUE_CANONICAL_ORDER`: duplicate bundle IDs fail and input is normalized by
+  bundle ID before deterministic identity and root construction.
+- `REVIEW_CATALOG_EXACT_VERIFIED_SOURCE`: every entry requires an intact current-code Phase 6F
+  manifest and its exact `VERIFIED` verification with matching artifact hashes.
+- `REVIEW_CATALOG_LOCAL_REHASH`: the contained local bundle file must still be regular, safe, and
+  byte-equal to its manifest hash at the catalog timestamp.
+- `REVIEW_CATALOG_CAUSAL_TIMESTAMP`: catalog time must be timezone-aware and no earlier than every
+  selected bundle verification.
+- `REVIEW_CATALOG_ROOT_HASH`: ordered bundle/verification and source-hash identities are bound into
+  one deterministic catalog root.
+- `REVIEW_CATALOG_COUNTS_ONLY`: totals are arithmetic evidence counts, not verdict aggregation,
+  ranking, consensus, probability, reliability, or readiness metrics.
+- `REVIEW_CATALOG_APPEND_ONLY`: catalogs and child entries use canonical payloads, deterministic
+  identity, hashes, transactional insertion, conflict rejection, and restart-safe idempotency.
+- `REVIEW_CATALOG_NO_AUTHORITY`: Phase 6G cannot authenticate reviewers, access networks or
+  credentials, notify, promote, claim production readiness, write to brokers, or enable trading.

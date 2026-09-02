@@ -23,6 +23,18 @@ from trading_system.operations.audit_export_contracts import (
 )
 from trading_system.operations.audit_export_registry import ObservationAuditExportRegistry
 from trading_system.operations.audit_registry import ObservationAuditRegistry
+from trading_system.operations.audit_review_catalog_config import (
+    ObservationAuditReviewCatalogConfig,
+    ObservationAuditReviewCatalogConfigError,
+    load_observation_audit_review_catalog_config,
+)
+from trading_system.operations.audit_review_catalog_contracts import (
+    ReviewBundleCatalog,
+    ReviewBundleCatalogEntry,
+)
+from trading_system.operations.audit_review_catalog_registry import (
+    ObservationAuditReviewCatalogRegistry,
+)
 from trading_system.operations.audit_review_config import (
     ObservationAuditReviewConfig,
     ObservationAuditReviewConfigError,
@@ -206,6 +218,9 @@ __all__ = [
     "ObservationAuditPacket",
     "ObservationAuditRegistry",
     "ObservationAuditReview",
+    "ObservationAuditReviewCatalogConfig",
+    "ObservationAuditReviewCatalogConfigError",
+    "ObservationAuditReviewCatalogRegistry",
     "ObservationAuditReviewConfig",
     "ObservationAuditReviewConfigError",
     "ObservationAuditReviewExportConfig",
@@ -251,6 +266,8 @@ __all__ = [
     "ReleaseEvidenceStatus",
     "RestoreVerification",
     "RetentionReport",
+    "ReviewBundleCatalog",
+    "ReviewBundleCatalogEntry",
     "ReviewBundleManifest",
     "ReviewBundleVerification",
     "ReviewBundleVerificationStatus",
@@ -266,6 +283,7 @@ __all__ = [
     "inspect_component",
     "load_observation_audit_config",
     "load_observation_audit_export_config",
+    "load_observation_audit_review_catalog_config",
     "load_observation_audit_review_config",
     "load_observation_audit_review_export_config",
     "load_observation_plan_config",

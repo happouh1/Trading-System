@@ -588,3 +588,20 @@ identical bytes and a content-derived filename. Publication is contained beside 
 atomic. Read-only verification checks byte hash/size, canonical encoding, exact source evidence,
 every review, supersession lineage, root, and counts. It does not authenticate reviewers, sign,
 encrypt, transport, promote, or interpret evidence.
+
+## Phase 6G verified review-bundle catalogs
+
+Phase 6G accepts a nonempty explicit list of `(bundle_id, verification_id)` pairs. Bundle IDs must
+be unique; input order is normalized by bundle ID. For every pair, the persisted Phase 6F manifest
+and exact `VERIFIED` verification are parsed, canonicalized, re-hashed, linked, and checked for the
+current package version and matching expected/actual artifact hashes.
+
+Catalog creation also reads and re-hashes the contained local bundle file. Missing, symlinked,
+outside-directory, or changed artifacts fail before persistence. The catalog timestamp cannot
+precede any selected verification. Each immutable entry retains the manifest and verification
+payload hashes, bundle artifact and review-root hashes, descriptive counts, and verified-at time.
+
+A deterministic root binds the ordered source identities and hashes. Totals are arithmetic sums
+only. The caller-selected denominator is disclosed: Phase 6G does not discover bundles, assert
+selection completeness, rank evidence, combine verdicts, calculate consensus, authenticate
+reviewers, or infer production readiness.
