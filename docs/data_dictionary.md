@@ -610,3 +610,11 @@ reconciliation time, `MATCHED`/`DEVIATION`/`MISSING`/`CORRUPT` status, canonical
 and optional catalog payload hashes, expected and actual counts, provenance, and disclosures.
 Migration `042_phase_6o_prospective_review_catalog_plans.sql` adds append-only plan, child-source,
 and reconciliation tables.
+
+## Phase 6P prospective review-bundle slots
+
+`ProspectiveReviewBundleSlot` stores stable slot ID and expected time.
+`ProspectiveReviewBundlePlan` stores catalog name, registration, canonical slots/root, provenance,
+version, disclosures, and config hash. `ProspectiveReviewBundleBinding` stores exact slot, Phase 6M
+bundle and verification IDs, causal times, artifact/chain/review hashes, and provenance. Migration
+`043_phase_6p_prospective_review_bundle_slots.sql` adds append-only plan, slot, and binding tables.

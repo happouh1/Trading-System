@@ -665,3 +665,19 @@ trading-system operations prospective-chain-review-catalog-reconciliation-status
 may encode already-known outcomes, so the plan proves neither unbiased selection nor a complete
 denominator. See `docs/proposals/phase_6o_preregistered_prospective_review_catalog_plans_v1.md` and
 `docs/phase_6o_review.md`.
+
+## Phase 6P prospective review-bundle slots
+
+Phase 6P registers stable future slots before Phase 6M bundle IDs exist and binds each slot once to
+exact verified bundle evidence.
+
+```text
+trading-system operations validate-prospective-review-bundle-plan-config --config config/operations.phase6p.v1.yaml
+trading-system operations register-prospective-review-bundle-plan --config config/operations.phase6p.v1.yaml --catalog-config config/operations.phase6n.v1.yaml --input plan.json --database operations.sqlite
+trading-system operations bind-prospective-review-bundle-slot --config config/operations.phase6p.v1.yaml --catalog-config config/operations.phase6n.v1.yaml --input binding.json --database operations.sqlite
+trading-system operations prospective-review-bundle-plan-status --config config/operations.phase6p.v1.yaml --catalog-config config/operations.phase6n.v1.yaml --database operations.sqlite --plan-id ID
+```
+
+Expected times have no inferred tolerance, and completion grants no consensus, readiness,
+promotion, brokerage, or trading authority. See
+`docs/proposals/phase_6p_prospective_review_bundle_slots_v1.md` and `docs/phase_6p_review.md`.

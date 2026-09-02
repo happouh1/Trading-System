@@ -624,3 +624,13 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   corrupt evidence remain distinct canonical outcomes.
 - `PROSPECTIVE_REVIEW_CATALOG_PLAN_LIMITED_CLAIM`: matching proves later catalog adherence only,
   not unbiased selection, completeness, consensus, quality, readiness, or trading authority.
+- `PROSPECTIVE_REVIEW_BUNDLE_SLOT_PRIOR_REGISTRATION`: Phase 6P registration precedes every stable
+  expected slot while content-derived bundle IDs remain unknown.
+- `PROSPECTIVE_REVIEW_BUNDLE_SLOT_EXACT_BINDING`: each slot and bundle may be bound only once per
+  plan to exact independently verified Phase 6M evidence.
+- `PROSPECTIVE_REVIEW_BUNDLE_SLOT_SOURCE_REVALIDATION`: binding applies full Phase 6N source,
+  provenance, root, containment, and local-artifact validation.
+- `PROSPECTIVE_REVIEW_BUNDLE_SLOT_NO_TIMING_INFERENCE`: expected times are descriptive because no
+  tolerance or missed-window policy is defined.
+- `PROSPECTIVE_REVIEW_BUNDLE_SLOT_NO_AUTHORITY`: resolved slots authenticate no reviewer and grant
+  no consensus, readiness, promotion, brokerage, or trading authority.

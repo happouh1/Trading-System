@@ -104,6 +104,12 @@ from trading_system.operations.prospective_chain_review_contracts import (
 from trading_system.operations.prospective_chain_review_registry import (
     ProspectiveChainReviewRegistry,
 )
+from trading_system.operations.prospective_review_bundle_plan_config import (
+    load_prospective_review_bundle_plan_config,
+)
+from trading_system.operations.prospective_review_bundle_plan_registry import (
+    ProspectiveReviewBundlePlanRegistry,
+)
 from trading_system.operations.prospective_review_config import (
     load_prospective_review_plan_config,
 )
@@ -425,6 +431,25 @@ def configure_operations_parser(
     chain_catalog_reconciliation_status.add_argument("--catalog-config", required=True)
     chain_catalog_reconciliation_status.add_argument("--database", required=True)
     chain_catalog_reconciliation_status.add_argument("--reconciliation-id", required=True)
+    validate_review_bundle_plan = actions.add_parser(
+        "validate-prospective-review-bundle-plan-config"
+    )
+    validate_review_bundle_plan.add_argument("--config", required=True)
+    register_review_bundle_plan = actions.add_parser("register-prospective-review-bundle-plan")
+    register_review_bundle_plan.add_argument("--config", required=True)
+    register_review_bundle_plan.add_argument("--catalog-config", required=True)
+    register_review_bundle_plan.add_argument("--input", required=True)
+    register_review_bundle_plan.add_argument("--database", required=True)
+    bind_review_bundle_slot = actions.add_parser("bind-prospective-review-bundle-slot")
+    bind_review_bundle_slot.add_argument("--config", required=True)
+    bind_review_bundle_slot.add_argument("--catalog-config", required=True)
+    bind_review_bundle_slot.add_argument("--input", required=True)
+    bind_review_bundle_slot.add_argument("--database", required=True)
+    review_bundle_plan_status = actions.add_parser("prospective-review-bundle-plan-status")
+    review_bundle_plan_status.add_argument("--config", required=True)
+    review_bundle_plan_status.add_argument("--catalog-config", required=True)
+    review_bundle_plan_status.add_argument("--database", required=True)
+    review_bundle_plan_status.add_argument("--plan-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -1953,6 +1978,82 @@ def _handle_prospective_chain_review_catalog_plan(args: argparse.Namespace) -> i
     return 0
 
 
+def _handle_prospective_review_bundle_plan(args: argparse.Namespace) -> int:
+    config = load_prospective_review_bundle_plan_config(args.config)
+    if args.operations_command == "validate-prospective-review-bundle-plan-config":
+        payload: object = {"config_hash": config.config_hash, "valid": True}
+    else:
+        catalog_config = load_prospective_chain_review_catalog_config(args.catalog_config)
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = ProspectiveReviewBundlePlanRegistry(repository, config, catalog_config)
+            if args.operations_command == "prospective-review-bundle-plan-status":
+                payload = registry.status(args.plan_id)
+            elif args.operations_command == "register-prospective-review-bundle-plan":
+                root = _control_input(
+                    args.input,
+                    {"catalog_name", "registered_at", "slots", "source_revision"},
+                )
+                raw_slots = root["slots"]
+                if not isinstance(raw_slots, list) or not raw_slots:
+                    raise ValueError("prospective review-bundle slots must be nonempty")
+                slots: list[tuple[str, datetime]] = []
+                for raw_slot in raw_slots:
+                    slot = _object(raw_slot, "prospective review-bundle slot")
+                    if set(slot) != {"slot_id", "expected_as_of"}:
+                        raise ValueError("prospective review-bundle slot fields are invalid")
+                    slots.append(
+                        (
+                            _string(slot["slot_id"], "review-bundle slot ID"),
+                            _time(slot["expected_as_of"]),
+                        )
+                    )
+                plan = registry.create_plan(
+                    catalog_name=_string(root["catalog_name"], "catalog name"),
+                    registered_at=_time(root["registered_at"]),
+                    slots=tuple(slots),
+                    source_revision=_string(root["source_revision"], "source revision"),
+                )
+                payload = {"plan": plan, "inserted": registry.insert_plan(plan)}
+            else:
+                root = _control_input(
+                    args.input,
+                    {
+                        "plan_id",
+                        "slot_id",
+                        "bundle_id",
+                        "verification_id",
+                        "bound_at",
+                        "source_revision",
+                    },
+                )
+                binding = registry.bind(
+                    plan_id=_string(root["plan_id"], "review-bundle plan ID"),
+                    slot_id=_string(root["slot_id"], "review-bundle slot ID"),
+                    bundle_id=_string(root["bundle_id"], "review bundle ID"),
+                    verification_id=_string(root["verification_id"], "verification ID"),
+                    bound_at=_time(root["bound_at"]),
+                    source_revision=_string(root["source_revision"], "source revision"),
+                )
+                payload = {"binding": binding, "inserted": registry.insert_binding(binding)}
+    print(
+        canonical_json(
+            {
+                "evidence": payload,
+                "timing_compliance_claim": False,
+                "selection_unbiased_claim": False,
+                "consensus_calculated": False,
+                "production_readiness_claim": False,
+                "automatic_promotion_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
+    return 0
+
+
 def _handle_prospective_chain_review_bundle(args: argparse.Namespace) -> int:
     config = load_prospective_chain_review_bundle_config(args.config)
     if args.operations_command == "validate-prospective-chain-review-bundle-config":
@@ -2152,6 +2253,13 @@ def _handle_prospective_chain_export(args: argparse.Namespace) -> int:
 
 
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-prospective-review-bundle-plan-config",
+        "register-prospective-review-bundle-plan",
+        "bind-prospective-review-bundle-slot",
+        "prospective-review-bundle-plan-status",
+    }:
+        return _handle_prospective_review_bundle_plan(args)
     if args.operations_command in {
         "validate-prospective-chain-review-catalog-plan-config",
         "register-prospective-chain-review-catalog-plan",

@@ -1,0 +1,36 @@
+{
+  "prospective_review_bundle_plan_version": "6P.1.0",
+  "authority": {
+    "offline_only": true,
+    "evidence_only": true,
+    "selection_unbiased_claim_enabled": false,
+    "reviewer_authentication_enabled": false,
+    "consensus_enabled": false,
+    "automatic_promotion_enabled": false,
+    "production_readiness_claim_enabled": false,
+    "network_enabled": false,
+    "credentials_enabled": false,
+    "external_notifications_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  },
+  "validation": {
+    "registration_before_all_slots_required": true,
+    "unique_slot_ids_required": true,
+    "unique_expected_times_required": true,
+    "canonical_slot_order_required": true,
+    "single_binding_per_slot_required": true,
+    "single_bundle_per_plan_required": true,
+    "verified_phase6m_bundle_required": true,
+    "bundle_verification_after_registration_required": true,
+    "full_phase6n_source_validation_required": true,
+    "append_only": true
+  },
+  "thresholds": {
+    "minimum_slot_count_defined": false,
+    "minimum_lead_time_defined": false,
+    "timing_tolerance_defined": false,
+    "completion_threshold_defined": false,
+    "production_threshold_defined": false
+  }
+}

@@ -718,3 +718,10 @@ or corrupt evidence remains explicit.
 Because bundle identities can encode already-observed review history, local preregistration freezes
 only the later catalog definition. It does not prove unbiased initial selection, trusted time,
 complete coverage, reviewer independence, consensus, or readiness.
+
+## Phase 6P prospective review-bundle slots
+
+Stable slots and expected times are registered before content-derived review-bundle IDs exist.
+Bindings are single-slot and single-bundle scoped, causal, append-only, and revalidate exact Phase
+6M evidence through Phase 6N controls. Pending slots remain explicit. Expected times are not judged
+because no tolerance policy exists, and completion has no readiness meaning.

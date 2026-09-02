@@ -226,6 +226,19 @@ from trading_system.operations.prospective_chain_review_contracts import (
 from trading_system.operations.prospective_chain_review_registry import (
     ProspectiveChainReviewRegistry,
 )
+from trading_system.operations.prospective_review_bundle_plan_config import (
+    ProspectiveReviewBundlePlanConfig,
+    ProspectiveReviewBundlePlanConfigError,
+    load_prospective_review_bundle_plan_config,
+)
+from trading_system.operations.prospective_review_bundle_plan_contracts import (
+    ProspectiveReviewBundleBinding,
+    ProspectiveReviewBundlePlan,
+    ProspectiveReviewBundleSlot,
+)
+from trading_system.operations.prospective_review_bundle_plan_registry import (
+    ProspectiveReviewBundlePlanRegistry,
+)
 from trading_system.operations.prospective_review_config import (
     ProspectiveReviewPlanConfig,
     ProspectiveReviewPlanConfigError,
@@ -397,6 +410,12 @@ __all__ = [
     "ProspectiveChainReviewVerdict",
     "ProspectiveChainVerificationStatus",
     "ProspectiveReviewBinding",
+    "ProspectiveReviewBundleBinding",
+    "ProspectiveReviewBundlePlan",
+    "ProspectiveReviewBundlePlanConfig",
+    "ProspectiveReviewBundlePlanConfigError",
+    "ProspectiveReviewBundlePlanRegistry",
+    "ProspectiveReviewBundleSlot",
     "ProspectiveReviewBundleVerificationStatus",
     "ProspectiveReviewPlan",
     "ProspectiveReviewPlanConfig",
@@ -450,6 +469,7 @@ __all__ = [
     "load_prospective_chain_review_catalog_config",
     "load_prospective_chain_review_catalog_plan_config",
     "load_prospective_chain_review_config",
+    "load_prospective_review_bundle_plan_config",
     "load_prospective_review_plan_config",
     "load_review_catalog_plan_config",
 ]

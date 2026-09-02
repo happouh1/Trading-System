@@ -706,3 +706,12 @@ comparable without relying on caller-selected names?
 prevent repeated favorable presentation while preserving corrections?
 248. Which independent governance process may assess denominator completeness and selection bias
 without gaining consensus, promotion, brokerage, or trading authority?
+
+249. What early/late tolerance and explicit missed-slot status should interpret Phase 6P expected
+times without allowing retrospective exceptions?
+250. What authenticated slot taxonomy proves intended campaign, review population, and evidence
+type without exposing future content identities?
+251. May an erroneous Phase 6P slot or binding be superseded, and what independently authorized
+append-only lineage must preserve the original?
+252. How should a complete Phase 6P plan materialize Phase 6O and Phase 6N evidence without a new
+caller-controlled membership transformation?
