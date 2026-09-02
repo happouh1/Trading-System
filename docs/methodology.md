@@ -757,3 +757,16 @@ to the immutable manifest. Verification never consults revised source rows and n
 Export cannot predate the Phase 6N catalog time. Local timestamps are not trusted timestamps, and
 the unsigned hash chain provides integrity rather than identity, nonrepudiation, consensus,
 readiness, or trading authority.
+
+## Phase 6S unresolved artifact trust
+
+Phase 6S causally binds one exact successfully verified Phase 6R artifact to an immutable local
+request. Before construction it revalidates the Phase 6R verification status, empty failure
+reasons, nonpromotion state, expected and actual artifact hashes, code version, manifest payload
+hash, and verification payload hash. The request time must be no earlier than policy registration
+or artifact verification.
+
+The policy and request deliberately remain `BLOCKED_UNCONFIGURED`. Six policy choices remain
+unresolved: signature algorithm, key custody, signer identity, trusted timestamp provider,
+revocation policy, and receiving verifier. Consequently Phase 6S never handles key material,
+creates signatures, contacts a provider, or changes any readiness or trading state.

@@ -715,3 +715,23 @@ The envelope is unsigned, unencrypted, local evidence. Hash verification does no
 signer or timestamp and grants no consensus, readiness, promotion, brokerage, or trading authority.
 See `docs/proposals/phase_6r_portable_review_bundle_materialization_chains_v1.md` and
 `docs/phase_6r_review.md`.
+
+## Phase 6S unresolved artifact-trust foundation
+
+Phase 6S records a strict offline trust policy whose algorithm, key custody, signer identity,
+trusted timestamp, revocation policy, and receiving verifier all remain unresolved. It can bind
+one exact verified Phase 6R export to a deterministic request, but that request remains
+`BLOCKED_UNCONFIGURED`, unsigned, and not trusted-timestamped.
+
+```text
+trading-system operations validate-artifact-trust-config --config config/operations.phase6s.v1.yaml
+trading-system operations register-artifact-trust-policy --config config/operations.phase6s.v1.yaml --export-config config/operations.phase6r.v1.yaml --input policy.json --database operations.sqlite
+trading-system operations artifact-trust-policy-status --config config/operations.phase6s.v1.yaml --export-config config/operations.phase6r.v1.yaml --database operations.sqlite --policy-id ID
+trading-system operations request-artifact-signing --config config/operations.phase6s.v1.yaml --export-config config/operations.phase6r.v1.yaml --input request.json --database operations.sqlite
+trading-system operations artifact-signing-request-status --config config/operations.phase6s.v1.yaml --export-config config/operations.phase6r.v1.yaml --database operations.sqlite --request-id ID
+```
+
+No command accepts keys or credentials or performs cryptography, network access, promotion,
+broker writes, or live trading. See
+`docs/proposals/phase_6s_unresolved_artifact_trust_foundation_v1.md` and
+`docs/phase_6s_review.md`.

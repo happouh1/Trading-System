@@ -644,3 +644,16 @@ The envelope contains named canonical source payloads and hashes for the Phase 6
 bindings; Phase 6O plan and sources; Phase 6N catalog and entries; and Phase 6Q materialization.
 Migration `045_phase_6r_review_bundle_chain_exports.sql` adds append-only manifest and verification
 tables.
+
+## Phase 6S artifact-trust foundation
+
+`operations_artifact_trust_policies` stores one canonical unresolved policy: deterministic
+`policy_id`, timezone-aware `registered_at`, `BLOCKED_UNCONFIGURED` status, source revision, code
+version, configuration hash, canonical payload, and payload hash. The payload contains the six
+`UNRESOLVED` policy choices, canonical blockers, and safety disclosures.
+
+`operations_artifact_signing_requests` stores one append-only blocked request for an exact policy,
+Phase 6R export, and Phase 6R verification tuple. It retains `requested_at`, artifact hash, chain
+root, both upstream payload hashes, canonical blockers, false `signed` and
+`trusted_timestamped` flags, source revision, code version, configuration hash, canonical payload,
+and payload hash. The tuple is unique and all referenced rows are foreign-key constrained.

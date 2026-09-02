@@ -660,3 +660,16 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   embedded source hashes and chain root, and checks exact manifest identity and counts.
 - `REVIEW_BUNDLE_CHAIN_EXPORT_NO_AUTHORITY`: local unsigned verification authenticates no signer
   or timestamp and grants no consensus, readiness, promotion, brokerage, or trading authority.
+
+## Phase 6S artifact-trust rules
+
+- `ARTIFACT_TRUST_POLICY_UNRESOLVED`: all six cryptographic and verification policy choices must
+  remain `UNRESOLVED`; any enabled authority or invented threshold rejects configuration.
+- `ARTIFACT_SIGNING_EXACT_PHASE6R_SOURCE`: a request requires one canonical, successful,
+  nonpromoted Phase 6R verification whose expected and actual hashes equal the source artifact.
+- `ARTIFACT_SIGNING_CAUSAL_TIME`: request time may not predate policy registration or source
+  verification.
+- `ARTIFACT_SIGNING_SINGLE_REQUEST`: one policy/export/verification tuple has at most one
+  append-only request.
+- `ARTIFACT_SIGNING_BLOCKED_UNSIGNED`: every request is `BLOCKED_UNCONFIGURED`, unsigned, and not
+  trusted-timestamped and grants no operational, promotion, brokerage, or trading authority.

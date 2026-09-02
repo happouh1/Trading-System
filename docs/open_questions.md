@@ -733,3 +733,18 @@ are outages, delayed receipts, duplicate submissions, and receipt verification r
 before a Phase 6R artifact may leave its local evidence registry?
 260. Which separately versioned receiving verifier may validate signatures and trusted timestamps,
 and what immutable compatibility and failure semantics apply across software versions?
+
+261. Which exact signature algorithm, parameter set, canonical byte representation, public-key
+format, and algorithm-agility policy should sign a Phase 6R artifact?
+262. Where are private keys generated and held, which hardware or offline custody boundary is
+required, and what backup, recovery, access-control, and audit rules apply?
+263. How is signer identity authenticated and certified, and which rotation, expiry, compromise,
+revocation, and historical-verification rules preserve old evidence?
+264. Which trusted timestamp or transparency provider, protocol, trust anchors, receipt format,
+outage behavior, retry policy, and independent verification process are acceptable?
+265. Which receiving verifier and compatibility contract will validate artifact bytes, signature,
+certificate chain, revocation evidence, and trusted timestamp without gaining promotion or trading
+authority?
+266. After questions 261–265 are governed, should a separate Phase 6T implement real signing, and
+what fixtures, cross-implementation vectors, threat model, secret-handling review, and rollback
+criteria must pass first?

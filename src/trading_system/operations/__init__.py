@@ -1,5 +1,17 @@
 """Phase 5 offline inspection, schedule planning, and internal monitoring."""
 
+from trading_system.operations.artifact_trust_config import (
+    ArtifactTrustConfig,
+    ArtifactTrustConfigError,
+    load_artifact_trust_config,
+)
+from trading_system.operations.artifact_trust_contracts import (
+    ArtifactSigningRequest,
+    ArtifactSigningRequestStatus,
+    ArtifactTrustPolicy,
+    ArtifactTrustPolicyStatus,
+)
+from trading_system.operations.artifact_trust_registry import ArtifactTrustRegistry
 from trading_system.operations.audit_config import (
     ObservationAuditConfig,
     ObservationAuditConfigError,
@@ -322,6 +334,13 @@ __all__ = [
     "AlertSeverity",
     "ApprovalAction",
     "ApprovalEvent",
+    "ArtifactSigningRequest",
+    "ArtifactSigningRequestStatus",
+    "ArtifactTrustConfig",
+    "ArtifactTrustConfigError",
+    "ArtifactTrustPolicy",
+    "ArtifactTrustPolicyStatus",
+    "ArtifactTrustRegistry",
     "AttemptStatus",
     "AuditArtifact",
     "AuditExportManifest",
@@ -488,6 +507,7 @@ __all__ = [
     "WorkerAction",
     "WorkerInvocation",
     "inspect_component",
+    "load_artifact_trust_config",
     "load_observation_audit_config",
     "load_observation_audit_export_config",
     "load_observation_audit_review_catalog_config",

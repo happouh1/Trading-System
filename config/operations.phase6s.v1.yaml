@@ -1,0 +1,7 @@
+{
+  "artifact_trust_foundation_version": "6S.1.0",
+  "authority": {"offline_only": true, "evidence_only": true, "signing_enabled": false, "key_generation_enabled": false, "key_loading_enabled": false, "trusted_timestamp_enabled": false, "external_transport_enabled": false, "reviewer_authentication_enabled": false, "consensus_enabled": false, "automatic_promotion_enabled": false, "production_readiness_claim_enabled": false, "network_enabled": false, "credentials_enabled": false, "broker_writes_enabled": false, "live_trading_enabled": false},
+  "policy": {"signature_algorithm": "UNRESOLVED", "key_custody": "UNRESOLVED", "signer_identity": "UNRESOLVED", "trusted_timestamp_provider": "UNRESOLVED", "revocation_policy": "UNRESOLVED", "receiving_verifier": "UNRESOLVED"},
+  "validation": {"exact_verified_phase6r_export_required": true, "canonical_source_hashes_required": true, "causal_request_time_required": true, "explicit_blockers_required": true, "unsigned_state_required": true, "single_request_per_policy_export_verification_required": true, "append_only": true},
+  "thresholds": {"minimum_signer_count_defined": false, "signature_quorum_defined": false, "timestamp_age_threshold_defined": false, "production_threshold_defined": false}
+}

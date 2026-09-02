@@ -8,6 +8,8 @@ from datetime import datetime
 from pathlib import Path
 
 from trading_system import PACKAGE_VERSION
+from trading_system.operations.artifact_trust_config import load_artifact_trust_config
+from trading_system.operations.artifact_trust_registry import ArtifactTrustRegistry
 from trading_system.operations.audit_config import load_observation_audit_config
 from trading_system.operations.audit_export import ObservationAuditExportService
 from trading_system.operations.audit_export_config import load_observation_audit_export_config
@@ -497,6 +499,28 @@ def configure_operations_parser(
     bundle_chain_export_status.add_argument("--config", required=True)
     bundle_chain_export_status.add_argument("--database", required=True)
     bundle_chain_export_status.add_argument("--export-id", required=True)
+    validate_artifact_trust = actions.add_parser("validate-artifact-trust-config")
+    validate_artifact_trust.add_argument("--config", required=True)
+    register_artifact_trust = actions.add_parser("register-artifact-trust-policy")
+    register_artifact_trust.add_argument("--config", required=True)
+    register_artifact_trust.add_argument("--export-config", required=True)
+    register_artifact_trust.add_argument("--input", required=True)
+    register_artifact_trust.add_argument("--database", required=True)
+    artifact_trust_status = actions.add_parser("artifact-trust-policy-status")
+    artifact_trust_status.add_argument("--config", required=True)
+    artifact_trust_status.add_argument("--export-config", required=True)
+    artifact_trust_status.add_argument("--database", required=True)
+    artifact_trust_status.add_argument("--policy-id", required=True)
+    request_artifact_signing = actions.add_parser("request-artifact-signing")
+    request_artifact_signing.add_argument("--config", required=True)
+    request_artifact_signing.add_argument("--export-config", required=True)
+    request_artifact_signing.add_argument("--input", required=True)
+    request_artifact_signing.add_argument("--database", required=True)
+    artifact_signing_status = actions.add_parser("artifact-signing-request-status")
+    artifact_signing_status.add_argument("--config", required=True)
+    artifact_signing_status.add_argument("--export-config", required=True)
+    artifact_signing_status.add_argument("--database", required=True)
+    artifact_signing_status.add_argument("--request-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -2217,6 +2241,76 @@ def _handle_prospective_review_bundle_chain_export(args: argparse.Namespace) -> 
     return 0
 
 
+def _handle_artifact_trust(args: argparse.Namespace) -> int:
+    config = load_artifact_trust_config(args.config)
+    if args.operations_command == "validate-artifact-trust-config":
+        payload: object = {"config_hash": config.config_hash, "valid": True}
+    else:
+        export_config = load_prospective_review_bundle_chain_export_config(args.export_config)
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = ArtifactTrustRegistry(repository, config, export_config)
+            if args.operations_command == "artifact-trust-policy-status":
+                payload = registry.policy(args.policy_id)
+            elif args.operations_command == "artifact-signing-request-status":
+                payload = registry.request(args.request_id)
+            else:
+                expected = (
+                    {"registered_at", "source_revision"}
+                    if args.operations_command == "register-artifact-trust-policy"
+                    else {
+                        "policy_id",
+                        "export_id",
+                        "export_verification_id",
+                        "requested_at",
+                        "source_revision",
+                    }
+                )
+                root = _control_input(args.input, expected)
+                if args.operations_command == "register-artifact-trust-policy":
+                    policy = registry.create_policy(
+                        registered_at=_time(root["registered_at"]),
+                        source_revision=_string(root["source_revision"], "source revision"),
+                    )
+                    payload = {
+                        "policy": policy,
+                        "inserted": registry.insert_policy(policy),
+                    }
+                else:
+                    request = registry.request_signing(
+                        policy_id=_string(root["policy_id"], "policy ID"),
+                        export_id=_string(root["export_id"], "export ID"),
+                        export_verification_id=_string(
+                            root["export_verification_id"], "export verification ID"
+                        ),
+                        requested_at=_time(root["requested_at"]),
+                        source_revision=_string(root["source_revision"], "source revision"),
+                    )
+                    payload = {
+                        "request": request,
+                        "inserted": registry.insert_request(request),
+                    }
+    print(
+        canonical_json(
+            {
+                "evidence": payload,
+                "signed": False,
+                "trusted_timestamped": False,
+                "key_material_used": False,
+                "credentials_used": False,
+                "external_transport_used": False,
+                "consensus_calculated": False,
+                "production_readiness_claim": False,
+                "automatic_promotion_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
+    return 0
+
+
 def _handle_prospective_chain_review_bundle(args: argparse.Namespace) -> int:
     config = load_prospective_chain_review_bundle_config(args.config)
     if args.operations_command == "validate-prospective-chain-review-bundle-config":
@@ -2416,6 +2510,14 @@ def _handle_prospective_chain_export(args: argparse.Namespace) -> int:
 
 
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-artifact-trust-config",
+        "register-artifact-trust-policy",
+        "artifact-trust-policy-status",
+        "request-artifact-signing",
+        "artifact-signing-request-status",
+    }:
+        return _handle_artifact_trust(args)
     if args.operations_command in {
         "validate-prospective-review-bundle-chain-export-config",
         "prospective-review-bundle-chain-export",
