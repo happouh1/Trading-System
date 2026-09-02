@@ -706,3 +706,15 @@ cited verification.
 The ordered entry identity and hash tuples form a deterministic catalog root. Counts sum the
 retained review observations only. They do not establish a denominator, consensus, quality, or
 readiness because membership is caller-declared and reviewer identities are unauthenticated.
+
+## Phase 6O preregistered prospective-review catalog plans
+
+Phase 6O records an exact catalog name and exact Phase 6M bundle-verification membership before
+Phase 6N catalog creation. Canonical source order forms a deterministic root and append-only plan.
+Reconciliation invokes Phase 6N status revalidation, requires the catalog to be strictly later than
+registration, and compares name and membership exactly. Missing, changed, added, omitted, early,
+or corrupt evidence remains explicit.
+
+Because bundle identities can encode already-observed review history, local preregistration freezes
+only the later catalog definition. It does not prove unbiased initial selection, trusted time,
+complete coverage, reviewer independence, consensus, or readiness.

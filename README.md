@@ -647,3 +647,21 @@ Membership remains caller-selected and counts remain descriptive. The catalog co
 or consensus and grants no promotion, production, brokerage, or trading authority. See
 `docs/proposals/phase_6n_verified_prospective_review_catalogs_v1.md` and
 `docs/phase_6n_review.md`.
+
+## Phase 6O preregistered prospective-review catalog plans
+
+Phase 6O freezes an exact intended Phase 6N catalog name and exact bundle-verification pairs before
+the catalog is created, then records exact adherence, deviation, absence, or corrupt evidence.
+
+```text
+trading-system operations validate-prospective-chain-review-catalog-plan-config --config config/operations.phase6o.v1.yaml
+trading-system operations register-prospective-chain-review-catalog-plan --config config/operations.phase6o.v1.yaml --catalog-config config/operations.phase6n.v1.yaml --input plan.json --database operations.sqlite
+trading-system operations prospective-chain-review-catalog-plan-status --config config/operations.phase6o.v1.yaml --catalog-config config/operations.phase6n.v1.yaml --database operations.sqlite --plan-id ID
+trading-system operations reconcile-prospective-chain-review-catalog-plan --config config/operations.phase6o.v1.yaml --catalog-config config/operations.phase6n.v1.yaml --input reconcile.json --database operations.sqlite
+trading-system operations prospective-chain-review-catalog-reconciliation-status --config config/operations.phase6o.v1.yaml --catalog-config config/operations.phase6n.v1.yaml --database operations.sqlite --reconciliation-id ID
+```
+
+`MATCHED` means only that the later catalog adhered to the local plan. Content-derived bundle IDs
+may encode already-known outcomes, so the plan proves neither unbiased selection nor a complete
+denominator. See `docs/proposals/phase_6o_preregistered_prospective_review_catalog_plans_v1.md` and
+`docs/phase_6o_review.md`.

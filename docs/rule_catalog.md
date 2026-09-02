@@ -612,3 +612,15 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   idempotency, conflict rejection, and restart validation preserve catalog evidence.
 - `PROSPECTIVE_REVIEW_CATALOG_NO_AUTHORITY`: membership and counts are descriptive, with no
   reviewer authentication, consensus, ranking, readiness, promotion, brokerage, or trading power.
+- `PROSPECTIVE_REVIEW_CATALOG_PLAN_EXACT_MEMBERSHIP`: Phase 6O freezes one exact future catalog
+  name and canonical unique bundle-verification membership.
+- `PROSPECTIVE_REVIEW_CATALOG_PLAN_APPEND_ONLY`: deterministic plan and reconciliation identities,
+  canonical payloads, idempotency, and conflict rejection retain immutable evidence.
+- `PROSPECTIVE_REVIEW_CATALOG_PLAN_CAUSAL`: a compared Phase 6N catalog must be strictly later than
+  registration and reconciliation cannot predate the catalog.
+- `PROSPECTIVE_REVIEW_CATALOG_PLAN_REVALIDATE`: reconciliation delegates to full Phase 6N restart,
+  source-link, provenance, root, child-entry, and local-artifact validation.
+- `PROSPECTIVE_REVIEW_CATALOG_PLAN_EXPLICIT_RESULT`: exact match, deviation, missing evidence, and
+  corrupt evidence remain distinct canonical outcomes.
+- `PROSPECTIVE_REVIEW_CATALOG_PLAN_LIMITED_CLAIM`: matching proves later catalog adherence only,
+  not unbiased selection, completeness, consensus, quality, readiness, or trading authority.

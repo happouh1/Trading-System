@@ -86,6 +86,12 @@ from trading_system.operations.prospective_chain_review_bundle_registry import (
 from trading_system.operations.prospective_chain_review_catalog_config import (
     load_prospective_chain_review_catalog_config,
 )
+from trading_system.operations.prospective_chain_review_catalog_plan_config import (
+    load_prospective_chain_review_catalog_plan_config,
+)
+from trading_system.operations.prospective_chain_review_catalog_plan_registry import (
+    ProspectiveChainReviewCatalogPlanRegistry,
+)
 from trading_system.operations.prospective_chain_review_catalog_registry import (
     ProspectiveChainReviewCatalogRegistry,
 )
@@ -387,6 +393,38 @@ def configure_operations_parser(
     chain_catalog_status.add_argument("--config", required=True)
     chain_catalog_status.add_argument("--database", required=True)
     chain_catalog_status.add_argument("--catalog-id", required=True)
+    validate_chain_catalog_plan = actions.add_parser(
+        "validate-prospective-chain-review-catalog-plan-config"
+    )
+    validate_chain_catalog_plan.add_argument("--config", required=True)
+    register_chain_catalog_plan = actions.add_parser(
+        "register-prospective-chain-review-catalog-plan"
+    )
+    register_chain_catalog_plan.add_argument("--config", required=True)
+    register_chain_catalog_plan.add_argument("--catalog-config", required=True)
+    register_chain_catalog_plan.add_argument("--input", required=True)
+    register_chain_catalog_plan.add_argument("--database", required=True)
+    chain_catalog_plan_status = actions.add_parser(
+        "prospective-chain-review-catalog-plan-status"
+    )
+    chain_catalog_plan_status.add_argument("--config", required=True)
+    chain_catalog_plan_status.add_argument("--catalog-config", required=True)
+    chain_catalog_plan_status.add_argument("--database", required=True)
+    chain_catalog_plan_status.add_argument("--plan-id", required=True)
+    reconcile_chain_catalog_plan = actions.add_parser(
+        "reconcile-prospective-chain-review-catalog-plan"
+    )
+    reconcile_chain_catalog_plan.add_argument("--config", required=True)
+    reconcile_chain_catalog_plan.add_argument("--catalog-config", required=True)
+    reconcile_chain_catalog_plan.add_argument("--input", required=True)
+    reconcile_chain_catalog_plan.add_argument("--database", required=True)
+    chain_catalog_reconciliation_status = actions.add_parser(
+        "prospective-chain-review-catalog-reconciliation-status"
+    )
+    chain_catalog_reconciliation_status.add_argument("--config", required=True)
+    chain_catalog_reconciliation_status.add_argument("--catalog-config", required=True)
+    chain_catalog_reconciliation_status.add_argument("--database", required=True)
+    chain_catalog_reconciliation_status.add_argument("--reconciliation-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -1835,6 +1873,86 @@ def _handle_prospective_chain_review_catalog(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_prospective_chain_review_catalog_plan(args: argparse.Namespace) -> int:
+    config = load_prospective_chain_review_catalog_plan_config(args.config)
+    if args.operations_command == "validate-prospective-chain-review-catalog-plan-config":
+        payload: object = {"config_hash": config.config_hash, "valid": True}
+    else:
+        catalog_config = load_prospective_chain_review_catalog_config(args.catalog_config)
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = ProspectiveChainReviewCatalogPlanRegistry(
+                repository, config, catalog_config
+            )
+            if args.operations_command == "prospective-chain-review-catalog-plan-status":
+                payload = registry.plan(args.plan_id)
+            elif (
+                args.operations_command
+                == "prospective-chain-review-catalog-reconciliation-status"
+            ):
+                payload = registry.reconciliation(args.reconciliation_id)
+            elif args.operations_command == "register-prospective-chain-review-catalog-plan":
+                root = _control_input(
+                    args.input,
+                    {"catalog_name", "registered_at", "sources", "source_revision"},
+                )
+                raw_sources = root["sources"]
+                if not isinstance(raw_sources, list) or not raw_sources:
+                    raise ValueError("prospective review catalog plan sources must be nonempty")
+                sources: list[tuple[str, str]] = []
+                for raw_source in raw_sources:
+                    source = _object(raw_source, "prospective review catalog plan source")
+                    if set(source) != {"bundle_id", "verification_id"}:
+                        raise ValueError(
+                            "prospective review catalog plan source fields are invalid"
+                        )
+                    sources.append(
+                        (
+                            _string(source["bundle_id"], "prospective review bundle ID"),
+                            _string(source["verification_id"], "bundle verification ID"),
+                        )
+                    )
+                plan = registry.create_plan(
+                    catalog_name=_string(root["catalog_name"], "catalog name"),
+                    registered_at=_time(root["registered_at"]),
+                    sources=tuple(sources),
+                    source_revision=_string(root["source_revision"], "source revision"),
+                )
+                payload = {"plan": plan, "inserted": registry.insert_plan(plan)}
+            else:
+                root = _control_input(
+                    args.input,
+                    {"plan_id", "catalog_id", "reconciled_at", "source_revision"},
+                )
+                result = registry.reconcile(
+                    plan_id=_string(root["plan_id"], "catalog plan ID"),
+                    catalog_id=_string(root["catalog_id"], "catalog ID"),
+                    reconciled_at=_time(root["reconciled_at"]),
+                    source_revision=_string(root["source_revision"], "source revision"),
+                )
+                payload = {
+                    "reconciliation": result,
+                    "inserted": registry.insert_reconciliation(result),
+                }
+    print(
+        canonical_json(
+            {
+                "evidence": payload,
+                "selection_unbiased_claim": False,
+                "reviewers_authenticated": False,
+                "consensus_calculated": False,
+                "ranking_calculated": False,
+                "production_readiness_claim": False,
+                "automatic_promotion_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
+    return 0
+
+
 def _handle_prospective_chain_review_bundle(args: argparse.Namespace) -> int:
     config = load_prospective_chain_review_bundle_config(args.config)
     if args.operations_command == "validate-prospective-chain-review-bundle-config":
@@ -2034,6 +2152,14 @@ def _handle_prospective_chain_export(args: argparse.Namespace) -> int:
 
 
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-prospective-chain-review-catalog-plan-config",
+        "register-prospective-chain-review-catalog-plan",
+        "prospective-chain-review-catalog-plan-status",
+        "reconcile-prospective-chain-review-catalog-plan",
+        "prospective-chain-review-catalog-reconciliation-status",
+    }:
+        return _handle_prospective_chain_review_catalog_plan(args)
     if args.operations_command in {
         "validate-prospective-chain-review-catalog-config",
         "prospective-chain-review-catalog",

@@ -693,3 +693,16 @@ modifying Phase 6N evidence or inheriting brokerage and trading authority?
 encryption, transport, recipient, redaction, retention, and receiving-verifier controls apply?
 242. What additional prospective performance, reliability, security, capital, rollback, and human
 approval evidence is mandatory before any production-readiness or trading decision?
+
+243. How should stable Phase 6M review-bundle slots be defined before content-derived bundle IDs
+exist, without allowing favorable evidence substitution during later binding?
+244. What expected creation window, early/late tolerance, missed-slot state, and immutable
+supersession policy should govern future review-bundle slots?
+245. Which trusted timestamp, authenticated signer, independent witness, and transparency record
+could prove Phase 6O registration was not locally backdated?
+246. What campaign, population, reviewer-role, and evidence-type taxonomy makes planned catalogs
+comparable without relying on caller-selected names?
+247. May one plan reconcile to multiple catalog versions, and what deduplication and lineage rules
+prevent repeated favorable presentation while preserving corrections?
+248. Which independent governance process may assess denominator completeness and selection bias
+without gaining consensus, promotion, brokerage, or trading authority?

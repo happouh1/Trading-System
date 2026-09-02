@@ -598,3 +598,15 @@ summary-eligible review counts; and verification time.
 bundle and aggregate review counts, provenance, package version, disclosures, and configuration
 hash. Migration `041_phase_6n_prospective_chain_review_catalogs.sql` adds append-only parent and
 child-entry tables.
+
+## Phase 6O prospective-review catalog plans
+
+`ProspectiveChainReviewCatalogPlanSource` records one intended Phase 6M bundle and exact
+verification ID. `ProspectiveChainReviewCatalogPlan` records the intended Phase 6N catalog name,
+registration time, canonical sources and root, provenance, version, disclosures, and config hash.
+
+`ProspectiveChainReviewCatalogPlanReconciliation` records plan and requested catalog IDs,
+reconciliation time, `MATCHED`/`DEVIATION`/`MISSING`/`CORRUPT` status, canonical reasons, exact plan
+and optional catalog payload hashes, expected and actual counts, provenance, and disclosures.
+Migration `042_phase_6o_prospective_review_catalog_plans.sql` adds append-only plan, child-source,
+and reconciliation tables.
