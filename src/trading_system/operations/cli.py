@@ -74,6 +74,15 @@ from trading_system.operations.prospective_chain_export_config import (
 from trading_system.operations.prospective_chain_export_registry import (
     ProspectiveChainExportRegistry,
 )
+from trading_system.operations.prospective_chain_review_bundle import (
+    ProspectiveChainReviewBundleService,
+)
+from trading_system.operations.prospective_chain_review_bundle_config import (
+    load_prospective_chain_review_bundle_config,
+)
+from trading_system.operations.prospective_chain_review_bundle_registry import (
+    ProspectiveChainReviewBundleRegistry,
+)
 from trading_system.operations.prospective_chain_review_config import (
     load_prospective_chain_review_config,
 )
@@ -344,6 +353,22 @@ def configure_operations_parser(
     chain_review_status.add_argument("--config", required=True)
     chain_review_status.add_argument("--database", required=True)
     chain_review_status.add_argument("--export-id", required=True)
+    validate_chain_bundle = actions.add_parser(
+        "validate-prospective-chain-review-bundle-config"
+    )
+    validate_chain_bundle.add_argument("--config", required=True)
+    for command in (
+        "prospective-chain-review-bundle",
+        "verify-prospective-chain-review-bundle",
+    ):
+        parser = actions.add_parser(command)
+        parser.add_argument("--config", required=True)
+        parser.add_argument("--input", required=True)
+        parser.add_argument("--database", required=True)
+    chain_bundle_status = actions.add_parser("prospective-chain-review-bundle-status")
+    chain_bundle_status.add_argument("--config", required=True)
+    chain_bundle_status.add_argument("--database", required=True)
+    chain_bundle_status.add_argument("--bundle-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -1736,6 +1761,67 @@ def _handle_prospective_catalog_materialization(args: argparse.Namespace) -> int
     return 0
 
 
+def _handle_prospective_chain_review_bundle(args: argparse.Namespace) -> int:
+    config = load_prospective_chain_review_bundle_config(args.config)
+    if args.operations_command == "validate-prospective-chain-review-bundle-config":
+        payload: object = {"config_hash": config.config_hash, "valid": True}
+    elif args.operations_command == "prospective-chain-review-bundle-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            manifest, latest, count = ProspectiveChainReviewBundleRegistry(
+                repository, config
+            ).status(args.bundle_id)
+        payload = {
+            "manifest": manifest,
+            "latest_verification_status": latest,
+            "verification_count": count,
+        }
+    else:
+        expected = (
+            {"export_id", "source_verification_id", "bundled_at", "source_revision"}
+            if args.operations_command == "prospective-chain-review-bundle"
+            else {"bundle_id", "verified_at", "source_revision"}
+        )
+        root = _control_input(args.input, expected)
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = ProspectiveChainReviewBundleRegistry(repository, config)
+            service = ProspectiveChainReviewBundleService(config, registry)
+            if args.operations_command == "prospective-chain-review-bundle":
+                payload = service.export(
+                    export_id=_string(root["export_id"], "prospective chain export ID"),
+                    source_verification_id=_string(
+                        root["source_verification_id"], "source verification ID"
+                    ),
+                    bundled_at=_time(root["bundled_at"]),
+                    source_revision=_string(root["source_revision"], "source revision"),
+                )
+            else:
+                payload = service.verify(
+                    bundle_id=_string(root["bundle_id"], "prospective review bundle ID"),
+                    verified_at=_time(root["verified_at"]),
+                    source_revision=_string(root["source_revision"], "source revision"),
+                )
+    print(
+        canonical_json(
+            {
+                "evidence": payload,
+                "signed": False,
+                "encrypted": False,
+                "external_transport_used": False,
+                "reviewers_authenticated": False,
+                "consensus_calculated": False,
+                "production_readiness_claim": False,
+                "automatic_promotion_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
+    return 0
+
+
 def _handle_prospective_chain_review(args: argparse.Namespace) -> int:
     config = load_prospective_chain_review_config(args.config)
     if args.operations_command == "validate-prospective-chain-review-config":
@@ -1874,6 +1960,13 @@ def _handle_prospective_chain_export(args: argparse.Namespace) -> int:
 
 
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-prospective-chain-review-bundle-config",
+        "prospective-chain-review-bundle",
+        "verify-prospective-chain-review-bundle",
+        "prospective-chain-review-bundle-status",
+    }:
+        return _handle_prospective_chain_review_bundle(args)
     if args.operations_command in {
         "validate-prospective-chain-review-config",
         "prospective-chain-review",

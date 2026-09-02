@@ -613,3 +613,20 @@ Reviewer IDs are asserted rather than authenticated. Active verdict counts are d
 they are not consensus, quality, production readiness, promotion, or trading authorization. See
 `docs/proposals/phase_6l_independent_prospective_chain_reviews_v1.md` and
 `docs/phase_6l_review.md`.
+
+## Phase 6M portable prospective-chain review bundles
+
+Phase 6M packages an exact verified Phase 6K export with its complete Phase 6L review history into
+canonical, content-addressed local JSON and independently verifies the resulting bytes.
+
+```text
+trading-system operations validate-prospective-chain-review-bundle-config --config config/operations.phase6m.v1.yaml
+trading-system operations prospective-chain-review-bundle --config config/operations.phase6m.v1.yaml --input bundle.json --database operations.sqlite
+trading-system operations verify-prospective-chain-review-bundle --config config/operations.phase6m.v1.yaml --input verify.json --database operations.sqlite
+trading-system operations prospective-chain-review-bundle-status --config config/operations.phase6m.v1.yaml --database operations.sqlite --bundle-id ID
+```
+
+The bundle is unsigned, unencrypted, and local. It retains asserted reviewer identities and
+computes no consensus or readiness result. See
+`docs/proposals/phase_6m_portable_prospective_chain_review_bundles_v1.md` and
+`docs/phase_6m_review.md`.

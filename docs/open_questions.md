@@ -667,3 +667,16 @@ and which trust root, timestamp, recipients, and receiving-verifier rules would 
 230. Which separately authenticated governance process may consume review outcomes, and what
 additional security, reliability, sandbox, capital, and rollback evidence must remain mandatory
 before any production or trading decision?
+
+231. Which signature algorithm, authenticated reviewer directory, trusted timestamp, key custody,
+and revocation policy could attest a future Phase 6M bundle?
+232. Which encryption format, recipients, key rotation, recovery, and removable-media controls are
+required before a prospective review bundle may leave its local registry directory?
+233. What receiving verifier and authenticated read-only transport may exchange these bundles
+without gaining promotion, system-control, brokerage, or trading authority?
+234. Which privacy, redaction, retention, legal-hold, and deletion policies apply to reviewer IDs,
+reason codes, notes, and prospective slot metadata embedded in a bundle?
+235. Should multiple verified versions of the same review history be cataloged, and what identity
+and deduplication policy would prevent repeated favorable presentation?
+236. What separately versioned governance consumer may interpret multiple bundles, and how must
+quorum, conflicts, abstentions, selection bias, and dissent remain outside immutable evidence?

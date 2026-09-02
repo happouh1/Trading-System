@@ -573,3 +573,17 @@ flags; disclosures; provenance; package version; and configuration hash.
 Migration `039_phase_6l_prospective_chain_reviews.sql` adds append-only
 `operations_prospective_chain_reviews`, indexed by export and asserted reviewer. Source records are
 foreign-key linked and never modified by a review.
+
+## Phase 6M prospective-chain review bundles
+
+`ProspectiveChainReviewBundleManifest` records bundle, export, and source-verification IDs; bundle
+time and artifact location/hash/size; export-manifest, source-verification, chain-root, and
+review-root hashes; total, active, and summary-eligible review counts; provenance; package version;
+disclosures; and configuration hash.
+
+`ProspectiveChainReviewBundleVerification` records verification identity and time,
+`VERIFIED`/`FAILED`, expected and actual hashes, canonical failure reasons, fixed
+`promoted=false`, provenance, package version, and configuration hash.
+
+Migration `040_phase_6m_prospective_chain_review_bundles.sql` adds append-only bundle and
+verification tables.

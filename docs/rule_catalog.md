@@ -585,3 +585,17 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   are excluded from descriptive summary-eligible counts.
 - `PROSPECTIVE_CHAIN_REVIEW_NO_AUTHORITY`: reviewer identities are unauthenticated and verdict
   counts grant no consensus, quality, readiness, promotion, brokerage, or trading authority.
+- `PROSPECTIVE_REVIEW_BUNDLE_COMPLETE_HISTORY`: Phase 6M includes every stored Phase 6L assertion,
+  including superseded records, for one exact verified Phase 6K export.
+- `PROSPECTIVE_REVIEW_BUNDLE_DUAL_ROOT`: the unchanged prospective chain root and canonical review
+  root separately bind source-chain evidence and review history.
+- `PROSPECTIVE_REVIEW_BUNDLE_CONTENT_ADDRESS`: canonical UTF-8 envelope bytes determine the local
+  artifact filename; conflicting existing bytes fail closed.
+- `PROSPECTIVE_REVIEW_BUNDLE_CONTAINED_ATOMIC_WRITE`: artifact paths remain registry-adjacent and
+  publication uses flushed same-directory staging plus atomic replacement.
+- `PROSPECTIVE_REVIEW_BUNDLE_INDEPENDENT_VERIFICATION`: read-only verification checks bytes,
+  canonical schema, embedded hashes, roots, identities, supersession, counts, and provenance.
+- `PROSPECTIVE_REVIEW_BUNDLE_APPEND_ONLY`: manifests and verification events have deterministic
+  identities, canonical payloads, conflict rejection, and restart-safe persistence.
+- `PROSPECTIVE_REVIEW_BUNDLE_NO_AUTHORITY`: unsigned, unencrypted local bundles authenticate no
+  reviewer and grant no consensus, readiness, promotion, brokerage, or trading authority.

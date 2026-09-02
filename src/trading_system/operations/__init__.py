@@ -172,6 +172,22 @@ from trading_system.operations.prospective_chain_export_contracts import (
 from trading_system.operations.prospective_chain_export_registry import (
     ProspectiveChainExportRegistry,
 )
+from trading_system.operations.prospective_chain_review_bundle import (
+    ProspectiveChainReviewBundleService,
+)
+from trading_system.operations.prospective_chain_review_bundle_config import (
+    ProspectiveChainReviewBundleConfig,
+    ProspectiveChainReviewBundleConfigError,
+    load_prospective_chain_review_bundle_config,
+)
+from trading_system.operations.prospective_chain_review_bundle_contracts import (
+    ProspectiveChainReviewBundleManifest,
+    ProspectiveChainReviewBundleVerification,
+    ProspectiveReviewBundleVerificationStatus,
+)
+from trading_system.operations.prospective_chain_review_bundle_registry import (
+    ProspectiveChainReviewBundleRegistry,
+)
 from trading_system.operations.prospective_chain_review_config import (
     ProspectiveChainReviewConfig,
     ProspectiveChainReviewConfigError,
@@ -331,12 +347,19 @@ __all__ = [
     "ProspectiveChainExportService",
     "ProspectiveChainExportVerification",
     "ProspectiveChainReview",
+    "ProspectiveChainReviewBundleConfig",
+    "ProspectiveChainReviewBundleConfigError",
+    "ProspectiveChainReviewBundleManifest",
+    "ProspectiveChainReviewBundleRegistry",
+    "ProspectiveChainReviewBundleService",
+    "ProspectiveChainReviewBundleVerification",
     "ProspectiveChainReviewConfig",
     "ProspectiveChainReviewConfigError",
     "ProspectiveChainReviewRegistry",
     "ProspectiveChainReviewVerdict",
     "ProspectiveChainVerificationStatus",
     "ProspectiveReviewBinding",
+    "ProspectiveReviewBundleVerificationStatus",
     "ProspectiveReviewPlan",
     "ProspectiveReviewPlanConfig",
     "ProspectiveReviewPlanConfigError",
@@ -385,6 +408,7 @@ __all__ = [
     "load_operations_runner_config",
     "load_prospective_catalog_materialization_config",
     "load_prospective_chain_export_config",
+    "load_prospective_chain_review_bundle_config",
     "load_prospective_chain_review_config",
     "load_prospective_review_plan_config",
     "load_review_catalog_plan_config",

@@ -682,3 +682,15 @@ reason codes are canonicalized. `UNCERTAIN` assertions remain retained but are n
 summary eligible. Supersession is later-only and restricted to the same asserted reviewer and
 export; prior assertions remain append-only. Counts describe active assertions and calculate no
 consensus or readiness result.
+
+## Phase 6M portable prospective-chain review bundles
+
+Phase 6M selects one exact successful Phase 6K verification and every Phase 6L assertion linked to
+that export. It revalidates canonical source payloads, exact identities, successful verification,
+matching artifact hashes, chain-root binding, review payload hashes, supersession lineage, current
+code provenance, and causal bundle time.
+
+Sorted review IDs and payload hashes form a distinct review root while the Phase 6K chain root is
+retained unchanged. Canonical bytes determine a contained local filename and are published using a
+flushed same-directory temporary file and atomic replacement. Read-only verification records
+explicit success or failure without modifying the source chain or review assertions.
