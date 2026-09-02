@@ -653,3 +653,17 @@ portable prospective-selection evidence?
 that evidence remain append-only and deterministic?
 224. What privacy and redaction review is required if future slot names, reviewer identities, or
 provenance fields contain sensitive operational information?
+
+225. Which identity provider, qualification registry, authentication factors, and revocation
+process would permit a Phase 6L reviewer ID to become more than a caller assertion?
+226. What independence and conflict-of-interest rules must separate prospective-chain reviewers
+from plan authors, evidence producers, operators, developers, and capital decision-makers?
+227. What preregistered quorum, weighting, disagreement, abstention, and consensus policy could
+interpret multiple Phase 6L assertions without rewriting their immutable history?
+228. Which controlled reason-code taxonomy, privacy review, redaction, and retention policy should
+replace caller-supplied codes and local free-text notes?
+229. Should prospective-chain reviews become a separately signed and encrypted portable bundle,
+and which trust root, timestamp, recipients, and receiving-verifier rules would govern it?
+230. Which separately authenticated governance process may consume review outcomes, and what
+additional security, reliability, sandbox, capital, and rollback evidence must remain mandatory
+before any production or trading decision?

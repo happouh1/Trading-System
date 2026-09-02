@@ -172,6 +172,18 @@ from trading_system.operations.prospective_chain_export_contracts import (
 from trading_system.operations.prospective_chain_export_registry import (
     ProspectiveChainExportRegistry,
 )
+from trading_system.operations.prospective_chain_review_config import (
+    ProspectiveChainReviewConfig,
+    ProspectiveChainReviewConfigError,
+    load_prospective_chain_review_config,
+)
+from trading_system.operations.prospective_chain_review_contracts import (
+    ProspectiveChainReview,
+    ProspectiveChainReviewVerdict,
+)
+from trading_system.operations.prospective_chain_review_registry import (
+    ProspectiveChainReviewRegistry,
+)
 from trading_system.operations.prospective_review_config import (
     ProspectiveReviewPlanConfig,
     ProspectiveReviewPlanConfigError,
@@ -318,6 +330,11 @@ __all__ = [
     "ProspectiveChainExportRegistry",
     "ProspectiveChainExportService",
     "ProspectiveChainExportVerification",
+    "ProspectiveChainReview",
+    "ProspectiveChainReviewConfig",
+    "ProspectiveChainReviewConfigError",
+    "ProspectiveChainReviewRegistry",
+    "ProspectiveChainReviewVerdict",
     "ProspectiveChainVerificationStatus",
     "ProspectiveReviewBinding",
     "ProspectiveReviewPlan",
@@ -368,6 +385,7 @@ __all__ = [
     "load_operations_runner_config",
     "load_prospective_catalog_materialization_config",
     "load_prospective_chain_export_config",
+    "load_prospective_chain_review_config",
     "load_prospective_review_plan_config",
     "load_review_catalog_plan_config",
 ]

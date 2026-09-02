@@ -597,3 +597,19 @@ Publication is local, atomic, and conflict rejecting. Verification is read-only 
 `VERIFIED` or `FAILED`. The artifact is unsigned and unencrypted; integrity is not authentication,
 consensus, production readiness, promotion, or trading authority. See
 `docs/proposals/phase_6k_portable_prospective_chain_exports_v1.md` and `docs/phase_6k_review.md`.
+
+## Phase 6L independent prospective-chain reviews
+
+Phase 6L records immutable local review assertions against one exact `VERIFIED` Phase 6K export.
+The assertion binds the export manifest, verification payload, and chain-root hashes.
+
+```text
+trading-system operations validate-prospective-chain-review-config --config config/operations.phase6l.v1.yaml
+trading-system operations prospective-chain-review --config config/operations.phase6l.v1.yaml --input review.json --database operations.sqlite
+trading-system operations prospective-chain-review-status --config config/operations.phase6l.v1.yaml --database operations.sqlite --export-id ID
+```
+
+Reviewer IDs are asserted rather than authenticated. Active verdict counts are descriptive only;
+they are not consensus, quality, production readiness, promotion, or trading authorization. See
+`docs/proposals/phase_6l_independent_prospective_chain_reviews_v1.md` and
+`docs/phase_6l_review.md`.

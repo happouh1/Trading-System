@@ -572,3 +572,16 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   canonical payloads, conflict rejection, and restart-safe persistence.
 - `PROSPECTIVE_CHAIN_NO_AUTHORITY`: exports are unsigned, unencrypted local evidence and grant no
   authentication, consensus, readiness, promotion, brokerage, or trading authority.
+- `PROSPECTIVE_CHAIN_REVIEW_VERIFIED_ONLY`: Phase 6L assertions require one exact successful Phase
+  6K verification with canonical payloads, matching artifact hashes, and current code provenance.
+- `PROSPECTIVE_CHAIN_REVIEW_ROOT_BINDING`: each assertion binds the export manifest, verification
+  payload, and prospective chain-root hashes.
+- `PROSPECTIVE_CHAIN_REVIEW_CAUSAL`: review timestamps cannot precede the cited verification.
+- `PROSPECTIVE_CHAIN_REVIEW_APPEND_ONLY`: deterministic identities, conflict rejection, and retained
+  superseded assertions make review history restart safe.
+- `PROSPECTIVE_CHAIN_REVIEW_SCOPED_SUPERSESSION`: only a later assertion by the same asserted
+  reviewer for the same export may supersede an earlier assertion.
+- `PROSPECTIVE_CHAIN_REVIEW_UNCERTAIN_EXPLICIT`: uncertain assertions remain visible and active but
+  are excluded from descriptive summary-eligible counts.
+- `PROSPECTIVE_CHAIN_REVIEW_NO_AUTHORITY`: reviewer identities are unauthenticated and verdict
+  counts grant no consensus, quality, readiness, promotion, brokerage, or trading authority.

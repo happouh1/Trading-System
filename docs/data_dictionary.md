@@ -562,3 +562,14 @@ provenance, package version, and configuration hash.
 Migration `038_phase_6k_prospective_chain_exports.sql` adds append-only
 `operations_prospective_chain_exports` and
 `operations_prospective_chain_export_verifications`.
+
+## Phase 6L prospective-chain reviews
+
+`ProspectiveChainReview` records review, export, verification, and asserted reviewer IDs; review
+time and verdict; canonical reason codes; notes; optional supersession; export-manifest,
+verification-payload, and chain-root hashes; summary eligibility; fixed unauthenticated/unpromoted
+flags; disclosures; provenance; package version; and configuration hash.
+
+Migration `039_phase_6l_prospective_chain_reviews.sql` adds append-only
+`operations_prospective_chain_reviews`, indexed by export and asserted reviewer. Source records are
+foreign-key linked and never modified by a review.

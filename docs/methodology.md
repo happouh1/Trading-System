@@ -670,3 +670,15 @@ atomic replacement. Existing paths are accepted only for byte-identical content.
 Read-only verification checks containment, file type, bytes, size, canonical schema, every embedded
 payload hash, current code provenance where applicable, source ordering, source count,
 materialization identity, and chain root. The local unsigned artifact proves integrity only.
+
+## Phase 6L independent prospective-chain reviews
+
+Phase 6L accepts only an exact successful Phase 6K verification. Before constructing a review it
+revalidates the canonical manifest and verification payload hashes, exact export link, matching
+expected and actual artifact hashes, current code provenance, and causal review timestamp.
+
+The immutable assertion binds both source payload hashes and the prospective chain root. Verdict
+reason codes are canonicalized. `UNCERTAIN` assertions remain retained but are not counted as
+summary eligible. Supersession is later-only and restricted to the same asserted reviewer and
+export; prior assertions remain append-only. Counts describe active assertions and calculate no
+consensus or readiness result.

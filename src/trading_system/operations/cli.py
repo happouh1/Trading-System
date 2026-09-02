@@ -74,6 +74,15 @@ from trading_system.operations.prospective_chain_export_config import (
 from trading_system.operations.prospective_chain_export_registry import (
     ProspectiveChainExportRegistry,
 )
+from trading_system.operations.prospective_chain_review_config import (
+    load_prospective_chain_review_config,
+)
+from trading_system.operations.prospective_chain_review_contracts import (
+    ProspectiveChainReviewVerdict,
+)
+from trading_system.operations.prospective_chain_review_registry import (
+    ProspectiveChainReviewRegistry,
+)
 from trading_system.operations.prospective_review_config import (
     load_prospective_review_plan_config,
 )
@@ -325,6 +334,16 @@ def configure_operations_parser(
     chain_status.add_argument("--config", required=True)
     chain_status.add_argument("--database", required=True)
     chain_status.add_argument("--export-id", required=True)
+    validate_chain_review = actions.add_parser("validate-prospective-chain-review-config")
+    validate_chain_review.add_argument("--config", required=True)
+    chain_review = actions.add_parser("prospective-chain-review")
+    chain_review.add_argument("--config", required=True)
+    chain_review.add_argument("--input", required=True)
+    chain_review.add_argument("--database", required=True)
+    chain_review_status = actions.add_parser("prospective-chain-review-status")
+    chain_review_status.add_argument("--config", required=True)
+    chain_review_status.add_argument("--database", required=True)
+    chain_review_status.add_argument("--export-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -1717,6 +1736,77 @@ def _handle_prospective_catalog_materialization(args: argparse.Namespace) -> int
     return 0
 
 
+def _handle_prospective_chain_review(args: argparse.Namespace) -> int:
+    config = load_prospective_chain_review_config(args.config)
+    if args.operations_command == "validate-prospective-chain-review-config":
+        payload: object = {"config_hash": config.config_hash, "valid": True}
+    elif args.operations_command == "prospective-chain-review-status":
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            reviews, counts = ProspectiveChainReviewRegistry(repository, config).status(
+                args.export_id
+            )
+        payload = {"export_id": args.export_id, "reviews": reviews, "counts": counts}
+    else:
+        root = _control_input(
+            args.input,
+            {
+                "export_id",
+                "verification_id",
+                "reviewer_id",
+                "reviewed_at",
+                "verdict",
+                "reason_codes",
+                "notes",
+                "supersedes_review_id",
+                "source_revision",
+            },
+        )
+        notes = root["notes"]
+        supersedes = root["supersedes_review_id"]
+        if not isinstance(notes, str):
+            raise ValueError("prospective chain review notes must be a string")
+        if supersedes is not None and (not isinstance(supersedes, str) or not supersedes):
+            raise ValueError("superseded prospective chain review ID is invalid")
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = ProspectiveChainReviewRegistry(repository, config)
+            review = registry.create(
+                export_id=_string(root["export_id"], "prospective chain export ID"),
+                verification_id=_string(
+                    root["verification_id"], "prospective chain verification ID"
+                ),
+                reviewer_id=_string(root["reviewer_id"], "reviewer ID"),
+                reviewed_at=_time(root["reviewed_at"]),
+                verdict=ProspectiveChainReviewVerdict(
+                    _string(root["verdict"], "prospective chain review verdict")
+                ),
+                reason_codes=_string_tuple(
+                    root["reason_codes"], "prospective chain review reason codes"
+                ),
+                notes=notes,
+                supersedes_review_id=supersedes,
+                source_revision=_string(root["source_revision"], "source revision"),
+            )
+            inserted = registry.insert(review)
+        payload = {"review": review, "inserted": inserted}
+    print(
+        canonical_json(
+            {
+                "evidence": payload,
+                "reviewer_authenticated": False,
+                "consensus_calculated": False,
+                "production_readiness_claim": False,
+                "automatic_promotion_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
+    return 0
+
+
 def _handle_prospective_chain_export(args: argparse.Namespace) -> int:
     config = load_prospective_chain_export_config(args.config)
     if args.operations_command == "validate-prospective-chain-export-config":
@@ -1784,6 +1874,12 @@ def _handle_prospective_chain_export(args: argparse.Namespace) -> int:
 
 
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-prospective-chain-review-config",
+        "prospective-chain-review",
+        "prospective-chain-review-status",
+    }:
+        return _handle_prospective_chain_review(args)
     if args.operations_command in {
         "validate-prospective-chain-export-config",
         "prospective-chain-export",
