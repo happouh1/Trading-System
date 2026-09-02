@@ -725,3 +725,19 @@ Stable slots and expected times are registered before content-derived review-bun
 Bindings are single-slot and single-bundle scoped, causal, append-only, and revalidate exact Phase
 6M evidence through Phase 6N controls. Pending slots remain explicit. Expected times are not judged
 because no tolerance policy exists, and completion has no readiness meaning.
+
+## Phase 6Q deterministic review-bundle materialization
+
+Phase 6Q accepts only a complete Phase 6P plan. It reads bindings in canonical slot order and
+derives the Phase 6O and Phase 6N source pairs without a caller membership parameter. The Phase 6O
+registration time is the materialization time; Phase 6N catalog time must be strictly later.
+
+The materialization binds the Phase 6P slot and ordered-binding roots, Phase 6O source root, and
+Phase 6N catalog root. Exact retries are deterministic and restart safe, while a different retry
+for an already materialized source plan fails before downstream construction. Status replays full
+source validation and compares identities, membership, roots, child rows, artifact hashes, code
+version, and configuration provenance.
+
+This removes a manual membership handoff. It does not make slot timestamps trusted, evaluate
+expected-time compliance, authenticate reviewers, calculate consensus, establish selection quality
+or readiness, or authorize promotion, networking, brokerage, or trading.

@@ -618,3 +618,14 @@ and reconciliation tables.
 version, disclosures, and config hash. `ProspectiveReviewBundleBinding` stores exact slot, Phase 6M
 bundle and verification IDs, causal times, artifact/chain/review hashes, and provenance. Migration
 `043_phase_6p_prospective_review_bundle_slots.sql` adds append-only plan, slot, and binding tables.
+
+## Phase 6Q review-bundle materializations
+
+`ProspectiveReviewBundleMaterialization` stores its deterministic ID; source Phase 6P plan, derived
+Phase 6O plan, and derived Phase 6N catalog IDs; materialization and catalog timestamps; Phase 6P
+slot and ordered-binding roots; Phase 6O source root; Phase 6N catalog root; slot count; provenance;
+package version; mandatory disclosures; and configuration hash.
+
+Migration `044_phase_6q_review_bundle_materializations.sql` adds the append-only
+`operations_prospective_review_bundle_materializations` table. Unique source-plan, catalog-plan,
+and catalog constraints prevent a second persisted transformation.

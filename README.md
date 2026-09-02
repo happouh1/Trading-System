@@ -681,3 +681,19 @@ trading-system operations prospective-review-bundle-plan-status --config config/
 Expected times have no inferred tolerance, and completion grants no consensus, readiness,
 promotion, brokerage, or trading authority. See
 `docs/proposals/phase_6p_prospective_review_bundle_slots_v1.md` and `docs/phase_6p_review.md`.
+
+## Phase 6Q deterministic review-bundle materialization
+
+Phase 6Q takes one complete Phase 6P plan and derives the exact Phase 6O plan and Phase 6N catalog
+without accepting a second caller-selected membership list.
+
+```text
+trading-system operations validate-prospective-review-bundle-materialization-config --config config/operations.phase6q.v1.yaml
+trading-system operations materialize-prospective-review-bundle-catalog --config config/operations.phase6q.v1.yaml --plan-config config/operations.phase6p.v1.yaml --catalog-plan-config config/operations.phase6o.v1.yaml --catalog-config config/operations.phase6n.v1.yaml --input materialize.json --database operations.sqlite
+trading-system operations prospective-review-bundle-materialization-status --config config/operations.phase6q.v1.yaml --plan-config config/operations.phase6p.v1.yaml --catalog-plan-config config/operations.phase6o.v1.yaml --catalog-config config/operations.phase6n.v1.yaml --database operations.sqlite --materialization-id ID
+```
+
+Status revalidates exact membership and root provenance after restart. Materialization remains local
+descriptive evidence and grants no consensus, readiness, promotion, brokerage, or trading
+authority. See `docs/proposals/phase_6q_deterministic_review_bundle_materialization_v1.md` and
+`docs/phase_6q_review.md`.

@@ -715,3 +715,12 @@ type without exposing future content identities?
 append-only lineage must preserve the original?
 252. How should a complete Phase 6P plan materialize Phase 6O and Phase 6N evidence without a new
 caller-controlled membership transformation?
+
+253. Must Phase 6Q wait until every Phase 6P expected slot time, and what governed early/late
+tolerance and missed-window states can be applied without retrospective exceptions?
+254. Which authenticated signer, independent witness, and trusted timestamp should attest Phase 6P
+registration, bindings, and Phase 6Q materialization rather than trusting local wall-clock values?
+255. How may an erroneous materialization be corrected through immutable, independently authorized
+supersession without allowing catalog denominator shopping?
+256. What portable envelope, signing, encryption, transport, retention, and receiving-verifier
+controls should cover the complete Phase 6P/6O/6N/6Q evidence chain?

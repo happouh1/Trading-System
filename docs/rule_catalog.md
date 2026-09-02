@@ -634,3 +634,17 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   tolerance or missed-window policy is defined.
 - `PROSPECTIVE_REVIEW_BUNDLE_SLOT_NO_AUTHORITY`: resolved slots authenticate no reviewer and grant
   no consensus, readiness, promotion, brokerage, or trading authority.
+- `PROSPECTIVE_REVIEW_BUNDLE_MATERIALIZATION_COMPLETE_ONLY`: Phase 6Q rejects a Phase 6P plan with
+  any unresolved slot.
+- `PROSPECTIVE_REVIEW_BUNDLE_MATERIALIZATION_NO_OVERRIDE`: catalog name and source membership
+  derive only from canonical Phase 6P slots and bindings; the request cannot supply membership.
+- `PROSPECTIVE_REVIEW_BUNDLE_MATERIALIZATION_CAUSAL`: materialization cannot predate a binding and
+  the Phase 6N catalog time must strictly follow Phase 6O registration.
+- `PROSPECTIVE_REVIEW_BUNDLE_MATERIALIZATION_ROOTS`: slot, binding, source, and catalog roots bind
+  every transformation layer into immutable evidence.
+- `PROSPECTIVE_REVIEW_BUNDLE_MATERIALIZATION_SINGLE_RESULT`: unique constraints allow one
+  materialization per Phase 6P plan, derived Phase 6O plan, and Phase 6N catalog.
+- `PROSPECTIVE_REVIEW_BUNDLE_MATERIALIZATION_REVALIDATE`: status revalidates exact source records,
+  membership, child rows, local artifacts, canonical hashes, roots, code, and configuration.
+- `PROSPECTIVE_REVIEW_BUNDLE_MATERIALIZATION_NO_AUTHORITY`: materialization grants no timing,
+  consensus, quality, readiness, promotion, brokerage, or trading authority.

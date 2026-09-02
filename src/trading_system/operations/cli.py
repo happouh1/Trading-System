@@ -104,6 +104,12 @@ from trading_system.operations.prospective_chain_review_contracts import (
 from trading_system.operations.prospective_chain_review_registry import (
     ProspectiveChainReviewRegistry,
 )
+from trading_system.operations.prospective_review_bundle_materialization_config import (
+    load_prospective_review_bundle_materialization_config,
+)
+from trading_system.operations.prospective_review_bundle_materialization_registry import (
+    ProspectiveReviewBundleMaterializationRegistry,
+)
 from trading_system.operations.prospective_review_bundle_plan_config import (
     load_prospective_review_bundle_plan_config,
 )
@@ -371,9 +377,7 @@ def configure_operations_parser(
     chain_review_status.add_argument("--config", required=True)
     chain_review_status.add_argument("--database", required=True)
     chain_review_status.add_argument("--export-id", required=True)
-    validate_chain_bundle = actions.add_parser(
-        "validate-prospective-chain-review-bundle-config"
-    )
+    validate_chain_bundle = actions.add_parser("validate-prospective-chain-review-bundle-config")
     validate_chain_bundle.add_argument("--config", required=True)
     for command in (
         "prospective-chain-review-bundle",
@@ -387,9 +391,7 @@ def configure_operations_parser(
     chain_bundle_status.add_argument("--config", required=True)
     chain_bundle_status.add_argument("--database", required=True)
     chain_bundle_status.add_argument("--bundle-id", required=True)
-    validate_chain_catalog = actions.add_parser(
-        "validate-prospective-chain-review-catalog-config"
-    )
+    validate_chain_catalog = actions.add_parser("validate-prospective-chain-review-catalog-config")
     validate_chain_catalog.add_argument("--config", required=True)
     chain_catalog = actions.add_parser("prospective-chain-review-catalog")
     chain_catalog.add_argument("--config", required=True)
@@ -410,9 +412,7 @@ def configure_operations_parser(
     register_chain_catalog_plan.add_argument("--catalog-config", required=True)
     register_chain_catalog_plan.add_argument("--input", required=True)
     register_chain_catalog_plan.add_argument("--database", required=True)
-    chain_catalog_plan_status = actions.add_parser(
-        "prospective-chain-review-catalog-plan-status"
-    )
+    chain_catalog_plan_status = actions.add_parser("prospective-chain-review-catalog-plan-status")
     chain_catalog_plan_status.add_argument("--config", required=True)
     chain_catalog_plan_status.add_argument("--catalog-config", required=True)
     chain_catalog_plan_status.add_argument("--database", required=True)
@@ -450,6 +450,24 @@ def configure_operations_parser(
     review_bundle_plan_status.add_argument("--catalog-config", required=True)
     review_bundle_plan_status.add_argument("--database", required=True)
     review_bundle_plan_status.add_argument("--plan-id", required=True)
+    validate_bundle_materialization = actions.add_parser(
+        "validate-prospective-review-bundle-materialization-config"
+    )
+    validate_bundle_materialization.add_argument("--config", required=True)
+    for command in (
+        "materialize-prospective-review-bundle-catalog",
+        "prospective-review-bundle-materialization-status",
+    ):
+        parser = actions.add_parser(command)
+        parser.add_argument("--config", required=True)
+        parser.add_argument("--plan-config", required=True)
+        parser.add_argument("--catalog-plan-config", required=True)
+        parser.add_argument("--catalog-config", required=True)
+        parser.add_argument("--database", required=True)
+        if command.startswith("materialize"):
+            parser.add_argument("--input", required=True)
+        else:
+            parser.add_argument("--materialization-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -1906,14 +1924,11 @@ def _handle_prospective_chain_review_catalog_plan(args: argparse.Namespace) -> i
         catalog_config = load_prospective_chain_review_catalog_config(args.catalog_config)
         with SQLiteRepository(args.database) as repository:
             repository.migrate()
-            registry = ProspectiveChainReviewCatalogPlanRegistry(
-                repository, config, catalog_config
-            )
+            registry = ProspectiveChainReviewCatalogPlanRegistry(repository, config, catalog_config)
             if args.operations_command == "prospective-chain-review-catalog-plan-status":
                 payload = registry.plan(args.plan_id)
             elif (
-                args.operations_command
-                == "prospective-chain-review-catalog-reconciliation-status"
+                args.operations_command == "prospective-chain-review-catalog-reconciliation-status"
             ):
                 payload = registry.reconciliation(args.reconciliation_id)
             elif args.operations_command == "register-prospective-chain-review-catalog-plan":
@@ -2042,6 +2057,52 @@ def _handle_prospective_review_bundle_plan(args: argparse.Namespace) -> int:
                 "evidence": payload,
                 "timing_compliance_claim": False,
                 "selection_unbiased_claim": False,
+                "consensus_calculated": False,
+                "production_readiness_claim": False,
+                "automatic_promotion_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
+    return 0
+
+
+def _handle_prospective_review_bundle_materialization(args: argparse.Namespace) -> int:
+    config = load_prospective_review_bundle_materialization_config(args.config)
+    if args.operations_command == "validate-prospective-review-bundle-materialization-config":
+        payload: object = {"config_hash": config.config_hash, "valid": True}
+    else:
+        plan_config = load_prospective_review_bundle_plan_config(args.plan_config)
+        catalog_plan_config = load_prospective_chain_review_catalog_plan_config(
+            args.catalog_plan_config
+        )
+        catalog_config = load_prospective_chain_review_catalog_config(args.catalog_config)
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = ProspectiveReviewBundleMaterializationRegistry(
+                repository, config, plan_config, catalog_plan_config, catalog_config
+            )
+            if args.operations_command == "prospective-review-bundle-materialization-status":
+                payload = registry.status(args.materialization_id)
+            else:
+                root = _control_input(
+                    args.input,
+                    {"source_plan_id", "materialized_at", "cataloged_at", "source_revision"},
+                )
+                item = registry.materialize(
+                    source_plan_id=_string(root["source_plan_id"], "source plan ID"),
+                    materialized_at=_time(root["materialized_at"]),
+                    cataloged_at=_time(root["cataloged_at"]),
+                    source_revision=_string(root["source_revision"], "source revision"),
+                )
+                payload = {"materialization": item, "inserted": registry.insert(item)}
+    print(
+        canonical_json(
+            {
+                "evidence": payload,
+                "caller_membership_override_used": False,
                 "consensus_calculated": False,
                 "production_readiness_claim": False,
                 "automatic_promotion_performed": False,
@@ -2253,6 +2314,12 @@ def _handle_prospective_chain_export(args: argparse.Namespace) -> int:
 
 
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-prospective-review-bundle-materialization-config",
+        "materialize-prospective-review-bundle-catalog",
+        "prospective-review-bundle-materialization-status",
+    }:
+        return _handle_prospective_review_bundle_materialization(args)
     if args.operations_command in {
         "validate-prospective-review-bundle-plan-config",
         "register-prospective-review-bundle-plan",
