@@ -339,9 +339,13 @@ generic order cancel route. The isolated Case-1 transport now uses only V3. A fr
 sandbox run is still required to determine whether this resolves the ambiguous cancel response.
 
 88. Case 2 uses `1.00` to `1.01` only as an offline disposable validation fixture. Before an
-official sandbox write surface is added, confirm the provider's exact V3 replacement request,
-same-client identity behavior, authoritative detail fields, tick metadata, status vocabulary, and
-whether an already-open initial stop must be created by a separate explicitly approved step.
+operator can run the new Case-2 replacement command, how will the exact deterministic `1.00`
+initial stop be safely placed and reviewed without introducing a general order-placement surface?
+The current command deliberately refuses to seed it.
+Before any broader official sandbox write surface is added, confirm the provider's exact V3
+replacement request, same-client identity behavior, authoritative detail fields, tick metadata,
+status vocabulary, and whether an already-open initial stop must be created by a separately
+approved step.
 
 89. Case 3's offline fixture requires exact cumulative fill quantity one plus a flat authenticated
 position response, but does not canonize a provider status spelling. Before exposing an official

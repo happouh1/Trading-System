@@ -207,7 +207,48 @@ def test_case2_rejects_wrong_position_before_write(tmp_path: Path) -> None:
         assert fake.replace_calls == 0
 
 
-def test_official_case2_write_surface_remains_absent() -> None:
-    from trading_system.webull.transport import OfficialSdkWebullCase1Transport
+def test_official_case2_transport_uses_only_exact_order_v3(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from trading_system.webull import transport as transport_module
+    from trading_system.webull.config import load_webull_config
+    from trading_system.webull.transport import OfficialSdkWebullCase2Transport
 
-    assert not hasattr(OfficialSdkWebullCase1Transport, "replace_exact_stop")
+    calls: list[object] = []
+
+    class Response:
+        status_code = 200
+
+        def json(self) -> dict[str, object]:
+            return {}
+
+    class OrderV3:
+        def get_order_detail(self, account_id: str, client_id: str) -> Response:
+            calls.append(("detail", account_id, client_id))
+            return Response()
+
+        def replace_order(
+            self, account_id: str, orders: list[dict[str, object]]
+        ) -> Response:
+            calls.append(("replace", account_id, orders))
+            return Response()
+
+    class Trade:
+        order_v3 = OrderV3()
+
+    monkeypatch.setattr(transport_module, "_trade_client", lambda *_: Trade())
+    transport = OfficialSdkWebullCase2Transport(
+        "case2-v3",
+        load_webull_config(ROOT / "config/webull.sandbox.v1.yaml"),
+        WebullCredentials("key", "secret", "account"),
+    )
+    before = exact_case2_order("case2-v3", INITIAL_STOP)
+    after = exact_case2_order("case2-v3", REPLACEMENT_STOP)
+    transport.order_detail("internal", before.client_order_id)
+    transport.replace_exact_stop("internal", after)
+    assert calls == [
+        ("detail", "internal", before.client_order_id),
+        ("replace", "internal", [after.sdk_payload()]),
+    ]
+    with pytest.raises(ValueError, match="exact approved"):
+        transport.replace_exact_stop("internal", replace(after, quantity=2))

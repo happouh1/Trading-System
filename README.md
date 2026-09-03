@@ -172,9 +172,16 @@ and the exact confirmation phrase for the matching deterministic order. The sepa
 `cancel-case1-order` recovery is fixed to that order, sends at most one cancellation request, and
 remains unable to route general exits. See the runbook for its environment and CLI gates.
 
-Case 2 now has an offline-only, deterministic same-client stop-replacement harness with fake
-transport coverage and append-only evidence. It deliberately exposes no official SDK replacement
-method or CLI broker-write command pending fresh Case-1 review and explicit Case-2 approval.
+Case 2 has a deterministic same-client stop-replacement harness with fake transport coverage and
+append-only evidence, plus a one-shot V3 sandbox operator script. The write remains unreachable
+unless the same session has an append-only `PASS` review for Case 1, XNYS is open, the exact
+initial Case-2 stop is
+already working, and the operator supplies the literal confirmation. The script never seeds that
+initial stop, retries an ambiguous replacement, promotes capabilities, or enables general exits.
+
+```text
+python scripts/webull-case2-replace.py --database DB --session-id SESSION --config config/webull.sandbox.v1.yaml --smoke-config config/webull.phase3d5.smoke.v1.json --confirmation REPLACE-SELL-1-AAPL-STOP-1.00-TO-1.01-GTC-CORE-WEBULL-SANDBOX
+```
 
 Case 3 likewise has an offline-only full-long reducing-exit harness. It requires one AAPL long
 share, no working orders, exact SELL MARKET/DAY CORE identity, cumulative fill proof, and flat

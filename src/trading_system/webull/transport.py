@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from decimal import Decimal
 from typing import Any, Protocol
 
 from trading_system.webull.case1_transport import case1_client_order_id, validate_case1_order
@@ -137,6 +138,52 @@ class OfficialSdkWebullCase1Transport:
         validate_case1_order(self._session_id, order)
         return _normalized(
             self._trade.order_v3.cancel_order(account_id, order.client_order_id)
+        )
+
+
+class OfficialSdkWebullCase2Transport:
+    """Exact Case-2 replacement surface pinned to the SDK V3 order API."""
+
+    def __init__(
+        self, session_id: str, config: WebullConfig, credentials: WebullCredentials
+    ) -> None:
+        self._session_id = session_id
+        self._trade = _trade_client(config, credentials)
+
+    def account_list(self) -> WebullResponse:
+        return _normalized(self._trade.account_v2.get_account_list())
+
+    def balance(self, account_id: str) -> WebullResponse:
+        return _normalized(self._trade.account_v2.get_account_balance(account_id))
+
+    def positions(self, account_id: str) -> WebullResponse:
+        return _normalized(self._trade.account_v2.get_account_position(account_id))
+
+    def open_orders(self, account_id: str) -> WebullResponse:
+        return _normalized(self._trade.order_v3.get_order_open(account_id))
+
+    def order_detail(self, account_id: str, client_order_id_value: str) -> WebullResponse:
+        from trading_system.webull.case2 import exact_case2_order
+
+        expected = exact_case2_order(self._session_id, Decimal("1.00"))
+        if client_order_id_value != expected.client_order_id:
+            raise ValueError("Case-2 detail query requires the exact approved client ID")
+        return _normalized(
+            self._trade.order_v3.get_order_detail(account_id, client_order_id_value)
+        )
+
+    def replace_exact_stop(
+        self, account_id: str, order: WebullExitOrder
+    ) -> WebullResponse:
+        from trading_system.webull.case2 import (
+            exact_case2_order,
+            validate_case2_replacement,
+        )
+
+        before = exact_case2_order(self._session_id, Decimal("1.00"))
+        validate_case2_replacement(self._session_id, before, order)
+        return _normalized(
+            self._trade.order_v3.replace_order(account_id, [order.sdk_payload()])
         )
 
 class OfficialSdkWebullMarketDataSource:

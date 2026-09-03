@@ -226,7 +226,10 @@ provider detail status, current AAPL quantity, open-order count, exact-open flag
 contains no credentials or internal account identifier.
 
 `Case2Result` is the offline same-client replacement result. It contains the pending-review smoke
-capture and deterministic client order ID. Its evidence sequence is exactly
+capture and deterministic client order ID. The official Case-2 V3 adapter exposes only account
+preflight reads, exact client-order detail, and the exact same-client replacement used by the
+one-shot script. Existing append-only `webull_smoke_operation_events`, captures, and reviews retain
+all evidence; this build adds no mutable state or migration. Its evidence sequence is exactly
 `STOP_DETAIL_BEFORE`, `STOP_REPLACE`, `STOP_DETAIL_AFTER`; its write journal uses the existing
 `webull_smoke_operation_events` table. The fixed `1.00` and `1.01` raw stops are disposable
 sandbox-validation constants and are not trading thresholds.

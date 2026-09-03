@@ -182,13 +182,18 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `WEBULL_CASE1_RECOVERY_CAPTURE_OFFLINE`: package only matching persisted envelopes, the exact
   ambiguous cancel journal, and terminal canceled detail; keep the capture pending review.
 - `WEBULL_SMOKE_CASE2_EXACT`: offline Case 2 fixes AAPL, SELL, quantity one, STOP_LOSS/GTC, CORE,
-  and a one-tick `1.00` to `1.01` replacement under one deterministic client ID.
+  a `1.00` initial stop, a `1.01` replacement, and the same deterministic client order ID.
+- `WEBULL_SMOKE_CASE2_PASS_GATE`: the official V3 replacement surface cannot load credentials or
+  call Webull unless Case 1 has a latest `PASS` review in the same session.
+- `WEBULL_SMOKE_CASE2_SINGLE_USE`: the one-shot operator requires an open XNYS core session, exact
+  literal confirmation, exact position/order preflight, persist-before-call journaling, no retry,
+  one ambiguity query, and a pending-review result with no capability promotion.
 - `WEBULL_SMOKE_CASE2_PREFLIGHT`: replacement requires exactly one AAPL long share and exactly one
   completely matching initial protective stop before crossing a write boundary.
 - `WEBULL_SMOKE_CASE2_NO_RETRY`: persist PREPARED/CALL_STARTED, invoke replacement once, query the
   same client ID once after ambiguity, halt, and block replay.
-- `WEBULL_SMOKE_CASE2_OFFLINE_ONLY`: the official SDK replacement surface and CLI write command
-  remain absent until reviewed sandbox evidence explicitly authorizes them.
+- `WEBULL_SMOKE_CASE2_SCOPE`: the official SDK surface supports only this disposable V3 validation
+  replacement; general stop management and exit routing remain absent.
 - `WEBULL_SMOKE_CASE3_EXACT`: offline Case 3 fixes AAPL, SELL, quantity one, MARKET/DAY, CORE, and
   one deterministic client order ID; arbitrary exit parameters are rejected.
 - `WEBULL_SMOKE_CASE3_PREFLIGHT`: require exactly one AAPL long share and no working orders before

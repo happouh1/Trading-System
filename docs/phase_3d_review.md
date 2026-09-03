@@ -44,3 +44,8 @@ The offline capture harness is complete. It produces the fixed seven-case plan, 
 factor-one evidence, stores captures and reviews append-only, survives restart, and reports progress.
 It performs no network call or broker write and cannot promote the pending manifest. The operational
 3D-5 result remains pending until disposable-sandbox captures are separately invoked and reviewed.
+
+Case 2 now has an exact V3 replacement adapter and one-shot operator script, but remains fail-closed
+because the recorded Case-1 review is `INCONCLUSIVE`. The script additionally requires an existing
+exact initial stop; safe creation of that prerequisite remains unresolved. No provider call was made
+during this build and official/general exit routing remains locked.

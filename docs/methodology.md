@@ -289,12 +289,17 @@ The disposable seed established only these provider envelope facts: preview HTTP
 do not authorize broader order behavior.
 
 Case 2 now has an offline-only state machine for same-client protective-stop replacement. Its
-disposable validation fixture is exactly one AAPL long share with one AAPL SELL STOP_LOSS/GTC CORE
+official adapter is restricted to V3 detail and replace calls for the deterministic Case-2 client
+ID and exact `1.00` to `1.01` validation transition. The operator gate checks persisted Case-1 PASS
+before credentials, then checks XNYS and exact broker state. It records the call boundary before
+replacement and never retries an ambiguous write. This is disposable sandbox evidence collection,
+not production stop management or general exit routing. The disposable validation fixture is
+exactly one AAPL long share with one AAPL SELL STOP_LOSS/GTC CORE
 order, moving raw stop `1.00` to `1.01` under the same deterministic client ID. These prices are
 test constants, not strategy behavior. The runner requires exact position and open-order identity,
 persists PREPARED/CALL_STARTED before one replacement call, queries the same identity once after
-ambiguity, blocks replay, and produces ordered redacted evidence. No official SDK replacement
-transport or CLI write command is exposed.
+ambiguity, blocks replay, and produces ordered redacted evidence. No official SDK method other than
+the exact Case-2 replacement surface is exposed.
 
 Case 3 now has an offline-only state machine for a full long reducing exit. Its disposable fixture
 requires exactly one AAPL long share, no working orders, and exactly one AAPL SELL MARKET/DAY CORE

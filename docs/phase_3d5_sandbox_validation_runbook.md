@@ -164,12 +164,26 @@ through V2.
 
 ## Case 2 preparation boundary
 
-Case 2 has an offline-tested runner but intentionally has no operator command or official SDK write
-transport. Its fixed validation sequence requires one AAPL long share and one exact SELL
+Case 2 has an offline-tested runner and a narrowly scoped one-shot V3 sandbox operator script. Its
+fixed validation sequence requires one AAPL long share and one exact SELL
 STOP_LOSS/GTC CORE stop at `1.00`, then models a same-client replacement to `1.01`. The prices are
-disposable validation constants, not a stop policy. Do not attempt Case 2 until a fresh V3 Case-1
-capture has been reviewed and a separate change approves the exact initial-stop setup and V3
-replacement request/response contract.
+disposable validation constants, not a stop policy. The script requires Case 1 to have a latest
+`PASS` review in the same session before it loads credentials, and it requires XNYS to be open plus
+the exact literal confirmation. It does not create the initial stop.
+
+```powershell
+python .\scripts\webull-case2-replace.py `
+  --database webull-sandbox.sqlite `
+  --session-id DISPOSABLE_SANDBOX_SESSION `
+  --config config/webull.sandbox.v1.yaml `
+  --smoke-config config/webull.phase3d5.smoke.v1.json `
+  --confirmation REPLACE-SELL-1-AAPL-STOP-1.00-TO-1.01-GTC-CORE-WEBULL-SANDBOX
+```
+
+Do not invoke it while Case 1 is `INCONCLUSIVE`, without the exact initial stop, or outside a
+disposable sandbox account. Any exception after the replacement call boundary causes exactly one
+same-client detail query and a halt; there is no automatic retry. A successful result remains
+`PENDING_REVIEW` and cannot unlock general exits.
 
 ## Case 3 preparation boundary
 
