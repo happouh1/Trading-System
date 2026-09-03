@@ -790,3 +790,13 @@ reviewer consensus, including copied proposals, common authorship, and conflicts
 abstention, and prove quorum without modifying Phase 6V evidence?
 278. What approval, effective-date, supersession, rollback, and revocation controls are required
 before any selected proposal can become active artifact-trust policy?
+
+279. Which authenticated governance source is authorized to declare Phase 6X slot identities and
+prove that they represent the complete eligible proposal population?
+280. Should proposal windows be non-overlapping across slots, and what governed rule defines any
+minimum lead time, window duration, missed-window treatment, or rescheduling procedure?
+281. Which authenticated identity and conflict-of-interest evidence may bind a proposal author to
+a prospective slot without allowing local caller assertions to count as proof?
+282. May a later phase materialize a Phase 6V catalog from fully bound Phase 6X slots, and how must
+it preserve missing slots, abstentions, invalid submissions, and the false population-completeness
+claim?

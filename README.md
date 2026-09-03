@@ -794,3 +794,19 @@ Phase 6W adds offline preregistration of the exact existing Phase 6U proposal ID
 before a Phase 6V catalog is created. Later reconciliation records exact adherence, deviation,
 missing evidence, or corruption. It does not claim prospective proposal creation, unbiased
 selection, authenticated identity, consensus, active policy, readiness, or trading authority.
+
+## Phase 6X prospective artifact-trust proposal slots
+
+Phase 6X preregisters canonical named time windows against one exact verified Phase 6T packet
+before Phase 6U proposal content exists. Each slot can later bind once to one proposal created
+inside its window; each proposal can satisfy only one slot in that plan.
+
+```text
+trading-system operations validate-artifact-trust-proposal-plan-config --config config/operations.phase6x.v1.yaml
+trading-system operations register-artifact-trust-proposal-plan --config config/operations.phase6x.v1.yaml --proposal-config config/operations.phase6u.v1.yaml --review-config config/operations.phase6t.v1.yaml --input plan.json --database operations.sqlite
+trading-system operations bind-artifact-trust-proposal-slot --config config/operations.phase6x.v1.yaml --proposal-config config/operations.phase6u.v1.yaml --review-config config/operations.phase6t.v1.yaml --input binding.json --database operations.sqlite
+trading-system operations artifact-trust-proposal-plan-status --config config/operations.phase6x.v1.yaml --proposal-config config/operations.phase6u.v1.yaml --review-config config/operations.phase6t.v1.yaml --database operations.sqlite --plan-id ID
+```
+
+Completion covers only caller-declared slots. It does not prove a complete population, independent
+authors, authentication, consensus, active policy, readiness, brokerage, or trading authority.

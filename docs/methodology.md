@@ -815,3 +815,11 @@ to its stored payload hash, and registers the resulting root before a Phase 6V c
 Reconciliation revalidates the later catalog and compares membership and the proposal payload root.
 The method is deterministic and append-only, but cannot establish a prospective or unbiased
 proposal denominator because proposal outcomes are already knowable at registration time.
+
+## Phase 6X prospective proposal-slot methodology
+
+Phase 6X registers caller-declared slot identities and closed time windows after exact Phase 6T
+verification but before any slot opens. Proposal content and IDs are absent from registration.
+Later binding revalidates the exact Phase 6U payload, requires the same Phase 6T source, and checks
+that proposal creation fell inside the declared window. This improves chronology evidence but does
+not authenticate authors or establish that the declared slots are a complete denominator.

@@ -1,0 +1,6 @@
+{
+  "artifact_trust_proposal_plan_version": "6X.1.0",
+  "authority": {"offline_only": true, "evidence_only": true, "proposal_content_enabled": false, "proposal_selection_enabled": false, "policy_activation_enabled": false, "signing_enabled": false, "reviewer_authentication_enabled": false, "consensus_enabled": false, "automatic_promotion_enabled": false, "production_readiness_claim_enabled": false, "network_enabled": false, "credentials_enabled": false, "broker_writes_enabled": false, "live_trading_enabled": false},
+  "validation": {"registration_before_all_windows_required": true, "unique_slot_ids_required": true, "unique_windows_required": true, "canonical_slot_order_required": true, "single_binding_per_slot_required": true, "single_slot_per_proposal_required": true, "proposal_within_window_required": true, "exact_phase6t_evidence_required": true, "exact_phase6u_revalidation_required": true, "canonical_payload_hashes_required": true, "current_code_version_required": true, "append_only": true},
+  "thresholds": {"minimum_slot_count_defined": false, "minimum_lead_time_defined": false, "window_duration_threshold_defined": false, "completion_threshold_defined": false, "quorum_defined": false, "consensus_threshold_defined": false, "production_threshold_defined": false}
+}

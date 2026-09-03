@@ -27,6 +27,12 @@ from trading_system.operations.artifact_trust_proposal_catalog_plan_registry imp
 from trading_system.operations.artifact_trust_proposal_catalog_registry import (
     ArtifactTrustProposalCatalogRegistry,
 )
+from trading_system.operations.artifact_trust_proposal_plan_config import (
+    load_artifact_trust_proposal_plan_config,
+)
+from trading_system.operations.artifact_trust_proposal_plan_registry import (
+    ArtifactTrustProposalPlanRegistry,
+)
 from trading_system.operations.artifact_trust_registry import ArtifactTrustRegistry
 from trading_system.operations.artifact_trust_review_export import (
     ArtifactTrustReviewExportService,
@@ -622,6 +628,26 @@ def configure_operations_parser(
     proposal_catalog_reconciliation_status.add_argument("--review-config", required=True)
     proposal_catalog_reconciliation_status.add_argument("--database", required=True)
     proposal_catalog_reconciliation_status.add_argument("--reconciliation-id", required=True)
+    validate_proposal_plan = actions.add_parser(
+        "validate-artifact-trust-proposal-plan-config"
+    )
+    validate_proposal_plan.add_argument("--config", required=True)
+    for command in (
+        "register-artifact-trust-proposal-plan",
+        "bind-artifact-trust-proposal-slot",
+    ):
+        parser = actions.add_parser(command)
+        parser.add_argument("--config", required=True)
+        parser.add_argument("--proposal-config", required=True)
+        parser.add_argument("--review-config", required=True)
+        parser.add_argument("--input", required=True)
+        parser.add_argument("--database", required=True)
+    proposal_plan_status = actions.add_parser("artifact-trust-proposal-plan-status")
+    proposal_plan_status.add_argument("--config", required=True)
+    proposal_plan_status.add_argument("--proposal-config", required=True)
+    proposal_plan_status.add_argument("--review-config", required=True)
+    proposal_plan_status.add_argument("--database", required=True)
+    proposal_plan_status.add_argument("--plan-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -2420,6 +2446,92 @@ def _handle_artifact_trust_policy_proposal(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_artifact_trust_proposal_plan(args: argparse.Namespace) -> int:
+    config = load_artifact_trust_proposal_plan_config(args.config)
+    if args.operations_command == "validate-artifact-trust-proposal-plan-config":
+        payload: object = {"config_hash": config.config_hash, "valid": True}
+    else:
+        proposal_config = load_artifact_trust_policy_proposal_config(args.proposal_config)
+        review_config = load_artifact_trust_review_export_config(args.review_config)
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            reviews = ArtifactTrustReviewExportRegistry(repository, review_config)
+            proposals = ArtifactTrustPolicyProposalRegistry(
+                repository, proposal_config, reviews
+            )
+            registry = ArtifactTrustProposalPlanRegistry(
+                repository, config, proposals, reviews
+            )
+            if args.operations_command == "artifact-trust-proposal-plan-status":
+                payload = registry.status(args.plan_id)
+            elif args.operations_command == "register-artifact-trust-proposal-plan":
+                root = _control_input(
+                    args.input,
+                    {
+                        "plan_name",
+                        "review_export_id",
+                        "review_verification_id",
+                        "registered_at",
+                        "slots",
+                        "source_revision",
+                    },
+                )
+                raw_slots = root["slots"]
+                if not isinstance(raw_slots, list):
+                    raise ValueError("proposal slots must be an array")
+                slots: list[tuple[str, datetime, datetime]] = []
+                for raw in raw_slots:
+                    item = _object(raw, "proposal slot")
+                    if set(item) != {"slot_id", "opens_at", "closes_at"}:
+                        raise ValueError("proposal slot fields are invalid")
+                    slots.append((
+                        _string(item["slot_id"], "proposal slot ID"),
+                        _time(item["opens_at"]),
+                        _time(item["closes_at"]),
+                    ))
+                plan = registry.create_plan(
+                    plan_name=_string(root["plan_name"], "proposal plan name"),
+                    review_export_id=_string(root["review_export_id"], "review export ID"),
+                    review_verification_id=_string(
+                        root["review_verification_id"], "review verification ID"
+                    ),
+                    registered_at=_time(root["registered_at"]),
+                    slots=tuple(slots),
+                    source_revision=_string(root["source_revision"], "source revision"),
+                )
+                payload = {"plan": plan, "inserted": registry.insert_plan(plan)}
+            else:
+                root = _control_input(
+                    args.input,
+                    {"plan_id", "slot_id", "proposal_id", "bound_at", "source_revision"},
+                )
+                binding = registry.bind(
+                    plan_id=_string(root["plan_id"], "proposal plan ID"),
+                    slot_id=_string(root["slot_id"], "proposal slot ID"),
+                    proposal_id=_string(root["proposal_id"], "proposal ID"),
+                    bound_at=_time(root["bound_at"]),
+                    source_revision=_string(root["source_revision"], "source revision"),
+                )
+                payload = {"binding": binding, "inserted": registry.insert_binding(binding)}
+    print(canonical_json({
+        "evidence": payload,
+        "complete_population_claim": False,
+        "proposal_content_generated": False,
+        "proposal_selected": False,
+        "policy_activated": False,
+        "signed": False,
+        "reviewers_authenticated": False,
+        "consensus_calculated": False,
+        "production_readiness_claim": False,
+        "automatic_promotion_performed": False,
+        "network_used": False,
+        "credentials_used": False,
+        "broker_write_performed": False,
+        "live_trading_enabled": False,
+    }))
+    return 0
+
+
 def _handle_artifact_trust_proposal_catalog_plan(args: argparse.Namespace) -> int:
     config = load_artifact_trust_proposal_catalog_plan_config(args.config)
     if args.operations_command == "validate-artifact-trust-proposal-catalog-plan-config":
@@ -2884,6 +2996,13 @@ def _handle_prospective_chain_export(args: argparse.Namespace) -> int:
 
 
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-artifact-trust-proposal-plan-config",
+        "register-artifact-trust-proposal-plan",
+        "bind-artifact-trust-proposal-slot",
+        "artifact-trust-proposal-plan-status",
+    }:
+        return _handle_artifact_trust_proposal_plan(args)
     if args.operations_command in {
         "validate-artifact-trust-proposal-catalog-plan-config",
         "register-artifact-trust-proposal-catalog-plan",

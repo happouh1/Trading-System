@@ -733,3 +733,18 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   `MISSING`, or `CORRUPT` evidence with canonical reasons.
 - `ARTIFACT_TRUST_PLAN_NO_AUTHORITY`: matching does not imply unbiased selection, authentication,
   consensus, policy activation, readiness, promotion, brokerage, or trading authority.
+
+## Phase 6X prospective artifact-trust proposal-slot rules
+
+- `ARTIFACT_TRUST_PROPOSAL_SLOT_PROSPECTIVE`: registration strictly precedes every slot opening,
+  and no proposal content or content-derived proposal ID appears in the plan.
+- `ARTIFACT_TRUST_PROPOSAL_SLOT_CANONICAL`: slot IDs and windows are unique, canonically sorted,
+  and content-bound by the slot-root hash.
+- `ARTIFACT_TRUST_PROPOSAL_SLOT_EXACT_SOURCE`: plans and proposals must share one exact verified
+  Phase 6T export and verification.
+- `ARTIFACT_TRUST_PROPOSAL_SLOT_WINDOW`: a proposal binds only when its immutable `proposed_at`
+  falls inclusively within the registered window.
+- `ARTIFACT_TRUST_PROPOSAL_SLOT_SINGLE_USE`: one slot binds one proposal and one proposal binds one
+  slot within a plan; exact retries are idempotent.
+- `ARTIFACT_TRUST_PROPOSAL_SLOT_NO_DENOMINATOR`: plan completion covers only declared slots and
+  never proves completeness, independence, authentication, consensus, policy, or trading authority.

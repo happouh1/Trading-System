@@ -50,6 +50,19 @@ from trading_system.operations.artifact_trust_proposal_catalog_plan_registry imp
 from trading_system.operations.artifact_trust_proposal_catalog_registry import (
     ArtifactTrustProposalCatalogRegistry,
 )
+from trading_system.operations.artifact_trust_proposal_plan_config import (
+    ArtifactTrustProposalPlanConfig,
+    ArtifactTrustProposalPlanConfigError,
+    load_artifact_trust_proposal_plan_config,
+)
+from trading_system.operations.artifact_trust_proposal_plan_contracts import (
+    ArtifactTrustProposalBinding,
+    ArtifactTrustProposalPlan,
+    ArtifactTrustProposalSlot,
+)
+from trading_system.operations.artifact_trust_proposal_plan_registry import (
+    ArtifactTrustProposalPlanRegistry,
+)
 from trading_system.operations.artifact_trust_registry import ArtifactTrustRegistry
 from trading_system.operations.artifact_trust_review_export import (
     ArtifactTrustReviewExportService,
@@ -400,6 +413,7 @@ __all__ = [
     "ArtifactTrustPolicyProposalRegistry",
     "ArtifactTrustPolicyProposalStatus",
     "ArtifactTrustPolicyStatus",
+    "ArtifactTrustProposalBinding",
     "ArtifactTrustProposalCatalog",
     "ArtifactTrustProposalCatalogConfig",
     "ArtifactTrustProposalCatalogConfigError",
@@ -412,6 +426,11 @@ __all__ = [
     "ArtifactTrustProposalCatalogReconciliationStatus",
     "ArtifactTrustProposalCatalogRegistry",
     "ArtifactTrustProposalCatalogStatus",
+    "ArtifactTrustProposalPlan",
+    "ArtifactTrustProposalPlanConfig",
+    "ArtifactTrustProposalPlanConfigError",
+    "ArtifactTrustProposalPlanRegistry",
+    "ArtifactTrustProposalSlot",
     "ArtifactTrustRegistry",
     "ArtifactTrustReviewExportConfig",
     "ArtifactTrustReviewExportConfigError",
@@ -591,6 +610,7 @@ __all__ = [
     "load_artifact_trust_policy_proposal_config",
     "load_artifact_trust_proposal_catalog_config",
     "load_artifact_trust_proposal_catalog_plan_config",
+    "load_artifact_trust_proposal_plan_config",
     "load_artifact_trust_review_export_config",
     "load_observation_audit_config",
     "load_observation_audit_export_config",

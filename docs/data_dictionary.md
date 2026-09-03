@@ -702,3 +702,14 @@ complete proposal denominator.
 and records `MATCHED`, `DEVIATION`, `MISSING`, or `CORRUPT`, canonical reasons, expected/actual
 counts, and exact plan/catalog payload hashes. Migration 050 stores plans, source rows, and
 append-only reconciliation records.
+
+## Phase 6X prospective artifact-trust proposal slots
+
+`ArtifactTrustProposalSlot` stores a stable caller-declared `slot_id`, `opens_at`, and `closes_at`.
+`ArtifactTrustProposalPlan` stores its deterministic ID, name, exact Phase 6T export and
+verification IDs, registration time, canonical slots, slot-root hash, provenance, disclosures,
+and config hash. `ArtifactTrustProposalBinding` stores one slot/proposal pair, binding and proposal
+times, the exact Phase 6U payload hash, provenance, and disclosures.
+
+Migration 051 adds append-only plans, child slots, and bindings. Database uniqueness prevents a
+slot or proposal from being reused within a plan.
