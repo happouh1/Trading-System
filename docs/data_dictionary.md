@@ -725,3 +725,26 @@ source revision; code version; disclosures; and configuration hash.
 Migration 052 adds the append-only
 `operations_artifact_trust_proposal_materializations` table. Unique source-plan and catalog
 constraints prevent a second persisted transformation.
+
+## Webull Case 2 seed evidence
+
+The controlled Case 2 initial-stop seeder reuses the existing append-only Webull envelope store;
+it does not add a schema migration. `SMOKE_CASE2_SEED_PREVIEW` records the exact preview response,
+`SMOKE_CASE2_SEED_PLACE_STARTED` is the durable no-replay boundary written before the broker call,
+`SMOKE_CASE2_SEED_PLACE` records a returned placement response, and
+`SMOKE_CASE2_SEED_DETAIL` records the same-client detail verification. If placement raises after
+the durable boundary, at most one same-client query is stored as
+`SMOKE_CASE2_SEED_RECOVERY_DETAIL`, after which the operation remains halted for review.
+
+## Phase 7A range-reclaim contracts
+
+`BoundaryEpisode` stores `LOWER` or `UPPER`, the nonempty completed-candle evidence IDs collapsed
+into that episode, and the final evidence `known_at`.
+
+`VolumePointOfControl` stores an observed price, timezone-aware `known_at`, source revision, and
+method version. It is distinct from the box midpoint and cannot be future-known.
+
+`RangeBox` stores deterministic box/base IDs, symbol/timeframe, candle and time bounds, lower,
+upper, exact geometric midpoint, optional observed POC, ordered episode evidence and counts,
+existing base metrics, optional causal parent ID, configuration hash, code version, fixed strategy
+family, and pattern version. Phase 7A does not persist this contract.

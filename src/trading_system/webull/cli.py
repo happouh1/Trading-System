@@ -17,6 +17,11 @@ from trading_system.persistence import SQLiteRepository
 from trading_system.risk import normalized_units
 from trading_system.serialization import canonical_hash, canonical_json
 from trading_system.webull.case1 import exact_case1_order
+from trading_system.webull.case2 import (
+    INITIAL_STOP,
+    case2_readiness,
+    exact_case2_order,
+)
 from trading_system.webull.config import load_webull_config
 from trading_system.webull.exit_config import (
     load_exit_capabilities,
@@ -39,7 +44,9 @@ from trading_system.webull.operator import (
 from trading_system.webull.registry import WebullRegistry
 from trading_system.webull.security import load_credentials, submission_enabled
 from trading_system.webull.service import WebullSandboxService
+from trading_system.webull.session import core_session_status
 from trading_system.webull.smoke import (
+    SmokeCase,
     load_smoke_capture,
     load_smoke_config,
     load_smoke_review,
@@ -48,6 +55,7 @@ from trading_system.webull.smoke import (
 from trading_system.webull.smoke_registry import WebullSmokeRegistry
 from trading_system.webull.transport import (
     OfficialSdkWebullCase1Transport,
+    OfficialSdkWebullCase2Transport,
     OfficialSdkWebullMarketDataSource,
     OfficialSdkWebullTransport,
     WebullTransport,
@@ -192,6 +200,11 @@ def configure_webull_parser(
     case1_status.add_argument("--session-id", required=True)
     case1_status.add_argument("--config", required=True)
     case1_status.add_argument("--allow-network-read", action="store_true")
+    case2_seed_preflight = actions.add_parser("case2-seed-preflight")
+    case2_seed_preflight.add_argument("--database", required=True)
+    case2_seed_preflight.add_argument("--session-id", required=True)
+    case2_seed_preflight.add_argument("--config", required=True)
+    case2_seed_preflight.add_argument("--allow-network-read", action="store_true")
     finalize_case1 = actions.add_parser("finalize-case1-recovery")
     finalize_case1.add_argument("--database", required=True)
     finalize_case1.add_argument("--session-id", required=True)
@@ -446,6 +459,89 @@ def handle_webull(args: argparse.Namespace) -> int:
             "network_mode": "READ_ONLY",
             "broker_write_performed": False,
         }
+    elif args.webull_command == "case2-seed-preflight":
+        if not args.allow_network_read:
+            raise ValueError(
+                "Case-2 seed preflight requires explicit read-only network permission"
+            )
+        now = datetime.now(UTC)
+        core_session = core_session_status(now, XNYSCalendar())
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            smoke_registry = WebullSmokeRegistry(repository)
+            case1_passed = (
+                SmokeCase.LONG_STOP_LIFECYCLE
+                in smoke_registry.passed_cases(args.session_id)
+            )
+            try:
+                smoke_registry.latest_envelope_evidence(
+                    args.session_id, "SMOKE_CASE2_SEED_PLACE_STARTED"
+                )
+            except KeyError:
+                write_boundary_crossed = False
+            else:
+                write_boundary_crossed = True
+            if not case1_passed or not core_session.is_open:
+                result = {
+                    "session_id": args.session_id,
+                    "case1_passed": case1_passed,
+                    "write_boundary_crossed": write_boundary_crossed,
+                    "xnys_core_session_open": core_session.is_open,
+                    "next_eligible_open": (
+                        None
+                        if core_session.next_open is None
+                        else core_session.next_open.isoformat()
+                    ),
+                    "seed_ready": False,
+                    "replacement_ready": False,
+                    "network_used": False,
+                    "network_mode": "READ_ONLY",
+                    "broker_write_performed": False,
+                }
+            else:
+                credentials = load_credentials()
+                case2_transport = OfficialSdkWebullCase2Transport(
+                    args.session_id, config, credentials
+                )
+                service = WebullSandboxService(
+                    args.session_id,
+                    credentials,
+                    cast(WebullTransport, case2_transport),
+                    smoke_registry,
+                    PaperRegistry(repository),
+                )
+                verification = service.verify_account(
+                    now, account_class="INDIVIDUAL_MARGIN"
+                )
+                sandbox_positions = service.sandbox_positions(datetime.now(UTC))
+                orders = service.sandbox_open_orders(datetime.now(UTC))
+                expected = exact_case2_order(args.session_id, INITIAL_STOP)
+                seed_ready, replacement_ready = case2_readiness(
+                    sandbox_positions,
+                    orders,
+                    expected,
+                    write_boundary_crossed=write_boundary_crossed,
+                )
+                exact_position = sandbox_positions == (("AAPL", 1),)
+                result = {
+                    "session_id": args.session_id,
+                    "verification_id": verification.verification_id,
+                    "case1_passed": True,
+                    "write_boundary_crossed": write_boundary_crossed,
+                    "xnys_core_session_open": True,
+                    "aapl_position_quantity": (
+                        1
+                        if exact_position
+                        else dict(sandbox_positions).get("AAPL", 0)
+                    ),
+                    "open_order_count": len(orders),
+                    "exact_initial_stop_open": replacement_ready,
+                    "seed_ready": seed_ready,
+                    "replacement_ready": replacement_ready,
+                    "network_used": True,
+                    "network_mode": "READ_ONLY",
+                    "broker_write_performed": False,
+                }
     elif args.webull_command == "finalize-case1-recovery":
         smoke_config = load_smoke_config(args.smoke_config)
         with SQLiteRepository(args.database) as repository:

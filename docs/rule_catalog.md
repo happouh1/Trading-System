@@ -764,3 +764,33 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `ARTIFACT_TRUST_PROPOSAL_MATERIALIZATION_NO_DENOMINATOR`: all declared slots resolved does not
   prove all eligible proposals represented or grant authentication, consensus, policy, or trading
   authority.
+
+## Webull Case 2 seed rules
+
+- `WEBULL_CASE2_SEED_PRIOR_REVIEW`: the same session requires a latest Case 1 `PASS` review.
+- `WEBULL_CASE2_SEED_EXACT_STATE`: one AAPL long share and zero open orders are required before the
+  seed write.
+- `WEBULL_CASE2_SEED_EXACT_ORDER`: only one-share AAPL SELL STOP_LOSS/GTC CORE at `$1.00` with the
+  deterministic Case 2 client ID can reach preview or placement.
+- `WEBULL_CASE2_SEED_SESSION_GATE`: the official sandbox endpoint, explicit confirmation, sandbox
+  environment, and an open authoritative XNYS core session are mandatory.
+- `WEBULL_CASE2_SEED_NO_RETRY`: a durable call-start record precedes placement; any ambiguity gets
+  one same-client detail query and blocks automatic replay.
+- `WEBULL_CASE2_SEED_NO_GENERAL_AUTHORITY`: the helper cannot replace, cancel, submit another
+  symbol or quantity, enable general exits, or access a production endpoint.
+
+## Phase 7A range-reclaim research rules
+
+- `RANGE_BOX_COMPLETED_CAUSAL_INPUT`: all bars are complete, same-symbol/timeframe, strictly
+  chronological, and nonoverlapping; the box is known only at its last close.
+- `RANGE_BOX_DISTINCT_ROTATIONS`: consecutive same-boundary contacts form one episode and an
+  opposite-boundary episode is required before that side counts again.
+- `RANGE_BOX_AMBIGUITY_FAIL_CLOSED`: any candle contacting both tolerance bands rejects the box.
+- `RANGE_BOX_MIDPOINT_NOT_COST_BASIS`: midpoint is `(upper + lower) / 2` and makes no claim about
+  participant holdings or institutional basis.
+- `RANGE_BOX_POC_OBSERVED_ONLY`: volume POC requires separately sourced, point-in-time evidence;
+  aggregate OHLCV cannot supply it.
+- `RANGE_BOX_PARENT_CAUSAL`: a parent is same-symbol, same-or-higher timeframe, strictly wider,
+  containing, and known strictly before the child; the narrowest eligible box wins.
+- `RANGE_BOX_RESEARCH_ONLY`: no persistence, replay, scoring, decision, option, alert, or broker
+  authority is granted.

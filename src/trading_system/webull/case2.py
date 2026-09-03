@@ -38,10 +38,30 @@ class Case2Transport(Protocol):
     ) -> WebullResponse: ...
 
 
+class Case2SeedTransport(Protocol):
+    def preview_initial_stop(
+        self, account_id: str, order: WebullExitOrder
+    ) -> WebullResponse: ...
+
+    def place_initial_stop(
+        self, account_id: str, order: WebullExitOrder
+    ) -> WebullResponse: ...
+
+    def order_detail(self, account_id: str, client_order_id: str) -> WebullResponse: ...
+
+
 @dataclass(frozen=True, slots=True)
 class Case2Result:
     capture: SmokeCapture
     client_order_id: str
+
+
+@dataclass(frozen=True, slots=True)
+class Case2SeedResult:
+    client_order_id: str
+    preview_status_code: int
+    place_status_code: int
+    detail_status_code: int
 
 
 def case2_client_order_id(session_id: str) -> str:
@@ -95,7 +115,7 @@ def _detail_item(response: WebullResponse, client_id: str) -> Mapping[str, objec
     return matches[0]
 
 
-def _detail_matches(response: WebullResponse, expected: WebullExitOrder) -> bool:
+def case2_detail_matches(response: WebullResponse, expected: WebullExitOrder) -> bool:
     item = _detail_item(response, expected.client_order_id)
     stop_price = item.get("stop_price")
     quantity = item.get("total_quantity", item.get("quantity"))
@@ -110,7 +130,7 @@ def _detail_matches(response: WebullResponse, expected: WebullExitOrder) -> bool
     )
 
 
-def _open_matches(item: WebullOpenOrder, expected: WebullExitOrder) -> bool:
+def case2_open_order_matches(item: WebullOpenOrder, expected: WebullExitOrder) -> bool:
     return (
         item.client_order_id == expected.client_order_id
         and item.symbol == expected.symbol
@@ -122,6 +142,127 @@ def _open_matches(item: WebullOpenOrder, expected: WebullExitOrder) -> bool:
         and item.support_trading_session == expected.support_trading_session
         and item.stop_price == expected.stop_price
     )
+
+
+def case2_readiness(
+    positions: tuple[tuple[str, int], ...],
+    open_orders: tuple[WebullOpenOrder, ...],
+    expected: WebullExitOrder,
+    *,
+    write_boundary_crossed: bool,
+) -> tuple[bool, bool]:
+    exact_position = positions == (("AAPL", 1),)
+    exact_initial_count = sum(
+        case2_open_order_matches(order, expected) for order in open_orders
+    )
+    seed_ready = exact_position and not open_orders and not write_boundary_crossed
+    replacement_ready = (
+        exact_position and len(open_orders) == 1 and exact_initial_count == 1
+    )
+    return seed_ready, replacement_ready
+
+
+class Case2SeedRunner:
+    """Place only the exact initial Case-2 stop after fail-closed preflight."""
+
+    def __init__(
+        self,
+        session_id: str,
+        service: WebullSandboxService,
+        transport: Case2SeedTransport,
+        registry: WebullSmokeRegistry,
+        clock: Callable[[], datetime] = lambda: datetime.now(UTC),
+    ) -> None:
+        self.session_id = session_id
+        self.service = service
+        self.transport = transport
+        self.registry = registry
+        self.clock = clock
+        self.order = exact_case2_order(session_id, INITIAL_STOP)
+
+    @staticmethod
+    def _require_success(operation: str, response: WebullResponse) -> None:
+        if not 200 <= response.status_code < 300:
+            raise Case1IncompleteError(
+                f"{operation} returned HTTP {response.status_code}; sequence halted"
+            )
+
+    def run(self) -> Case2SeedResult:
+        if SmokeCase.LONG_STOP_LIFECYCLE not in self.registry.passed_cases(
+            self.session_id
+        ):
+            raise Case1IncompleteError("Case 2 seed requires a latest Case-1 PASS review")
+        try:
+            self.registry.latest_envelope_evidence(
+                self.session_id, "SMOKE_CASE2_SEED_PLACE_STARTED"
+            )
+        except KeyError:
+            pass
+        else:
+            raise Case1IncompleteError(
+                "Case 2 seed already crossed a write boundary; replay is prohibited"
+            )
+        self.service.verify_account(self.clock(), account_class="INDIVIDUAL_MARGIN")
+        positions = self.service.sandbox_positions(self.clock())
+        open_orders = self.service.sandbox_open_orders(self.clock())
+        if positions != (("AAPL", 1),) or open_orders:
+            raise Case1IncompleteError(
+                "Case 2 seed requires exactly one AAPL long share and zero open orders"
+            )
+        account_id = self.service._require_verified()
+        preview = self.transport.preview_initial_stop(account_id, self.order)
+        self.registry.insert_envelope(
+            self.session_id, "SMOKE_CASE2_SEED_PREVIEW", self.clock(), preview, self.order
+        )
+        self._require_success("CASE2_SEED_PREVIEW", preview)
+        self.registry.insert_envelope(
+            self.session_id,
+            "SMOKE_CASE2_SEED_PLACE_STARTED",
+            self.clock(),
+            WebullResponse(102, {"state": "CALL_STARTED"}),
+            self.order,
+        )
+        try:
+            placed = self.transport.place_initial_stop(account_id, self.order)
+        except Exception as error:
+            try:
+                recovered = self.transport.order_detail(
+                    account_id, self.order.client_order_id
+                )
+                self.registry.insert_envelope(
+                    self.session_id,
+                    "SMOKE_CASE2_SEED_RECOVERY_DETAIL",
+                    self.clock(),
+                    recovered,
+                    self.order,
+                )
+            except Exception:
+                pass
+            raise Case1AmbiguousError(
+                "Case-2 seed placement was ambiguous; queried once and halted"
+            ) from error
+        self.registry.insert_envelope(
+            self.session_id, "SMOKE_CASE2_SEED_PLACE", self.clock(), placed, self.order
+        )
+        self._require_success("CASE2_SEED_PLACE", placed)
+        detail = self.transport.order_detail(account_id, self.order.client_order_id)
+        self.registry.insert_envelope(
+            self.session_id, "SMOKE_CASE2_SEED_DETAIL", self.clock(), detail, self.order
+        )
+        self._require_success("CASE2_SEED_DETAIL", detail)
+        if not case2_detail_matches(detail, self.order):
+            raise Case1IncompleteError("Case-2 seed detail identity is invalid")
+        open_orders = self.service.sandbox_open_orders(self.clock())
+        if len(open_orders) != 1 or not case2_open_order_matches(
+            open_orders[0], self.order
+        ):
+            raise Case1IncompleteError("Case-2 exact initial stop is not open")
+        return Case2SeedResult(
+            self.order.client_order_id,
+            preview.status_code,
+            placed.status_code,
+            detail.status_code,
+        )
 
 
 class Case2Runner:
@@ -200,7 +341,9 @@ class Case2Runner:
         open_orders = self.service.sandbox_open_orders(self.clock())
         if positions != (("AAPL", 1),):
             raise Case1IncompleteError("Case 2 requires exactly one AAPL long share")
-        if len(open_orders) != 1 or not _open_matches(open_orders[0], self.before):
+        if len(open_orders) != 1 or not case2_open_order_matches(
+            open_orders[0], self.before
+        ):
             raise Case1IncompleteError("Case 2 requires its exact initial stop to be open")
         account_id = self.service._require_verified()
         before = self.transport.order_detail(account_id, self.before.client_order_id)
@@ -208,7 +351,10 @@ class Case2Runner:
             self.session_id, "SMOKE_CASE2_STOP_DETAIL_BEFORE", self.clock(),
             before, self.before,
         )
-        if not 200 <= before.status_code < 300 or not _detail_matches(before, self.before):
+        if (
+            not 200 <= before.status_code < 300
+            or not case2_detail_matches(before, self.before)
+        ):
             raise Case1IncompleteError("Case-2 detail-before identity is invalid")
         evidence = [self._evidence("STOP_DETAIL_BEFORE", self.before, before)]
         self._event(SmokeOperationEventType.PREPARED, {"request": self.after})
@@ -245,7 +391,10 @@ class Case2Runner:
         self.registry.insert_envelope(
             self.session_id, "SMOKE_CASE2_STOP_DETAIL_AFTER", self.clock(), after, self.after
         )
-        if not 200 <= after.status_code < 300 or not _detail_matches(after, self.after):
+        if (
+            not 200 <= after.status_code < 300
+            or not case2_detail_matches(after, self.after)
+        ):
             raise Case1IncompleteError("Case-2 detail-after identity is invalid")
         evidence.append(self._evidence("STOP_DETAIL_AFTER", self.after, after))
         capture = build_smoke_capture(

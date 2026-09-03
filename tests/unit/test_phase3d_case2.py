@@ -233,6 +233,18 @@ def test_official_case2_transport_uses_only_exact_order_v3(
             calls.append(("replace", account_id, orders))
             return Response()
 
+        def preview_order(
+            self, account_id: str, orders: list[dict[str, object]]
+        ) -> Response:
+            calls.append(("preview", account_id, orders))
+            return Response()
+
+        def place_order(
+            self, account_id: str, orders: list[dict[str, object]]
+        ) -> Response:
+            calls.append(("place", account_id, orders))
+            return Response()
+
     class Trade:
         order_v3 = OrderV3()
 
@@ -245,10 +257,16 @@ def test_official_case2_transport_uses_only_exact_order_v3(
     before = exact_case2_order("case2-v3", INITIAL_STOP)
     after = exact_case2_order("case2-v3", REPLACEMENT_STOP)
     transport.order_detail("internal", before.client_order_id)
+    transport.preview_initial_stop("internal", before)
+    transport.place_initial_stop("internal", before)
     transport.replace_exact_stop("internal", after)
     assert calls == [
         ("detail", "internal", before.client_order_id),
+        ("preview", "internal", [before.sdk_payload()]),
+        ("place", "internal", [before.sdk_payload()]),
         ("replace", "internal", [after.sdk_payload()]),
     ]
+    with pytest.raises(ValueError, match="exact approved initial"):
+        transport.place_initial_stop("internal", after)
     with pytest.raises(ValueError, match="exact approved"):
         transport.replace_exact_stop("internal", replace(after, quantity=2))

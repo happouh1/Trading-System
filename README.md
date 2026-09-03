@@ -172,14 +172,15 @@ and the exact confirmation phrase for the matching deterministic order. The sepa
 `cancel-case1-order` recovery is fixed to that order, sends at most one cancellation request, and
 remains unable to route general exits. See the runbook for its environment and CLI gates.
 
-Case 2 has a deterministic same-client stop-replacement harness with fake transport coverage and
-append-only evidence, plus a one-shot V3 sandbox operator script. The write remains unreachable
-unless the same session has an append-only `PASS` review for Case 1, XNYS is open, the exact
-initial Case-2 stop is
-already working, and the operator supplies the literal confirmation. The script never seeds that
-initial stop, retries an ambiguous replacement, promotes capabilities, or enables general exits.
+Case 2 has a deterministic same-client stop-replacement harness with fake transport coverage,
+read-only seed preflight, and separate one-shot V3 sandbox seed and replacement scripts. Each write
+requires a same-session Case 1 `PASS`, an open XNYS core session, exact state, and a literal
+confirmation. Durable call boundaries prevent automatic replay after ambiguity; neither script
+promotes capabilities or enables general exits.
 
 ```text
+trading-system webull case2-seed-preflight --database DB --session-id SESSION --config config/webull.sandbox.v1.yaml --allow-network-read
+python scripts/webull-case2-seed.py --database DB --session-id SESSION --config config/webull.sandbox.v1.yaml --confirmation PLACE-SELL-1-AAPL-STOP-1.00-GTC-CORE-FOR-CASE2-WEBULL-SANDBOX
 python scripts/webull-case2-replace.py --database DB --session-id SESSION --config config/webull.sandbox.v1.yaml --smoke-config config/webull.phase3d5.smoke.v1.json --confirmation REPLACE-SELL-1-AAPL-STOP-1.00-TO-1.01-GTC-CORE-WEBULL-SANDBOX
 ```
 
@@ -825,3 +826,12 @@ trading-system operations artifact-trust-proposal-materialization-status --confi
 Materialization covers only the plan's declared slots. It does not establish population
 completeness, authentication, consensus, active policy, readiness, promotion, brokerage, or
 trading authority.
+
+## Phase 7A range-reclaim research foundation
+
+Phase 7A adds `RANGE_RECLAIM_CONTINUATION_V1`, a research-only mechanical representation of the
+range/rotation/reclaim idea sometimes called a Potter Box. It reuses approved base detection,
+counts distinct alternating boundary episodes, keeps the geometric midpoint separate from an
+optional observed volume POC, and assigns only causal containing parent boxes. The feature is not
+connected to replay, scoring, options, alerts, or brokerage. See
+`docs/proposals/phase_7a_range_reclaim_research_v1.md` and `docs/phase_7a_review.md`.

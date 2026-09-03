@@ -164,12 +164,34 @@ through V2.
 
 ## Case 2 preparation boundary
 
-Case 2 has an offline-tested runner and a narrowly scoped one-shot V3 sandbox operator script. Its
-fixed validation sequence requires one AAPL long share and one exact SELL
-STOP_LOSS/GTC CORE stop at `1.00`, then models a same-client replacement to `1.01`. The prices are
-disposable validation constants, not a stop policy. The script requires Case 1 to have a latest
-`PASS` review in the same session before it loads credentials, and it requires XNYS to be open plus
-the exact literal confirmation. It does not create the initial stop.
+Case 2 has an offline-tested runner, a read-only seed preflight, and separate narrowly scoped
+one-shot V3 sandbox scripts for the initial stop and replacement. Its fixed validation sequence
+requires one AAPL long share and one exact SELL STOP_LOSS/GTC CORE stop at `1.00`, then performs a
+same-client replacement to `1.01`. The prices are disposable validation constants, not a stop
+policy. Both write scripts require Case 1 to have a latest `PASS` review in the same session before
+loading credentials, an open XNYS core session, and an exact literal confirmation.
+
+First inspect the seed boundary without writing:
+
+```powershell
+python -m trading_system.cli webull case2-seed-preflight `
+  --database webull-sandbox.sqlite `
+  --session-id DISPOSABLE_SANDBOX_SESSION `
+  --config config/webull.sandbox.v1.yaml `
+  --allow-network-read
+```
+
+Only when `seed_ready` is true, place the exact initial stop:
+
+```powershell
+python .\scripts\webull-case2-seed.py `
+  --database webull-sandbox.sqlite `
+  --session-id DISPOSABLE_SANDBOX_SESSION `
+  --config config/webull.sandbox.v1.yaml `
+  --confirmation PLACE-SELL-1-AAPL-STOP-1.00-GTC-CORE-FOR-CASE2-WEBULL-SANDBOX
+```
+
+Rerun the read-only preflight and require `replacement_ready=true` before replacement:
 
 ```powershell
 python .\scripts\webull-case2-replace.py `
@@ -180,10 +202,11 @@ python .\scripts\webull-case2-replace.py `
   --confirmation REPLACE-SELL-1-AAPL-STOP-1.00-TO-1.01-GTC-CORE-WEBULL-SANDBOX
 ```
 
-Do not invoke it while Case 1 is `INCONCLUSIVE`, without the exact initial stop, or outside a
-disposable sandbox account. Any exception after the replacement call boundary causes exactly one
-same-client detail query and a halt; there is no automatic retry. A successful result remains
-`PENDING_REVIEW` and cannot unlock general exits.
+Do not invoke either write script while Case 1 is `INCONCLUSIVE` or outside a disposable sandbox
+account. The initial-stop seeder also requires zero open orders, while replacement requires its
+exact initial stop. Any exception after either call boundary causes exactly one same-client detail
+query and a halt; there is no automatic retry. A successful replacement remains `PENDING_REVIEW`
+and cannot unlock general exits.
 
 ## Case 3 preparation boundary
 

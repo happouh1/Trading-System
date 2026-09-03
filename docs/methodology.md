@@ -831,3 +831,22 @@ order, and supplies exactly those proposal IDs to the existing Phase 6V catalog 
 then binds plan and catalog payload hashes plus slot and ordered-binding roots into an append-only
 materialization record. This removes membership discretion after binding while preserving the fact
 that the caller-declared Phase 6X slots are not an authenticated complete population.
+
+## Webull Case 2 seed methodology
+
+Case 2 preparation first performs a read-only check of the latest Case 1 review, XNYS core-session
+state, exact sandbox position, open orders, and prior seed call boundary. The seed write accepts no
+variable order parameters: it previews and places only one AAPL SELL STOP_LOSS/GTC CORE order for
+one share at the disposable `$1.00` validation constant. A durable marker is stored immediately
+before the provider call. Ambiguity triggers one same-client detail query and permanently blocks
+automatic replay for that session.
+
+## Phase 7A range-reclaim methodology
+
+Phase 7A adapts an approved causal base into a range box only when completed candles demonstrate
+alternating lower/upper boundary episodes. Consecutive same-side contacts collapse into one
+episode; an opposite-side contact is required before that boundary can count again. A candle that
+contacts both tolerance bands rejects the box. The midpoint is geometric only. Volume POC is
+accepted only as separately sourced point-in-time evidence and is never reconstructed from OHLCV.
+Parent selection is a deterministic, strictly causal containment join. This phase is descriptive
+research infrastructure and does not claim predictive value.

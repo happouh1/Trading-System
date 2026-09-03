@@ -172,6 +172,28 @@ class OfficialSdkWebullCase2Transport:
             self._trade.order_v3.get_order_detail(account_id, client_order_id_value)
         )
 
+    def preview_initial_stop(
+        self, account_id: str, order: WebullExitOrder
+    ) -> WebullResponse:
+        from trading_system.webull.case2 import INITIAL_STOP, exact_case2_order
+
+        if order != exact_case2_order(self._session_id, INITIAL_STOP):
+            raise ValueError("Case-2 seed requires the exact approved initial stop")
+        return _normalized(
+            self._trade.order_v3.preview_order(account_id, [order.sdk_payload()])
+        )
+
+    def place_initial_stop(
+        self, account_id: str, order: WebullExitOrder
+    ) -> WebullResponse:
+        from trading_system.webull.case2 import INITIAL_STOP, exact_case2_order
+
+        if order != exact_case2_order(self._session_id, INITIAL_STOP):
+            raise ValueError("Case-2 seed requires the exact approved initial stop")
+        return _normalized(
+            self._trade.order_v3.place_order(account_id, [order.sdk_payload()])
+        )
+
     def replace_exact_stop(
         self, account_id: str, order: WebullExitOrder
     ) -> WebullResponse:

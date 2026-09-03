@@ -810,3 +810,20 @@ and which unsigned local-time limitations must remain explicit in that envelope?
 286. How should a future comparison between Phase 6W preregistered membership and Phase 6Y
 prospective-slot materialization preserve both distinct chronology claims without implying
 authentication, consensus, approval, or policy authority?
+
+287. After Case 2 sandbox capture review, which exact cleanup command and independently verified
+terminal-state evidence should remove the disposable `$1.01` stop without widening cancellation
+authority or silently flattening the retained AAPL sandbox share?
+
+288. What minimum opposite-boundary travel, intervening-bar count, or dwell requirement should
+distinguish a genuine range rotation from microstructure noise beyond Phase 7A's alternating-side
+default?
+289. Which point-in-time trade or quote dataset and volume-at-price method may produce an observed
+POC, and how should corrections and session boundaries be versioned without inferring it from
+OHLCV?
+290. Should same-timeframe nested ranges remain eligible parents, or must a parent always use a
+strictly higher timeframe after chronological validation?
+291. How should premarket and after-hours range context be researched while remaining segregated
+from canonical XNYS regular-session candles and avoiding contamination of regular-session rules?
+292. Which preregistered chronological experiment, universe, cost model, and holdout criteria are
+required before range-reclaim evidence can influence scores, decisions, options, or alerts?

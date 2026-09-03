@@ -1,0 +1,27 @@
+{
+  "strategy_version": "7A.1.0",
+  "strategy_family": "RANGE_RECLAIM_CONTINUATION_V1",
+  "box": {
+    "min_bars": 8,
+    "max_bars": 40,
+    "contact_tolerance_adr": 0.10,
+    "minimum_lower_episodes": 2,
+    "minimum_upper_episodes": 2,
+    "reject_dual_boundary_bars": true
+  },
+  "volume_profile": {
+    "require_observed_poc": false,
+    "infer_poc_from_ohlcv": false
+  },
+  "nesting": {
+    "enabled": true,
+    "require_parent_known_before_child": true
+  },
+  "authority": {
+    "research_only": true,
+    "replay_integration_enabled": false,
+    "scoring_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}
