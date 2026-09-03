@@ -619,6 +619,17 @@ rules would prevent repeated favorable presentations of the same planned evidenc
 206. Which external governance process may assess completeness or selection bias while remaining
 separate from reviewer authentication, consensus, promotion, brokerage, and live trading?
 
+207. What stable proposal-slot identity and creation window can be registered before Phase 6U
+proposal content exists, without allowing later substitution based on favorable policy text?
+208. What complete expected proposal denominator, cancellation rule, and supersession lineage must
+be fixed before a catalog plan can support a claim stronger than exact later adherence?
+209. Which authenticated signer, trusted timestamp, minimum lead time, and independent witness are
+required before proposal-catalog planning can be treated as externally governed?
+210. May a proposal slot remain empty or bind multiple revisions, and what immutable reason and
+deduplication rules prevent selective omission or double counting?
+211. What separately versioned consumer may interpret matched plans without turning local evidence
+into consensus, active policy, readiness, promotion, brokerage, or live-trading authority?
+
 207. What semantic identity should a future slot carry beyond caller-supplied text so it proves the
 intended campaign, window, evidence type, and review population without revealing future content?
 208. What early/late tolerance and explicit missed-window policy should apply to `expected_as_of`

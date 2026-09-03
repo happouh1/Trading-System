@@ -808,3 +808,10 @@ root. Six comparisons preserve proposal-to-value attribution and derive equality
 The labels `ALL_VALUES_IDENTICAL_UNAUTHENTICATED` and `VALUES_DIFFER_UNAUTHENTICATED` describe only
 the selected records. They do not infer catalog completeness, reviewer identity, independence,
 consensus, approval, or policy validity, and they cannot affect operational or trading state.
+## Phase 6W proposal-catalog planning methodology
+
+Phase 6W revalidates a caller-declared canonical set of existing Phase 6U proposals, binds each ID
+to its stored payload hash, and registers the resulting root before a Phase 6V catalog is created.
+Reconciliation revalidates the later catalog and compares membership and the proposal payload root.
+The method is deterministic and append-only, but cannot establish a prospective or unbiased
+proposal denominator because proposal outcomes are already knowable at registration time.

@@ -790,3 +790,7 @@ trading-system operations artifact-trust-proposal-catalog-status --config config
 Equality is not consensus or approval. Phase 6V authenticates nobody and grants no policy,
 readiness, promotion, brokerage, or trading authority. See
 `docs/proposals/phase_6v_artifact_trust_proposal_catalog_v1.md` and `docs/phase_6v_review.md`.
+Phase 6W adds offline preregistration of the exact existing Phase 6U proposal IDs and payload hashes
+before a Phase 6V catalog is created. Later reconciliation records exact adherence, deviation,
+missing evidence, or corruption. It does not claim prospective proposal creation, unbiased
+selection, authenticated identity, consensus, active policy, readiness, or trading authority.

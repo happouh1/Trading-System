@@ -691,3 +691,14 @@ unauthenticated descriptive status, source revision, code version, disclosures, 
 
 Migration `049_phase_6v_artifact_trust_proposal_catalogs.sql` adds append-only catalog and ordered
 membership tables with foreign keys to the exact Phase 6U proposals.
+## Phase 6W artifact-trust proposal-catalog plans
+
+`ArtifactTrustProposalCatalogPlanSource` binds one existing Phase 6U `proposal_id` to its canonical
+stored payload hash. `ArtifactTrustProposalCatalogPlan` records the registration time, ordered
+sources, content root, provenance, disclosures, and configuration hash. The plan does not define a
+complete proposal denominator.
+
+`ArtifactTrustProposalCatalogPlanReconciliation` compares one later Phase 6V catalog with the plan
+and records `MATCHED`, `DEVIATION`, `MISSING`, or `CORRUPT`, canonical reasons, expected/actual
+counts, and exact plan/catalog payload hashes. Migration 050 stores plans, source rows, and
+append-only reconciliation records.

@@ -721,3 +721,15 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `ARTIFACT_TRUST_CATALOG_APPEND_ONLY`: exact retries are idempotent and membership is immutable.
 - `ARTIFACT_TRUST_CATALOG_NO_AUTHORITY`: the catalog selects no proposal and establishes no
   authentication, consensus, approval, policy, readiness, promotion, brokerage, or trading authority.
+## Phase 6W artifact-trust proposal-catalog plan rules
+
+- `ARTIFACT_TRUST_PLAN_EXACT_SOURCES`: plan sources are sorted, unique Phase 6U proposal IDs bound
+  to their exact canonical payload hashes.
+- `ARTIFACT_TRUST_PLAN_CAUSAL`: registration cannot predate any proposal and a matching Phase 6V
+  catalog must be created strictly after registration.
+- `ARTIFACT_TRUST_PLAN_REVALIDATE`: plans, source rows, proposals, and later catalogs are
+  content-revalidated on retrieval or reconciliation.
+- `ARTIFACT_TRUST_PLAN_EXPLICIT_RESULT`: reconciliation records exact `MATCHED`, `DEVIATION`,
+  `MISSING`, or `CORRUPT` evidence with canonical reasons.
+- `ARTIFACT_TRUST_PLAN_NO_AUTHORITY`: matching does not imply unbiased selection, authentication,
+  consensus, policy activation, readiness, promotion, brokerage, or trading authority.
