@@ -713,3 +713,15 @@ times, the exact Phase 6U payload hash, provenance, and disclosures.
 
 Migration 051 adds append-only plans, child slots, and bindings. Database uniqueness prevents a
 slot or proposal from being reused within a plan.
+
+## Phase 6Y prospective proposal-catalog materializations
+
+`ArtifactTrustProposalMaterialization` stores the deterministic materialization ID; source Phase
+6X plan and derived Phase 6V catalog IDs; materialization and catalog timestamps; exact sorted
+proposal IDs; Phase 6X slot and binding roots; source-plan and derived-catalog payload hashes; slot
+count; fixed `MATERIALIZED_DECLARED_SLOTS_ONLY` status; fixed false population-completeness claim;
+source revision; code version; disclosures; and configuration hash.
+
+Migration 052 adds the append-only
+`operations_artifact_trust_proposal_materializations` table. Unique source-plan and catalog
+constraints prevent a second persisted transformation.

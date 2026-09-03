@@ -1,0 +1,6 @@
+{
+  "artifact_trust_proposal_materialization_version": "6Y.1.0",
+  "authority": {"offline_only": true, "evidence_only": true, "caller_membership_override_enabled": false, "proposal_selection_enabled": false, "policy_activation_enabled": false, "signing_enabled": false, "reviewer_authentication_enabled": false, "consensus_enabled": false, "automatic_promotion_enabled": false, "production_readiness_claim_enabled": false, "network_enabled": false, "credentials_enabled": false, "broker_writes_enabled": false, "live_trading_enabled": false},
+  "validation": {"complete_phase6x_plan_required": true, "slot_order_membership_required": true, "phase6v_catalog_required": true, "strict_timestamp_order_required": true, "root_provenance_required": true, "single_materialization_per_plan_required": true, "exact_source_revalidation_required": true, "append_only": true},
+  "thresholds": {"minimum_slot_count_defined": false, "minimum_lead_time_defined": false, "completion_threshold_defined": false, "quorum_defined": false, "consensus_threshold_defined": false, "production_threshold_defined": false}
+}

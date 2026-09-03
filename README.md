@@ -810,3 +810,18 @@ trading-system operations artifact-trust-proposal-plan-status --config config/op
 
 Completion covers only caller-declared slots. It does not prove a complete population, independent
 authors, authentication, consensus, active policy, readiness, brokerage, or trading authority.
+
+## Phase 6Y prospective proposal-catalog materialization
+
+Phase 6Y derives one Phase 6V catalog from exactly the bindings in a fully resolved Phase 6X plan.
+The caller cannot override membership during materialization.
+
+```text
+trading-system operations validate-artifact-trust-proposal-materialization-config --config config/operations.phase6y.v1.yaml
+trading-system operations materialize-artifact-trust-proposal-catalog --config config/operations.phase6y.v1.yaml --plan-config config/operations.phase6x.v1.yaml --proposal-config config/operations.phase6u.v1.yaml --review-config config/operations.phase6t.v1.yaml --catalog-config config/operations.phase6v.v1.yaml --input materialization.json --database operations.sqlite
+trading-system operations artifact-trust-proposal-materialization-status --config config/operations.phase6y.v1.yaml --plan-config config/operations.phase6x.v1.yaml --proposal-config config/operations.phase6u.v1.yaml --review-config config/operations.phase6t.v1.yaml --catalog-config config/operations.phase6v.v1.yaml --database operations.sqlite --materialization-id ID
+```
+
+Materialization covers only the plan's declared slots. It does not establish population
+completeness, authentication, consensus, active policy, readiness, promotion, brokerage, or
+trading authority.

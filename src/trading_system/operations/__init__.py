@@ -50,6 +50,18 @@ from trading_system.operations.artifact_trust_proposal_catalog_plan_registry imp
 from trading_system.operations.artifact_trust_proposal_catalog_registry import (
     ArtifactTrustProposalCatalogRegistry,
 )
+from trading_system.operations.artifact_trust_proposal_materialization_config import (
+    ArtifactTrustProposalMaterializationConfig,
+    ArtifactTrustProposalMaterializationConfigError,
+    load_artifact_trust_proposal_materialization_config,
+)
+from trading_system.operations.artifact_trust_proposal_materialization_contracts import (
+    ArtifactTrustProposalMaterialization,
+    ArtifactTrustProposalMaterializationStatus,
+)
+from trading_system.operations.artifact_trust_proposal_materialization_registry import (
+    ArtifactTrustProposalMaterializationRegistry,
+)
 from trading_system.operations.artifact_trust_proposal_plan_config import (
     ArtifactTrustProposalPlanConfig,
     ArtifactTrustProposalPlanConfigError,
@@ -426,6 +438,11 @@ __all__ = [
     "ArtifactTrustProposalCatalogReconciliationStatus",
     "ArtifactTrustProposalCatalogRegistry",
     "ArtifactTrustProposalCatalogStatus",
+    "ArtifactTrustProposalMaterialization",
+    "ArtifactTrustProposalMaterializationConfig",
+    "ArtifactTrustProposalMaterializationConfigError",
+    "ArtifactTrustProposalMaterializationRegistry",
+    "ArtifactTrustProposalMaterializationStatus",
     "ArtifactTrustProposalPlan",
     "ArtifactTrustProposalPlanConfig",
     "ArtifactTrustProposalPlanConfigError",
@@ -610,6 +627,7 @@ __all__ = [
     "load_artifact_trust_policy_proposal_config",
     "load_artifact_trust_proposal_catalog_config",
     "load_artifact_trust_proposal_catalog_plan_config",
+    "load_artifact_trust_proposal_materialization_config",
     "load_artifact_trust_proposal_plan_config",
     "load_artifact_trust_review_export_config",
     "load_observation_audit_config",

@@ -748,3 +748,19 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   slot within a plan; exact retries are idempotent.
 - `ARTIFACT_TRUST_PROPOSAL_SLOT_NO_DENOMINATOR`: plan completion covers only declared slots and
   never proves completeness, independence, authentication, consensus, policy, or trading authority.
+
+## Phase 6Y prospective proposal-catalog materialization rules
+
+- `ARTIFACT_TRUST_PROPOSAL_MATERIALIZATION_COMPLETE_PLAN`: only a fully bound, currently valid
+  Phase 6X plan can be materialized.
+- `ARTIFACT_TRUST_PROPOSAL_MATERIALIZATION_EXACT_MEMBERSHIP`: derived Phase 6V membership equals
+  the complete canonical set of bound proposals; callers cannot override it.
+- `ARTIFACT_TRUST_PROPOSAL_MATERIALIZATION_CAUSAL`: materialization cannot predate any binding and
+  the derived catalog must be timestamped strictly later.
+- `ARTIFACT_TRUST_PROPOSAL_MATERIALIZATION_CONTENT_BOUND`: slot, binding, plan-payload, and
+  catalog-payload hashes are retained and revalidated on retrieval.
+- `ARTIFACT_TRUST_PROPOSAL_MATERIALIZATION_SINGLE_USE`: each source plan and derived catalog has at
+  most one append-only materialization; exact retries are idempotent.
+- `ARTIFACT_TRUST_PROPOSAL_MATERIALIZATION_NO_DENOMINATOR`: all declared slots resolved does not
+  prove all eligible proposals represented or grant authentication, consensus, policy, or trading
+  authority.

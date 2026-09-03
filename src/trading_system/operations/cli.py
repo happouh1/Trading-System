@@ -27,6 +27,12 @@ from trading_system.operations.artifact_trust_proposal_catalog_plan_registry imp
 from trading_system.operations.artifact_trust_proposal_catalog_registry import (
     ArtifactTrustProposalCatalogRegistry,
 )
+from trading_system.operations.artifact_trust_proposal_materialization_config import (
+    load_artifact_trust_proposal_materialization_config,
+)
+from trading_system.operations.artifact_trust_proposal_materialization_registry import (
+    ArtifactTrustProposalMaterializationRegistry,
+)
 from trading_system.operations.artifact_trust_proposal_plan_config import (
     load_artifact_trust_proposal_plan_config,
 )
@@ -648,6 +654,30 @@ def configure_operations_parser(
     proposal_plan_status.add_argument("--review-config", required=True)
     proposal_plan_status.add_argument("--database", required=True)
     proposal_plan_status.add_argument("--plan-id", required=True)
+    validate_proposal_materialization = actions.add_parser(
+        "validate-artifact-trust-proposal-materialization-config"
+    )
+    validate_proposal_materialization.add_argument("--config", required=True)
+    materialize_proposal_catalog = actions.add_parser(
+        "materialize-artifact-trust-proposal-catalog"
+    )
+    materialize_proposal_catalog.add_argument("--config", required=True)
+    materialize_proposal_catalog.add_argument("--plan-config", required=True)
+    materialize_proposal_catalog.add_argument("--proposal-config", required=True)
+    materialize_proposal_catalog.add_argument("--review-config", required=True)
+    materialize_proposal_catalog.add_argument("--catalog-config", required=True)
+    materialize_proposal_catalog.add_argument("--input", required=True)
+    materialize_proposal_catalog.add_argument("--database", required=True)
+    proposal_materialization_status = actions.add_parser(
+        "artifact-trust-proposal-materialization-status"
+    )
+    proposal_materialization_status.add_argument("--config", required=True)
+    proposal_materialization_status.add_argument("--plan-config", required=True)
+    proposal_materialization_status.add_argument("--proposal-config", required=True)
+    proposal_materialization_status.add_argument("--review-config", required=True)
+    proposal_materialization_status.add_argument("--catalog-config", required=True)
+    proposal_materialization_status.add_argument("--database", required=True)
+    proposal_materialization_status.add_argument("--materialization-id", required=True)
 
 
 def _object(value: object, name: str) -> dict[str, object]:
@@ -2446,6 +2476,73 @@ def _handle_artifact_trust_policy_proposal(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_artifact_trust_proposal_materialization(args: argparse.Namespace) -> int:
+    config = load_artifact_trust_proposal_materialization_config(args.config)
+    if (
+        args.operations_command
+        == "validate-artifact-trust-proposal-materialization-config"
+    ):
+        payload: object = {"config_hash": config.config_hash, "valid": True}
+    else:
+        plan_config = load_artifact_trust_proposal_plan_config(args.plan_config)
+        proposal_config = load_artifact_trust_policy_proposal_config(args.proposal_config)
+        review_config = load_artifact_trust_review_export_config(args.review_config)
+        catalog_config = load_artifact_trust_proposal_catalog_config(args.catalog_config)
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            registry = ArtifactTrustProposalMaterializationRegistry(
+                repository,
+                config,
+                plan_config,
+                proposal_config,
+                review_config,
+                catalog_config,
+            )
+            if (
+                args.operations_command
+                == "artifact-trust-proposal-materialization-status"
+            ):
+                payload = registry.status(args.materialization_id)
+            else:
+                root = _control_input(
+                    args.input,
+                    {
+                        "source_plan_id",
+                        "materialized_at",
+                        "cataloged_at",
+                        "source_revision",
+                    },
+                )
+                item = registry.materialize(
+                    source_plan_id=_string(root["source_plan_id"], "proposal plan ID"),
+                    materialized_at=_time(root["materialized_at"]),
+                    cataloged_at=_time(root["cataloged_at"]),
+                    source_revision=_string(root["source_revision"], "source revision"),
+                )
+                payload = {"materialization": item, "inserted": registry.insert(item)}
+    print(
+        canonical_json(
+            {
+                "evidence": payload,
+                "complete_population_claim": False,
+                "caller_membership_override_performed": False,
+                "proposal_selected": False,
+                "policy_activated": False,
+                "signed": False,
+                "reviewers_authenticated": False,
+                "consensus_calculated": False,
+                "production_readiness_claim": False,
+                "automatic_promotion_performed": False,
+                "network_used": False,
+                "credentials_used": False,
+                "broker_write_performed": False,
+                "live_trading_enabled": False,
+            }
+        )
+    )
+    return 0
+
+
 def _handle_artifact_trust_proposal_plan(args: argparse.Namespace) -> int:
     config = load_artifact_trust_proposal_plan_config(args.config)
     if args.operations_command == "validate-artifact-trust-proposal-plan-config":
@@ -2996,6 +3093,12 @@ def _handle_prospective_chain_export(args: argparse.Namespace) -> int:
 
 
 def handle_operations(args: argparse.Namespace) -> int:
+    if args.operations_command in {
+        "validate-artifact-trust-proposal-materialization-config",
+        "materialize-artifact-trust-proposal-catalog",
+        "artifact-trust-proposal-materialization-status",
+    }:
+        return _handle_artifact_trust_proposal_materialization(args)
     if args.operations_command in {
         "validate-artifact-trust-proposal-plan-config",
         "register-artifact-trust-proposal-plan",

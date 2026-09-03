@@ -800,3 +800,13 @@ a prospective slot without allowing local caller assertions to count as proof?
 282. May a later phase materialize a Phase 6V catalog from fully bound Phase 6X slots, and how must
 it preserve missing slots, abstentions, invalid submissions, and the false population-completeness
 claim?
+
+283. Which authenticated governance source can prove that a Phase 6X plan contains every eligible
+proposal slot before a Phase 6Y materialization is interpreted beyond declared-slot coverage?
+284. How should abstentions, missed slots, invalid submissions, and independently authorized plan
+supersession be represented without retroactively changing a Phase 6Y catalog denominator?
+285. Should the complete Phase 6X/6V/6Y evidence chain be exported for independent verification,
+and which unsigned local-time limitations must remain explicit in that envelope?
+286. How should a future comparison between Phase 6W preregistered membership and Phase 6Y
+prospective-slot materialization preserve both distinct chronology claims without implying
+authentication, consensus, approval, or policy authority?

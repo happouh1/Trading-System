@@ -823,3 +823,11 @@ verification but before any slot opens. Proposal content and IDs are absent from
 Later binding revalidates the exact Phase 6U payload, requires the same Phase 6T source, and checks
 that proposal creation fell inside the declared window. This improves chronology evidence but does
 not authenticate authors or establish that the declared slots are a complete denominator.
+
+## Phase 6Y prospective catalog-materialization methodology
+
+Phase 6Y revalidates one complete Phase 6X plan, traverses its immutable bindings in canonical slot
+order, and supplies exactly those proposal IDs to the existing Phase 6V catalog constructor. It
+then binds plan and catalog payload hashes plus slot and ordered-binding roots into an append-only
+materialization record. This removes membership discretion after binding while preserving the fact
+that the caller-declared Phase 6X slots are not an authenticated complete population.
