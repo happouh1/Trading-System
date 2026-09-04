@@ -1,5 +1,9 @@
 # Trading System
 
+Phase 7E adds causal hypothetical next-open entries for Phase 7D evidence, using versioned Phase 1
+slippage and adverse-gap assumptions. It cannot place orders and defines no exit or performance
+claim. See `docs/phase_7e_review.md`.
+
 Phase 7D adds evidence-only causal composition between accepted reclaim events and previously known
 range boundaries. Exact lower/long and upper/short matches are persisted without defining entries,
 performance, scoring, alerts, options, or brokerage behavior. See `docs/phase_7d_review.md`.

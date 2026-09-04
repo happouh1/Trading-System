@@ -1,0 +1,29 @@
+{
+  "entry_version": "7E.1.0",
+  "entry": {
+    "timing": "NEXT_ELIGIBLE_OPEN",
+    "slippage_bps": "1",
+    "slippage_atr20_fraction": "0.02",
+    "maximum_adverse_gap_adr20": "0.25",
+    "require_completed_historical_candle": true,
+    "require_context_known_by_evidence": true,
+    "omit_when_next_candle_unavailable": true
+  },
+  "provenance": {
+    "assumptions_inherited_from": "PHASE_1_EXECUTION_SIM",
+    "currency_fees_included": false,
+    "spread_quotes_included": false,
+    "borrow_costs_included": false
+  },
+  "authority": {
+    "research_only": true,
+    "hypothetical_entries_only": true,
+    "exit_rule_enabled": false,
+    "efficacy_claims_enabled": false,
+    "scoring_enabled": false,
+    "alerts_enabled": false,
+    "options_routing_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

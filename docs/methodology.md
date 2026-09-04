@@ -1,5 +1,12 @@
 # Phase 1A methodology
 
+## Phase 7E hypothetical entry methodology
+
+Entry occurs at the earliest same-series candle open at or after causal evidence. The historical
+candle must be complete, but only its open is used for price formation. Causal ATR20 and ADR20 must
+already be known. Slippage is the greater of 1 bp of open or 2% of ATR20; an adverse gap exceeding
+0.25 ADR20 cancels the hypothetical entry. Missing future candles remain immature and are omitted.
+
 ## Phase 7D causal range-reclaim composition
 
 Only a completed, accepted reclaim event strictly later than a range box may be linked. Bullish

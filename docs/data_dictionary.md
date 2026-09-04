@@ -1,5 +1,15 @@
 # Phase 1A data dictionary
 
+## Phase 7E hypothetical range entries
+
+- `RangeEntryContext`: ATR20 and ADR20 values with their causal known-at time for one Phase 7D
+  evidence record.
+- `RangeResearchEntry`: immutable filled or adverse-gap-cancelled next-open research proxy,
+  preserving opening price, simulated fill, slippage, gap in ADR units, volatility inputs, source
+  candle revision, configuration hash, and code version.
+- `range_research_entries`: append-only migration 056 table referencing the originating evidence
+  and source candle; each evidence identity has at most one mature entry record.
+
 ## Phase 7D causal range-reclaim evidence
 
 - `RangeReclaimEvidence`: immutable link from one previously known `RangeBox` to one accepted

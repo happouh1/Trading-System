@@ -1,5 +1,17 @@
 # Rule catalog
 
+## Phase 7E hypothetical entry rules
+
+- `R7E-01`: select only the earliest completed same-symbol/timeframe candle opening at or after
+  Phase 7D evidence.
+- `R7E-02`: ATR20 and ADR20 must be positive and known by the evidence time.
+- `R7E-03`: adverse slippage is `max(open × 1bp, ATR20 × 0.02)`.
+- `R7E-04`: add slippage for long entries and subtract it for short entries.
+- `R7E-05`: cancel without fill when the adverse boundary-to-open gap is greater than 0.25 ADR20.
+- `R7E-06`: omit immature evidence when no next candle is available.
+- `R7E-07`: normalize input permutations and reject duplicate identities.
+- `R7E-08`: research entries have no decision, exit, alert, options, or brokerage authority.
+
 ## Phase 7D range-reclaim evidence rules
 
 - `R7D-01`: accept only `RECLAIM` events in `ACCEPTED` state with exact accepted reason evidence.

@@ -858,3 +858,14 @@ evaluation without choosing the most favorable box retrospectively?
 evidence, and how will gaps between reclaim close and next executable price be modeled?
 306. Must a Phase 7D event's source run equal the range-box detection run, or may independently
 versioned runs be joined through a separately authenticated candle and configuration lineage?
+
+307. Which separately preregistered exit policy should close Phase 7E hypothetical entries without
+selecting a favorable horizon after seeing the path?
+308. Which point-in-time quote source can replace the 1 bp/2% ATR20 slippage proxy with spread and
+depth evidence, particularly for small-cap securities?
+309. How should exchange halts, opening auctions, limit-up/limit-down states, and stale first prints
+alter or invalidate the next-open research proxy?
+310. What borrow availability, borrow fee, and forced-buy-in data is required before short Phase 7E
+entries can support net-return research?
+311. Should evidence with no next candle receive an explicit dataset-cutoff status in a later
+materialization so the denominator remains independently auditable?

@@ -7,6 +7,18 @@ from trading_system.patterns.range_config import (
     RangeReclaimConfigError,
     load_range_reclaim_config,
 )
+from trading_system.patterns.range_entry import (
+    RangeEntryContext,
+    RangeEntryStatus,
+    RangeResearchEntry,
+    materialize_range_entries,
+)
+from trading_system.patterns.range_entry_config import (
+    RangeEntryConfig,
+    RangeEntryConfigError,
+    load_range_entry_config,
+)
+from trading_system.patterns.range_entry_registry import RangeEntryRegistry
 from trading_system.patterns.range_experiment import (
     RangeEvidenceGate,
     RangeExperimentAssignment,
@@ -66,6 +78,11 @@ __all__ = [
     "RangeBox",
     "RangeBoxDetector",
     "RangeBoxOutcome",
+    "RangeEntryConfig",
+    "RangeEntryConfigError",
+    "RangeEntryContext",
+    "RangeEntryRegistry",
+    "RangeEntryStatus",
     "RangeEvidenceGate",
     "RangeExperimentAssignment",
     "RangeExperimentConfig",
@@ -78,6 +95,7 @@ __all__ = [
     "RangeReclaimEvidence",
     "RangeResearchConfig",
     "RangeResearchConfigError",
+    "RangeResearchEntry",
     "RangeResearchRegistry",
     "RangeResearchReplay",
     "RangeResearchResult",
@@ -91,10 +109,12 @@ __all__ = [
     "assign_parent_box",
     "compose_range_reclaim_evidence",
     "label_range_box",
+    "load_range_entry_config",
     "load_range_experiment_config",
     "load_range_reclaim_config",
     "load_range_research_config",
     "load_range_trigger_config",
+    "materialize_range_entries",
     "materialize_range_experiment",
     "preregister_range_experiment",
 ]
