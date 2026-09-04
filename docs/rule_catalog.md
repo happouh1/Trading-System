@@ -1,5 +1,16 @@
 # Rule catalog
 
+## Phase 7C range experiment rules
+
+- `R7C-01`: sessions must be unique and strictly chronological.
+- `R7C-02`: every outcome must reference a supplied box with matching symbol and timeframe.
+- `R7C-03`: labels unavailable at a partition cutoff are `EXCLUDED`.
+- `R7C-04`: embargo sessions belong to no evaluation partition.
+- `R7C-05`: all horizons from one range box share the box-ID dependence cluster.
+- `R7C-06`: an evidence gate requires both its observation and independent-cluster minima.
+- `R7C-07`: an existing deterministic identity with a different payload fails closed.
+- `R7C-08`: Phase 7C has no efficacy, scoring, alert, brokerage, or live-trading authority.
+
 ## Phase 4A portfolio rules
 
 - `PORTFOLIO_CANONICAL_ORDER`: require `(known_at, candidate_id)` input order.

@@ -835,5 +835,17 @@ compression, or should range research retain an independent feature-input builde
 report both without selecting a preferred metric after observing results?
 296. How should overlapping and nested box outcomes be clustered so correlated observations do
 not masquerade as independent samples?
-297. What minimum sample size, embargo, multiple-testing correction, transaction-cost model, and
-untouched holdout must Phase 7C preregister before any efficacy claim is evaluated?
+297. Does governed review accept Phase 7C's initial 30-observation/20-box gate, five-session
+embargo, Holm correction, and 63-session untouched test window before any efficacy evaluation?
+
+298. Which exact causal event constitutes the directional range-reclaim trigger, and may it reuse
+the existing accepted `RECLAIM` event only when its reference level exactly matches the lower
+boundary for longs or upper boundary for shorts?
+299. How should boxes whose candle evidence overlaps, including nested and adjacent boxes, be
+grouped above the Phase 7C box-ID cluster so inferential statistics do not overstate independence?
+300. Which independently timestamped preregistration service or signed governance record can prove
+that a Phase 7C definition was frozen before outcome inspection rather than relying on local time?
+301. Once a directional entry and exit policy is separately approved, which point-in-time spread,
+slippage, fees, and borrow model should replace Phase 7C's explicitly non-applicable cost model?
+302. Should evidence gates be increased for intraday autocorrelation or small-cap universe slices,
+and what simulation or external literature may justify that change before results are viewed?

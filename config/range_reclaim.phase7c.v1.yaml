@@ -1,0 +1,31 @@
+{
+  "experiment_version": "7C.1.0",
+  "walk_forward": {
+    "minimum_train_sessions": 504,
+    "validation_sessions": 63,
+    "test_sessions": 63,
+    "step_sessions": 63,
+    "embargo_sessions": 5
+  },
+  "evidence_gates": {
+    "minimum_observations_per_cohort": 30,
+    "minimum_independent_box_clusters": 20,
+    "cluster_key": "BOX_ID"
+  },
+  "statistics": {
+    "familywise_alpha": "0.05",
+    "multiple_testing_correction": "HOLM",
+    "bootstrap_samples": 1000,
+    "seed": 20260815,
+    "transaction_cost_model": "NOT_APPLICABLE_DIRECTION_NEUTRAL"
+  },
+  "authority": {
+    "preregistration_only": true,
+    "efficacy_claims_enabled": false,
+    "parameter_selection_enabled": false,
+    "scoring_enabled": false,
+    "alerts_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

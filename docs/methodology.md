@@ -1,5 +1,14 @@
 # Phase 1A methodology
 
+## Phase 7C preregistered range experiments
+
+Range-box outcomes are assigned by the box's causal `known_at` session. Forward labels must be
+available no later than the assigned partition cutoff; otherwise the assignment is excluded.
+Expanding 504-session training windows precede 63-session validation and test windows, separated
+by five-session embargoes. Cohorts are gated at 30 observations and 20 distinct box IDs. These are
+initial tunable defaults, frozen by configuration and definition hashes for each plan. Phase 7C
+does not evaluate cohorts, infer independence between overlapping boxes, or define a trade.
+
 ## Phase 4A portfolio methodology
 
 Portfolio evaluation occurs after a deterministic trade plan exists and never feeds back into the

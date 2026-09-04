@@ -1,5 +1,18 @@
 # Phase 1A data dictionary
 
+## Phase 7C range experiment evidence
+
+- `RangeExperimentPlan`: immutable preregistration identity, local registration time, source-run
+  IDs, point-in-time universe revision, configuration/code hashes, walk-forward windows, evidence
+  gates, statistical constants, and frozen definition hash.
+- `RangeExperimentAssignment`: deterministic mapping of one Phase 7B outcome to one fold and
+  `TRAIN`, `VALIDATION`, `TEST`, or `EXCLUDED`; includes its label-availability time and box-ID
+  dependence cluster.
+- `RangeEvidenceGate`: per fold/partition/timeframe/horizon observation and distinct-cluster counts.
+  `passed` is a sufficiency gate, never an efficacy result.
+- `range_experiment_plans`, `range_experiment_assignments`, `range_experiment_gates`: append-only
+  SQLite evidence introduced by migration 054.
+
 ## Phase 4A portfolio research
 
 - `PortfolioCandidate`: immutable upstream equity plan plus holding horizon, quantity, point-in-time

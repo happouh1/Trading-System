@@ -1,5 +1,10 @@
 # Trading System
 
+Phase 7C adds a research-only preregistration boundary for chronological range-box experiments.
+It freezes walk-forward folds, embargoes, evidence gates, and deterministic outcome assignments;
+it does not add a trading signal or widen scoring, alert, options, or broker authority. See
+`docs/phase_7c_review.md`.
+
 Phase 3A foundation for a deterministic candle-by-candle trading research system.
 
 The repository contains immutable contracts, canonical serialization, strict CSV/Parquet OHLCV

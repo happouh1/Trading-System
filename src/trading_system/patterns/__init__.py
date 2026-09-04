@@ -7,6 +7,20 @@ from trading_system.patterns.range_config import (
     RangeReclaimConfigError,
     load_range_reclaim_config,
 )
+from trading_system.patterns.range_experiment import (
+    RangeEvidenceGate,
+    RangeExperimentAssignment,
+    RangeExperimentMaterialization,
+    RangeExperimentPlan,
+    materialize_range_experiment,
+    preregister_range_experiment,
+)
+from trading_system.patterns.range_experiment_config import (
+    RangeExperimentConfig,
+    RangeExperimentConfigError,
+    load_range_experiment_config,
+)
+from trading_system.patterns.range_experiment_registry import RangeExperimentRegistry
 from trading_system.patterns.range_reclaim import (
     BoundaryEpisode,
     RangeBoundary,
@@ -42,6 +56,13 @@ __all__ = [
     "RangeBox",
     "RangeBoxDetector",
     "RangeBoxOutcome",
+    "RangeEvidenceGate",
+    "RangeExperimentAssignment",
+    "RangeExperimentConfig",
+    "RangeExperimentConfigError",
+    "RangeExperimentMaterialization",
+    "RangeExperimentPlan",
+    "RangeExperimentRegistry",
     "RangeReclaimConfig",
     "RangeReclaimConfigError",
     "RangeResearchConfig",
@@ -55,6 +76,9 @@ __all__ = [
     "VolumePointOfControl",
     "assign_parent_box",
     "label_range_box",
+    "load_range_experiment_config",
     "load_range_reclaim_config",
     "load_range_research_config",
+    "materialize_range_experiment",
+    "preregister_range_experiment",
 ]
