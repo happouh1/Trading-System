@@ -30,6 +30,17 @@ from trading_system.patterns.range_evaluation import (
     load_range_evaluation_config,
 )
 from trading_system.patterns.range_evaluation_registry import RangeEvaluationRegistry
+from trading_system.patterns.range_evaluation_report import (
+    RangeEvaluationReport,
+    RangeEvaluationReportConfig,
+    RangeEvaluationReportConfigError,
+    build_range_evaluation_report,
+    load_range_evaluation_report_config,
+    range_evaluation_markdown,
+)
+from trading_system.patterns.range_evaluation_report_registry import (
+    RangeEvaluationReportRegistry,
+)
 from trading_system.patterns.range_experiment import (
     RangeEvidenceGate,
     RangeExperimentAssignment,
@@ -108,6 +119,10 @@ __all__ = [
     "RangeEvaluationConfig",
     "RangeEvaluationConfigError",
     "RangeEvaluationRegistry",
+    "RangeEvaluationReport",
+    "RangeEvaluationReportConfig",
+    "RangeEvaluationReportConfigError",
+    "RangeEvaluationReportRegistry",
     "RangeEvaluationResult",
     "RangeEvidenceGate",
     "RangeExperimentAssignment",
@@ -136,12 +151,14 @@ __all__ = [
     "SweepPatternMachine",
     "VolumePointOfControl",
     "assign_parent_box",
+    "build_range_evaluation_report",
     "compose_range_reclaim_evidence",
     "evaluate_range_outcomes",
     "label_range_box",
     "label_range_entries",
     "load_range_entry_config",
     "load_range_evaluation_config",
+    "load_range_evaluation_report_config",
     "load_range_experiment_config",
     "load_range_outcome_config",
     "load_range_reclaim_config",
@@ -150,4 +167,5 @@ __all__ = [
     "materialize_range_entries",
     "materialize_range_experiment",
     "preregister_range_experiment",
+    "range_evaluation_markdown",
 ]

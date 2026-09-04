@@ -899,3 +899,11 @@ horizons. The observation denominator is the number of included outcomes and the
 proxy is distinct box identity. Descriptive statistics are materialized only if both thresholds in
 the Phase 7C plan pass. The deterministic bootstrap uses the plan's frozen seed and sample count.
 This procedure neither performs inference nor selects a preferred result.
+
+## Phase 7H range evaluation report methodology
+
+Phase 7H reconstructs the Phase 7G denominator from non-excluded assignments and compares every
+fold/partition/timeframe/direction/horizon group to exactly one summary. It rejects missing,
+duplicate, or inconsistent summaries and gate/statistics disagreement. Canonically sorted source
+contracts are hashed into separate assignment and summary roots. Persistence rechecks each source
+payload hash. Markdown uses fixed cohort ordering and never outcome-based ranking.

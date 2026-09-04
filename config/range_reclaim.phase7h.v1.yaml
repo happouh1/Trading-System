@@ -1,0 +1,28 @@
+{
+  "report_version": "7H.1.0",
+  "ordering": "FOLD_PARTITION_TIMEFRAME_DIRECTION_HORIZON",
+  "integrity": {
+    "assignment_root": "CANONICAL_SHA256",
+    "summary_root": "CANONICAL_SHA256",
+    "verify_cohort_denominators": true,
+    "verify_gate_statistics_consistency": true
+  },
+  "disclosures": [
+    "DESCRIPTIVE_RESEARCH_ONLY",
+    "NO_MULTIPLE_TESTING_INFERENCE",
+    "NO_EFFICACY_CLAIM",
+    "NO_PARAMETER_OR_HORIZON_SELECTION",
+    "NO_SCORING_OR_TRADING_AUTHORITY"
+  ],
+  "authority": {
+    "ranking_enabled": false,
+    "hypothesis_tests_enabled": false,
+    "efficacy_claims_enabled": false,
+    "parameter_selection_enabled": false,
+    "scoring_enabled": false,
+    "alerts_enabled": false,
+    "options_routing_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

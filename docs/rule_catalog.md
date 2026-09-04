@@ -869,3 +869,18 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   retained as separate cohorts.
 - `RANGE_EVALUATION_DESCRIPTIVE_ONLY`: results grant no efficacy, scoring, alert, option, broker,
   or live-trading authority.
+
+## Phase 7H range evaluation audit-report rules
+
+- `RANGE_REPORT_EXACT_DENOMINATOR`: every included Phase 7G assignment belongs to exactly one
+  summary with matching observation and distinct-box counts.
+- `RANGE_REPORT_CONTENT_BOUND`: canonical assignment and summary roots bind the complete source
+  evidence, and persisted source hashes are revalidated before insertion.
+- `RANGE_REPORT_GATE_WITHHOLDING`: a failed-gate cohort renders `WITHHELD_GATE_FAILED`, never a
+  numerical substitute.
+- `RANGE_REPORT_NONRANKING`: cohorts appear only in canonical dimension order, never ordered by an
+  observed outcome.
+- `RANGE_REPORT_APPEND_ONLY`: exact retries are idempotent and conflicting report identities fail
+  closed.
+- `RANGE_REPORT_NO_AUTHORITY`: reports create no inference, efficacy, selection, scoring, alert,
+  option, broker, or live-trading authority.

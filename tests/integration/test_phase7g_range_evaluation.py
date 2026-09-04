@@ -5,6 +5,7 @@ from datetime import UTC, datetime
 from decimal import Decimal
 from pathlib import Path
 
+import pytest
 from tests.unit.test_features import daily_candle
 from tests.unit.test_phase7b_range_research import replay, research_bars
 from tests.unit.test_phase7c_range_experiment import materialization
@@ -18,14 +19,17 @@ from trading_system.patterns import (
     RangeEntryContext,
     RangeEntryRegistry,
     RangeEvaluationRegistry,
+    RangeEvaluationReportRegistry,
     RangeExperimentRegistry,
     RangeOutcomeRegistry,
     RangeResearchRegistry,
     RangeTriggerRegistry,
+    build_range_evaluation_report,
     compose_range_reclaim_evidence,
     evaluate_range_outcomes,
     label_range_entries,
     load_range_evaluation_config,
+    load_range_evaluation_report_config,
     materialize_range_entries,
 )
 from trading_system.persistence import RunRecord, SQLiteRepository
@@ -105,6 +109,24 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
         assert registry.persist(evaluation) == expected
         assert registry.persist(evaluation) == (0, 0)
         assert registry.counts(experiment.plan.plan_id) == expected
+        report = build_range_evaluation_report(
+            load_range_evaluation_report_config(
+                ROOT / "config/range_reclaim.phase7h.v1.yaml"
+            ),
+            evaluation,
+        )
+        report_registry = RangeEvaluationReportRegistry(repository)
+        assert report_registry.persist(report, evaluation)
+        assert not report_registry.persist(report, evaluation)
+        assert report_registry.count(experiment.plan.plan_id) == 1
     with SQLiteRepository(database) as repository:
         repository.migrate()
         assert RangeEvaluationRegistry(repository).counts(experiment.plan.plan_id) == expected
+        report_registry = RangeEvaluationReportRegistry(repository)
+        assert report_registry.count(experiment.plan.plan_id) == 1
+        repository.connection.execute(
+            "UPDATE range_cohort_summaries SET payload_hash = 'sha256:corrupt'"
+        )
+        repository.connection.commit()
+        with pytest.raises(ValueError, match="missing or corrupt"):
+            report_registry.persist(report, evaluation)

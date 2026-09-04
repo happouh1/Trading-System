@@ -811,3 +811,13 @@ evaluation version. Statistics are absent unless both Phase 7C evidence gates pa
 Migration 058 stores append-only canonical assignments and summaries in
 `range_evaluation_assignments` and `range_cohort_summaries`, with foreign keys to the exact Phase
 7C plan and Phase 7F outcome and canonical payload hashes.
+
+## Phase 7H range evaluation audit reports
+
+`RangeEvaluationReport` stores its deterministic report and Phase 7C plan IDs; total, included,
+and excluded assignment counts; cohort and passing-cohort counts; canonical assignment and summary
+roots; fixed research disclosures; configuration hash; and report version.
+
+Migration 059 adds `range_evaluation_reports`. Each append-only row references the exact Phase 7C
+plan and retains the two source roots, canonical payload, and payload hash. Uniqueness prevents two
+reports for the same plan and exact source roots.

@@ -887,3 +887,10 @@ box-ID independence proxy, especially for nested ranges and repeated entries?
 directional returns for small-cap cohorts can be interpreted as implementable?
 319. What independently governed promotion criteria and untouched prospective sample are required
 before any Phase 7G result may influence scoring, alerts, options research, or trade decisions?
+
+320. Which external, immutable storage or signature mechanism should authenticate a Phase 7H
+report without confusing content integrity with reviewer identity or approval?
+321. Should a future export include every canonical assignment and summary payload or only their
+roots plus a separately retrievable evidence bundle, and what portability limit should apply?
+322. Which governed review record may annotate a Phase 7H report while preserving the original
+manifest and preventing an annotation from becoming strategy-promotion authority?

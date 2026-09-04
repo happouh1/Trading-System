@@ -868,3 +868,11 @@ rechecks label availability at each partition cutoff, and emits descriptive coho
 when both preregistered sample gates pass. It retains every configured horizon and has no scoring,
 alerting, options, brokerage, or live-trading authority. See
 `docs/proposals/phase_7g_evidence_gated_range_evaluation_v1.md` and `docs/phase_7g_review.md`.
+
+## Phase 7H range evaluation audit reports
+
+Phase 7H content-binds a complete Phase 7G result, verifies every cohort denominator, persists an
+append-only audit manifest, and renders canonical non-ranking Markdown. Failed-gate statistics are
+withheld explicitly. Reports grant no efficacy, selection, scoring, alerting, options, brokerage,
+or live-trading authority. See `docs/proposals/phase_7h_range_evaluation_audit_reports_v1.md` and
+`docs/phase_7h_review.md`.
