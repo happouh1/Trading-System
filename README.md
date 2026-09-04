@@ -860,3 +860,11 @@ forward-path measurements at the specification's 1H, 4H, and Daily horizons. Exa
 idempotent. This lane still accepts explicit causal ADR20/ATR10 inputs and remains disconnected
 from production replay, scoring, alerts, options, and brokerage. See
 `docs/proposals/phase_7b_range_research_replay_v1.md` and `docs/phase_7b_review.md`.
+
+## Phase 7G evidence-gated range evaluation
+
+Phase 7G joins Phase 7F fixed-horizon outcomes to the frozen Phase 7C walk-forward assignments,
+rechecks label availability at each partition cutoff, and emits descriptive cohort statistics only
+when both preregistered sample gates pass. It retains every configured horizon and has no scoring,
+alerting, options, brokerage, or live-trading authority. See
+`docs/proposals/phase_7g_evidence_gated_range_evaluation_v1.md` and `docs/phase_7g_review.md`.

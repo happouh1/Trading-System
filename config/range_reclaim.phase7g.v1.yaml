@@ -1,0 +1,22 @@
+{
+  "evaluation_version": "7G.1.0",
+  "metrics": {
+    "primary_value": "NET_DIRECTIONAL_RETURN",
+    "retain_all_horizons": true,
+    "cluster_key": "BOX_ID",
+    "require_phase7c_observation_gate": true,
+    "require_phase7c_cluster_gate": true,
+    "bootstrap_confidence_interval": "95_PERCENTILE"
+  },
+  "authority": {
+    "descriptive_statistics_only": true,
+    "hypothesis_tests_enabled": false,
+    "efficacy_claims_enabled": false,
+    "parameter_selection_enabled": false,
+    "scoring_enabled": false,
+    "alerts_enabled": false,
+    "options_routing_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

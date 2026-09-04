@@ -798,3 +798,16 @@ version.
 Migration 053 stores canonical `RangeBox` payloads in `range_boxes` and outcome payloads in
 `range_box_outcomes`. Both tables retain payload hashes; outcomes reference their source box and
 both records reference an existing run.
+
+## Phase 7G range evaluation records
+
+`RangeEvaluationAssignment` binds one Phase 7F outcome to one frozen Phase 7C fold, preserving the
+original assignment ID, box cluster, cohort dimensions, resulting partition, and exclusion reason.
+
+`RangeCohortSummary` stores fold, partition, timeframe, direction, horizon, observation count,
+distinct-box count, gate result, optional `RangeDescriptiveStatistics`, configuration hash, and
+evaluation version. Statistics are absent unless both Phase 7C evidence gates pass.
+
+Migration 058 stores append-only canonical assignments and summaries in
+`range_evaluation_assignments` and `range_cohort_summaries`, with foreign keys to the exact Phase
+7C plan and Phase 7F outcome and canonical payload hashes.

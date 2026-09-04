@@ -889,3 +889,13 @@ return is measured from the box-ending close. Maximum favorable-direction-neutra
 reported separately as upside and downside distance divided by box width. The horizon's final
 close is `ABOVE` or `BELOW` only when strictly beyond a boundary; a boundary close remains
 `INSIDE`. No directional trade or success label is inferred.
+
+## Phase 7G range evaluation methodology
+
+Phase 7G maps each fixed-horizon Phase 7F outcome into every matching frozen Phase 7C fold using
+box and horizon identity. It independently checks that `label_available_at` does not exceed the
+assigned partition cutoff. Cohorts never mix folds, partitions, timeframes, directions, or
+horizons. The observation denominator is the number of included outcomes and the independence
+proxy is distinct box identity. Descriptive statistics are materialized only if both thresholds in
+the Phase 7C plan pass. The deterministic bootstrap uses the plan's frozen seed and sample count.
+This procedure neither performs inference nor selects a preferred result.

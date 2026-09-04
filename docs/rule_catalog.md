@@ -854,3 +854,18 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   conflicting identities fail closed.
 - `RANGE_RESEARCH_NO_AUTHORITY`: Phase 7B cannot affect production replay, scores, decisions,
   alerts, options, position sizing, or broker operations.
+
+## Phase 7G evidence-gated evaluation rules
+
+- `RANGE_EVALUATION_FROZEN_ASSIGNMENT`: every evaluated outcome must match a Phase 7C box/horizon
+  assignment; unmatched or ambiguous inputs fail closed.
+- `RANGE_EVALUATION_LABEL_CUTOFF`: a Phase 7F label known after its assigned partition cutoff is
+  explicitly excluded.
+- `RANGE_EVALUATION_SEPARATE_COHORTS`: fold, partition, timeframe, direction, and horizon never
+  share a summary.
+- `RANGE_EVALUATION_DUAL_GATE`: statistics exist only when both the frozen minimum observation
+  count and distinct-box count pass.
+- `RANGE_EVALUATION_ALL_HORIZONS`: no favorable horizon is selected; all configured horizons are
+  retained as separate cohorts.
+- `RANGE_EVALUATION_DESCRIPTIVE_ONLY`: results grant no efficacy, scoring, alert, option, broker,
+  or live-trading authority.

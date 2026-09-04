@@ -878,3 +878,12 @@ horizons, and which intrabar ambiguity policy would govern simultaneous touches?
 interpreted as implementable, especially for small-cap shorts?
 315. Should excursion denominators remain box width only or include a separately reported causal
 ADR20 measure without selecting the more favorable normalization?
+
+316. Which horizon, if any, may be declared primary before inferential evaluation, and how should
+the full direction/timeframe/horizon family be corrected without choosing after results are known?
+317. Should bootstrap sampling operate at an overlap-aware parent cluster rather than Phase 7G's
+box-ID independence proxy, especially for nested ranges and repeated entries?
+318. Which point-in-time spread, fee, borrow, halt, and liquidity evidence is required before net
+directional returns for small-cap cohorts can be interpreted as implementable?
+319. What independently governed promotion criteria and untouched prospective sample are required
+before any Phase 7G result may influence scoring, alerts, options research, or trade decisions?
