@@ -850,3 +850,12 @@ contacts both tolerance bands rejects the box. The midpoint is geometric only. V
 accepted only as separately sourced point-in-time evidence and is never reconstructed from OHLCV.
 Parent selection is a deterministic, strictly causal containment join. This phase is descriptive
 research infrastructure and does not claim predictive value.
+
+## Phase 7B range research replay methodology
+
+Phase 7B evaluates Phase 7A detection at every completed input prefix, deduplicates identical
+content-derived box IDs, and joins only later same-series candles to mature horizons. Forward
+return is measured from the box-ending close. Maximum favorable-direction-neutral excursions are
+reported separately as upside and downside distance divided by box width. The horizon's final
+close is `ABOVE` or `BELOW` only when strictly beyond a boundary; a boundary close remains
+`INSIDE`. No directional trade or success label is inferred.

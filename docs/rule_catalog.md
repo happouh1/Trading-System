@@ -794,3 +794,18 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   containing, and known strictly before the child; the narrowest eligible box wins.
 - `RANGE_BOX_RESEARCH_ONLY`: no persistence, replay, scoring, decision, option, alert, or broker
   authority is granted.
+
+## Phase 7B range research replay rules
+
+- `RANGE_RESEARCH_PREFIX_ONLY`: detection is evaluated on successively completed prefixes; future
+  bars never participate in box formation.
+- `RANGE_RESEARCH_EXPLICIT_VOLATILITY_INPUTS`: replay consumes causal ADR20 and ATR10 values and
+  cannot silently substitute a different period or estimator.
+- `RANGE_RESEARCH_LABEL_MATURITY`: an outcome exists only when its full same-series completed-bar
+  horizon is available, and `label_available_at` equals the final evidence close.
+- `RANGE_RESEARCH_DIRECTION_NEUTRAL`: outcomes preserve return, upside/downside box excursions,
+  and terminal location without claiming a direction or success.
+- `RANGE_RESEARCH_APPEND_ONLY`: box and outcome payload hashes make exact replay idempotent and
+  conflicting identities fail closed.
+- `RANGE_RESEARCH_NO_AUTHORITY`: Phase 7B cannot affect production replay, scores, decisions,
+  alerts, options, position sizing, or broker operations.

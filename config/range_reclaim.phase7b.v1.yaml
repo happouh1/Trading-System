@@ -1,0 +1,22 @@
+{
+  "research_version": "7B.1.0",
+  "label_version": "1.0.0",
+  "horizons": {
+    "1h": [1, 3, 6, 12, 24, 48],
+    "4h": [1, 3, 6, 12, 24],
+    "1d": [1, 3, 5, 10, 20, 60]
+  },
+  "terminal_location": {
+    "above_when_close_strictly_above_upper": true,
+    "below_when_close_strictly_below_lower": true,
+    "boundary_close_is_inside": true
+  },
+  "authority": {
+    "research_only": true,
+    "descriptive_labels_only": true,
+    "replay_decisions_enabled": false,
+    "scoring_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

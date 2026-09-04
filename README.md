@@ -835,3 +835,11 @@ counts distinct alternating boundary episodes, keeps the geometric midpoint sepa
 optional observed volume POC, and assigns only causal containing parent boxes. The feature is not
 connected to replay, scoring, options, alerts, or brokerage. See
 `docs/proposals/phase_7a_range_reclaim_research_v1.md` and `docs/phase_7a_review.md`.
+
+## Phase 7B offline range research replay
+
+Phase 7B evaluates Phase 7A detection on completed prefixes and persists direction-neutral
+forward-path measurements at the specification's 1H, 4H, and Daily horizons. Exact reruns are
+idempotent. This lane still accepts explicit causal ADR20/ATR10 inputs and remains disconnected
+from production replay, scoring, alerts, options, and brokerage. See
+`docs/proposals/phase_7b_range_research_replay_v1.md` and `docs/phase_7b_review.md`.

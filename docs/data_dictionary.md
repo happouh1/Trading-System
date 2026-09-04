@@ -748,3 +748,14 @@ method version. It is distinct from the box midpoint and cannot be future-known.
 upper, exact geometric midpoint, optional observed POC, ordered episode evidence and counts,
 existing base metrics, optional causal parent ID, configuration hash, code version, fixed strategy
 family, and pattern version. Phase 7A does not persist this contract.
+
+## Phase 7B range research records
+
+`RangeBoxOutcome` stores deterministic outcome and box IDs, symbol/timeframe, horizon bars,
+label-availability time, box-ending anchor close, forward return, maximum upside/downside in box
+units, terminal location, exact future candle IDs, configuration hash, code version, and label
+version.
+
+Migration 053 stores canonical `RangeBox` payloads in `range_boxes` and outcome payloads in
+`range_box_outcomes`. Both tables retain payload hashes; outcomes reference their source box and
+both records reference an existing run.

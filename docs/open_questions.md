@@ -827,3 +827,13 @@ strictly higher timeframe after chronological validation?
 from canonical XNYS regular-session candles and avoiding contamination of regular-session rules?
 292. Which preregistered chronological experiment, universe, cost model, and holdout criteria are
 required before range-reclaim evidence can influence scores, decisions, options, or alerts?
+
+293. Should the main causal feature engine expose a separately versioned Wilder ATR10 for base
+compression, or should range research retain an independent feature-input builder?
+294. What weekly forward horizons, if any, should be approved for range-box research?
+295. Should outcome excursions remain normalized by box width, add causal ADR normalization, or
+report both without selecting a preferred metric after observing results?
+296. How should overlapping and nested box outcomes be clustered so correlated observations do
+not masquerade as independent samples?
+297. What minimum sample size, embargo, multiple-testing correction, transaction-cost model, and
+untouched holdout must Phase 7C preregister before any efficacy claim is evaluated?
