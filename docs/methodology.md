@@ -1,5 +1,12 @@
 # Phase 1A methodology
 
+## Phase 7F fixed-horizon outcome methodology
+
+The entry candle is horizon bar one. Each configured horizon exits at its terminal completed close
+and reuses the entry's causal slippage amount on the adverse side. Every mature horizon is retained.
+Returns are directional; favorable and adverse excursions are divided by the causal box width.
+Cancelled entries and immature horizons do not receive outcomes.
+
 ## Phase 7E hypothetical entry methodology
 
 Entry occurs at the earliest same-series candle open at or after causal evidence. The historical

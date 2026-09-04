@@ -1,5 +1,9 @@
 # Trading System
 
+Phase 7F labels hypothetical range entries at every mature preregistered horizon, including gross
+and two-sided-slippage-adjusted returns plus box-normalized excursions. It adds no optimized exit,
+score, alert, or trading authority. See `docs/phase_7f_review.md`.
+
 Phase 7E adds causal hypothetical next-open entries for Phase 7D evidence, using versioned Phase 1
 slippage and adverse-gap assumptions. It cannot place orders and defines no exit or performance
 claim. See `docs/phase_7e_review.md`.

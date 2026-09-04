@@ -1,5 +1,13 @@
 # Phase 1A data dictionary
 
+## Phase 7F range entry outcomes
+
+- `RangeEntryOutcome`: immutable direction-aware horizon result containing exit evidence, gross
+  and net returns, box-width-normalized favorable/adverse excursions, configuration hash, code
+  version, and exact completed-candle path.
+- `range_entry_outcomes`: append-only migration 057 table with one outcome per entry/horizon and
+  label-availability indexing.
+
 ## Phase 7E hypothetical range entries
 
 - `RangeEntryContext`: ATR20 and ADR20 values with their causal known-at time for one Phase 7D

@@ -1,5 +1,16 @@
 # Rule catalog
 
+## Phase 7F fixed-horizon outcome rules
+
+- `R7F-01`: retain every mature configured Phase 7B horizon.
+- `R7F-02`: count the entry candle as horizon bar one and exit at terminal close.
+- `R7F-03`: reuse Phase 7E causal slippage adversely at exit.
+- `R7F-04`: calculate gross return from opening price and net return from simulated fill prices.
+- `R7F-05`: calculate MFE/MAE from the complete path and normalize by box width.
+- `R7F-06`: cancelled entries produce no outcomes; immature horizons remain omitted.
+- `R7F-07`: preserve exact path candle IDs and label-availability time.
+- `R7F-08`: outcomes have no efficacy, scoring, alert, options, or broker authority.
+
 ## Phase 7E hypothetical entry rules
 
 - `R7E-01`: select only the earliest completed same-symbol/timeframe candle opening at or after

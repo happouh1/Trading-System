@@ -1,0 +1,26 @@
+{
+  "outcome_version": "7F.1.0",
+  "horizons": {
+    "1h": [1, 3, 6, 12, 24, 48],
+    "4h": [1, 3, 6, 12, 24],
+    "1d": [1, 3, 5, 10, 20, 60]
+  },
+  "exit": {
+    "timing": "CONFIGURED_HORIZON_CLOSE",
+    "include_entry_candle_as_bar_one": true,
+    "retain_every_mature_horizon": true,
+    "exit_slippage": "REUSE_ENTRY_CAUSAL_SLIPPAGE",
+    "fees_included": false,
+    "borrow_costs_included": false
+  },
+  "authority": {
+    "research_outcomes_only": true,
+    "efficacy_claims_enabled": false,
+    "parameter_selection_enabled": false,
+    "scoring_enabled": false,
+    "alerts_enabled": false,
+    "options_routing_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

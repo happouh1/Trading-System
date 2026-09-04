@@ -869,3 +869,12 @@ alter or invalidate the next-open research proxy?
 entries can support net-return research?
 311. Should evidence with no next candle receive an explicit dataset-cutoff status in a later
 materialization so the denominator remains independently auditable?
+
+312. Which primary Phase 7F horizon, if any, may be selected before evaluation, or must all
+horizons remain a Holm-corrected endpoint family?
+313. Should a separately preregistered structural stop/target experiment be compared with fixed
+horizons, and which intrabar ambiguity policy would govern simultaneous touches?
+314. Which point-in-time fees and borrow data must be applied before Phase 7F net returns can be
+interpreted as implementable, especially for small-cap shorts?
+315. Should excursion denominators remain box width only or include a separately reported causal
+ADR20 measure without selecting the more favorable normalization?
