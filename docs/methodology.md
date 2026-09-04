@@ -1,5 +1,12 @@
 # Phase 1A methodology
 
+## Phase 7D causal range-reclaim composition
+
+Only a completed, accepted reclaim event strictly later than a range box may be linked. Bullish
+reclaims match the exact lower boundary and bearish reclaims match the exact upper boundary. No
+tolerance, implicit entry, or preferred overlapping box is introduced. All exact matches are kept,
+and their dependence must be handled by preregistered research before evaluation.
+
 ## Phase 7C preregistered range experiments
 
 Range-box outcomes are assigned by the box's causal `known_at` session. Forward labels must be

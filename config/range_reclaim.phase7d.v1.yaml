@@ -1,0 +1,26 @@
+{
+  "evidence_version": "7D.1.0",
+  "trigger": {
+    "pattern_family": "RECLAIM",
+    "required_state": "ACCEPTED",
+    "required_reason_code": "RECLAIM_ACCEPTED",
+    "bullish_pattern_name": "BULLISH_RECLAIM",
+    "bullish_boundary": "LOWER",
+    "bearish_pattern_name": "BEARISH_RECLAIM",
+    "bearish_boundary": "UPPER",
+    "reference_match": "EXACT",
+    "require_event_strictly_after_box": true,
+    "retain_all_overlapping_matches": true
+  },
+  "authority": {
+    "research_evidence_only": true,
+    "entry_rule_enabled": false,
+    "exit_rule_enabled": false,
+    "efficacy_claims_enabled": false,
+    "scoring_enabled": false,
+    "alerts_enabled": false,
+    "options_routing_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

@@ -1,5 +1,16 @@
 # Rule catalog
 
+## Phase 7D range-reclaim evidence rules
+
+- `R7D-01`: accept only `RECLAIM` events in `ACCEPTED` state with exact accepted reason evidence.
+- `R7D-02`: require identical symbol and timeframe between event and box.
+- `R7D-03`: require event `known_at` strictly after box `known_at`.
+- `R7D-04`: map bullish/long only to the exact lower boundary.
+- `R7D-05`: map bearish/short only to the exact upper boundary.
+- `R7D-06`: normalize input permutations and reject duplicate source identities.
+- `R7D-07`: retain all exact overlapping box matches without selection.
+- `R7D-08`: evidence has no entry, scoring, alert, options, or broker authority.
+
 ## Phase 7C range experiment rules
 
 - `R7C-01`: sessions must be unique and strictly chronological.

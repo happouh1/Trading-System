@@ -1,5 +1,9 @@
 # Trading System
 
+Phase 7D adds evidence-only causal composition between accepted reclaim events and previously known
+range boundaries. Exact lower/long and upper/short matches are persisted without defining entries,
+performance, scoring, alerts, options, or brokerage behavior. See `docs/phase_7d_review.md`.
+
 Phase 7C adds a research-only preregistration boundary for chronological range-box experiments.
 It freezes walk-forward folds, embargoes, evidence gates, and deterministic outcome assignments;
 it does not add a trading signal or widen scoring, alert, options, or broker authority. See

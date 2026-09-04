@@ -1,5 +1,13 @@
 # Phase 1A data dictionary
 
+## Phase 7D causal range-reclaim evidence
+
+- `RangeReclaimEvidence`: immutable link from one previously known `RangeBox` to one accepted
+  `PatternEvent`, including direction, matched boundary and price, causal times, source versions,
+  configuration hashes, code version, and candle evidence.
+- `range_reclaim_evidence`: append-only migration 055 table with foreign keys to `runs`,
+  `range_boxes`, and `pattern_events`; `(box_id, event_id)` is unique.
+
 ## Phase 7C range experiment evidence
 
 - `RangeExperimentPlan`: immutable preregistration identity, local registration time, source-run

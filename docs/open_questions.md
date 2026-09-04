@@ -849,3 +849,12 @@ that a Phase 7C definition was frozen before outcome inspection rather than rely
 slippage, fees, and borrow model should replace Phase 7C's explicitly non-applicable cost model?
 302. Should evidence gates be increased for intraday autocorrelation or small-cap universe slices,
 and what simulation or external literature may justify that change before results are viewed?
+
+303. Should a later preregistration permit a nonzero boundary-match tolerance, and which causal
+tick-size or ADR rule can justify it without selecting tolerance after viewing outcomes?
+304. How should multiple exact overlapping Phase 7D matches be collapsed or cluster-adjusted in
+evaluation without choosing the most favorable box retrospectively?
+305. Which explicit completed-candle rule may define a hypothetical research entry after Phase 7D
+evidence, and how will gaps between reclaim close and next executable price be modeled?
+306. Must a Phase 7D event's source run equal the range-box detection run, or may independently
+versioned runs be joined through a separately authenticated candle and configuration lineage?
