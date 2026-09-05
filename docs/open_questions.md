@@ -958,3 +958,10 @@ interoperability outside the Python implementation?
 would either avoid weakening the local completion evidence?
 350. Which signature, signer identity, revocation, and trusted-timestamp profile could authenticate
 Phase 7P bytes without implying catalog completeness, strategy efficacy, or promotion authority?
+
+351. Which independently governed schedule and retention policy should determine Phase 7Q check
+frequency without treating repeated availability as evidence of strategy efficacy?
+352. Which authenticated verifier identity, host attestation, and trusted timestamp would support
+a claim stronger than caller-asserted local integrity?
+353. When a Phase 7Q failure follows an earlier success, which incident process should preserve the
+artifact, notify an operator, and prohibit unsafe downstream use without granting promotion power?

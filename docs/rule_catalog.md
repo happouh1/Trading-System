@@ -997,3 +997,17 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   evidence required for independent offline verification.
 - `REVIEWED_CATALOG_EXPORT_NO_AUTHORITY`: exports establish no completeness, ranking, consensus,
   approval, efficacy, promotion, scoring, alert, options, brokerage, or trading authority.
+
+## Phase 7Q reviewed-catalog export verification rules
+
+- `REVIEWED_CATALOG_EXPORT_AUDIT_EXACT_SOURCE`: every attempt references one persisted Phase 7P
+  export and exact Phase 7O catalog.
+- `REVIEWED_CATALOG_EXPORT_AUDIT_FULL_VERIFY`: success requires current byte equality, expected
+  manifest equality, and complete upstream Phase 7O-to-Phase 7K verification.
+- `REVIEWED_CATALOG_EXPORT_AUDIT_FAILURE_RECORDED`: missing, modified, configuration-mismatched,
+  or invalid evidence appends `FAILED` with a stable non-sensitive reason.
+- `REVIEWED_CATALOG_EXPORT_AUDIT_CAUSAL_TIME`: caller time is aware and cannot predate the source
+  catalog, but remains explicitly untrusted.
+- `REVIEWED_CATALOG_EXPORT_AUDIT_HISTORY`: exact retries are idempotent and prior attempts remain.
+- `REVIEWED_CATALOG_EXPORT_AUDIT_NO_AUTHORITY`: receipts establish no completeness, ranking,
+  consensus, approval, efficacy, promotion, scoring, alert, options, brokerage, or trading authority.

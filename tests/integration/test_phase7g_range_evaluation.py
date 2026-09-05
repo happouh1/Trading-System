@@ -459,10 +459,51 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
         str(ROOT / "config/range_reclaim.phase7k.v1.yaml"),
     ]
     assert main(catalog_export_status_args) == 0
+    catalog_export_audit_args = [
+        "research",
+        "range-reviewed-bundle-catalog-export-audit",
+        "--database",
+        str(database),
+        "--export-id",
+        catalog_export_id,
+        "--verified-at",
+        "2026-09-05T16:00:00Z",
+        "--audit-config",
+        str(ROOT / "config/range_reclaim.phase7q.v1.yaml"),
+        "--export-config",
+        str(ROOT / "config/range_reclaim.phase7p.v1.yaml"),
+        "--catalog-config",
+        str(ROOT / "config/range_reclaim.phase7o.v1.yaml"),
+        "--bundle-config",
+        str(ROOT / "config/range_reclaim.phase7m.v1.yaml"),
+        "--source-config",
+        str(ROOT / "config/range_reclaim.phase7k.v1.yaml"),
+    ]
+    assert main(catalog_export_audit_args) == 0
+    assert main(catalog_export_audit_args) == 0
     catalog_export_bytes = catalog_export_output.read_bytes()
     catalog_export_output.write_bytes(catalog_export_bytes + b"tampered")
     with pytest.raises(ValueError, match="manifest content is corrupt"):
         main(catalog_export_status_args)
+    catalog_export_audit_args[
+        catalog_export_audit_args.index("2026-09-05T16:00:00Z")
+    ] = "2026-09-05T17:00:00Z"
+    assert main(catalog_export_audit_args) == 0
+    catalog_export_audit_status_args = [
+        "research",
+        "range-reviewed-bundle-catalog-export-audit-status",
+        "--database",
+        str(database),
+        "--export-id",
+        catalog_export_id,
+    ]
+    assert main(catalog_export_audit_status_args) == 0
+    with SQLiteRepository(database) as repository:
+        statuses = repository.connection.execute(
+            "SELECT status FROM reviewed_range_catalog_export_verifications "
+            "ORDER BY verified_at, verification_id"
+        ).fetchall()
+        assert statuses == [("VERIFIED",), ("FAILED",)]
     catalog_export_output.write_bytes(catalog_export_bytes)
     reviewed_bundle_output.write_bytes(reviewed_bundle_output.read_bytes() + b"tampered")
     with pytest.raises(ValueError, match=r"artifact|container|source changed"):
@@ -516,3 +557,11 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
         repository.connection.commit()
     with pytest.raises(ValueError, match="Phase 7L review is corrupt"):
         main(review_status_args)
+    with SQLiteRepository(database) as repository:
+        repository.connection.execute(
+            "UPDATE reviewed_range_catalog_export_verifications "
+            "SET payload_hash = 'sha256:corrupt' WHERE status = 'FAILED'"
+        )
+        repository.connection.commit()
+    with pytest.raises(ValueError, match="stored Phase 7Q verification is corrupt"):
+        main(catalog_export_audit_status_args)

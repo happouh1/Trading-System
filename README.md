@@ -983,3 +983,18 @@ trading-system research range-reviewed-bundle-catalog-export-status --database D
 The JSON is a portable membership manifest, not an evidence archive, signature, approval, or
 promotion record. See `docs/proposals/phase_7p_atomic_reviewed_range_catalog_exports_v1.md` and
 `docs/phase_7p_review.md`.
+
+## Phase 7Q catalog-export verification receipts
+
+Phase 7Q appends local verification attempts for exact Phase 7P manifest exports while preserving
+both successes and failures.
+
+```text
+trading-system research range-reviewed-bundle-catalog-export-audit --database DB --export-id ID --verified-at 2026-09-05T17:00:00Z --audit-config config/range_reclaim.phase7q.v1.yaml --export-config config/range_reclaim.phase7p.v1.yaml --catalog-config config/range_reclaim.phase7o.v1.yaml --bundle-config config/range_reclaim.phase7m.v1.yaml --source-config config/range_reclaim.phase7k.v1.yaml
+trading-system research range-reviewed-bundle-catalog-export-audit-status --database DB --export-id ID
+```
+
+Receipts prove only local integrity at a caller-asserted time; they are not signatures, trusted
+timestamps, approvals, or promotion records. See
+`docs/proposals/phase_7q_reviewed_catalog_export_verification_receipts_v1.md` and
+`docs/phase_7q_review.md`.

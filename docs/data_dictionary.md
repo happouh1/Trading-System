@@ -897,3 +897,11 @@ local path, SHA-256 byte hash and count, catalog root and entry count, Phase 7O 
 configuration hashes, fixed version, false signature/time/completeness/ranking/approval/promotion
 fields, and disclosures. Migration 067 stores canonical receipt payloads append-only and references
 the exact Phase 7O catalog.
+
+## Phase 7Q catalog-export verification receipts
+
+`ReviewedRangeCatalogExportAuditReceipt` stores deterministic verification ID, exact Phase 7P
+export and Phase 7O catalog IDs, caller-asserted aware time, `VERIFIED` or `FAILED`, expected and
+optional actual byte hashes, canonical reasons, Phase 7Q/7P/7O/7M/7K configuration hashes, fixed
+version, false authority fields, and disclosures. Migration 068 stores canonical payloads and
+hashes append-only by export and attempt time.

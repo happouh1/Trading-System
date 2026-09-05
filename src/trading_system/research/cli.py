@@ -18,6 +18,7 @@ from trading_system.reporting import (
     RangeReportExportRegistry,
     ReviewedRangeBundleAuditRegistry,
     ReviewedRangeBundleRegistry,
+    ReviewedRangeCatalogExportAuditRegistry,
     ReviewedRangeCatalogExportRegistry,
     ReviewedRangeCatalogRegistry,
     build_range_bundle_review,
@@ -28,6 +29,7 @@ from trading_system.reporting import (
     load_reviewed_range_bundle_audit_config,
     load_reviewed_range_bundle_config,
     load_reviewed_range_catalog_config,
+    load_reviewed_range_catalog_export_audit_config,
     load_reviewed_range_catalog_export_config,
     render_persisted_range_evaluation,
     verify_range_evidence_bundle,
@@ -180,6 +182,22 @@ def configure_research_parser(
     reviewed_catalog_export_status.add_argument("--catalog-config", required=True)
     reviewed_catalog_export_status.add_argument("--bundle-config", required=True)
     reviewed_catalog_export_status.add_argument("--source-config", required=True)
+    reviewed_catalog_export_audit = actions.add_parser(
+        "range-reviewed-bundle-catalog-export-audit"
+    )
+    reviewed_catalog_export_audit.add_argument("--database", required=True)
+    reviewed_catalog_export_audit.add_argument("--export-id", required=True)
+    reviewed_catalog_export_audit.add_argument("--verified-at", required=True)
+    reviewed_catalog_export_audit.add_argument("--audit-config", required=True)
+    reviewed_catalog_export_audit.add_argument("--export-config", required=True)
+    reviewed_catalog_export_audit.add_argument("--catalog-config", required=True)
+    reviewed_catalog_export_audit.add_argument("--bundle-config", required=True)
+    reviewed_catalog_export_audit.add_argument("--source-config", required=True)
+    reviewed_catalog_export_audit_status = actions.add_parser(
+        "range-reviewed-bundle-catalog-export-audit-status"
+    )
+    reviewed_catalog_export_audit_status.add_argument("--database", required=True)
+    reviewed_catalog_export_audit_status.add_argument("--export-id", required=True)
 
 
 def _load_object(path: str | Path) -> dict[str, Any]:
@@ -829,6 +847,59 @@ def handle_research(args: argparse.Namespace) -> int:
                 "portable_evidence_archive": False,
                 "membership_complete": False,
                 "ranking_performed": False,
+                "approval_granted": False,
+                "promotion_authority": False,
+                "network_used": False,
+                "broker_write_performed": False,
+            }
+        elif command == "range-reviewed-bundle-catalog-export-audit":
+            phase7q_bundle_config = load_reviewed_range_bundle_config(args.bundle_config)
+            phase7q_source_config = load_range_evidence_bundle_config(args.source_config)
+            phase7q_catalog_config = load_reviewed_range_catalog_config(args.catalog_config)
+            phase7p_config = load_reviewed_range_catalog_export_config(args.export_config)
+            catalog_registry = ReviewedRangeCatalogRegistry(
+                repository,
+                phase7q_catalog_config,
+                phase7q_bundle_config,
+                phase7q_source_config,
+            )
+            phase7p_registry = ReviewedRangeCatalogExportRegistry(
+                repository, catalog_registry
+            )
+            phase7q_receipt = ReviewedRangeCatalogExportAuditRegistry(
+                repository, phase7p_registry
+            ).audit(
+                export_id=args.export_id,
+                verified_at=datetime.fromisoformat(args.verified_at.replace("Z", "+00:00")),
+                audit_config=load_reviewed_range_catalog_export_audit_config(args.audit_config),
+                export_config=phase7p_config,
+                catalog_config=phase7q_catalog_config,
+                bundle_config=phase7q_bundle_config,
+                source_config=phase7q_source_config,
+            )
+            result = {
+                "verification_id": phase7q_receipt.verification_id,
+                "catalog_export_id": phase7q_receipt.catalog_export_id,
+                "catalog_id": phase7q_receipt.catalog_id,
+                "status": phase7q_receipt.status,
+                "reasons": phase7q_receipt.reasons,
+                "trusted_timestamp": False,
+                "signed": False,
+                "membership_complete": False,
+                "ranking_performed": False,
+                "approval_granted": False,
+                "promotion_authority": False,
+                "network_used": False,
+                "broker_write_performed": False,
+            }
+        elif command == "range-reviewed-bundle-catalog-export-audit-status":
+            latest_status, verification_count = ReviewedRangeCatalogExportAuditRegistry(
+                repository
+            ).status(args.export_id)
+            result = {
+                "catalog_export_id": args.export_id,
+                "latest_status": latest_status,
+                "verification_count": verification_count,
                 "approval_granted": False,
                 "promotion_authority": False,
                 "network_used": False,

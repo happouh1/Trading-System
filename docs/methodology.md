@@ -974,3 +974,12 @@ persisted only after the file write completes. Verification reconstructs the can
 and deterministic identity, repeats the full upstream verification chain, regenerates expected
 manifest bytes, and requires exact equality, byte count, and SHA-256 hash. The exported manifest
 contains membership metadata but deliberately does not embed Phase 7M artifact bytes.
+
+## Phase 7Q export-verification methodology
+
+Phase 7Q resolves an exact persisted Phase 7P receipt, requires caller time not to predate the
+source catalog, hashes current manifest bytes, and executes the Phase 7P verifier. That verifier
+reconstructs the expected canonical manifest and recursively revalidates every upstream local
+record and artifact. Any file or validation failure becomes one stable failed receipt. Receipt
+history orders by caller-asserted aware time and deterministic ID; no time or identity is externally
+authenticated.
