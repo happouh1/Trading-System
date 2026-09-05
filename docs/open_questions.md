@@ -965,3 +965,12 @@ frequency without treating repeated availability as evidence of strategy efficac
 a claim stronger than caller-asserted local integrity?
 353. When a Phase 7Q failure follows an earlier success, which incident process should preserve the
 artifact, notify an operator, and prohibit unsafe downstream use without granting promotion power?
+
+354. Which authenticated operator directory, role policy, delegation, and revocation mechanism may
+replace Phase 7R's caller-asserted actor ID?
+355. Which separately authorized notification channel, retry policy, escalation window, and
+deduplication rule should consume an open incident without making delivery evidence authoritative?
+356. Should a future enforcement layer prohibit use of an export with an open incident, and which
+consumer boundaries, override process, and recovery evidence must be governed before doing so?
+357. What retention, redaction, correction, and deletion policy applies to Phase 7R free-text notes,
+especially before incident history leaves the approved local boundary?

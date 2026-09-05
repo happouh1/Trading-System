@@ -504,7 +504,101 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
             "ORDER BY verified_at, verification_id"
         ).fetchall()
         assert statuses == [("VERIFIED",), ("FAILED",)]
+        failed_verification_id = str(
+            repository.connection.execute(
+                "SELECT verification_id FROM reviewed_range_catalog_export_verifications "
+                "WHERE status = 'FAILED'"
+            ).fetchone()[0]
+        )
+    incident_open_args = [
+        "research",
+        "range-reviewed-bundle-catalog-export-incident-open",
+        "--database",
+        str(database),
+        "--verification-id",
+        failed_verification_id,
+        "--occurred-at",
+        "2026-09-05T17:05:00Z",
+        "--actor-id",
+        "fixture-operator",
+        "--note",
+        "Local integrity check failed",
+        "--config",
+        str(ROOT / "config/range_reclaim.phase7r.v1.yaml"),
+    ]
+    assert main(incident_open_args) == 0
+    assert main(incident_open_args) == 0
+    with SQLiteRepository(database) as repository:
+        incident_id = str(
+            repository.connection.execute(
+                "SELECT incident_id FROM reviewed_range_catalog_export_incident_events"
+            ).fetchone()[0]
+        )
+    assert main(
+        [
+            "research",
+            "range-reviewed-bundle-catalog-export-incident-acknowledge",
+            "--database",
+            str(database),
+            "--incident-id",
+            incident_id,
+            "--occurred-at",
+            "2026-09-05T17:10:00Z",
+            "--actor-id",
+            "fixture-operator",
+            "--note",
+            "Investigating exact local export",
+            "--config",
+            str(ROOT / "config/range_reclaim.phase7r.v1.yaml"),
+        ]
+    ) == 0
     catalog_export_output.write_bytes(catalog_export_bytes)
+    catalog_export_audit_args[
+        catalog_export_audit_args.index("2026-09-05T17:00:00Z")
+    ] = "2026-09-05T18:00:00Z"
+    assert main(catalog_export_audit_args) == 0
+    with SQLiteRepository(database) as repository:
+        recovery_verification_id = str(
+            repository.connection.execute(
+                "SELECT verification_id FROM reviewed_range_catalog_export_verifications "
+                "WHERE status = 'VERIFIED' ORDER BY verified_at DESC LIMIT 1"
+            ).fetchone()[0]
+        )
+    incident_resolve_args = [
+        "research",
+        "range-reviewed-bundle-catalog-export-incident-resolve",
+        "--database",
+        str(database),
+        "--incident-id",
+        incident_id,
+        "--recovery-verification-id",
+        recovery_verification_id,
+        "--occurred-at",
+        "2026-09-05T18:05:00Z",
+        "--actor-id",
+        "fixture-operator",
+        "--note",
+        "Exact export restored and reverified",
+        "--config",
+        str(ROOT / "config/range_reclaim.phase7r.v1.yaml"),
+    ]
+    assert main(incident_resolve_args) == 0
+    assert main(incident_resolve_args) == 0
+    incident_status_args = [
+        "research",
+        "range-reviewed-bundle-catalog-export-incident-status",
+        "--database",
+        str(database),
+        "--incident-id",
+        incident_id,
+    ]
+    assert main(incident_status_args) == 0
+    with SQLiteRepository(database) as repository:
+        states = repository.connection.execute(
+            "SELECT new_state FROM reviewed_range_catalog_export_incident_events "
+            "ORDER BY occurred_at, incident_event_id"
+        ).fetchall()
+        assert states == [("OPEN",), ("ACKNOWLEDGED",), ("RESOLVED",)]
     reviewed_bundle_output.write_bytes(reviewed_bundle_output.read_bytes() + b"tampered")
     with pytest.raises(ValueError, match=r"artifact|container|source changed"):
         main(catalog_status_args)
@@ -557,6 +651,14 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
         repository.connection.commit()
     with pytest.raises(ValueError, match="Phase 7L review is corrupt"):
         main(review_status_args)
+    with SQLiteRepository(database) as repository:
+        repository.connection.execute(
+            "UPDATE reviewed_range_catalog_export_incident_events "
+            "SET payload_hash = 'sha256:corrupt' WHERE new_state = 'RESOLVED'"
+        )
+        repository.connection.commit()
+    with pytest.raises(ValueError, match="stored Phase 7R incident event is corrupt"):
+        main(incident_status_args)
     with SQLiteRepository(database) as repository:
         repository.connection.execute(
             "UPDATE reviewed_range_catalog_export_verifications "

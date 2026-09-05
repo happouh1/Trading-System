@@ -998,3 +998,21 @@ Receipts prove only local integrity at a caller-asserted time; they are not sign
 timestamps, approvals, or promotion records. See
 `docs/proposals/phase_7q_reviewed_catalog_export_verification_receipts_v1.md` and
 `docs/phase_7q_review.md`.
+
+## Phase 7R catalog-export verification incidents
+
+Phase 7R records a deterministic append-only incident when an exact Phase 7Q verification fails.
+Acknowledgement records an unauthenticated operator assertion; resolution additionally requires a
+later successful Phase 7Q verification for the same export.
+
+```text
+trading-system research range-reviewed-bundle-catalog-export-incident-open --database DB --verification-id FAILED_ID --occurred-at 2026-09-05T17:05:00Z --actor-id operator --note "investigating" --config config/range_reclaim.phase7r.v1.yaml
+trading-system research range-reviewed-bundle-catalog-export-incident-acknowledge --database DB --incident-id ID --occurred-at 2026-09-05T17:10:00Z --actor-id operator --note "source preserved" --config config/range_reclaim.phase7r.v1.yaml
+trading-system research range-reviewed-bundle-catalog-export-incident-resolve --database DB --incident-id ID --recovery-verification-id VERIFIED_ID --occurred-at 2026-09-05T18:05:00Z --actor-id operator --note "restored and reverified" --config config/range_reclaim.phase7r.v1.yaml
+trading-system research range-reviewed-bundle-catalog-export-incident-status --database DB --incident-id ID
+```
+
+The ledger sends no alerts and enforces no quarantine. It does not mutate artifacts or grant
+approval, promotion, or trading authority. See
+`docs/proposals/phase_7r_reviewed_catalog_export_incident_ledger_v1.md` and
+`docs/phase_7r_review.md`.

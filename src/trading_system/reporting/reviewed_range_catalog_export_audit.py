@@ -261,6 +261,52 @@ class ReviewedRangeCatalogExportAuditRegistry:
                 raise ValueError("stored Phase 7Q verification is corrupt")
         return (None if not rows else str(rows[-1][3]), len(rows))
 
+    def load(self, verification_id: str) -> ReviewedRangeCatalogExportAuditReceipt:
+        row = self.repository.connection.execute(
+            """SELECT catalog_export_id, catalog_id, verified_at, status, expected_hash,
+                      actual_hash, reasons_json, config_hash, export_config_hash,
+                      catalog_config_hash, bundle_config_hash, source_config_hash,
+                      payload_json, payload_hash
+               FROM reviewed_range_catalog_export_verifications
+               WHERE verification_id = ?""",
+            (verification_id,),
+        ).fetchone()
+        if row is None:
+            raise ValueError("unknown Phase 7Q verification receipt")
+        try:
+            payload = json.loads(str(row[12]))
+            reasons = json.loads(str(row[6]))
+        except json.JSONDecodeError as error:
+            raise ValueError("stored Phase 7Q verification is corrupt") from error
+        if not isinstance(payload, dict) or canonical_hash(payload) != str(row[13]):
+            raise ValueError("stored Phase 7Q verification is corrupt")
+        receipt = _audit_receipt(payload)
+        expected_columns = (
+            receipt.catalog_export_id, receipt.catalog_id, receipt.verified_at.isoformat(),
+            receipt.status.value, receipt.expected_hash, receipt.actual_hash,
+            canonical_json(receipt.reasons), receipt.config_hash,
+            receipt.export_config_hash, receipt.catalog_config_hash,
+            receipt.bundle_config_hash, receipt.source_config_hash,
+        )
+        if (
+            receipt.verification_id != verification_id
+            or expected_columns != tuple(row[:12])
+            or reasons != list(receipt.reasons)
+            or receipt.verification_id
+            != deterministic_id(
+                "reviewed_range_catalog_export_verification",
+                (
+                    receipt.catalog_export_id, receipt.catalog_id, receipt.verified_at,
+                    receipt.status, receipt.expected_hash, receipt.actual_hash,
+                    receipt.reasons, receipt.config_hash, receipt.export_config_hash,
+                    receipt.catalog_config_hash, receipt.bundle_config_hash,
+                    receipt.source_config_hash,
+                ),
+            )
+        ):
+            raise ValueError("stored Phase 7Q verification is corrupt")
+        return receipt
+
 
 def _audit_receipt(payload: Mapping[str, object]) -> ReviewedRangeCatalogExportAuditReceipt:
     required = {

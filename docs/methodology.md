@@ -983,3 +983,14 @@ reconstructs the expected canonical manifest and recursively revalidates every u
 record and artifact. Any file or validation failure becomes one stable failed receipt. Receipt
 history orders by caller-asserted aware time and deterministic ID; no time or identity is externally
 authenticated.
+
+## Phase 7R verification-incident methodology
+
+Phase 7R opens one deterministic incident from one exact failed Phase 7Q receipt. The incident ID
+binds the export and failure receipt, so an exact retry cannot create a second incident. Events are
+ordered by caller-asserted aware time and deterministic event ID. An acknowledgement retains the
+original failure as its source. Resolution requires an explicit later `VERIFIED` Phase 7Q receipt
+for the same export and cannot predate that receipt. Status reconstructs canonical event payloads,
+validates the transition chain, and revalidates every referenced Phase 7Q receipt. Actor IDs and
+times remain unauthenticated. The ledger does not alter or delete files and performs no automatic
+notification or enforcement.

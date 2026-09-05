@@ -19,6 +19,7 @@ from trading_system.reporting import (
     ReviewedRangeBundleAuditRegistry,
     ReviewedRangeBundleRegistry,
     ReviewedRangeCatalogExportAuditRegistry,
+    ReviewedRangeCatalogExportIncidentRegistry,
     ReviewedRangeCatalogExportRegistry,
     ReviewedRangeCatalogRegistry,
     build_range_bundle_review,
@@ -31,6 +32,7 @@ from trading_system.reporting import (
     load_reviewed_range_catalog_config,
     load_reviewed_range_catalog_export_audit_config,
     load_reviewed_range_catalog_export_config,
+    load_reviewed_range_catalog_export_incident_config,
     render_persisted_range_evaluation,
     verify_range_evidence_bundle,
     verify_reviewed_range_bundle,
@@ -198,6 +200,39 @@ def configure_research_parser(
     )
     reviewed_catalog_export_audit_status.add_argument("--database", required=True)
     reviewed_catalog_export_audit_status.add_argument("--export-id", required=True)
+    reviewed_catalog_incident_open = actions.add_parser(
+        "range-reviewed-bundle-catalog-export-incident-open"
+    )
+    reviewed_catalog_incident_open.add_argument("--database", required=True)
+    reviewed_catalog_incident_open.add_argument("--verification-id", required=True)
+    reviewed_catalog_incident_open.add_argument("--occurred-at", required=True)
+    reviewed_catalog_incident_open.add_argument("--actor-id", required=True)
+    reviewed_catalog_incident_open.add_argument("--note", default="")
+    reviewed_catalog_incident_open.add_argument("--config", required=True)
+    reviewed_catalog_incident_ack = actions.add_parser(
+        "range-reviewed-bundle-catalog-export-incident-acknowledge"
+    )
+    reviewed_catalog_incident_ack.add_argument("--database", required=True)
+    reviewed_catalog_incident_ack.add_argument("--incident-id", required=True)
+    reviewed_catalog_incident_ack.add_argument("--occurred-at", required=True)
+    reviewed_catalog_incident_ack.add_argument("--actor-id", required=True)
+    reviewed_catalog_incident_ack.add_argument("--note", default="")
+    reviewed_catalog_incident_ack.add_argument("--config", required=True)
+    reviewed_catalog_incident_resolve = actions.add_parser(
+        "range-reviewed-bundle-catalog-export-incident-resolve"
+    )
+    reviewed_catalog_incident_resolve.add_argument("--database", required=True)
+    reviewed_catalog_incident_resolve.add_argument("--incident-id", required=True)
+    reviewed_catalog_incident_resolve.add_argument("--recovery-verification-id", required=True)
+    reviewed_catalog_incident_resolve.add_argument("--occurred-at", required=True)
+    reviewed_catalog_incident_resolve.add_argument("--actor-id", required=True)
+    reviewed_catalog_incident_resolve.add_argument("--note", default="")
+    reviewed_catalog_incident_resolve.add_argument("--config", required=True)
+    reviewed_catalog_incident_status = actions.add_parser(
+        "range-reviewed-bundle-catalog-export-incident-status"
+    )
+    reviewed_catalog_incident_status.add_argument("--database", required=True)
+    reviewed_catalog_incident_status.add_argument("--incident-id", required=True)
 
 
 def _load_object(path: str | Path) -> dict[str, Any]:
@@ -900,6 +935,74 @@ def handle_research(args: argparse.Namespace) -> int:
                 "catalog_export_id": args.export_id,
                 "latest_status": latest_status,
                 "verification_count": verification_count,
+                "approval_granted": False,
+                "promotion_authority": False,
+                "network_used": False,
+                "broker_write_performed": False,
+            }
+        elif command in {
+            "range-reviewed-bundle-catalog-export-incident-open",
+            "range-reviewed-bundle-catalog-export-incident-acknowledge",
+            "range-reviewed-bundle-catalog-export-incident-resolve",
+        }:
+            incident_registry = ReviewedRangeCatalogExportIncidentRegistry(repository)
+            incident_config = load_reviewed_range_catalog_export_incident_config(args.config)
+            occurred_at = datetime.fromisoformat(args.occurred_at.replace("Z", "+00:00"))
+            if command.endswith("-open"):
+                incident_event = incident_registry.open(
+                    verification_id=args.verification_id,
+                    occurred_at=occurred_at,
+                    actor_id=args.actor_id,
+                    note=args.note,
+                    config=incident_config,
+                )
+            elif command.endswith("-acknowledge"):
+                incident_event = incident_registry.acknowledge(
+                    incident_id=args.incident_id,
+                    occurred_at=occurred_at,
+                    actor_id=args.actor_id,
+                    note=args.note,
+                    config=incident_config,
+                )
+            else:
+                incident_event = incident_registry.resolve(
+                    incident_id=args.incident_id,
+                    recovery_verification_id=args.recovery_verification_id,
+                    occurred_at=occurred_at,
+                    actor_id=args.actor_id,
+                    note=args.note,
+                    config=incident_config,
+                )
+            result = {
+                "incident_event_id": incident_event.incident_event_id,
+                "incident_id": incident_event.incident_id,
+                "catalog_export_id": incident_event.catalog_export_id,
+                "source_verification_id": incident_event.source_verification_id,
+                "event_type": incident_event.event_type,
+                "prior_state": incident_event.prior_state,
+                "new_state": incident_event.new_state,
+                "trusted_timestamp": False,
+                "authenticated_actor": False,
+                "artifact_mutated": False,
+                "quarantine_enforced": False,
+                "approval_granted": False,
+                "promotion_authority": False,
+                "network_used": False,
+                "broker_write_performed": False,
+            }
+        elif command == "range-reviewed-bundle-catalog-export-incident-status":
+            incident = ReviewedRangeCatalogExportIncidentRegistry(repository).status(
+                args.incident_id
+            )
+            result = {
+                "incident_id": incident.incident_id,
+                "catalog_export_id": incident.catalog_export_id,
+                "state": incident.state,
+                "event_count": incident.event_count,
+                "opened_at": incident.opened_at,
+                "latest_at": incident.latest_at,
+                "failed_verification_id": incident.failed_verification_id,
+                "recovery_verification_id": incident.recovery_verification_id,
                 "approval_granted": False,
                 "promotion_authority": False,
                 "network_used": False,

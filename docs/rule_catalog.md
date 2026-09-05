@@ -1011,3 +1011,20 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `REVIEWED_CATALOG_EXPORT_AUDIT_HISTORY`: exact retries are idempotent and prior attempts remain.
 - `REVIEWED_CATALOG_EXPORT_AUDIT_NO_AUTHORITY`: receipts establish no completeness, ranking,
   consensus, approval, efficacy, promotion, scoring, alert, options, brokerage, or trading authority.
+
+## Phase 7R reviewed-catalog export incident rules
+
+- `REVIEWED_CATALOG_INCIDENT_EXACT_FAILURE`: an incident opens only from an exact persisted failed
+  Phase 7Q receipt and binds that receipt and its Phase 7P export in its deterministic identity.
+- `REVIEWED_CATALOG_INCIDENT_APPEND_ONLY`: `OPENED`, `ACKNOWLEDGED`, and `RESOLVED` are immutable
+  events; exact retries are idempotent and conflicting transitions fail closed.
+- `REVIEWED_CATALOG_INCIDENT_CAUSAL_TRANSITIONS`: event times are aware and nondecreasing, although
+  they remain caller-asserted and untrusted.
+- `REVIEWED_CATALOG_INCIDENT_RECOVERY_EVIDENCE`: resolution requires an explicit later successful
+  Phase 7Q verification for the same export; acknowledgement alone cannot resolve an incident.
+- `REVIEWED_CATALOG_INCIDENT_SOURCE_REVALIDATION`: status validates canonical event history and
+  every referenced Phase 7Q receipt, including deterministic lineage.
+- `REVIEWED_CATALOG_INCIDENT_NO_ENFORCEMENT`: the ledger sends no notification, mutates no artifact,
+  and enforces no quarantine.
+- `REVIEWED_CATALOG_INCIDENT_NO_AUTHORITY`: states and notes establish no approval, efficacy,
+  promotion, scoring, alert, options, brokerage, or trading authority.

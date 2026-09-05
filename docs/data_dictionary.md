@@ -905,3 +905,16 @@ export and Phase 7O catalog IDs, caller-asserted aware time, `VERIFIED` or `FAIL
 optional actual byte hashes, canonical reasons, Phase 7Q/7P/7O/7M/7K configuration hashes, fixed
 version, false authority fields, and disclosures. Migration 068 stores canonical payloads and
 hashes append-only by export and attempt time.
+
+## Phase 7R catalog-export verification incidents
+
+`ReviewedRangeCatalogExportIncidentEvent` stores a deterministic event and incident ID, exact
+Phase 7P export and Phase 7Q source-verification IDs, caller-asserted aware event time, event type,
+prior and new state, bounded unauthenticated actor ID and note, configuration hash, fixed version,
+false authority fields, and disclosures.
+
+`ReviewedRangeCatalogExportIncidentSummary` is a validated projection of one incident's immutable
+history: current state, event count, opening/latest times, failed verification, and optional recovery
+verification. Migration 069 stores append-only canonical event payloads and hashes with exact
+foreign-key lineage. States are `OPEN`, `ACKNOWLEDGED`, and `RESOLVED`; events are `OPENED`,
+`ACKNOWLEDGED`, and `RESOLVED`.
