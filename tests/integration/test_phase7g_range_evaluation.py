@@ -676,9 +676,56 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
     notification_body = notification_output.read_text(encoding="utf-8")
     assert "fixture-operator" not in notification_body
     assert "Investigating exact local export" not in notification_body
+    notification_export_audit_args = [
+        "research",
+        "range-reviewed-bundle-catalog-export-incident-notification-export-audit",
+        "--database",
+        str(database),
+        "--export-id",
+        notification_export_id,
+        "--verified-at",
+        "2026-09-05T18:10:00Z",
+        "--config",
+        str(ROOT / "config/range_reclaim.phase7u.v1.yaml"),
+        "--export-config",
+        str(ROOT / "config/range_reclaim.phase7t.v1.yaml"),
+        "--source-config",
+        str(ROOT / "config/range_reclaim.phase7s.v1.yaml"),
+    ]
+    assert main(notification_export_audit_args) == 0
+    assert main(notification_export_audit_args) == 0
     notification_output.write_bytes(notification_output.read_bytes() + b"tampered")
     with pytest.raises(ValueError, match="notification export content is corrupt"):
         main(notification_export_status_args)
+    notification_export_audit_args[
+        notification_export_audit_args.index("2026-09-05T18:10:00Z")
+    ] = "2026-09-05T18:15:00Z"
+    assert main(notification_export_audit_args) == 0
+    notification_export_audit_status_args = [
+        "research",
+        "range-reviewed-bundle-catalog-export-incident-notification-export-audit-status",
+        "--database",
+        str(database),
+        "--export-id",
+        notification_export_id,
+    ]
+    assert main(notification_export_audit_status_args) == 0
+    notification_output.unlink()
+    notification_export_audit_args[
+        notification_export_audit_args.index("2026-09-05T18:15:00Z")
+    ] = "2026-09-05T18:20:00Z"
+    assert main(notification_export_audit_args) == 0
+    with SQLiteRepository(database) as repository:
+        notification_export_audit_statuses = repository.connection.execute(
+            "SELECT status FROM "
+            "reviewed_range_catalog_incident_notification_export_verifications "
+            "ORDER BY verified_at, verification_id"
+        ).fetchall()
+        assert notification_export_audit_statuses == [
+            ("VERIFIED",),
+            ("FAILED",),
+            ("FAILED",),
+        ]
     reviewed_bundle_output.write_bytes(reviewed_bundle_output.read_bytes() + b"tampered")
     with pytest.raises(ValueError, match=r"artifact|container|source changed"):
         main(catalog_status_args)
@@ -731,6 +778,14 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
         repository.connection.commit()
     with pytest.raises(ValueError, match="Phase 7L review is corrupt"):
         main(review_status_args)
+    with SQLiteRepository(database) as repository:
+        repository.connection.execute(
+            "UPDATE reviewed_range_catalog_incident_notification_export_verifications "
+            "SET payload_hash = 'sha256:corrupt' WHERE status = 'FAILED'"
+        )
+        repository.connection.commit()
+    with pytest.raises(ValueError, match="stored Phase 7U verification is corrupt"):
+        main(notification_export_audit_status_args)
     with SQLiteRepository(database) as repository:
         repository.connection.execute(
             "UPDATE reviewed_range_catalog_incident_notification_intents "

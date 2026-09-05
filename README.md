@@ -1045,3 +1045,18 @@ The file is an unsigned local handoff artifact, not a delivery attempt or receip
 operator identity or note and grants no enforcement or trading authority. See
 `docs/proposals/phase_7t_atomic_incident_notification_exports_v1.md` and
 `docs/phase_7t_review.md`.
+
+## Phase 7U notification-export verification receipts
+
+Phase 7U appends local verification receipts for those Phase 7T files. It records both successful
+and failed exact-byte checks and revalidates the complete Phase 7S source chain. Caller time is
+untrusted, hashes are unsigned, and the operation has no delivery, quarantine, approval,
+promotion, broker, or trading authority.
+
+```text
+trading-system research range-reviewed-bundle-catalog-export-incident-notification-export-audit --database DB --export-id ID --verified-at 2026-09-05T18:10:00Z --config config/range_reclaim.phase7u.v1.yaml --export-config config/range_reclaim.phase7t.v1.yaml --source-config config/range_reclaim.phase7s.v1.yaml
+trading-system research range-reviewed-bundle-catalog-export-incident-notification-export-audit-status --database DB --export-id ID
+```
+
+See `docs/proposals/phase_7u_incident_notification_export_verification_receipts_v1.md` and
+`docs/phase_7u_review.md`.

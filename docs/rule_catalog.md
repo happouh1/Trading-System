@@ -1061,3 +1061,13 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   attempt, retry, escalation, or recipient acknowledgement.
 - `REVIEWED_CATALOG_NOTIFICATION_EXPORT_NO_AUTHORITY`: exports establish no quarantine, approval,
   efficacy, promotion, scoring, options, brokerage, or trading authority.
+
+## Phase 7U incident-notification export verification
+
+- Verify only a persisted Phase 7T export and require an aware time no earlier than its incident
+  history.
+- Rehash exact file bytes and revalidate the complete Phase 7T/7S source chain.
+- Append `VERIFIED` on complete success; otherwise append `FAILED` with a stable reason.
+- Preserve history and make identical checks idempotent; never overwrite prior evidence.
+- Fail closed on stored receipt corruption.
+- Never deliver, retry, escalate, mutate, quarantine, approve, promote, route, or trade.

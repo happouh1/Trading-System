@@ -1013,3 +1013,12 @@ writes through a flushed and fsynced same-directory temporary file, atomically r
 and then persists a path-bound receipt. Verification reconstructs the canonical receipt and
 deterministic ID, revalidates the full source set, regenerates bytes, and requires exact content,
 size, and SHA-256 equality. The export remains a local delivery-neutral artifact.
+
+## Phase 7U local notification-export verification
+
+Phase 7U independently rehashes the exact file path recorded by Phase 7T and re-runs Phase 7T's
+full-source validation. Every caller-timed check becomes an immutable `VERIFIED` or `FAILED`
+receipt. A missing, unreadable, changed, or source-invalid artifact records the same stable failure
+reason; when bytes are readable their actual SHA-256 is retained. Results do not mutate or
+quarantine artifacts and do not establish delivery, identity, approval, efficacy, or trading
+authority.

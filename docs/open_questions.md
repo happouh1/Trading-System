@@ -992,3 +992,12 @@ content-only receipt, and how would either preserve exact source lineage?
 7T exports may claim interoperability outside this Python implementation?
 365. Which separately authorized consumer may import a Phase 7T artifact, and what atomic claiming,
 deduplication, crash recovery, and ambiguous-delivery rules must it satisfy before network use?
+
+366. Which independently governed schedule and retention policy should determine Phase 7U checks
+without treating repeated verification as evidence of notification delivery or strategy efficacy?
+367. Which authenticated verifier identity, host attestation, signature, and trusted timestamp are
+required before Phase 7U evidence may support a claim stronger than caller-asserted local integrity?
+368. Should a Phase 7U failure open a separate incident, and what deduplication and recovery rules
+must govern that workflow without granting quarantine, approval, or promotion authority?
+369. Which consumers must fail closed on the latest Phase 7U status, and what separately approved
+override and artifact-preservation process is required before enforcement is implemented?

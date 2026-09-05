@@ -940,3 +940,12 @@ false delivery/identity/authority fields, and disclosures.
 
 Migration 071 stores append-only canonical export receipts and hashes. The exported canonical JSON
 contains the exact Phase 7S intents and fixed disclosure fields but no operator identity or note.
+
+## Phase 7U notification-export verification receipt
+
+`ReviewedRangeCatalogIncidentNotificationExportAuditReceipt` stores a deterministic
+`verification_id`, Phase 7T `notification_export_id`, incident ID, caller-asserted aware
+`verified_at`, `VERIFIED`/`FAILED` status, expected and optional observed SHA-256 hashes, stable
+failure reasons, Phase 7U/7T/7S configuration hashes, version, explicit false authority flags, and
+disclosures. SQLite additionally stores canonical payload JSON and its hash. The append-only table
+is `reviewed_range_catalog_incident_notification_export_verifications`.

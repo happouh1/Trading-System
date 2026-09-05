@@ -21,6 +21,7 @@ from trading_system.reporting import (
     ReviewedRangeCatalogExportAuditRegistry,
     ReviewedRangeCatalogExportIncidentRegistry,
     ReviewedRangeCatalogExportRegistry,
+    ReviewedRangeCatalogIncidentNotificationExportAuditRegistry,
     ReviewedRangeCatalogIncidentNotificationExportRegistry,
     ReviewedRangeCatalogIncidentNotificationRegistry,
     ReviewedRangeCatalogRegistry,
@@ -36,6 +37,7 @@ from trading_system.reporting import (
     load_reviewed_range_catalog_export_config,
     load_reviewed_range_catalog_export_incident_config,
     load_reviewed_range_catalog_incident_notification_config,
+    load_reviewed_range_catalog_incident_notification_export_audit_config,
     load_reviewed_range_catalog_incident_notification_export_config,
     render_persisted_range_evaluation,
     verify_range_evidence_bundle,
@@ -265,6 +267,20 @@ def configure_research_parser(
     reviewed_catalog_incident_notify_export_status.add_argument("--export-id", required=True)
     reviewed_catalog_incident_notify_export_status.add_argument("--config", required=True)
     reviewed_catalog_incident_notify_export_status.add_argument("--source-config", required=True)
+    reviewed_catalog_incident_notify_export_audit = actions.add_parser(
+        "range-reviewed-bundle-catalog-export-incident-notification-export-audit"
+    )
+    reviewed_catalog_incident_notify_export_audit.add_argument("--database", required=True)
+    reviewed_catalog_incident_notify_export_audit.add_argument("--export-id", required=True)
+    reviewed_catalog_incident_notify_export_audit.add_argument("--verified-at", required=True)
+    reviewed_catalog_incident_notify_export_audit.add_argument("--config", required=True)
+    reviewed_catalog_incident_notify_export_audit.add_argument("--export-config", required=True)
+    reviewed_catalog_incident_notify_export_audit.add_argument("--source-config", required=True)
+    reviewed_catalog_incident_notify_export_audit_status = actions.add_parser(
+        "range-reviewed-bundle-catalog-export-incident-notification-export-audit-status"
+    )
+    reviewed_catalog_incident_notify_export_audit_status.add_argument("--database", required=True)
+    reviewed_catalog_incident_notify_export_audit_status.add_argument("--export-id", required=True)
 
 
 def _load_object(path: str | Path) -> dict[str, Any]:
@@ -1118,6 +1134,73 @@ def handle_research(args: argparse.Namespace) -> int:
                 "network_used": False,
                 "delivery_attempted": False,
                 "recipient_authenticated": False,
+                "quarantine_enforced": False,
+                "approval_granted": False,
+                "promotion_authority": False,
+                "broker_write_performed": False,
+            }
+        elif command in {
+            "range-reviewed-bundle-catalog-export-incident-notification-export-audit",
+            "range-reviewed-bundle-catalog-export-incident-notification-export-audit-status",
+        }:
+            audit_registry = ReviewedRangeCatalogIncidentNotificationExportAuditRegistry(
+                repository
+            )
+            if command.endswith("-audit"):
+                phase7u_audit_config = (
+                    load_reviewed_range_catalog_incident_notification_export_audit_config(
+                        args.config
+                    )
+                )
+                phase7u_export_config = (
+                    load_reviewed_range_catalog_incident_notification_export_config(
+                        args.export_config
+                    )
+                )
+                phase7u_source_config = load_reviewed_range_catalog_incident_notification_config(
+                    args.source_config
+                )
+                phase7u_notification_registry = ReviewedRangeCatalogIncidentNotificationRegistry(
+                    repository
+                )
+                phase7u_export_registry = ReviewedRangeCatalogIncidentNotificationExportRegistry(
+                    repository, phase7u_notification_registry
+                )
+                audit_registry = (
+                    ReviewedRangeCatalogIncidentNotificationExportAuditRegistry(
+                        repository, phase7u_export_registry
+                    )
+                )
+                phase7u_audit_receipt = audit_registry.audit(
+                    export_id=args.export_id,
+                    verified_at=datetime.fromisoformat(args.verified_at.replace("Z", "+00:00")),
+                    audit_config=phase7u_audit_config,
+                    export_config=phase7u_export_config,
+                    notification_config=phase7u_source_config,
+                )
+                latest_status, verification_count = audit_registry.status(args.export_id)
+                verification_id = phase7u_audit_receipt.verification_id
+                expected_hash = phase7u_audit_receipt.expected_hash
+                actual_hash = phase7u_audit_receipt.actual_hash
+                reasons = phase7u_audit_receipt.reasons
+            else:
+                latest_status, verification_count = audit_registry.status(args.export_id)
+                verification_id = None
+                expected_hash = None
+                actual_hash = None
+                reasons = ()
+            result = {
+                "notification_export_id": args.export_id,
+                "verification_id": verification_id,
+                "latest_status": latest_status,
+                "verification_count": verification_count,
+                "expected_hash": expected_hash,
+                "actual_hash": actual_hash,
+                "reasons": reasons,
+                "network_used": False,
+                "delivery_attempted": False,
+                "recipient_authenticated": False,
+                "artifact_mutated": False,
                 "quarantine_enforced": False,
                 "approval_granted": False,
                 "promotion_authority": False,
