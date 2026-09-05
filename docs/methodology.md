@@ -915,3 +915,11 @@ sequences rather than querying every record for the plan, verifies the current s
 canonical payload of each member, and reconstructs both Phase 7H roots. Only after verification
 does the CLI render Markdown from stored summaries. It neither calls an external service nor
 recomputes any trading or evaluation value.
+
+## Phase 7J atomic export methodology
+
+Phase 7J first performs the complete Phase 7I source verification and deterministic rendering.
+It encodes the result as UTF-8 with LF newlines, writes the bytes to a unique temporary file in the
+destination directory, flushes and fsyncs, then performs an atomic same-filesystem replacement.
+The receipt is inserted only after replacement succeeds. Status reads the file as bytes and
+revalidates its length and SHA-256 hash before revalidating the source report and memberships.

@@ -899,3 +899,10 @@ manifest and preventing an annotation from becoming strategy-promotion authority
 should interrupted local exports be distinguished from verified persisted report evidence?
 324. Which separately specified portable bundle format should include exact member payloads,
 schema files, and verification instructions without implying signature, approval, or promotion?
+
+325. Should Phase 7J additionally fsync the destination directory on platforms that support it,
+and what tested Windows/POSIX durability guarantee is required beyond atomic replacement?
+326. How should a future portable receipt represent relocated files without weakening Phase 7J's
+explicit local-path identity?
+327. Which external signature and trusted-timestamp service, if any, may authenticate an export
+without converting content-integrity evidence into reviewer approval or promotion authority?

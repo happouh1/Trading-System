@@ -828,3 +828,13 @@ Migration 060 adds `range_evaluation_report_members`. Each row stores a Phase 7H
 `ASSIGNMENT` or `SUMMARY` member type, zero-based ordinal, exact source ID, and source payload hash.
 Primary-key and uniqueness constraints prevent ordinal or source reuse within a report and allow
 the exact source sequences to be reconstructed independently of later records for the same plan.
+
+## Phase 7J range report export receipts
+
+`RangeReportExportReceipt` stores a deterministic export ID, source report and plan IDs, absolute
+local output path, SHA-256 byte hash, byte count, assignment and summary roots, Phase 7I rendering
+configuration hash, Phase 7J receipt configuration hash, receipt version, and fixed disclosures.
+
+Migration 061 adds `range_evaluation_report_exports`. Each append-only row references its exact
+Phase 7H report and retains the canonical receipt payload and payload hash. The local path is part
+of receipt identity; moving a file requires a new export receipt.

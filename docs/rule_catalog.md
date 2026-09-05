@@ -898,3 +898,16 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   failed-gate withholding.
 - `RANGE_REPORT_EXPORT_NO_AUTHORITY`: local output grants no inference, efficacy, selection,
   scoring, alert, options, brokerage, or trading authority.
+
+## Phase 7J atomic range-report export rules
+
+- `RANGE_EXPORT_ATOMIC_REPLACE`: report bytes are flushed and fsynced in the destination directory
+  before atomic replacement.
+- `RANGE_EXPORT_RECEIPT_AFTER_WRITE`: no completion receipt is persisted until replacement
+  succeeds; a leftover temporary file is not completion evidence.
+- `RANGE_EXPORT_BYTE_BOUND`: receipt hash and byte count must match the exact local file.
+- `RANGE_EXPORT_SOURCE_REVALIDATED`: status must revalidate the Phase 7H report, ordered Phase 7I
+  membership, underlying payload hashes, and both content roots.
+- `RANGE_EXPORT_IDEMPOTENT`: the same report, path, bytes, and configuration produce one receipt.
+- `RANGE_EXPORT_LOCAL_NO_AUTHORITY`: export and verification use no network or broker and grant no
+  inference, ranking, promotion, scoring, alert, options, or trading authority.

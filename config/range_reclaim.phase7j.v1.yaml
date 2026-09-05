@@ -1,0 +1,20 @@
+{
+  "receipt_version": "7J.1.0",
+  "write_policy": "ATOMIC_SAME_DIRECTORY_REPLACE",
+  "content_encoding": "UTF-8",
+  "newline": "LF",
+  "verification": "SHA256_BYTES_AND_SOURCE_REPORT",
+  "authority": {
+    "network_enabled": false,
+    "recomputation_enabled": false,
+    "ranking_enabled": false,
+    "hypothesis_tests_enabled": false,
+    "efficacy_claims_enabled": false,
+    "parameter_selection_enabled": false,
+    "scoring_enabled": false,
+    "alerts_enabled": false,
+    "options_routing_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

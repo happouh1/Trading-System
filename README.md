@@ -888,3 +888,16 @@ trading-system research range-report --database DB --report-id ID --config confi
 
 The command performs no recomputation, network access, broker write, ranking, or promotion. See
 `docs/proposals/phase_7i_verified_local_range_reports_v1.md` and `docs/phase_7i_review.md`.
+
+## Phase 7J atomic range-report exports
+
+Phase 7J adds an atomic export path and a persisted receipt that binds the exact UTF-8 file bytes
+to the verified Phase 7H roots and Phase 7I rendering policy.
+
+```text
+trading-system research range-report-export --database DB --report-id ID --config config/range_reclaim.phase7i.v1.yaml --receipt-config config/range_reclaim.phase7j.v1.yaml --output report.md
+trading-system research range-report-export-status --database DB --export-id ID --receipt-config config/range_reclaim.phase7j.v1.yaml
+```
+
+Both commands are local-only and grant no research-promotion or trading authority. See
+`docs/proposals/phase_7j_atomic_range_report_exports_v1.md` and `docs/phase_7j_review.md`.

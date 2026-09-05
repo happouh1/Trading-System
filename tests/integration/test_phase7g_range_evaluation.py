@@ -138,6 +138,39 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
     body = output.read_text(encoding="utf-8")
     assert report.report_id in body
     assert "canonical order; not ranked" in body
+    atomic_output = tmp_path / "range-report-atomic.md"
+    assert main(
+        [
+            "research",
+            "range-report-export",
+            "--database",
+            str(database),
+            "--report-id",
+            report.report_id,
+            "--config",
+            str(ROOT / "config/range_reclaim.phase7i.v1.yaml"),
+            "--receipt-config",
+            str(ROOT / "config/range_reclaim.phase7j.v1.yaml"),
+            "--output",
+            str(atomic_output),
+        ]
+    ) == 0
+    assert main(
+        [
+            "research",
+            "range-report-export",
+            "--database",
+            str(database),
+            "--report-id",
+            report.report_id,
+            "--config",
+            str(ROOT / "config/range_reclaim.phase7i.v1.yaml"),
+            "--receipt-config",
+            str(ROOT / "config/range_reclaim.phase7j.v1.yaml"),
+            "--output",
+            str(atomic_output),
+        ]
+    ) == 0
     with SQLiteRepository(database) as repository:
         repository.migrate()
         assert RangeEvaluationRegistry(repository).counts(experiment.plan.plan_id) == expected
@@ -146,6 +179,46 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
         stored_report, stored_summaries = report_registry.load_verified_payloads(report.report_id)
         assert stored_report["report_id"] == report.report_id
         assert len(stored_summaries) == len(evaluation.summaries)
+        export_row = repository.connection.execute(
+            "SELECT export_id FROM range_evaluation_report_exports WHERE report_id = ?",
+            (report.report_id,),
+        ).fetchone()
+        assert export_row is not None
+        export_count = repository.connection.execute(
+            "SELECT COUNT(*) FROM range_evaluation_report_exports WHERE report_id = ?",
+            (report.report_id,),
+        ).fetchone()
+        assert export_count == (1,)
+        export_id = str(export_row[0])
+    assert main(
+        [
+            "research",
+            "range-report-export-status",
+            "--database",
+            str(database),
+            "--export-id",
+            export_id,
+            "--receipt-config",
+            str(ROOT / "config/range_reclaim.phase7j.v1.yaml"),
+        ]
+    ) == 0
+    atomic_output.write_text("tampered\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="content is corrupt"):
+        main(
+            [
+                "research",
+                "range-report-export-status",
+                "--database",
+                str(database),
+                "--export-id",
+                export_id,
+                "--receipt-config",
+                str(ROOT / "config/range_reclaim.phase7j.v1.yaml"),
+            ]
+        )
+    with SQLiteRepository(database) as repository:
+        repository.migrate()
+        report_registry = RangeEvaluationReportRegistry(repository)
         repository.connection.execute(
             "UPDATE range_cohort_summaries SET payload_hash = 'sha256:corrupt'"
         )

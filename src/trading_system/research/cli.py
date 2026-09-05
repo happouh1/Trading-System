@@ -12,8 +12,11 @@ from typing import Any
 from trading_system.patterns import RangeEvaluationReportRegistry
 from trading_system.persistence import SQLiteRepository
 from trading_system.reporting import (
+    RangeReportExportRegistry,
     load_range_report_export_config,
+    load_range_report_receipt_config,
     render_persisted_range_evaluation,
+    write_atomic_range_report,
 )
 from trading_system.research.contracts import (
     ExperimentSpec,
@@ -79,6 +82,16 @@ def configure_research_parser(
     range_report.add_argument("--report-id", required=True)
     range_report.add_argument("--config", required=True)
     range_report.add_argument("--output", required=True)
+    range_export = actions.add_parser("range-report-export")
+    range_export.add_argument("--database", required=True)
+    range_export.add_argument("--report-id", required=True)
+    range_export.add_argument("--config", required=True)
+    range_export.add_argument("--receipt-config", required=True)
+    range_export.add_argument("--output", required=True)
+    range_status = actions.add_parser("range-report-export-status")
+    range_status.add_argument("--database", required=True)
+    range_status.add_argument("--export-id", required=True)
+    range_status.add_argument("--receipt-config", required=True)
 
 
 def _load_object(path: str | Path) -> dict[str, Any]:
@@ -416,6 +429,44 @@ def handle_research(args: argparse.Namespace) -> int:
                 "report_id": args.report_id,
                 "output": args.output,
                 "config_hash": export_config.config_hash,
+                "network_used": False,
+                "broker_write_performed": False,
+            }
+        elif command == "range-report-export":
+            export_config = load_range_report_export_config(args.config)
+            receipt_config = load_range_report_receipt_config(args.receipt_config)
+            report, summaries = RangeEvaluationReportRegistry(
+                repository
+            ).load_verified_payloads(args.report_id)
+            receipt = write_atomic_range_report(
+                body=render_persisted_range_evaluation(export_config, report, summaries),
+                output=args.output,
+                report=report,
+                rendering_config_hash=export_config.config_hash,
+                config=receipt_config,
+            )
+            inserted = RangeReportExportRegistry(repository).persist(receipt)
+            result = {
+                "export_id": receipt.export_id,
+                "report_id": receipt.report_id,
+                "output": receipt.output_path,
+                "content_hash": receipt.content_hash,
+                "byte_count": receipt.byte_count,
+                "receipt_inserted": inserted,
+                "network_used": False,
+                "broker_write_performed": False,
+            }
+        elif command == "range-report-export-status":
+            receipt = RangeReportExportRegistry(repository).verify(
+                args.export_id, load_range_report_receipt_config(args.receipt_config)
+            )
+            result = {
+                "export_id": receipt.export_id,
+                "report_id": receipt.report_id,
+                "output": receipt.output_path,
+                "content_hash": receipt.content_hash,
+                "byte_count": receipt.byte_count,
+                "verified": True,
                 "network_used": False,
                 "broker_write_performed": False,
             }
