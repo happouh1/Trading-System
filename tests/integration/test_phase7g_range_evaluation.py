@@ -202,6 +202,38 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
             str(ROOT / "config/range_reclaim.phase7j.v1.yaml"),
         ]
     ) == 0
+    bundle_output = tmp_path / "range-evidence.zip"
+    bundle_args = [
+        "research",
+        "range-bundle-export",
+        "--database",
+        str(database),
+        "--report-id",
+        report.report_id,
+        "--config",
+        str(ROOT / "config/range_reclaim.phase7k.v1.yaml"),
+        "--output",
+        str(bundle_output),
+    ]
+    assert main(bundle_args) == 0
+    assert main(bundle_args) == 0
+    assert main(
+        [
+            "research",
+            "range-bundle-verify",
+            "--bundle",
+            str(bundle_output),
+            "--config",
+            str(ROOT / "config/range_reclaim.phase7k.v1.yaml"),
+        ]
+    ) == 0
+    with SQLiteRepository(database) as repository:
+        repository.migrate()
+        bundle_count = repository.connection.execute(
+            "SELECT COUNT(*) FROM range_evaluation_bundle_exports WHERE report_id = ?",
+            (report.report_id,),
+        ).fetchone()
+        assert bundle_count == (1,)
     atomic_output.write_text("tampered\n", encoding="utf-8")
     with pytest.raises(ValueError, match="content is corrupt"):
         main(

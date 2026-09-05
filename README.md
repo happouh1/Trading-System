@@ -901,3 +901,18 @@ trading-system research range-report-export-status --database DB --export-id ID 
 
 Both commands are local-only and grant no research-promotion or trading authority. See
 `docs/proposals/phase_7j_atomic_range_report_exports_v1.md` and `docs/phase_7j_review.md`.
+
+## Phase 7K portable range-evidence bundles
+
+Phase 7K creates deterministic ZIP bundles containing the exact report, assignments, summaries,
+schemas, and offline verification instructions. Bundle identity is content-based and survives file
+relocation.
+
+```text
+trading-system research range-bundle-export --database DB --report-id ID --config config/range_reclaim.phase7k.v1.yaml --output evidence.zip
+trading-system research range-bundle-verify --bundle evidence.zip --config config/range_reclaim.phase7k.v1.yaml
+```
+
+The verifier needs no database or network. Bundles remain unsigned and confer no approval,
+promotion, or trading authority. See
+`docs/proposals/phase_7k_portable_range_evidence_bundle_v1.md` and `docs/phase_7k_review.md`.

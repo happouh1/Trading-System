@@ -122,6 +122,16 @@ class RangeEvaluationReportRegistry:
     def load_verified_payloads(
         self, report_id: str
     ) -> tuple[Mapping[str, object], tuple[Mapping[str, object], ...]]:
+        report, _assignments, summaries = self.load_verified_evidence(report_id)
+        return report, summaries
+
+    def load_verified_evidence(
+        self, report_id: str
+    ) -> tuple[
+        Mapping[str, object],
+        tuple[Mapping[str, object], ...],
+        tuple[Mapping[str, object], ...],
+    ]:
         report_row = self.repository.connection.execute(
             """SELECT plan_id, assignment_root, summary_root, payload_json, payload_hash
                FROM range_evaluation_reports WHERE report_id = ?""",
@@ -142,7 +152,7 @@ class RangeEvaluationReportRegistry:
             raise ValueError("stored Phase 7H report identity is corrupt")
         if report_payload.get("plan_id") != str(report_row[0]):
             raise ValueError("stored Phase 7H report plan is corrupt")
-        return report_payload, summaries
+        return report_payload, assignments, summaries
 
     def _load_members(
         self, report_id: str, member_type: str

@@ -923,3 +923,12 @@ It encodes the result as UTF-8 with LF newlines, writes the bytes to a unique te
 destination directory, flushes and fsyncs, then performs an atomic same-filesystem replacement.
 The receipt is inserted only after replacement succeeds. Status reads the file as bytes and
 revalidates its length and SHA-256 hash before revalidating the source report and memberships.
+
+## Phase 7K portable-bundle methodology
+
+Phase 7K reloads the exact Phase 7I membership and verifies source payload hashes and Phase 7H
+roots before packaging. Assignments and summaries are sorted by their deterministic IDs. Canonical
+JSON payloads, fixed schemas, and fixed instructions are individually hashed into a manifest. ZIP
+metadata and ordering are fixed, and storage compression is disabled to avoid implementation-
+dependent output. Offline verification applies resource limits, verifies exact membership and
+bytes, reconstructs both roots, and recomputes the path-independent bundle identity.

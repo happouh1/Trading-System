@@ -838,3 +838,17 @@ configuration hash, Phase 7J receipt configuration hash, receipt version, and fi
 Migration 061 adds `range_evaluation_report_exports`. Each append-only row references its exact
 Phase 7H report and retains the canonical receipt payload and payload hash. The local path is part
 of receipt identity; moving a file requires a new export receipt.
+
+## Phase 7K portable range-evidence bundles
+
+`RangeEvidenceBundleRecord` stores a path-specific local export ID, path-independent bundle ID,
+source report ID, local output path, artifact SHA-256 hash and byte count, manifest byte hash,
+configuration hash, and bundle version.
+
+`RangeEvidenceBundleVerification` reports the verified bundle, report and plan IDs; assignment and
+summary counts; artifact hash and size; configuration hash; and explicit false signature,
+trusted-timestamp, and promotion-authority states.
+
+Migration 062 adds `range_evaluation_bundle_exports`. Records are append-only and reference the
+persisted Phase 7H source report. A relocated copy has the same bundle ID but a distinct local
+export ID if it is separately exported and recorded.

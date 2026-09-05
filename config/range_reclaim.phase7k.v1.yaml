@@ -1,0 +1,28 @@
+{
+  "bundle_version": "7K.1.0",
+  "source": "PERSISTED_VERIFIED_PHASE7I_MEMBERS",
+  "container": "ZIP_STORED",
+  "payload_format": "CANONICAL_JSON_UTF8_LF",
+  "entry_order": "LEXICOGRAPHIC_PATH",
+  "timestamp_policy": "FIXED_1980_01_01",
+  "limits": {
+    "maximum_bundle_bytes": 104857600,
+    "maximum_entry_bytes": 10485760,
+    "maximum_member_count": 100000
+  },
+  "authority": {
+    "network_enabled": false,
+    "signature_enabled": false,
+    "trusted_timestamp_enabled": false,
+    "review_approval_enabled": false,
+    "recomputation_enabled": false,
+    "ranking_enabled": false,
+    "efficacy_claims_enabled": false,
+    "parameter_selection_enabled": false,
+    "scoring_enabled": false,
+    "alerts_enabled": false,
+    "options_routing_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

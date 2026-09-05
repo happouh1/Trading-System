@@ -911,3 +911,19 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `RANGE_EXPORT_IDEMPOTENT`: the same report, path, bytes, and configuration produce one receipt.
 - `RANGE_EXPORT_LOCAL_NO_AUTHORITY`: export and verification use no network or broker and grant no
   inference, ranking, promotion, scoring, alert, options, or trading authority.
+
+## Phase 7K portable range-evidence bundle rules
+
+- `RANGE_BUNDLE_COMPLETE_MEMBERSHIP`: the artifact contains the exact ordered report assignments
+  and summaries plus the source report.
+- `RANGE_BUNDLE_DETERMINISTIC_CONTAINER`: entry order, timestamps, permissions, encoding, newlines,
+  and compression policy are fixed.
+- `RANGE_BUNDLE_CONTENT_IDENTITY`: bundle identity depends on canonical manifest content and never
+  on its local path.
+- `RANGE_BUNDLE_BOUNDED_VERIFY`: verification enforces byte, entry, and member limits before trust.
+- `RANGE_BUNDLE_OFFLINE_VERIFY`: verification requires neither source database nor network and
+  reconstructs both Phase 7H roots.
+- `RANGE_BUNDLE_UNSIGNED`: successful verification proves internal consistency, not signer identity,
+  creation time, approval, efficacy, completeness, or promotion.
+- `RANGE_BUNDLE_NO_AUTHORITY`: no bundle action can affect parameters, scores, alerts, options,
+  brokerage, or trading.

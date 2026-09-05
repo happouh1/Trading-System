@@ -12,11 +12,15 @@ from typing import Any
 from trading_system.patterns import RangeEvaluationReportRegistry
 from trading_system.persistence import SQLiteRepository
 from trading_system.reporting import (
+    RangeEvidenceBundleRegistry,
     RangeReportExportRegistry,
+    load_range_evidence_bundle_config,
     load_range_report_export_config,
     load_range_report_receipt_config,
     render_persisted_range_evaluation,
+    verify_range_evidence_bundle,
     write_atomic_range_report,
+    write_range_evidence_bundle,
 )
 from trading_system.research.contracts import (
     ExperimentSpec,
@@ -92,6 +96,14 @@ def configure_research_parser(
     range_status.add_argument("--database", required=True)
     range_status.add_argument("--export-id", required=True)
     range_status.add_argument("--receipt-config", required=True)
+    range_bundle = actions.add_parser("range-bundle-export")
+    range_bundle.add_argument("--database", required=True)
+    range_bundle.add_argument("--report-id", required=True)
+    range_bundle.add_argument("--config", required=True)
+    range_bundle.add_argument("--output", required=True)
+    range_bundle_verify = actions.add_parser("range-bundle-verify")
+    range_bundle_verify.add_argument("--bundle", required=True)
+    range_bundle_verify.add_argument("--config", required=True)
 
 
 def _load_object(path: str | Path) -> dict[str, Any]:
@@ -353,6 +365,12 @@ def _import_reviews(args: argparse.Namespace, registry: ExperimentRegistry) -> d
 
 
 def handle_research(args: argparse.Namespace) -> int:
+    if args.research_command == "range-bundle-verify":
+        verification = verify_range_evidence_bundle(
+            args.bundle, load_range_evidence_bundle_config(args.config)
+        )
+        print(canonical_json(verification))
+        return 0
     with SQLiteRepository(args.database) as repository:
         repository.migrate()
         registry = ExperimentRegistry(repository)
@@ -467,6 +485,32 @@ def handle_research(args: argparse.Namespace) -> int:
                 "content_hash": receipt.content_hash,
                 "byte_count": receipt.byte_count,
                 "verified": True,
+                "network_used": False,
+                "broker_write_performed": False,
+            }
+        elif command == "range-bundle-export":
+            bundle_config = load_range_evidence_bundle_config(args.config)
+            report, assignments, summaries = RangeEvaluationReportRegistry(
+                repository
+            ).load_verified_evidence(args.report_id)
+            record = write_range_evidence_bundle(
+                output=args.output,
+                report=report,
+                assignments=assignments,
+                summaries=summaries,
+                config=bundle_config,
+            )
+            inserted = RangeEvidenceBundleRegistry(repository).persist(record)
+            result = {
+                "bundle_export_id": record.bundle_export_id,
+                "bundle_id": record.bundle_id,
+                "report_id": record.report_id,
+                "output": record.output_path,
+                "artifact_hash": record.artifact_hash,
+                "artifact_bytes": record.artifact_bytes,
+                "record_inserted": inserted,
+                "signed": False,
+                "trusted_timestamp": False,
                 "network_used": False,
                 "broker_write_performed": False,
             }

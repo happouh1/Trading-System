@@ -906,3 +906,12 @@ and what tested Windows/POSIX durability guarantee is required beyond atomic rep
 explicit local-path identity?
 327. Which external signature and trusted-timestamp service, if any, may authenticate an export
 without converting content-integrity evidence into reviewer approval or promotion authority?
+
+328. Which governed signature algorithm, signer identity, key custody, rotation, revocation, and
+cross-implementation test vectors may authenticate a future Phase 7K bundle?
+329. Which trusted timestamp or transparency-log protocol may attest publication time, including
+outage, retry, historical verification, and trust-anchor behavior?
+330. What encryption, authorized-recipient, transport, redaction, retention, and deletion controls
+must apply before a Phase 7K bundle leaves an approved local boundary?
+331. Should full JSON Schemas become normative validators in another implementation, and which
+cross-language canonical-JSON and ZIP fixtures must pass before claiming interoperability?
