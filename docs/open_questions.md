@@ -940,3 +940,12 @@ occurred while retaining useful failure evidence during service outages?
 be required before a receipt could support a claim stronger than local content verification?
 342. How should repeated scheduled verification frequency, retention, and incident escalation be
 governed without turning availability observations into strategy approval or promotion?
+
+343. Which preregistered universe or denominator could support a future catalog-completeness claim,
+and how would omissions be detected independently of the catalog creator?
+344. Which authenticated curator identity and trusted timestamp mechanism could replace Phase 7O's
+caller assertions while preserving offline verification during external-service outages?
+345. Should identical reviewed-bundle evidence be allowed in multiple named catalogs, and which
+cross-catalog lineage rules could identify reuse without silently deduplicating declared membership?
+346. Which separately governed consumer, if any, may use a verified catalog while proving that
+catalog membership cannot itself grant promotion, scoring, alerting, options, or trading authority?

@@ -1,0 +1,15 @@
+{
+  "catalog_version": "7O.1.0",
+  "source": "EXPLICIT_PHASE7M_EXPORT_AND_PHASE7N_VERIFIED_RECEIPT_PAIRS",
+  "membership": "CALLER_DECLARED_NONEMPTY_UNIQUE_CANONICAL",
+  "verification": "REHASH_AND_FULL_NESTED_VERIFY",
+  "timestamp": "CALLER_ASSERTED_UNTRUSTED_AWARE_CAUSAL",
+  "thresholds": {"minimum_bundle_count_defined": false, "completeness_claim_enabled": false},
+  "authority": {
+    "network_enabled": false, "signature_enabled": false, "trusted_timestamp_enabled": false,
+    "consensus_enabled": false, "ranking_enabled": false, "approval_enabled": false,
+    "efficacy_claims_enabled": false, "promotion_enabled": false, "scoring_enabled": false,
+    "alerts_enabled": false, "options_routing_enabled": false, "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

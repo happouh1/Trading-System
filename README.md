@@ -955,3 +955,17 @@ trading-system research range-reviewed-bundle-audit-status --database DB --expor
 
 Receipts are unsigned content-integrity evidence, not approval or promotion. See
 `docs/proposals/phase_7n_reviewed_bundle_verification_receipts_v1.md` and `docs/phase_7n_review.md`.
+
+## Phase 7O verified reviewed-bundle catalogs
+
+Phase 7O records a caller-declared, canonically ordered set of exact Phase 7M exports paired with
+successful Phase 7N receipts. Creation and status fully revalidate the current nested artifacts.
+
+```text
+trading-system research range-reviewed-bundle-catalog-create --database DB --config config/range_reclaim.phase7o.v1.yaml --bundle-config config/range_reclaim.phase7m.v1.yaml --source-config config/range_reclaim.phase7k.v1.yaml --input catalog.json
+trading-system research range-reviewed-bundle-catalog-status --database DB --config config/range_reclaim.phase7o.v1.yaml --bundle-config config/range_reclaim.phase7m.v1.yaml --source-config config/range_reclaim.phase7k.v1.yaml --catalog-id ID
+```
+
+Membership is not a complete population and grants no ranking, approval, promotion, or trading
+authority. See `docs/proposals/phase_7o_verified_reviewed_range_catalogs_v1.md` and
+`docs/phase_7o_review.md`.

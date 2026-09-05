@@ -341,7 +341,79 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
     ]
     assert main(audit_args) == 0
     assert main(audit_args) == 0
+    with SQLiteRepository(database) as repository:
+        repository.migrate()
+        verification_row = repository.connection.execute(
+            "SELECT verification_id FROM reviewed_range_bundle_verifications "
+            "WHERE reviewed_bundle_export_id = ? AND status = 'VERIFIED'",
+            (reviewed_export_id,),
+        ).fetchone()
+        assert verification_row is not None
+        verification_id = str(verification_row[0])
+    catalog_input = tmp_path / "reviewed-range-catalog.json"
+    catalog_input.write_text(
+        json.dumps(
+            {
+                "catalog_name": "fixture-reviewed-range-catalog",
+                "cataloged_at": "2026-09-05T15:30:00Z",
+                "source_revision": "fixture-phase7o-v1",
+                "sources": [
+                    {
+                        "reviewed_bundle_export_id": reviewed_export_id,
+                        "verification_id": verification_id,
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    catalog_args = [
+        "research",
+        "range-reviewed-bundle-catalog-create",
+        "--database",
+        str(database),
+        "--config",
+        str(ROOT / "config/range_reclaim.phase7o.v1.yaml"),
+        "--bundle-config",
+        str(ROOT / "config/range_reclaim.phase7m.v1.yaml"),
+        "--source-config",
+        str(ROOT / "config/range_reclaim.phase7k.v1.yaml"),
+        "--input",
+        str(catalog_input),
+    ]
+    assert main(catalog_args) == 0
+    assert main(catalog_args) == 0
+    with SQLiteRepository(database) as repository:
+        repository.migrate()
+        catalog_row = repository.connection.execute(
+            "SELECT catalog_id FROM reviewed_range_bundle_catalogs"
+        ).fetchone()
+        assert catalog_row is not None
+        catalog_id = str(catalog_row[0])
+        assert repository.connection.execute(
+            "SELECT COUNT(*) FROM reviewed_range_bundle_catalogs"
+        ).fetchone() == (1,)
+        assert repository.connection.execute(
+            "SELECT COUNT(*) FROM reviewed_range_bundle_catalog_entries"
+        ).fetchone() == (1,)
+    catalog_status_args = [
+        "research",
+        "range-reviewed-bundle-catalog-status",
+        "--database",
+        str(database),
+        "--config",
+        str(ROOT / "config/range_reclaim.phase7o.v1.yaml"),
+        "--bundle-config",
+        str(ROOT / "config/range_reclaim.phase7m.v1.yaml"),
+        "--source-config",
+        str(ROOT / "config/range_reclaim.phase7k.v1.yaml"),
+        "--catalog-id",
+        catalog_id,
+    ]
+    assert main(catalog_status_args) == 0
     reviewed_bundle_output.write_bytes(reviewed_bundle_output.read_bytes() + b"tampered")
+    with pytest.raises(ValueError, match=r"artifact|container|source changed"):
+        main(catalog_status_args)
     audit_args[audit_args.index("2026-09-05T15:00:00Z")] = "2026-09-05T16:00:00Z"
     assert main(audit_args) == 0
     assert main(

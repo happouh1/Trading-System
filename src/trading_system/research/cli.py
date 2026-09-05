@@ -18,6 +18,7 @@ from trading_system.reporting import (
     RangeReportExportRegistry,
     ReviewedRangeBundleAuditRegistry,
     ReviewedRangeBundleRegistry,
+    ReviewedRangeCatalogRegistry,
     build_range_bundle_review,
     load_range_bundle_review_config,
     load_range_evidence_bundle_config,
@@ -25,6 +26,7 @@ from trading_system.reporting import (
     load_range_report_receipt_config,
     load_reviewed_range_bundle_audit_config,
     load_reviewed_range_bundle_config,
+    load_reviewed_range_catalog_config,
     render_persisted_range_evaluation,
     verify_range_evidence_bundle,
     verify_reviewed_range_bundle,
@@ -146,6 +148,18 @@ def configure_research_parser(
     reviewed_bundle_audit_status = actions.add_parser("range-reviewed-bundle-audit-status")
     reviewed_bundle_audit_status.add_argument("--database", required=True)
     reviewed_bundle_audit_status.add_argument("--export-id", required=True)
+    reviewed_catalog = actions.add_parser("range-reviewed-bundle-catalog-create")
+    reviewed_catalog.add_argument("--database", required=True)
+    reviewed_catalog.add_argument("--config", required=True)
+    reviewed_catalog.add_argument("--bundle-config", required=True)
+    reviewed_catalog.add_argument("--source-config", required=True)
+    reviewed_catalog.add_argument("--input", required=True)
+    reviewed_catalog_status = actions.add_parser("range-reviewed-bundle-catalog-status")
+    reviewed_catalog_status.add_argument("--database", required=True)
+    reviewed_catalog_status.add_argument("--config", required=True)
+    reviewed_catalog_status.add_argument("--bundle-config", required=True)
+    reviewed_catalog_status.add_argument("--source-config", required=True)
+    reviewed_catalog_status.add_argument("--catalog-id", required=True)
 
 
 def _load_object(path: str | Path) -> dict[str, Any]:
@@ -159,6 +173,22 @@ def _strings(value: object, name: str) -> tuple[str, ...]:
     if not isinstance(value, list) or not value or not all(isinstance(item, str) for item in value):
         raise ValueError(f"{name} must be a nonempty string list")
     return tuple(str(item) for item in value)
+
+
+def _catalog_sources(value: object) -> tuple[tuple[str, str], ...]:
+    keys = {"reviewed_bundle_export_id", "verification_id"}
+    if not isinstance(value, list) or not value:
+        raise ValueError("Phase 7O catalog sources are invalid")
+    result: list[tuple[str, str]] = []
+    for item in value:
+        if (
+            not isinstance(item, dict)
+            or set(item) != keys
+            or not all(isinstance(item[key], str) for key in keys)
+        ):
+            raise ValueError("Phase 7O catalog sources are invalid")
+        result.append((str(item["reviewed_bundle_export_id"]), str(item["verification_id"])))
+    return tuple(result)
 
 
 def _define(args: argparse.Namespace, registry: ExperimentRegistry) -> dict[str, object]:
@@ -684,6 +714,62 @@ def handle_research(args: argparse.Namespace) -> int:
                 "reviewed_bundle_export_id": args.export_id,
                 "latest_status": latest_status,
                 "verification_count": verification_count,
+                "approval_granted": False,
+                "promotion_authority": False,
+                "network_used": False,
+                "broker_write_performed": False,
+            }
+        elif command == "range-reviewed-bundle-catalog-create":
+            catalog_input = _load_object(args.input)
+            required = {"catalog_name", "cataloged_at", "source_revision", "sources"}
+            if set(catalog_input) != required or not all(
+                isinstance(catalog_input[key], str)
+                for key in ("catalog_name", "cataloged_at", "source_revision")
+            ):
+                raise ValueError("Phase 7O catalog input keys are invalid")
+            sources = _catalog_sources(catalog_input["sources"])
+            catalog_registry = ReviewedRangeCatalogRegistry(
+                repository,
+                load_reviewed_range_catalog_config(args.config),
+                load_reviewed_range_bundle_config(args.bundle_config),
+                load_range_evidence_bundle_config(args.source_config),
+            )
+            catalog = catalog_registry.create(
+                catalog_name=catalog_input["catalog_name"],
+                cataloged_at=datetime.fromisoformat(
+                    catalog_input["cataloged_at"].replace("Z", "+00:00")
+                ),
+                source_revision=catalog_input["source_revision"],
+                sources=sources,
+            )
+            inserted = catalog_registry.persist(catalog)
+            result = {
+                "catalog_id": catalog.catalog_id,
+                "catalog_root": catalog.catalog_root,
+                "entry_count": catalog.entry_count,
+                "record_inserted": inserted,
+                "membership_complete": False,
+                "ranking_performed": False,
+                "approval_granted": False,
+                "promotion_authority": False,
+                "network_used": False,
+                "broker_write_performed": False,
+            }
+        elif command == "range-reviewed-bundle-catalog-status":
+            catalog_registry = ReviewedRangeCatalogRegistry(
+                repository,
+                load_reviewed_range_catalog_config(args.config),
+                load_reviewed_range_bundle_config(args.bundle_config),
+                load_range_evidence_bundle_config(args.source_config),
+            )
+            catalog_root, entry_count = catalog_registry.status(args.catalog_id)
+            result = {
+                "catalog_id": args.catalog_id,
+                "catalog_root": catalog_root,
+                "entry_count": entry_count,
+                "verified": True,
+                "membership_complete": False,
+                "ranking_performed": False,
                 "approval_granted": False,
                 "promotion_authority": False,
                 "network_used": False,

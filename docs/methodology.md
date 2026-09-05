@@ -956,3 +956,12 @@ Phase 7N validates the persisted Phase 7M export record and configuration, reads
 current path, compares exact bytes, and then executes full Phase 7M and nested Phase 7K validation.
 Any file or validation failure becomes one stable failed receipt rather than a partial success.
 Receipts sort by caller-asserted aware time and deterministic ID; time is explicitly untrusted.
+
+## Phase 7O catalog methodology
+
+Phase 7O accepts only explicit export/verification pairs and sorts them by export ID. Each member
+must reference an internally consistent successful Phase 7N receipt, and catalog time cannot
+predate receipt time. Construction and status revalidate the persisted Phase 7M record, current
+artifact bytes, complete Phase 7M container, and nested Phase 7K evidence. Member identity binds
+both persisted payload hashes. The catalog root binds the complete caller-declared sequence, but
+does not claim the sequence is a complete population or a ranked selection.

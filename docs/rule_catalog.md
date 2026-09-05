@@ -969,3 +969,17 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `REVIEWED_BUNDLE_AUDIT_UNTRUSTED_TIME`: caller time is aware but not externally authenticated.
 - `REVIEWED_BUNDLE_AUDIT_NO_AUTHORITY`: receipts do not establish approval, consensus, efficacy,
   promotion, scoring, alerts, options, brokerage, or trading.
+
+## Phase 7O verified reviewed-bundle catalog rules
+
+- `REVIEWED_CATALOG_EXPLICIT_MEMBERSHIP`: members are caller-declared exact Phase 7M export and
+  successful Phase 7N verification pairs; no discovery or completeness claim is performed.
+- `REVIEWED_CATALOG_CANONICAL_MEMBERSHIP`: export IDs are unique and entries sort by export ID.
+- `REVIEWED_CATALOG_CAUSAL_TIME`: caller catalog time is aware and cannot predate a member's
+  caller-asserted verification time.
+- `REVIEWED_CATALOG_FULL_REVALIDATION`: create and status revalidate stored payloads, artifact
+  bytes, full Phase 7M content, and nested Phase 7K evidence.
+- `REVIEWED_CATALOG_APPEND_ONLY`: parent and members persist transactionally; exact retries are
+  idempotent and conflicts fail closed.
+- `REVIEWED_CATALOG_NO_AUTHORITY`: catalogs establish no completeness, ranking, consensus,
+  approval, efficacy, promotion, scoring, alert, options, brokerage, or trading authority.

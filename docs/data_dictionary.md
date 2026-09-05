@@ -878,3 +878,14 @@ append-only canonical local export records referencing the exact source report.
 bundle IDs, caller-asserted aware time, `VERIFIED` or `FAILED`, expected and optional actual hashes,
 canonical reasons, audit and nested-source configuration hashes, fixed false authority fields, and
 disclosures. Migration 065 stores canonical payloads and hashes append-only by export and time.
+
+## Phase 7O verified reviewed-bundle catalogs
+
+`ReviewedRangeCatalogEntry` binds an exact Phase 7M export and reviewed-bundle ID to an exact
+successful Phase 7N verification ID. It preserves artifact and review roots, review count,
+verification time, and both source-record payload hashes.
+
+`ReviewedRangeCatalog` stores deterministic catalog identity, caller-supplied name and aware time,
+canonically ordered entries, catalog root and count, source revision, configuration hash, fixed
+version, false completeness/ranking/approval/promotion fields, and disclosures. Migration 066 adds
+append-only parent and member tables with exact foreign-key lineage.

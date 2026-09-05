@@ -53,6 +53,14 @@ from trading_system.reporting.reviewed_range_bundle_audit import (
     ReviewedRangeBundleAuditStatus,
     load_reviewed_range_bundle_audit_config,
 )
+from trading_system.reporting.reviewed_range_catalog import (
+    ReviewedRangeCatalog,
+    ReviewedRangeCatalogConfig,
+    ReviewedRangeCatalogConfigError,
+    ReviewedRangeCatalogEntry,
+    ReviewedRangeCatalogRegistry,
+    load_reviewed_range_catalog_config,
+)
 
 __all__ = [
     "RangeBundleReviewAssertion",
@@ -81,6 +89,11 @@ __all__ = [
     "ReviewedRangeBundleRecord",
     "ReviewedRangeBundleRegistry",
     "ReviewedRangeBundleVerification",
+    "ReviewedRangeCatalog",
+    "ReviewedRangeCatalogConfig",
+    "ReviewedRangeCatalogConfigError",
+    "ReviewedRangeCatalogEntry",
+    "ReviewedRangeCatalogRegistry",
     "build_range_bundle_review",
     "export_csv",
     "export_jsonl",
@@ -90,6 +103,7 @@ __all__ = [
     "load_range_report_receipt_config",
     "load_reviewed_range_bundle_audit_config",
     "load_reviewed_range_bundle_config",
+    "load_reviewed_range_catalog_config",
     "markdown_report",
     "parse_range_bundle_review_payload",
     "render_persisted_range_evaluation",
