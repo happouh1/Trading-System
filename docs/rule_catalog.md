@@ -1028,3 +1028,19 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   and enforces no quarantine.
 - `REVIEWED_CATALOG_INCIDENT_NO_AUTHORITY`: states and notes establish no approval, efficacy,
   promotion, scoring, alert, options, brokerage, or trading authority.
+
+## Phase 7S offline incident notification-intent rules
+
+- `REVIEWED_CATALOG_NOTIFICATION_VALIDATED_SOURCE`: every intent derives from one event in a fully
+  validated Phase 7R incident history.
+- `REVIEWED_CATALOG_NOTIFICATION_EXACTLY_ONCE_IDENTITY`: intent identity binds the exact incident
+  event and Phase 7S configuration; exact retries are idempotent.
+- `REVIEWED_CATALOG_NOTIFICATION_COMPLETE_SET`: status requires one stored intent for every current
+  source event and rejects missing, extra, mismatched, or corrupt records.
+- `REVIEWED_CATALOG_NOTIFICATION_MINIMAL_CONTENT`: intents exclude actor IDs and free-text notes.
+- `REVIEWED_CATALOG_NOTIFICATION_OFFLINE_ONLY`: route is `LOCAL_OPERATOR_OUTBOX`, delivery attempts
+  remain zero, and no network, retry, escalation, or recipient authentication occurs.
+- `REVIEWED_CATALOG_NOTIFICATION_NO_ENFORCEMENT`: intents neither mutate artifacts nor enforce
+  quarantine.
+- `REVIEWED_CATALOG_NOTIFICATION_NO_AUTHORITY`: intents establish no approval, efficacy, promotion,
+  scoring, options, brokerage, or trading authority.

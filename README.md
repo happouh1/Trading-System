@@ -1016,3 +1016,17 @@ The ledger sends no alerts and enforces no quarantine. It does not mutate artifa
 approval, promotion, or trading authority. See
 `docs/proposals/phase_7r_reviewed_catalog_export_incident_ledger_v1.md` and
 `docs/phase_7r_review.md`.
+
+## Phase 7S offline incident notification intents
+
+Phase 7S materializes one canonical local outbox intent for every validated Phase 7R incident
+event. Intent content includes identifiers and states but deliberately excludes operator notes.
+
+```text
+trading-system research range-reviewed-bundle-catalog-export-incident-notification-materialize --database DB --incident-id ID --config config/range_reclaim.phase7s.v1.yaml
+trading-system research range-reviewed-bundle-catalog-export-incident-notification-status --database DB --incident-id ID --config config/range_reclaim.phase7s.v1.yaml
+```
+
+The outbox performs no delivery, retry, escalation, or network access and authenticates no
+recipient. See `docs/proposals/phase_7s_offline_incident_notification_intents_v1.md` and
+`docs/phase_7s_review.md`.

@@ -1,0 +1,18 @@
+{
+  "notification_version": "7S.1.0",
+  "source": "VALIDATED_PHASE7R_INCIDENT_EVENTS",
+  "route": "LOCAL_OPERATOR_OUTBOX",
+  "materialization": "ONE_INTENT_PER_EXACT_INCIDENT_EVENT",
+  "delivery_policy": "NONE_OFFLINE_ONLY",
+  "content_policy": "IDENTIFIERS_AND_STATES_ONLY_NO_OPERATOR_NOTE",
+  "authority": {
+    "network_enabled": false, "delivery_enabled": false, "retry_enabled": false,
+    "escalation_enabled": false, "signature_enabled": false,
+    "trusted_timestamp_enabled": false, "authenticated_recipient_enabled": false,
+    "artifact_mutation_enabled": false, "artifact_deletion_enabled": false,
+    "quarantine_enforcement_enabled": false, "approval_enabled": false,
+    "efficacy_claims_enabled": false, "promotion_enabled": false, "scoring_enabled": false,
+    "options_routing_enabled": false, "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

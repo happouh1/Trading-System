@@ -87,6 +87,14 @@ from trading_system.reporting.reviewed_range_catalog_export_incident import (
     ReviewedRangeCatalogExportIncidentSummary,
     load_reviewed_range_catalog_export_incident_config,
 )
+from trading_system.reporting.reviewed_range_catalog_incident_notification import (
+    ReviewedRangeCatalogIncidentNotificationConfig,
+    ReviewedRangeCatalogIncidentNotificationConfigError,
+    ReviewedRangeCatalogIncidentNotificationIntent,
+    ReviewedRangeCatalogIncidentNotificationRegistry,
+    ReviewedRangeCatalogIncidentNotificationSummary,
+    load_reviewed_range_catalog_incident_notification_config,
+)
 
 __all__ = [
     "RangeBundleReviewAssertion",
@@ -135,6 +143,11 @@ __all__ = [
     "ReviewedRangeCatalogExportIncidentSummary",
     "ReviewedRangeCatalogExportReceipt",
     "ReviewedRangeCatalogExportRegistry",
+    "ReviewedRangeCatalogIncidentNotificationConfig",
+    "ReviewedRangeCatalogIncidentNotificationConfigError",
+    "ReviewedRangeCatalogIncidentNotificationIntent",
+    "ReviewedRangeCatalogIncidentNotificationRegistry",
+    "ReviewedRangeCatalogIncidentNotificationSummary",
     "ReviewedRangeCatalogRegistry",
     "build_range_bundle_review",
     "export_csv",
@@ -149,6 +162,7 @@ __all__ = [
     "load_reviewed_range_catalog_export_audit_config",
     "load_reviewed_range_catalog_export_config",
     "load_reviewed_range_catalog_export_incident_config",
+    "load_reviewed_range_catalog_incident_notification_config",
     "markdown_report",
     "parse_range_bundle_review_payload",
     "render_persisted_range_evaluation",

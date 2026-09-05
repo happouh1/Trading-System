@@ -918,3 +918,15 @@ history: current state, event count, opening/latest times, failed verification, 
 verification. Migration 069 stores append-only canonical event payloads and hashes with exact
 foreign-key lineage. States are `OPEN`, `ACKNOWLEDGED`, and `RESOLVED`; events are `OPENED`,
 `ACKNOWLEDGED`, and `RESOLVED`.
+
+## Phase 7S offline incident notification intents
+
+`ReviewedRangeCatalogIncidentNotificationIntent` stores deterministic intent identity, exact
+Phase 7R incident/event lineage, Phase 7P export and Phase 7Q verification lineage, source event
+time/type/state, the fixed `LOCAL_OPERATOR_OUTBOX` route, zero delivery attempts, configuration
+hash, fixed version, false authority fields, and disclosures. It contains no Phase 7R actor ID or
+note.
+
+`ReviewedRangeCatalogIncidentNotificationSummary` reports validated intent count and ordered event
+types for one incident. Migration 070 stores canonical intent payloads and hashes append-only, with
+one intent per source event and configuration hash.

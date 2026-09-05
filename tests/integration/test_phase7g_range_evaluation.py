@@ -599,6 +599,40 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
             "ORDER BY occurred_at, incident_event_id"
         ).fetchall()
         assert states == [("OPEN",), ("ACKNOWLEDGED",), ("RESOLVED",)]
+    notification_materialize_args = [
+        "research",
+        "range-reviewed-bundle-catalog-export-incident-notification-materialize",
+        "--database",
+        str(database),
+        "--incident-id",
+        incident_id,
+        "--config",
+        str(ROOT / "config/range_reclaim.phase7s.v1.yaml"),
+    ]
+    assert main(notification_materialize_args) == 0
+    assert main(notification_materialize_args) == 0
+    notification_status_args = [
+        "research",
+        "range-reviewed-bundle-catalog-export-incident-notification-status",
+        "--database",
+        str(database),
+        "--incident-id",
+        incident_id,
+        "--config",
+        str(ROOT / "config/range_reclaim.phase7s.v1.yaml"),
+    ]
+    assert main(notification_status_args) == 0
+    with SQLiteRepository(database) as repository:
+        notifications = repository.connection.execute(
+            "SELECT event_type, incident_state, delivery_attempt_count "
+            "FROM reviewed_range_catalog_incident_notification_intents "
+            "ORDER BY occurred_at, notification_intent_id"
+        ).fetchall()
+        assert notifications == [
+            ("OPENED", "OPEN", 0),
+            ("ACKNOWLEDGED", "ACKNOWLEDGED", 0),
+            ("RESOLVED", "RESOLVED", 0),
+        ]
     reviewed_bundle_output.write_bytes(reviewed_bundle_output.read_bytes() + b"tampered")
     with pytest.raises(ValueError, match=r"artifact|container|source changed"):
         main(catalog_status_args)
@@ -651,6 +685,14 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
         repository.connection.commit()
     with pytest.raises(ValueError, match="Phase 7L review is corrupt"):
         main(review_status_args)
+    with SQLiteRepository(database) as repository:
+        repository.connection.execute(
+            "UPDATE reviewed_range_catalog_incident_notification_intents "
+            "SET payload_hash = 'sha256:corrupt' WHERE incident_state = 'RESOLVED'"
+        )
+        repository.connection.commit()
+    with pytest.raises(ValueError, match="stored Phase 7S notification intent is corrupt"):
+        main(notification_status_args)
     with SQLiteRepository(database) as repository:
         repository.connection.execute(
             "UPDATE reviewed_range_catalog_export_incident_events "

@@ -974,3 +974,12 @@ deduplication rule should consume an open incident without making delivery evide
 consumer boundaries, override process, and recovery evidence must be governed before doing so?
 357. What retention, redaction, correction, and deletion policy applies to Phase 7R free-text notes,
 especially before incident history leaves the approved local boundary?
+
+358. Which independently authorized delivery adapter, endpoint allowlist, credential store, and
+recipient directory may consume Phase 7S intents without exposing secrets or operator notes?
+359. What acknowledgement, retry, backoff, dead-letter, and deduplication protocol is required
+before delivery attempts may be recorded, and how should provider ambiguity fail closed?
+360. Which preregistered escalation windows and severity mapping should apply to `OPENED`,
+`ACKNOWLEDGED`, and unresolved incidents without interpreting urgency as strategy efficacy?
+361. What authenticated delivery receipt and trusted-time evidence would prove notification receipt
+without granting approval, promotion, quarantine override, or trading authority?

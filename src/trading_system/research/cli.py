@@ -21,6 +21,7 @@ from trading_system.reporting import (
     ReviewedRangeCatalogExportAuditRegistry,
     ReviewedRangeCatalogExportIncidentRegistry,
     ReviewedRangeCatalogExportRegistry,
+    ReviewedRangeCatalogIncidentNotificationRegistry,
     ReviewedRangeCatalogRegistry,
     build_range_bundle_review,
     load_range_bundle_review_config,
@@ -33,6 +34,7 @@ from trading_system.reporting import (
     load_reviewed_range_catalog_export_audit_config,
     load_reviewed_range_catalog_export_config,
     load_reviewed_range_catalog_export_incident_config,
+    load_reviewed_range_catalog_incident_notification_config,
     render_persisted_range_evaluation,
     verify_range_evidence_bundle,
     verify_reviewed_range_bundle,
@@ -233,6 +235,18 @@ def configure_research_parser(
     )
     reviewed_catalog_incident_status.add_argument("--database", required=True)
     reviewed_catalog_incident_status.add_argument("--incident-id", required=True)
+    reviewed_catalog_incident_notify = actions.add_parser(
+        "range-reviewed-bundle-catalog-export-incident-notification-materialize"
+    )
+    reviewed_catalog_incident_notify.add_argument("--database", required=True)
+    reviewed_catalog_incident_notify.add_argument("--incident-id", required=True)
+    reviewed_catalog_incident_notify.add_argument("--config", required=True)
+    reviewed_catalog_incident_notify_status = actions.add_parser(
+        "range-reviewed-bundle-catalog-export-incident-notification-status"
+    )
+    reviewed_catalog_incident_notify_status.add_argument("--database", required=True)
+    reviewed_catalog_incident_notify_status.add_argument("--incident-id", required=True)
+    reviewed_catalog_incident_notify_status.add_argument("--config", required=True)
 
 
 def _load_object(path: str | Path) -> dict[str, Any]:
@@ -1006,6 +1020,41 @@ def handle_research(args: argparse.Namespace) -> int:
                 "approval_granted": False,
                 "promotion_authority": False,
                 "network_used": False,
+                "broker_write_performed": False,
+            }
+        elif command in {
+            "range-reviewed-bundle-catalog-export-incident-notification-materialize",
+            "range-reviewed-bundle-catalog-export-incident-notification-status",
+        }:
+            notification_config = load_reviewed_range_catalog_incident_notification_config(
+                args.config
+            )
+            notification_registry = ReviewedRangeCatalogIncidentNotificationRegistry(repository)
+            if command.endswith("-materialize"):
+                intents = notification_registry.materialize(args.incident_id, notification_config)
+                incident_summary = notification_registry.status(
+                    args.incident_id, notification_config
+                )
+                materialized = len(intents)
+            else:
+                incident_summary = notification_registry.status(
+                    args.incident_id, notification_config
+                )
+                materialized = 0
+            result = {
+                "incident_id": incident_summary.incident_id,
+                "catalog_export_id": incident_summary.catalog_export_id,
+                "intent_count": incident_summary.intent_count,
+                "event_types": incident_summary.event_types,
+                "materialized_count": materialized,
+                "route": "LOCAL_OPERATOR_OUTBOX",
+                "delivery_attempt_count": incident_summary.delivery_attempt_count,
+                "network_used": False,
+                "delivery_attempted": False,
+                "recipient_authenticated": False,
+                "quarantine_enforced": False,
+                "approval_granted": False,
+                "promotion_authority": False,
                 "broker_write_performed": False,
             }
         else:

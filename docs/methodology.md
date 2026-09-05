@@ -994,3 +994,13 @@ for the same export and cannot predate that receipt. Status reconstructs canonic
 validates the transition chain, and revalidates every referenced Phase 7Q receipt. Actor IDs and
 times remain unauthenticated. The ledger does not alter or delete files and performs no automatic
 notification or enforcement.
+
+## Phase 7S offline notification-intent methodology
+
+Phase 7S first loads and fully validates a Phase 7R incident history, including every referenced
+Phase 7Q receipt. It maps each exact incident event to one deterministic local outbox intent whose
+identity binds the source event and Phase 7S configuration hash. Repeated materialization is
+idempotent, while status requires the stored set to equal the complete current incident-event set.
+The content carries only lineage identifiers, source time, event type, and state; it excludes actor
+identity and operator notes. Delivery-attempt count is fixed at zero. No channel is contacted and
+no retry or escalation clock is computed.
