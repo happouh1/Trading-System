@@ -876,3 +876,15 @@ append-only audit manifest, and renders canonical non-ranking Markdown. Failed-g
 withheld explicitly. Reports grant no efficacy, selection, scoring, alerting, options, brokerage,
 or live-trading authority. See `docs/proposals/phase_7h_range_evaluation_audit_reports_v1.md` and
 `docs/phase_7h_review.md`.
+
+## Phase 7I verified local range reports
+
+Phase 7I records exact report membership and adds a local CLI that revalidates every Phase 7G
+payload and both Phase 7H roots before writing canonical non-ranking Markdown.
+
+```text
+trading-system research range-report --database DB --report-id ID --config config/range_reclaim.phase7i.v1.yaml --output report.md
+```
+
+The command performs no recomputation, network access, broker write, ranking, or promotion. See
+`docs/proposals/phase_7i_verified_local_range_reports_v1.md` and `docs/phase_7i_review.md`.

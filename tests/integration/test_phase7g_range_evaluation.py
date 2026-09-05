@@ -14,6 +14,7 @@ from tests.unit.test_phase7d_range_trigger import config as trigger_config
 from tests.unit.test_phase7e_range_entry import config as entry_config
 from tests.unit.test_phase7f_range_outcome import config as outcome_config
 
+from trading_system.cli.main import main
 from trading_system.domain import Observation
 from trading_system.patterns import (
     RangeEntryContext,
@@ -119,11 +120,32 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
         assert report_registry.persist(report, evaluation)
         assert not report_registry.persist(report, evaluation)
         assert report_registry.count(experiment.plan.plan_id) == 1
+    output = tmp_path / "range-report.md"
+    assert main(
+        [
+            "research",
+            "range-report",
+            "--database",
+            str(database),
+            "--report-id",
+            report.report_id,
+            "--config",
+            str(ROOT / "config/range_reclaim.phase7i.v1.yaml"),
+            "--output",
+            str(output),
+        ]
+    ) == 0
+    body = output.read_text(encoding="utf-8")
+    assert report.report_id in body
+    assert "canonical order; not ranked" in body
     with SQLiteRepository(database) as repository:
         repository.migrate()
         assert RangeEvaluationRegistry(repository).counts(experiment.plan.plan_id) == expected
         report_registry = RangeEvaluationReportRegistry(repository)
         assert report_registry.count(experiment.plan.plan_id) == 1
+        stored_report, stored_summaries = report_registry.load_verified_payloads(report.report_id)
+        assert stored_report["report_id"] == report.report_id
+        assert len(stored_summaries) == len(evaluation.summaries)
         repository.connection.execute(
             "UPDATE range_cohort_summaries SET payload_hash = 'sha256:corrupt'"
         )

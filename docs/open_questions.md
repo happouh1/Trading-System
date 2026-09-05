@@ -894,3 +894,8 @@ report without confusing content integrity with reviewer identity or approval?
 roots plus a separately retrievable evidence bundle, and what portability limit should apply?
 322. Which governed review record may annotate a Phase 7H report while preserving the original
 manifest and preventing an annotation from becoming strategy-promotion authority?
+
+323. Should a future Phase 7I export use an atomic temporary-file replacement policy, and how
+should interrupted local exports be distinguished from verified persisted report evidence?
+324. Which separately specified portable bundle format should include exact member payloads,
+schema files, and verification instructions without implying signature, approval, or promotion?

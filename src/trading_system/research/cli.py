@@ -9,7 +9,12 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
+from trading_system.patterns import RangeEvaluationReportRegistry
 from trading_system.persistence import SQLiteRepository
+from trading_system.reporting import (
+    load_range_report_export_config,
+    render_persisted_range_evaluation,
+)
 from trading_system.research.contracts import (
     ExperimentSpec,
     HumanReview,
@@ -69,6 +74,11 @@ def configure_research_parser(
     review_export.add_argument("--database", required=True)
     review_export.add_argument("--experiment-id", required=True)
     review_export.add_argument("--output", required=True)
+    range_report = actions.add_parser("range-report")
+    range_report.add_argument("--database", required=True)
+    range_report.add_argument("--report-id", required=True)
+    range_report.add_argument("--config", required=True)
+    range_report.add_argument("--output", required=True)
 
 
 def _load_object(path: str | Path) -> dict[str, Any]:
@@ -392,6 +402,23 @@ def handle_research(args: argparse.Namespace) -> int:
                 )
             export_jsonl(tuple(exported), args.output)
             result = {"experiment_id": args.experiment_id, "rows": len(rows), "output": args.output}
+        elif command == "range-report":
+            export_config = load_range_report_export_config(args.config)
+            report, summaries = RangeEvaluationReportRegistry(
+                repository
+            ).load_verified_payloads(args.report_id)
+            Path(args.output).write_text(
+                render_persisted_range_evaluation(export_config, report, summaries),
+                encoding="utf-8",
+                newline="\n",
+            )
+            result = {
+                "report_id": args.report_id,
+                "output": args.output,
+                "config_hash": export_config.config_hash,
+                "network_used": False,
+                "broker_write_performed": False,
+            }
         else:
             raise ValueError(f"unsupported research command: {command}")
     print(canonical_json(result))

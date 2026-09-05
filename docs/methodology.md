@@ -907,3 +907,11 @@ fold/partition/timeframe/direction/horizon group to exactly one summary. It reje
 duplicate, or inconsistent summaries and gate/statistics disagreement. Canonically sorted source
 contracts are hashed into separate assignment and summary roots. Persistence rechecks each source
 payload hash. Markdown uses fixed cohort ordering and never outcome-based ranking.
+
+## Phase 7I verified local-report methodology
+
+Phase 7I materializes ordered membership at report persistence time. Reload follows those exact
+sequences rather than querying every record for the plan, verifies the current stored hash and
+canonical payload of each member, and reconstructs both Phase 7H roots. Only after verification
+does the CLI render Markdown from stored summaries. It neither calls an external service nor
+recomputes any trading or evaluation value.

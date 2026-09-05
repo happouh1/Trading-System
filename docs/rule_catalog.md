@@ -884,3 +884,17 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   closed.
 - `RANGE_REPORT_NO_AUTHORITY`: reports create no inference, efficacy, selection, scoring, alert,
   option, broker, or live-trading authority.
+
+## Phase 7I verified local-report rules
+
+- `RANGE_REPORT_MEMBERSHIP_EXACT`: each report has contiguous ordered assignment and summary
+  memberships bound to exact source IDs and payload hashes.
+- `RANGE_REPORT_RELOAD_VERIFY`: report, member payloads, member hashes, and both canonical roots
+  must revalidate before rendering.
+- `RANGE_REPORT_STORED_ONLY`: the CLI renders persisted evidence and cannot recompute outcomes,
+  cohorts, gates, or statistics.
+- `RANGE_REPORT_LOCAL_ONLY`: the command uses no network and performs no broker write.
+- `RANGE_REPORT_EXPORT_NONRANKING`: output retains canonical cohort ordering and explicit
+  failed-gate withholding.
+- `RANGE_REPORT_EXPORT_NO_AUTHORITY`: local output grants no inference, efficacy, selection,
+  scoring, alert, options, brokerage, or trading authority.

@@ -821,3 +821,10 @@ roots; fixed research disclosures; configuration hash; and report version.
 Migration 059 adds `range_evaluation_reports`. Each append-only row references the exact Phase 7C
 plan and retains the two source roots, canonical payload, and payload hash. Uniqueness prevents two
 reports for the same plan and exact source roots.
+
+## Phase 7I range report membership
+
+Migration 060 adds `range_evaluation_report_members`. Each row stores a Phase 7H report ID,
+`ASSIGNMENT` or `SUMMARY` member type, zero-based ordinal, exact source ID, and source payload hash.
+Primary-key and uniqueness constraints prevent ordinal or source reuse within a report and allow
+the exact source sequences to be reconstructed independently of later records for the same plan.

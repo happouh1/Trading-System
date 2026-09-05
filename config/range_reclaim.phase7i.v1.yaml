@@ -1,0 +1,19 @@
+{
+  "export_version": "7I.1.0",
+  "source": "PERSISTED_VERIFIED_PHASE7H_REPORT_ONLY",
+  "format": "MARKDOWN",
+  "cohort_ordering": "FOLD_PARTITION_TIMEFRAME_DIRECTION_HORIZON",
+  "failed_gate_value": "WITHHELD_GATE_FAILED",
+  "authority": {
+    "recomputation_enabled": false,
+    "ranking_enabled": false,
+    "hypothesis_tests_enabled": false,
+    "efficacy_claims_enabled": false,
+    "parameter_selection_enabled": false,
+    "scoring_enabled": false,
+    "alerts_enabled": false,
+    "options_routing_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}
