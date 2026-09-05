@@ -915,3 +915,14 @@ outage, retry, historical verification, and trust-anchor behavior?
 must apply before a Phase 7K bundle leaves an approved local boundary?
 331. Should full JSON Schemas become normative validators in another implementation, and which
 cross-language canonical-JSON and ZIP fixtures must pass before claiming interoperability?
+
+332. Which authenticated reviewer identity, qualification, delegation, rotation, and revocation
+mechanism may replace Phase 7L's explicitly unauthenticated caller assertion?
+333. Which preregistered quorum, conflict-resolution, abstention, and consensus policy could govern
+multiple reviews without interpreting content-integrity checks as strategy efficacy or approval?
+334. Which signature and trusted-timestamp mechanism should authenticate a review, and how must its
+trust anchors, outages, retries, and historical verification behave?
+335. What privacy, redaction, retention, correction, and deletion rules apply to reviewer IDs and
+free-text notes before reviews leave the approved local boundary?
+336. What separately governed process, if any, may consume Phase 7L assertions while proving that
+the annotations themselves cannot promote parameters, scores, alerts, options, or trades?

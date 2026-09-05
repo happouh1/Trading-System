@@ -12,8 +12,12 @@ from typing import Any
 from trading_system.patterns import RangeEvaluationReportRegistry
 from trading_system.persistence import SQLiteRepository
 from trading_system.reporting import (
+    RangeBundleReviewRegistry,
+    RangeBundleReviewVerdict,
     RangeEvidenceBundleRegistry,
     RangeReportExportRegistry,
+    build_range_bundle_review,
+    load_range_bundle_review_config,
     load_range_evidence_bundle_config,
     load_range_report_export_config,
     load_range_report_receipt_config,
@@ -104,6 +108,17 @@ def configure_research_parser(
     range_bundle_verify = actions.add_parser("range-bundle-verify")
     range_bundle_verify.add_argument("--bundle", required=True)
     range_bundle_verify.add_argument("--config", required=True)
+    range_bundle_review = actions.add_parser("range-bundle-review")
+    range_bundle_review.add_argument("--database", required=True)
+    range_bundle_review.add_argument("--bundle", required=True)
+    range_bundle_review.add_argument("--bundle-config", required=True)
+    range_bundle_review.add_argument("--review-config", required=True)
+    range_bundle_review.add_argument("--input", required=True)
+    range_bundle_review_status = actions.add_parser("range-bundle-review-status")
+    range_bundle_review_status.add_argument("--database", required=True)
+    range_bundle_review_status.add_argument("--bundle", required=True)
+    range_bundle_review_status.add_argument("--bundle-config", required=True)
+    range_bundle_review_status.add_argument("--review-config", required=True)
 
 
 def _load_object(path: str | Path) -> dict[str, Any]:
@@ -511,6 +526,67 @@ def handle_research(args: argparse.Namespace) -> int:
                 "record_inserted": inserted,
                 "signed": False,
                 "trusted_timestamp": False,
+                "network_used": False,
+                "broker_write_performed": False,
+            }
+        elif command == "range-bundle-review":
+            bundle_config = load_range_evidence_bundle_config(args.bundle_config)
+            review_config = load_range_bundle_review_config(args.review_config)
+            verification = verify_range_evidence_bundle(args.bundle, bundle_config)
+            review_input = _load_object(args.input)
+            required = {"reviewer_id", "reviewed_at", "verdict", "reason_codes", "notes"}
+            if set(review_input) != required:
+                raise ValueError("Phase 7L review input keys are invalid")
+            reasons = review_input["reason_codes"]
+            if not all(
+                isinstance(review_input[key], str)
+                for key in ("reviewer_id", "reviewed_at", "verdict", "notes")
+            ):
+                raise ValueError("Phase 7L review scalar values must be strings")
+            if not isinstance(reasons, list) or not all(
+                isinstance(item, str) for item in reasons
+            ):
+                raise ValueError("Phase 7L reason_codes must be a string list")
+            review_registry = RangeBundleReviewRegistry(repository)
+            assertion = build_range_bundle_review(
+                verification=verification,
+                bundle_export_id=review_registry.source_export(verification),
+                reviewer_id=review_input["reviewer_id"],
+                reviewed_at=datetime.fromisoformat(
+                    review_input["reviewed_at"].replace("Z", "+00:00")
+                ),
+                verdict=RangeBundleReviewVerdict(review_input["verdict"]),
+                reason_codes=tuple(reasons),
+                notes=review_input["notes"],
+                config=review_config,
+            )
+            inserted = review_registry.persist(assertion)
+            result = {
+                "annotation_id": assertion.annotation_id,
+                "bundle_id": assertion.bundle_id,
+                "verdict": assertion.verdict,
+                "record_inserted": inserted,
+                "reviewer_identity_authenticated": False,
+                "approval_granted": False,
+                "promotion_authority": False,
+                "network_used": False,
+                "broker_write_performed": False,
+            }
+        elif command == "range-bundle-review-status":
+            verification = verify_range_evidence_bundle(
+                args.bundle, load_range_evidence_bundle_config(args.bundle_config)
+            )
+            assertions = RangeBundleReviewRegistry(repository).load_verified(
+                verification, load_range_bundle_review_config(args.review_config)
+            )
+            result = {
+                "bundle_id": verification.bundle_id,
+                "report_id": verification.report_id,
+                "assertion_count": len(assertions),
+                "assertions": assertions,
+                "aggregation_performed": False,
+                "approval_granted": False,
+                "promotion_authority": False,
                 "network_used": False,
                 "broker_write_performed": False,
             }

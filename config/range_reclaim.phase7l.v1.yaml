@@ -1,0 +1,33 @@
+{
+  "review_version": "7L.1.0",
+  "source": "VERIFIED_PHASE7K_BUNDLE",
+  "scope": "CONTENT_INTEGRITY_ASSERTION_ONLY",
+  "reviewer_identity": "CALLER_ASSERTED_UNAUTHENTICATED",
+  "verdicts": [
+    "CONFIRMED_CONTENT_INTEGRITY",
+    "PARTIAL_CONTENT_INTEGRITY",
+    "DISPUTED_CONTENT_INTEGRITY",
+    "UNCERTAIN_CONTENT_INTEGRITY"
+  ],
+  "limits": {
+    "maximum_reason_codes": 16,
+    "maximum_notes_characters": 2000
+  },
+  "aggregation": "NONE_INDIVIDUAL_ASSERTIONS_ONLY",
+  "authority": {
+    "network_enabled": false,
+    "signature_enabled": false,
+    "trusted_timestamp_enabled": false,
+    "authenticated_identity_enabled": false,
+    "approval_enabled": false,
+    "consensus_enabled": false,
+    "efficacy_claims_enabled": false,
+    "promotion_enabled": false,
+    "parameter_selection_enabled": false,
+    "scoring_enabled": false,
+    "alerts_enabled": false,
+    "options_routing_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

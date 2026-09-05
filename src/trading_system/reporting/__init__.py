@@ -1,6 +1,15 @@
 """Machine-readable exports and transparent Phase 1 reports."""
 
 from trading_system.reporting.exports import export_csv, export_jsonl, markdown_report
+from trading_system.reporting.range_bundle_review import (
+    RangeBundleReviewAssertion,
+    RangeBundleReviewConfig,
+    RangeBundleReviewConfigError,
+    RangeBundleReviewRegistry,
+    RangeBundleReviewVerdict,
+    build_range_bundle_review,
+    load_range_bundle_review_config,
+)
 from trading_system.reporting.range_evaluation import (
     RangeReportExportConfig,
     RangeReportExportConfigError,
@@ -27,6 +36,11 @@ from trading_system.reporting.range_export_receipt import (
 )
 
 __all__ = [
+    "RangeBundleReviewAssertion",
+    "RangeBundleReviewConfig",
+    "RangeBundleReviewConfigError",
+    "RangeBundleReviewRegistry",
+    "RangeBundleReviewVerdict",
     "RangeEvidenceBundleConfig",
     "RangeEvidenceBundleConfigError",
     "RangeEvidenceBundleRecord",
@@ -38,8 +52,10 @@ __all__ = [
     "RangeReportExportRegistry",
     "RangeReportReceiptConfig",
     "RangeReportReceiptConfigError",
+    "build_range_bundle_review",
     "export_csv",
     "export_jsonl",
+    "load_range_bundle_review_config",
     "load_range_evidence_bundle_config",
     "load_range_report_export_config",
     "load_range_report_receipt_config",

@@ -916,3 +916,17 @@ trading-system research range-bundle-verify --bundle evidence.zip --config confi
 The verifier needs no database or network. Bundles remain unsigned and confer no approval,
 promotion, or trading authority. See
 `docs/proposals/phase_7k_portable_range_evidence_bundle_v1.md` and `docs/phase_7k_review.md`.
+
+## Phase 7L range-bundle review assertions
+
+Phase 7L appends unauthenticated, content-integrity-only human assertions to a verified Phase 7K
+bundle without modifying its evidence or granting approval.
+
+```text
+trading-system research range-bundle-review --database DB --bundle evidence.zip --bundle-config config/range_reclaim.phase7k.v1.yaml --review-config config/range_reclaim.phase7l.v1.yaml --input review.json
+trading-system research range-bundle-review-status --database DB --bundle evidence.zip --bundle-config config/range_reclaim.phase7k.v1.yaml --review-config config/range_reclaim.phase7l.v1.yaml
+```
+
+Identity and review time are caller assertions, and status never aggregates reviews into consensus.
+See `docs/proposals/phase_7l_unauthenticated_range_bundle_reviews_v1.md` and
+`docs/phase_7l_review.md`.

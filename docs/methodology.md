@@ -932,3 +932,12 @@ JSON payloads, fixed schemas, and fixed instructions are individually hashed int
 metadata and ordering are fixed, and storage compression is disabled to avoid implementation-
 dependent output. Offline verification applies resource limits, verifies exact membership and
 bytes, reconstructs both roots, and recomputes the path-independent bundle identity.
+
+## Phase 7L review methodology
+
+Phase 7L first performs the complete offline Phase 7K verification. It then locates a matching
+local export by bundle ID, report ID, artifact hash and size, and configuration hash, validating
+the export's canonical payload before binding the assertion. Inputs use a fixed content-integrity
+verdict vocabulary; reason codes are deduplicated and sorted. Status re-verifies the supplied
+bundle and every stored review payload. It returns assertions individually and performs no review
+aggregation, efficacy interpretation, approval, or promotion.

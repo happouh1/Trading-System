@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from dataclasses import replace
 from datetime import UTC, datetime
 from decimal import Decimal
@@ -227,6 +228,48 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
             str(ROOT / "config/range_reclaim.phase7k.v1.yaml"),
         ]
     ) == 0
+    review_input = tmp_path / "range-review.json"
+    review_input.write_text(
+        json.dumps(
+            {
+                "reviewer_id": "fixture-reviewer",
+                "reviewed_at": "2026-09-04T14:30:00Z",
+                "verdict": "CONFIRMED_CONTENT_INTEGRITY",
+                "reason_codes": ["ROOTS_MATCH", "MEMBERS_READABLE"],
+                "notes": "Fixture content-integrity review only.",
+            }
+        ),
+        encoding="utf-8",
+    )
+    review_args = [
+        "research",
+        "range-bundle-review",
+        "--database",
+        str(database),
+        "--bundle",
+        str(bundle_output),
+        "--bundle-config",
+        str(ROOT / "config/range_reclaim.phase7k.v1.yaml"),
+        "--review-config",
+        str(ROOT / "config/range_reclaim.phase7l.v1.yaml"),
+        "--input",
+        str(review_input),
+    ]
+    assert main(review_args) == 0
+    assert main(review_args) == 0
+    review_status_args = [
+        "research",
+        "range-bundle-review-status",
+        "--database",
+        str(database),
+        "--bundle",
+        str(bundle_output),
+        "--bundle-config",
+        str(ROOT / "config/range_reclaim.phase7k.v1.yaml"),
+        "--review-config",
+        str(ROOT / "config/range_reclaim.phase7l.v1.yaml"),
+    ]
+    assert main(review_status_args) == 0
     with SQLiteRepository(database) as repository:
         repository.migrate()
         bundle_count = repository.connection.execute(
@@ -234,6 +277,11 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
             (report.report_id,),
         ).fetchone()
         assert bundle_count == (1,)
+        review_count = repository.connection.execute(
+            "SELECT COUNT(*) FROM range_evidence_bundle_reviews WHERE report_id = ?",
+            (report.report_id,),
+        ).fetchone()
+        assert review_count == (1,)
     atomic_output.write_text("tampered\n", encoding="utf-8")
     with pytest.raises(ValueError, match="content is corrupt"):
         main(
@@ -257,3 +305,9 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
         repository.connection.commit()
         with pytest.raises(ValueError, match="missing or corrupt"):
             report_registry.persist(report, evaluation)
+        repository.connection.execute(
+            "UPDATE range_evidence_bundle_reviews SET payload_hash = 'sha256:corrupt'"
+        )
+        repository.connection.commit()
+    with pytest.raises(ValueError, match="Phase 7L review is corrupt"):
+        main(review_status_args)

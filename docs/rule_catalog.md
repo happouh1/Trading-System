@@ -927,3 +927,19 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   creation time, approval, efficacy, completeness, or promotion.
 - `RANGE_BUNDLE_NO_AUTHORITY`: no bundle action can affect parameters, scores, alerts, options,
   brokerage, or trading.
+
+## Phase 7L range-bundle review rules
+
+- `RANGE_REVIEW_VERIFIED_SOURCE`: import and status must first complete Phase 7K bundle
+  verification and match a validated local export record.
+- `RANGE_REVIEW_APPEND_ONLY`: exact retries are idempotent; assertions never alter source evidence.
+- `RANGE_REVIEW_CONTENT_ONLY`: verdicts address content integrity and cannot represent efficacy,
+  strategy approval, or promotion.
+- `RANGE_REVIEW_UNAUTHENTICATED`: reviewer ID and review time are disclosed caller assertions,
+  not authenticated identity or trusted time.
+- `RANGE_REVIEW_NO_AGGREGATION`: status preserves individual assertions and computes no quorum,
+  consensus, vote, or aggregate verdict.
+- `RANGE_REVIEW_FAIL_CLOSED`: invalid configuration, malformed input, mismatched lineage, and
+  corrupt persisted payloads are rejected.
+- `RANGE_REVIEW_NO_AUTHORITY`: reviews cannot affect parameters, scores, alerts, options,
+  brokerage, or trading.

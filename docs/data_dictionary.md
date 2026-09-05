@@ -852,3 +852,14 @@ trusted-timestamp, and promotion-authority states.
 Migration 062 adds `range_evaluation_bundle_exports`. Records are append-only and reference the
 persisted Phase 7H source report. A relocated copy has the same bundle ID but a distinct local
 export ID if it is separately exported and recorded.
+
+## Phase 7L range-bundle reviews
+
+`RangeBundleReviewAssertion` stores a deterministic annotation ID; exact Phase 7K export, bundle,
+report, and artifact identities; caller-asserted reviewer ID and aware timestamp; content-integrity
+verdict; canonical reason codes; bounded notes; configuration hash; fixed review version; false
+authentication, approval, and promotion flags; and fixed authority disclosures.
+
+Migration 063 adds `range_evidence_bundle_reviews`. Rows are append-only, reference an exact local
+Phase 7K export, retain canonical payload JSON and hash, and are canonically read by review time and
+annotation ID. They are individual assertions, not votes or approvals.
