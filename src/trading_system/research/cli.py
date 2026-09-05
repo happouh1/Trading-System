@@ -16,15 +16,19 @@ from trading_system.reporting import (
     RangeBundleReviewVerdict,
     RangeEvidenceBundleRegistry,
     RangeReportExportRegistry,
+    ReviewedRangeBundleRegistry,
     build_range_bundle_review,
     load_range_bundle_review_config,
     load_range_evidence_bundle_config,
     load_range_report_export_config,
     load_range_report_receipt_config,
+    load_reviewed_range_bundle_config,
     render_persisted_range_evaluation,
     verify_range_evidence_bundle,
+    verify_reviewed_range_bundle,
     write_atomic_range_report,
     write_range_evidence_bundle,
+    write_reviewed_range_bundle,
 )
 from trading_system.research.contracts import (
     ExperimentSpec,
@@ -119,6 +123,17 @@ def configure_research_parser(
     range_bundle_review_status.add_argument("--bundle", required=True)
     range_bundle_review_status.add_argument("--bundle-config", required=True)
     range_bundle_review_status.add_argument("--review-config", required=True)
+    reviewed_bundle = actions.add_parser("range-reviewed-bundle-export")
+    reviewed_bundle.add_argument("--database", required=True)
+    reviewed_bundle.add_argument("--bundle", required=True)
+    reviewed_bundle.add_argument("--bundle-config", required=True)
+    reviewed_bundle.add_argument("--review-config", required=True)
+    reviewed_bundle.add_argument("--config", required=True)
+    reviewed_bundle.add_argument("--output", required=True)
+    reviewed_bundle_verify = actions.add_parser("range-reviewed-bundle-verify")
+    reviewed_bundle_verify.add_argument("--bundle", required=True)
+    reviewed_bundle_verify.add_argument("--config", required=True)
+    reviewed_bundle_verify.add_argument("--source-config", required=True)
 
 
 def _load_object(path: str | Path) -> dict[str, Any]:
@@ -386,6 +401,14 @@ def handle_research(args: argparse.Namespace) -> int:
         )
         print(canonical_json(verification))
         return 0
+    if args.research_command == "range-reviewed-bundle-verify":
+        reviewed_verification = verify_reviewed_range_bundle(
+            args.bundle,
+            load_reviewed_range_bundle_config(args.config),
+            load_range_evidence_bundle_config(args.source_config),
+        )
+        print(canonical_json(reviewed_verification))
+        return 0
     with SQLiteRepository(args.database) as repository:
         repository.migrate()
         registry = ExperimentRegistry(repository)
@@ -585,6 +608,37 @@ def handle_research(args: argparse.Namespace) -> int:
                 "assertion_count": len(assertions),
                 "assertions": assertions,
                 "aggregation_performed": False,
+                "approval_granted": False,
+                "promotion_authority": False,
+                "network_used": False,
+                "broker_write_performed": False,
+            }
+        elif command == "range-reviewed-bundle-export":
+            source = verify_range_evidence_bundle(
+                args.bundle, load_range_evidence_bundle_config(args.bundle_config)
+            )
+            review_registry = RangeBundleReviewRegistry(repository)
+            review_registry.source_export(source)
+            reviews = review_registry.load_verified(
+                source, load_range_bundle_review_config(args.review_config)
+            )
+            reviewed_record = write_reviewed_range_bundle(
+                output=args.output,
+                source_bundle=args.bundle,
+                source=source,
+                reviews=reviews,
+                config=load_reviewed_range_bundle_config(args.config),
+            )
+            inserted = ReviewedRangeBundleRegistry(repository).persist(reviewed_record)
+            result = {
+                "reviewed_bundle_export_id": reviewed_record.reviewed_bundle_export_id,
+                "reviewed_bundle_id": reviewed_record.reviewed_bundle_id,
+                "source_bundle_id": reviewed_record.source_bundle_id,
+                "review_count": reviewed_record.review_count,
+                "artifact_hash": reviewed_record.artifact_hash,
+                "record_inserted": inserted,
+                "signed": False,
+                "consensus_established": False,
                 "approval_granted": False,
                 "promotion_authority": False,
                 "network_used": False,

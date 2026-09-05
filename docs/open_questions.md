@@ -926,3 +926,10 @@ trust anchors, outages, retries, and historical verification behave?
 free-text notes before reviews leave the approved local boundary?
 336. What separately governed process, if any, may consume Phase 7L assertions while proving that
 the annotations themselves cannot promote parameters, scores, alerts, options, or trades?
+
+337. Which encryption, recipient authorization, secure transport, retention, and deletion policy
+must govern a Phase 7M artifact before it leaves its approved local boundary?
+338. Which signature, signer-key custody, revocation, and trusted timestamp profile may authenticate
+Phase 7M bytes without converting review history into approval or efficacy?
+339. Should a future format support append-only review additions without repackaging the source,
+and which canonical log proof would preserve complete-history verification across implementations?

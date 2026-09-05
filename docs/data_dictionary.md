@@ -863,3 +863,11 @@ authentication, approval, and promotion flags; and fixed authority disclosures.
 Migration 063 adds `range_evidence_bundle_reviews`. Rows are append-only, reference an exact local
 Phase 7K export, retain canonical payload JSON and hash, and are canonically read by review time and
 annotation ID. They are individual assertions, not votes or approvals.
+
+## Phase 7M reviewed range bundles
+
+`ReviewedRangeBundleRecord` stores path-specific export identity, path-independent reviewed-bundle
+identity, source bundle and report IDs, artifact path/hash/size, review root/count, configuration
+hash, and version. `ReviewedRangeBundleVerification` exposes verified content identity plus fixed
+false signature, authentication, consensus, approval, and promotion states. Migration 064 stores
+append-only canonical local export records referencing the exact source report.

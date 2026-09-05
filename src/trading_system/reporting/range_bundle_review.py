@@ -361,6 +361,13 @@ def _assertion_from_payload(payload: Mapping[str, object]) -> RangeBundleReviewA
     return assertion
 
 
+def parse_range_bundle_review_payload(
+    payload: Mapping[str, object],
+) -> RangeBundleReviewAssertion:
+    """Reconstruct and validate a canonical Phase 7L assertion payload."""
+    return _assertion_from_payload(payload)
+
+
 def _object(value: str) -> Mapping[str, object]:
     parsed = json.loads(value)
     if not isinstance(parsed, dict):

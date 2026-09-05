@@ -9,6 +9,7 @@ from trading_system.reporting.range_bundle_review import (
     RangeBundleReviewVerdict,
     build_range_bundle_review,
     load_range_bundle_review_config,
+    parse_range_bundle_review_payload,
 )
 from trading_system.reporting.range_evaluation import (
     RangeReportExportConfig,
@@ -34,6 +35,16 @@ from trading_system.reporting.range_export_receipt import (
     load_range_report_receipt_config,
     write_atomic_range_report,
 )
+from trading_system.reporting.reviewed_range_bundle import (
+    ReviewedRangeBundleConfig,
+    ReviewedRangeBundleConfigError,
+    ReviewedRangeBundleRecord,
+    ReviewedRangeBundleRegistry,
+    ReviewedRangeBundleVerification,
+    load_reviewed_range_bundle_config,
+    verify_reviewed_range_bundle,
+    write_reviewed_range_bundle,
+)
 
 __all__ = [
     "RangeBundleReviewAssertion",
@@ -52,6 +63,11 @@ __all__ = [
     "RangeReportExportRegistry",
     "RangeReportReceiptConfig",
     "RangeReportReceiptConfigError",
+    "ReviewedRangeBundleConfig",
+    "ReviewedRangeBundleConfigError",
+    "ReviewedRangeBundleRecord",
+    "ReviewedRangeBundleRegistry",
+    "ReviewedRangeBundleVerification",
     "build_range_bundle_review",
     "export_csv",
     "export_jsonl",
@@ -59,9 +75,13 @@ __all__ = [
     "load_range_evidence_bundle_config",
     "load_range_report_export_config",
     "load_range_report_receipt_config",
+    "load_reviewed_range_bundle_config",
     "markdown_report",
+    "parse_range_bundle_review_payload",
     "render_persisted_range_evaluation",
     "verify_range_evidence_bundle",
+    "verify_reviewed_range_bundle",
     "write_atomic_range_report",
     "write_range_evidence_bundle",
+    "write_reviewed_range_bundle",
 ]

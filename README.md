@@ -930,3 +930,16 @@ trading-system research range-bundle-review-status --database DB --bundle eviden
 Identity and review time are caller assertions, and status never aggregates reviews into consensus.
 See `docs/proposals/phase_7l_unauthenticated_range_bundle_reviews_v1.md` and
 `docs/phase_7l_review.md`.
+
+## Phase 7M portable reviewed range bundles
+
+Phase 7M packages the exact Phase 7K artifact with every Phase 7L assertion and verifies the nested
+evidence offline.
+
+```text
+trading-system research range-reviewed-bundle-export --database DB --bundle evidence.zip --bundle-config config/range_reclaim.phase7k.v1.yaml --review-config config/range_reclaim.phase7l.v1.yaml --config config/range_reclaim.phase7m.v1.yaml --output reviewed.zip
+trading-system research range-reviewed-bundle-verify --bundle reviewed.zip --config config/range_reclaim.phase7m.v1.yaml --source-config config/range_reclaim.phase7k.v1.yaml
+```
+
+The bundle is unsigned, unauthenticated, and non-authoritative. See
+`docs/proposals/phase_7m_portable_reviewed_range_bundles_v1.md` and `docs/phase_7m_review.md`.

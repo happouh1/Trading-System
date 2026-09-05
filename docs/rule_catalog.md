@@ -943,3 +943,18 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   corrupt persisted payloads are rejected.
 - `RANGE_REVIEW_NO_AUTHORITY`: reviews cannot affect parameters, scores, alerts, options,
   brokerage, or trading.
+
+## Phase 7M portable reviewed-bundle rules
+
+- `REVIEWED_RANGE_BUNDLE_COMPLETE_HISTORY`: include the exact source artifact and every stored
+  assertion for its content identity.
+- `REVIEWED_RANGE_BUNDLE_DUAL_ROOT`: preserve the source artifact hash separately from the
+  canonical review-history root.
+- `REVIEWED_RANGE_BUNDLE_DETERMINISTIC`: fixed ZIP metadata and canonical JSON produce stable,
+  path-independent bytes and identity.
+- `REVIEWED_RANGE_BUNDLE_NESTED_VERIFY`: offline verification repeats full Phase 7K validation and
+  Phase 7L payload, identity, and lineage validation.
+- `REVIEWED_RANGE_BUNDLE_NO_CONSENSUS`: review history is preserved without counts-as-votes,
+  quorum, consensus, approval, or efficacy interpretation.
+- `REVIEWED_RANGE_BUNDLE_NO_AUTHORITY`: bundle actions cannot affect parameters, scores, alerts,
+  options, brokerage, or trading.

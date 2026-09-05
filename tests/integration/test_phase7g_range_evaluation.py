@@ -270,6 +270,37 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
         str(ROOT / "config/range_reclaim.phase7l.v1.yaml"),
     ]
     assert main(review_status_args) == 0
+    reviewed_bundle_output = tmp_path / "reviewed-range-evidence.zip"
+    reviewed_bundle_args = [
+        "research",
+        "range-reviewed-bundle-export",
+        "--database",
+        str(database),
+        "--bundle",
+        str(bundle_output),
+        "--bundle-config",
+        str(ROOT / "config/range_reclaim.phase7k.v1.yaml"),
+        "--review-config",
+        str(ROOT / "config/range_reclaim.phase7l.v1.yaml"),
+        "--config",
+        str(ROOT / "config/range_reclaim.phase7m.v1.yaml"),
+        "--output",
+        str(reviewed_bundle_output),
+    ]
+    assert main(reviewed_bundle_args) == 0
+    assert main(reviewed_bundle_args) == 0
+    assert main(
+        [
+            "research",
+            "range-reviewed-bundle-verify",
+            "--bundle",
+            str(reviewed_bundle_output),
+            "--config",
+            str(ROOT / "config/range_reclaim.phase7m.v1.yaml"),
+            "--source-config",
+            str(ROOT / "config/range_reclaim.phase7k.v1.yaml"),
+        ]
+    ) == 0
     with SQLiteRepository(database) as repository:
         repository.migrate()
         bundle_count = repository.connection.execute(
@@ -282,6 +313,11 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
             (report.report_id,),
         ).fetchone()
         assert review_count == (1,)
+        reviewed_bundle_count = repository.connection.execute(
+            "SELECT COUNT(*) FROM reviewed_range_evidence_bundle_exports WHERE report_id = ?",
+            (report.report_id,),
+        ).fetchone()
+        assert reviewed_bundle_count == (1,)
     atomic_output.write_text("tampered\n", encoding="utf-8")
     with pytest.raises(ValueError, match="content is corrupt"):
         main(

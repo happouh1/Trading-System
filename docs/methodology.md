@@ -941,3 +941,11 @@ the export's canonical payload before binding the assertion. Inputs use a fixed 
 verdict vocabulary; reason codes are deduplicated and sorted. Status re-verifies the supplied
 bundle and every stored review payload. It returns assertions individually and performs no review
 aggregation, efficacy interpretation, approval, or promotion.
+
+## Phase 7M reviewed-bundle methodology
+
+Phase 7M re-verifies the Phase 7K source and every Phase 7L payload, sorts assertions by content ID,
+and hashes their ID/payload-hash pairs into a review root. The exact original ZIP is embedded
+unchanged. Fixed timestamps, permissions, ordering, and storage compression make container bytes
+deterministic. Offline verification repeats nested Phase 7K validation and all Phase 7L identity
+and lineage checks. No result is aggregated or interpreted.

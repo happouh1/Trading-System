@@ -1,0 +1,16 @@
+{
+  "bundle_version": "7M.1.0",
+  "source": "VERIFIED_PHASE7K_BUNDLE_AND_COMPLETE_PHASE7L_HISTORY",
+  "container": "ZIP_STORED",
+  "entry_order": "LEXICOGRAPHIC_PATH",
+  "timestamp_policy": "FIXED_1980_01_01",
+  "limits": {"maximum_bundle_bytes": 157286400, "maximum_review_count": 10000},
+  "authority": {
+    "network_enabled": false, "signature_enabled": false,
+    "trusted_timestamp_enabled": false, "authenticated_identity_enabled": false,
+    "consensus_enabled": false, "approval_enabled": false, "efficacy_claims_enabled": false,
+    "promotion_enabled": false, "scoring_enabled": false, "alerts_enabled": false,
+    "options_routing_enabled": false, "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}
