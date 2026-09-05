@@ -351,6 +351,74 @@ class ReviewedRangeBundleRegistry:
         self.repository.connection.commit()
         return inserted
 
+    def load(
+        self, export_id: str, config: ReviewedRangeBundleConfig
+    ) -> ReviewedRangeBundleRecord:
+        row = self.repository.connection.execute(
+            """SELECT reviewed_bundle_id, source_bundle_id, report_id, output_path,
+                      artifact_hash, artifact_bytes, review_root, review_count, config_hash,
+                      payload_json, payload_hash
+               FROM reviewed_range_evidence_bundle_exports
+               WHERE reviewed_bundle_export_id = ?""",
+            (export_id,),
+        ).fetchone()
+        if row is None:
+            raise ValueError("unknown Phase 7M reviewed bundle export")
+        try:
+            payload = json.loads(str(row[9]))
+        except json.JSONDecodeError as error:
+            raise ValueError("stored Phase 7M export is corrupt") from error
+        if not isinstance(payload, dict) or canonical_hash(payload) != str(row[10]):
+            raise ValueError("stored Phase 7M export is corrupt")
+        expected_keys = {field for field in ReviewedRangeBundleRecord.__dataclass_fields__} | {
+            "__type__"
+        }
+        if set(payload) != expected_keys or payload.get("__type__") != "ReviewedRangeBundleRecord":
+            raise ValueError("stored Phase 7M export shape is invalid")
+        record = ReviewedRangeBundleRecord(
+            str(payload["reviewed_bundle_export_id"]),
+            str(payload["reviewed_bundle_id"]),
+            str(payload["source_bundle_id"]),
+            str(payload["report_id"]),
+            str(payload["output_path"]),
+            str(payload["artifact_hash"]),
+            int(payload["artifact_bytes"]),
+            str(payload["review_root"]),
+            int(payload["review_count"]),
+            str(payload["config_hash"]),
+            str(payload["bundle_version"]),
+        )
+        columns = tuple(row[:9])
+        values = (
+            record.reviewed_bundle_id,
+            record.source_bundle_id,
+            record.report_id,
+            record.output_path,
+            record.artifact_hash,
+            record.artifact_bytes,
+            record.review_root,
+            record.review_count,
+            record.config_hash,
+        )
+        expected_id = deterministic_id(
+            "reviewed_range_bundle_export",
+            (
+                record.reviewed_bundle_id,
+                record.output_path,
+                record.artifact_hash,
+                record.config_hash,
+            ),
+        )
+        if (
+            columns != values
+            or record.reviewed_bundle_export_id != export_id
+            or expected_id != export_id
+            or record.config_hash != config.config_hash
+            or record.bundle_version != "7M.1.0"
+        ):
+            raise ValueError("stored Phase 7M export lineage is inconsistent")
+        return record
+
 
 def _limit(config: ReviewedRangeBundleConfig, name: str) -> int:
     limits = config.values["limits"]

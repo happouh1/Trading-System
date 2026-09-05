@@ -318,6 +318,48 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
             (report.report_id,),
         ).fetchone()
         assert reviewed_bundle_count == (1,)
+        reviewed_export_row = repository.connection.execute(
+            "SELECT reviewed_bundle_export_id FROM reviewed_range_evidence_bundle_exports"
+        ).fetchone()
+        assert reviewed_export_row is not None
+        reviewed_export_id = str(reviewed_export_row[0])
+    audit_args = [
+        "research",
+        "range-reviewed-bundle-audit",
+        "--database",
+        str(database),
+        "--export-id",
+        reviewed_export_id,
+        "--verified-at",
+        "2026-09-05T15:00:00Z",
+        "--audit-config",
+        str(ROOT / "config/range_reclaim.phase7n.v1.yaml"),
+        "--bundle-config",
+        str(ROOT / "config/range_reclaim.phase7m.v1.yaml"),
+        "--source-config",
+        str(ROOT / "config/range_reclaim.phase7k.v1.yaml"),
+    ]
+    assert main(audit_args) == 0
+    assert main(audit_args) == 0
+    reviewed_bundle_output.write_bytes(reviewed_bundle_output.read_bytes() + b"tampered")
+    audit_args[audit_args.index("2026-09-05T15:00:00Z")] = "2026-09-05T16:00:00Z"
+    assert main(audit_args) == 0
+    assert main(
+        [
+            "research",
+            "range-reviewed-bundle-audit-status",
+            "--database",
+            str(database),
+            "--export-id",
+            reviewed_export_id,
+        ]
+    ) == 0
+    with SQLiteRepository(database) as repository:
+        statuses = repository.connection.execute(
+            "SELECT status FROM reviewed_range_bundle_verifications "
+            "ORDER BY verified_at, verification_id"
+        ).fetchall()
+        assert statuses == [("VERIFIED",), ("FAILED",)]
     atomic_output.write_text("tampered\n", encoding="utf-8")
     with pytest.raises(ValueError, match="content is corrupt"):
         main(

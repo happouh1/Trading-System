@@ -1,0 +1,15 @@
+{
+  "verification_version": "7N.1.0",
+  "source": "PERSISTED_PHASE7M_LOCAL_EXPORT",
+  "verification": "REHASH_AND_FULL_OFFLINE_NESTED_VERIFY",
+  "failure_policy": "APPEND_RECEIPT_AND_FAIL_CLOSED",
+  "timestamp": "CALLER_ASSERTED_UNTRUSTED_AWARE",
+  "authority": {
+    "network_enabled": false, "signature_enabled": false,
+    "trusted_timestamp_enabled": false, "authenticated_identity_enabled": false,
+    "consensus_enabled": false, "approval_enabled": false, "efficacy_claims_enabled": false,
+    "promotion_enabled": false, "scoring_enabled": false, "alerts_enabled": false,
+    "options_routing_enabled": false, "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

@@ -943,3 +943,15 @@ trading-system research range-reviewed-bundle-verify --bundle reviewed.zip --con
 
 The bundle is unsigned, unauthenticated, and non-authoritative. See
 `docs/proposals/phase_7m_portable_reviewed_range_bundles_v1.md` and `docs/phase_7m_review.md`.
+
+## Phase 7N reviewed-bundle verification receipts
+
+Phase 7N records append-only local verification attempts against exact Phase 7M exports.
+
+```text
+trading-system research range-reviewed-bundle-audit --database DB --export-id ID --verified-at 2026-09-05T15:00:00Z --audit-config config/range_reclaim.phase7n.v1.yaml --bundle-config config/range_reclaim.phase7m.v1.yaml --source-config config/range_reclaim.phase7k.v1.yaml
+trading-system research range-reviewed-bundle-audit-status --database DB --export-id ID
+```
+
+Receipts are unsigned content-integrity evidence, not approval or promotion. See
+`docs/proposals/phase_7n_reviewed_bundle_verification_receipts_v1.md` and `docs/phase_7n_review.md`.

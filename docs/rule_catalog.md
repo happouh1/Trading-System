@@ -958,3 +958,14 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   quorum, consensus, approval, or efficacy interpretation.
 - `REVIEWED_RANGE_BUNDLE_NO_AUTHORITY`: bundle actions cannot affect parameters, scores, alerts,
   options, brokerage, or trading.
+
+## Phase 7N reviewed-bundle verification rules
+
+- `REVIEWED_BUNDLE_AUDIT_EXACT_EXPORT`: every receipt references one validated Phase 7M export.
+- `REVIEWED_BUNDLE_AUDIT_FULL_VERIFY`: success requires byte equality plus full Phase 7M and nested
+  Phase 7K verification.
+- `REVIEWED_BUNDLE_AUDIT_FAILURE_RECORDED`: missing, changed, or invalid artifacts append `FAILED`.
+- `REVIEWED_BUNDLE_AUDIT_HISTORY_RETAINED`: retries are idempotent and prior attempts remain visible.
+- `REVIEWED_BUNDLE_AUDIT_UNTRUSTED_TIME`: caller time is aware but not externally authenticated.
+- `REVIEWED_BUNDLE_AUDIT_NO_AUTHORITY`: receipts do not establish approval, consensus, efficacy,
+  promotion, scoring, alerts, options, brokerage, or trading.

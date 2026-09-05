@@ -933,3 +933,10 @@ must govern a Phase 7M artifact before it leaves its approved local boundary?
 Phase 7M bytes without converting review history into approval or efficacy?
 339. Should a future format support append-only review additions without repackaging the source,
 and which canonical log proof would preserve complete-history verification across implementations?
+
+340. Which external transparency log or trusted timestamp could attest when a Phase 7N verification
+occurred while retaining useful failure evidence during service outages?
+341. Which authenticated verifier identity, software attestation, and host-integrity evidence would
+be required before a receipt could support a claim stronger than local content verification?
+342. How should repeated scheduled verification frequency, retention, and incident escalation be
+governed without turning availability observations into strategy approval or promotion?

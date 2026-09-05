@@ -871,3 +871,10 @@ identity, source bundle and report IDs, artifact path/hash/size, review root/cou
 hash, and version. `ReviewedRangeBundleVerification` exposes verified content identity plus fixed
 false signature, authentication, consensus, approval, and promotion states. Migration 064 stores
 append-only canonical local export records referencing the exact source report.
+
+## Phase 7N reviewed-bundle verification receipts
+
+`ReviewedRangeBundleAuditReceipt` stores deterministic verification ID, exact Phase 7M export and
+bundle IDs, caller-asserted aware time, `VERIFIED` or `FAILED`, expected and optional actual hashes,
+canonical reasons, audit and nested-source configuration hashes, fixed false authority fields, and
+disclosures. Migration 065 stores canonical payloads and hashes append-only by export and time.

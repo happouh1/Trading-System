@@ -949,3 +949,10 @@ and hashes their ID/payload-hash pairs into a review root. The exact original ZI
 unchanged. Fixed timestamps, permissions, ordering, and storage compression make container bytes
 deterministic. Offline verification repeats nested Phase 7K validation and all Phase 7L identity
 and lineage checks. No result is aggregated or interpreted.
+
+## Phase 7N verification-receipt methodology
+
+Phase 7N validates the persisted Phase 7M export record and configuration, reads and rehashes the
+current path, compares exact bytes, and then executes full Phase 7M and nested Phase 7K validation.
+Any file or validation failure becomes one stable failed receipt rather than a partial success.
+Receipts sort by caller-asserted aware time and deterministic ID; time is explicitly untrusted.
