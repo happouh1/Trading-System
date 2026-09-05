@@ -1004,3 +1004,12 @@ idempotent, while status requires the stored set to equal the complete current i
 The content carries only lineage identifiers, source time, event type, and state; it excludes actor
 identity and operator notes. Delivery-attempt count is fixed at zero. No channel is contacted and
 no retry or escalation clock is computed.
+
+## Phase 7T notification-intent export methodology
+
+Phase 7T obtains the exact Phase 7S intent set only after complete Phase 7R and Phase 7Q source
+revalidation. It renders the ordered intents as canonical JSON with UTF-8 encoding and one LF,
+writes through a flushed and fsynced same-directory temporary file, atomically replaces the target,
+and then persists a path-bound receipt. Verification reconstructs the canonical receipt and
+deterministic ID, revalidates the full source set, regenerates bytes, and requires exact content,
+size, and SHA-256 equality. The export remains a local delivery-neutral artifact.

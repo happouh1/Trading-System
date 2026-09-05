@@ -1030,3 +1030,18 @@ trading-system research range-reviewed-bundle-catalog-export-incident-notificati
 The outbox performs no delivery, retry, escalation, or network access and authenticates no
 recipient. See `docs/proposals/phase_7s_offline_incident_notification_intents_v1.md` and
 `docs/phase_7s_review.md`.
+
+## Phase 7T atomic notification-intent exports
+
+Phase 7T writes the complete validated Phase 7S intent set as canonical JSON using an atomic local
+replacement and persists a path-bound content receipt.
+
+```text
+trading-system research range-reviewed-bundle-catalog-export-incident-notification-export --database DB --incident-id ID --config config/range_reclaim.phase7t.v1.yaml --source-config config/range_reclaim.phase7s.v1.yaml --output notifications.json
+trading-system research range-reviewed-bundle-catalog-export-incident-notification-export-status --database DB --export-id ID --config config/range_reclaim.phase7t.v1.yaml --source-config config/range_reclaim.phase7s.v1.yaml
+```
+
+The file is an unsigned local handoff artifact, not a delivery attempt or receipt. It contains no
+operator identity or note and grants no enforcement or trading authority. See
+`docs/proposals/phase_7t_atomic_incident_notification_exports_v1.md` and
+`docs/phase_7t_review.md`.

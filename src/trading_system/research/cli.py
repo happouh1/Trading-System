@@ -21,6 +21,7 @@ from trading_system.reporting import (
     ReviewedRangeCatalogExportAuditRegistry,
     ReviewedRangeCatalogExportIncidentRegistry,
     ReviewedRangeCatalogExportRegistry,
+    ReviewedRangeCatalogIncidentNotificationExportRegistry,
     ReviewedRangeCatalogIncidentNotificationRegistry,
     ReviewedRangeCatalogRegistry,
     build_range_bundle_review,
@@ -35,12 +36,14 @@ from trading_system.reporting import (
     load_reviewed_range_catalog_export_config,
     load_reviewed_range_catalog_export_incident_config,
     load_reviewed_range_catalog_incident_notification_config,
+    load_reviewed_range_catalog_incident_notification_export_config,
     render_persisted_range_evaluation,
     verify_range_evidence_bundle,
     verify_reviewed_range_bundle,
     write_atomic_range_report,
     write_range_evidence_bundle,
     write_reviewed_range_bundle,
+    write_reviewed_range_catalog_incident_notification_export,
     write_reviewed_range_catalog_manifest,
 )
 from trading_system.research.contracts import (
@@ -247,6 +250,21 @@ def configure_research_parser(
     reviewed_catalog_incident_notify_status.add_argument("--database", required=True)
     reviewed_catalog_incident_notify_status.add_argument("--incident-id", required=True)
     reviewed_catalog_incident_notify_status.add_argument("--config", required=True)
+    reviewed_catalog_incident_notify_export = actions.add_parser(
+        "range-reviewed-bundle-catalog-export-incident-notification-export"
+    )
+    reviewed_catalog_incident_notify_export.add_argument("--database", required=True)
+    reviewed_catalog_incident_notify_export.add_argument("--incident-id", required=True)
+    reviewed_catalog_incident_notify_export.add_argument("--config", required=True)
+    reviewed_catalog_incident_notify_export.add_argument("--source-config", required=True)
+    reviewed_catalog_incident_notify_export.add_argument("--output", required=True)
+    reviewed_catalog_incident_notify_export_status = actions.add_parser(
+        "range-reviewed-bundle-catalog-export-incident-notification-export-status"
+    )
+    reviewed_catalog_incident_notify_export_status.add_argument("--database", required=True)
+    reviewed_catalog_incident_notify_export_status.add_argument("--export-id", required=True)
+    reviewed_catalog_incident_notify_export_status.add_argument("--config", required=True)
+    reviewed_catalog_incident_notify_export_status.add_argument("--source-config", required=True)
 
 
 def _load_object(path: str | Path) -> dict[str, Any]:
@@ -1049,6 +1067,54 @@ def handle_research(args: argparse.Namespace) -> int:
                 "materialized_count": materialized,
                 "route": "LOCAL_OPERATOR_OUTBOX",
                 "delivery_attempt_count": incident_summary.delivery_attempt_count,
+                "network_used": False,
+                "delivery_attempted": False,
+                "recipient_authenticated": False,
+                "quarantine_enforced": False,
+                "approval_granted": False,
+                "promotion_authority": False,
+                "broker_write_performed": False,
+            }
+        elif command in {
+            "range-reviewed-bundle-catalog-export-incident-notification-export",
+            "range-reviewed-bundle-catalog-export-incident-notification-export-status",
+        }:
+            phase7t_source_config = load_reviewed_range_catalog_incident_notification_config(
+                args.source_config
+            )
+            phase7t_export_config = (
+                load_reviewed_range_catalog_incident_notification_export_config(args.config)
+            )
+            notification_registry = ReviewedRangeCatalogIncidentNotificationRegistry(repository)
+            notification_export_registry = (
+                ReviewedRangeCatalogIncidentNotificationExportRegistry(
+                    repository, notification_registry
+                )
+            )
+            if command.endswith("-export"):
+                intents = notification_registry.load(args.incident_id, phase7t_source_config)
+                notification_export = (
+                    write_reviewed_range_catalog_incident_notification_export(
+                        intents=intents, output=args.output, config=phase7t_export_config
+                    )
+                )
+                inserted = notification_export_registry.persist(
+                    notification_export, phase7t_source_config
+                )
+            else:
+                notification_export = notification_export_registry.verify(
+                    args.export_id, phase7t_export_config, phase7t_source_config
+                )
+                inserted = False
+            result = {
+                "notification_export_id": notification_export.notification_export_id,
+                "incident_id": notification_export.incident_id,
+                "catalog_export_id": notification_export.catalog_export_id,
+                "content_hash": notification_export.content_hash,
+                "byte_count": notification_export.byte_count,
+                "intent_count": notification_export.intent_count,
+                "record_inserted": inserted,
+                "verified": command.endswith("-status"),
                 "network_used": False,
                 "delivery_attempted": False,
                 "recipient_authenticated": False,

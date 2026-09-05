@@ -633,6 +633,52 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
             ("ACKNOWLEDGED", "ACKNOWLEDGED", 0),
             ("RESOLVED", "RESOLVED", 0),
         ]
+    notification_output = tmp_path / "incident-notifications.json"
+    notification_export_args = [
+        "research",
+        "range-reviewed-bundle-catalog-export-incident-notification-export",
+        "--database",
+        str(database),
+        "--incident-id",
+        incident_id,
+        "--config",
+        str(ROOT / "config/range_reclaim.phase7t.v1.yaml"),
+        "--source-config",
+        str(ROOT / "config/range_reclaim.phase7s.v1.yaml"),
+        "--output",
+        str(notification_output),
+    ]
+    assert main(notification_export_args) == 0
+    assert main(notification_export_args) == 0
+    with SQLiteRepository(database) as repository:
+        notification_export_row = repository.connection.execute(
+            "SELECT notification_export_id "
+            "FROM reviewed_range_catalog_incident_notification_exports"
+        ).fetchone()
+        assert notification_export_row is not None
+        notification_export_id = str(notification_export_row[0])
+        assert repository.connection.execute(
+            "SELECT COUNT(*) FROM reviewed_range_catalog_incident_notification_exports"
+        ).fetchone() == (1,)
+    notification_export_status_args = [
+        "research",
+        "range-reviewed-bundle-catalog-export-incident-notification-export-status",
+        "--database",
+        str(database),
+        "--export-id",
+        notification_export_id,
+        "--config",
+        str(ROOT / "config/range_reclaim.phase7t.v1.yaml"),
+        "--source-config",
+        str(ROOT / "config/range_reclaim.phase7s.v1.yaml"),
+    ]
+    assert main(notification_export_status_args) == 0
+    notification_body = notification_output.read_text(encoding="utf-8")
+    assert "fixture-operator" not in notification_body
+    assert "Investigating exact local export" not in notification_body
+    notification_output.write_bytes(notification_output.read_bytes() + b"tampered")
+    with pytest.raises(ValueError, match="notification export content is corrupt"):
+        main(notification_export_status_args)
     reviewed_bundle_output.write_bytes(reviewed_bundle_output.read_bytes() + b"tampered")
     with pytest.raises(ValueError, match=r"artifact|container|source changed"):
         main(catalog_status_args)

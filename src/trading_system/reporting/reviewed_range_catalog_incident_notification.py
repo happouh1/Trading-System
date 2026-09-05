@@ -171,6 +171,15 @@ class ReviewedRangeCatalogIncidentNotificationRegistry:
     def status(
         self, incident_id: str, config: ReviewedRangeCatalogIncidentNotificationConfig
     ) -> ReviewedRangeCatalogIncidentNotificationSummary:
+        actual = self.load(incident_id, config)
+        return ReviewedRangeCatalogIncidentNotificationSummary(
+            incident_id, actual[0].catalog_export_id, len(actual),
+            tuple(intent.event_type for intent in actual), 0,
+        )
+
+    def load(
+        self, incident_id: str, config: ReviewedRangeCatalogIncidentNotificationConfig
+    ) -> tuple[ReviewedRangeCatalogIncidentNotificationIntent, ...]:
         events = self.incident_registry.history(incident_id)
         expected = tuple(self._from_event(event, config) for event in events)
         rows = self.repository.connection.execute(
@@ -183,10 +192,7 @@ class ReviewedRangeCatalogIncidentNotificationRegistry:
         actual = tuple(self._load(str(row[0])) for row in rows)
         if actual != expected:
             raise ValueError("Phase 7S notification intent set is incomplete or corrupt")
-        return ReviewedRangeCatalogIncidentNotificationSummary(
-            incident_id, events[0].catalog_export_id, len(actual),
-            tuple(intent.event_type for intent in actual), 0,
-        )
+        return actual
 
     @staticmethod
     def _from_event(

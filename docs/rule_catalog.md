@@ -1044,3 +1044,20 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   quarantine.
 - `REVIEWED_CATALOG_NOTIFICATION_NO_AUTHORITY`: intents establish no approval, efficacy, promotion,
   scoring, options, brokerage, or trading authority.
+
+## Phase 7T atomic notification-intent export rules
+
+- `REVIEWED_CATALOG_NOTIFICATION_EXPORT_VERIFIED_SOURCE`: export and status require the complete
+  validated Phase 7S intent set and recursively validated incident lineage.
+- `REVIEWED_CATALOG_NOTIFICATION_EXPORT_CANONICAL_BYTES`: output is canonical JSON, UTF-8, and one
+  LF terminator with intents in source-event order.
+- `REVIEWED_CATALOG_NOTIFICATION_EXPORT_ATOMIC`: a flushed and fsynced same-directory temporary
+  file is replaced atomically before receipt persistence.
+- `REVIEWED_CATALOG_NOTIFICATION_EXPORT_CONTENT_BOUND`: receipt identity binds incident, opening
+  event, source export, absolute local path, bytes, and both configuration hashes.
+- `REVIEWED_CATALOG_NOTIFICATION_EXPORT_MINIMAL_CONTENT`: exported intents contain no Phase 7R
+  actor identity or free-text note.
+- `REVIEWED_CATALOG_NOTIFICATION_EXPORT_NO_DELIVERY`: writing or verifying a file is not a delivery
+  attempt, retry, escalation, or recipient acknowledgement.
+- `REVIEWED_CATALOG_NOTIFICATION_EXPORT_NO_AUTHORITY`: exports establish no quarantine, approval,
+  efficacy, promotion, scoring, options, brokerage, or trading authority.

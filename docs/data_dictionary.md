@@ -930,3 +930,13 @@ note.
 `ReviewedRangeCatalogIncidentNotificationSummary` reports validated intent count and ordered event
 types for one incident. Migration 070 stores canonical intent payloads and hashes append-only, with
 one intent per source event and configuration hash.
+
+## Phase 7T incident notification exports
+
+`ReviewedRangeCatalogIncidentNotificationExportReceipt` stores deterministic path-bound export
+identity, Phase 7R incident/opening-event and Phase 7P catalog-export lineage, absolute local path,
+exact byte hash and count, intent count, Phase 7S and Phase 7T configuration hashes, fixed version,
+false delivery/identity/authority fields, and disclosures.
+
+Migration 071 stores append-only canonical export receipts and hashes. The exported canonical JSON
+contains the exact Phase 7S intents and fixed disclosure fields but no operator identity or note.

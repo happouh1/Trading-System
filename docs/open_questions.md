@@ -983,3 +983,12 @@ before delivery attempts may be recorded, and how should provider ambiguity fail
 `ACKNOWLEDGED`, and unresolved incidents without interpreting urgency as strategy efficacy?
 361. What authenticated delivery receipt and trusted-time evidence would prove notification receipt
 without granting approval, promotion, quarantine override, or trading authority?
+
+362. Which approved local directory, file permissions, encryption, retention, and secure-deletion
+rules must govern Phase 7T exports before another process may consume them?
+363. Should relocation create a new path-bound Phase 7T receipt or a separately specified
+content-only receipt, and how would either preserve exact source lineage?
+364. Which cross-language canonical-JSON fixtures and schema validators are required before Phase
+7T exports may claim interoperability outside this Python implementation?
+365. Which separately authorized consumer may import a Phase 7T artifact, and what atomic claiming,
+deduplication, crash recovery, and ambiguous-delivery rules must it satisfy before network use?
