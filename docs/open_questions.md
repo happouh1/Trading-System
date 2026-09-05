@@ -1001,3 +1001,12 @@ required before Phase 7U evidence may support a claim stronger than caller-asser
 must govern that workflow without granting quarantine, approval, or promotion authority?
 369. Which consumers must fail closed on the latest Phase 7U status, and what separately approved
 override and artifact-preservation process is required before enforcement is implemented?
+
+370. Which authenticated operator directory, role policy, delegation, and revocation mechanism may
+replace Phase 7V's caller-asserted actor identity?
+371. Should a separately authorized local notification-intent process consume Phase 7V events, and
+how would it avoid recursive incident/notification layers and duplicate operator work?
+372. Which artifact-preservation and quarantine policy should apply while a Phase 7V incident is
+open, and what independently governed override evidence would be required?
+373. What retention, redaction, correction, and deletion policy applies to Phase 7V free-text notes
+before any incident evidence leaves the approved local boundary?

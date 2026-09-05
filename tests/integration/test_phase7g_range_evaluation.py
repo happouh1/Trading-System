@@ -726,6 +726,105 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
             ("FAILED",),
             ("FAILED",),
         ]
+        failed_notification_verification_id = str(
+            repository.connection.execute(
+                "SELECT verification_id FROM "
+                "reviewed_range_catalog_incident_notification_export_verifications "
+                "WHERE status = 'FAILED' ORDER BY verified_at LIMIT 1"
+            ).fetchone()[0]
+        )
+    assert main(notification_export_args) == 0
+    notification_export_audit_args[
+        notification_export_audit_args.index("2026-09-05T18:20:00Z")
+    ] = "2026-09-05T18:25:00Z"
+    assert main(notification_export_audit_args) == 0
+    with SQLiteRepository(database) as repository:
+        recovery_notification_verification_id = str(
+            repository.connection.execute(
+                "SELECT verification_id FROM "
+                "reviewed_range_catalog_incident_notification_export_verifications "
+                "WHERE status = 'VERIFIED' ORDER BY verified_at DESC LIMIT 1"
+            ).fetchone()[0]
+        )
+    notification_export_incident_open_args = [
+        "research",
+        "range-reviewed-bundle-catalog-export-incident-notification-export-incident-open",
+        "--database",
+        str(database),
+        "--verification-id",
+        failed_notification_verification_id,
+        "--occurred-at",
+        "2026-09-05T18:30:00Z",
+        "--actor-id",
+        "fixture-operator",
+        "--note",
+        "Investigating notification export integrity",
+        "--config",
+        str(ROOT / "config/range_reclaim.phase7v.v1.yaml"),
+    ]
+    assert main(notification_export_incident_open_args) == 0
+    assert main(notification_export_incident_open_args) == 0
+    with SQLiteRepository(database) as repository:
+        notification_export_incident_id = str(
+            repository.connection.execute(
+                "SELECT incident_id FROM "
+                "reviewed_range_catalog_incident_notification_export_incident_events "
+                "WHERE event_type = 'OPENED'"
+            ).fetchone()[0]
+        )
+    notification_export_incident_ack_args = [
+        "research",
+        "range-reviewed-bundle-catalog-export-incident-notification-export-incident-acknowledge",
+        "--database",
+        str(database),
+        "--incident-id",
+        notification_export_incident_id,
+        "--occurred-at",
+        "2026-09-05T18:35:00Z",
+        "--actor-id",
+        "fixture-operator",
+        "--config",
+        str(ROOT / "config/range_reclaim.phase7v.v1.yaml"),
+    ]
+    assert main(notification_export_incident_ack_args) == 0
+    notification_export_incident_resolve_args = [
+        "research",
+        "range-reviewed-bundle-catalog-export-incident-notification-export-incident-resolve",
+        "--database",
+        str(database),
+        "--incident-id",
+        notification_export_incident_id,
+        "--recovery-verification-id",
+        recovery_notification_verification_id,
+        "--occurred-at",
+        "2026-09-05T18:40:00Z",
+        "--actor-id",
+        "fixture-operator",
+        "--config",
+        str(ROOT / "config/range_reclaim.phase7v.v1.yaml"),
+    ]
+    assert main(notification_export_incident_resolve_args) == 0
+    assert main(notification_export_incident_resolve_args) == 0
+    notification_export_incident_status_args = [
+        "research",
+        "range-reviewed-bundle-catalog-export-incident-notification-export-incident-status",
+        "--database",
+        str(database),
+        "--incident-id",
+        notification_export_incident_id,
+    ]
+    assert main(notification_export_incident_status_args) == 0
+    with SQLiteRepository(database) as repository:
+        notification_export_incident_states = repository.connection.execute(
+            "SELECT new_state FROM "
+            "reviewed_range_catalog_incident_notification_export_incident_events "
+            "ORDER BY occurred_at, incident_event_id"
+        ).fetchall()
+        assert notification_export_incident_states == [
+            ("OPEN",),
+            ("ACKNOWLEDGED",),
+            ("RESOLVED",),
+        ]
     reviewed_bundle_output.write_bytes(reviewed_bundle_output.read_bytes() + b"tampered")
     with pytest.raises(ValueError, match=r"artifact|container|source changed"):
         main(catalog_status_args)
@@ -778,6 +877,14 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
         repository.connection.commit()
     with pytest.raises(ValueError, match="Phase 7L review is corrupt"):
         main(review_status_args)
+    with SQLiteRepository(database) as repository:
+        repository.connection.execute(
+            "UPDATE reviewed_range_catalog_incident_notification_export_incident_events "
+            "SET payload_hash = 'sha256:corrupt' WHERE new_state = 'RESOLVED'"
+        )
+        repository.connection.commit()
+    with pytest.raises(ValueError, match="stored Phase 7V incident event is corrupt"):
+        main(notification_export_incident_status_args)
     with SQLiteRepository(database) as repository:
         repository.connection.execute(
             "UPDATE reviewed_range_catalog_incident_notification_export_verifications "

@@ -111,6 +111,16 @@ from trading_system.reporting.reviewed_range_catalog_incident_notification_expor
     ReviewedRangeCatalogIncidentNotificationExportAuditStatus,
     load_reviewed_range_catalog_incident_notification_export_audit_config,
 )
+from trading_system.reporting.reviewed_range_catalog_incident_notification_export_incident import (
+    ReviewedRangeCatalogIncidentNotificationExportIncidentConfig,
+    ReviewedRangeCatalogIncidentNotificationExportIncidentConfigError,
+    ReviewedRangeCatalogIncidentNotificationExportIncidentEvent,
+    ReviewedRangeCatalogIncidentNotificationExportIncidentEventType,
+    ReviewedRangeCatalogIncidentNotificationExportIncidentRegistry,
+    ReviewedRangeCatalogIncidentNotificationExportIncidentState,
+    ReviewedRangeCatalogIncidentNotificationExportIncidentSummary,
+    load_reviewed_range_catalog_incident_notification_export_incident_config,
+)
 
 __all__ = [
     "RangeBundleReviewAssertion",
@@ -168,6 +178,13 @@ __all__ = [
     "ReviewedRangeCatalogIncidentNotificationExportAuditStatus",
     "ReviewedRangeCatalogIncidentNotificationExportConfig",
     "ReviewedRangeCatalogIncidentNotificationExportConfigError",
+    "ReviewedRangeCatalogIncidentNotificationExportIncidentConfig",
+    "ReviewedRangeCatalogIncidentNotificationExportIncidentConfigError",
+    "ReviewedRangeCatalogIncidentNotificationExportIncidentEvent",
+    "ReviewedRangeCatalogIncidentNotificationExportIncidentEventType",
+    "ReviewedRangeCatalogIncidentNotificationExportIncidentRegistry",
+    "ReviewedRangeCatalogIncidentNotificationExportIncidentState",
+    "ReviewedRangeCatalogIncidentNotificationExportIncidentSummary",
     "ReviewedRangeCatalogIncidentNotificationExportReceipt",
     "ReviewedRangeCatalogIncidentNotificationExportRegistry",
     "ReviewedRangeCatalogIncidentNotificationIntent",
@@ -190,6 +207,7 @@ __all__ = [
     "load_reviewed_range_catalog_incident_notification_config",
     "load_reviewed_range_catalog_incident_notification_export_audit_config",
     "load_reviewed_range_catalog_incident_notification_export_config",
+    "load_reviewed_range_catalog_incident_notification_export_incident_config",
     "markdown_report",
     "parse_range_bundle_review_payload",
     "render_persisted_range_evaluation",

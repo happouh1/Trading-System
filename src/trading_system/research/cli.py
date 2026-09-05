@@ -22,6 +22,7 @@ from trading_system.reporting import (
     ReviewedRangeCatalogExportIncidentRegistry,
     ReviewedRangeCatalogExportRegistry,
     ReviewedRangeCatalogIncidentNotificationExportAuditRegistry,
+    ReviewedRangeCatalogIncidentNotificationExportIncidentRegistry,
     ReviewedRangeCatalogIncidentNotificationExportRegistry,
     ReviewedRangeCatalogIncidentNotificationRegistry,
     ReviewedRangeCatalogRegistry,
@@ -39,6 +40,7 @@ from trading_system.reporting import (
     load_reviewed_range_catalog_incident_notification_config,
     load_reviewed_range_catalog_incident_notification_export_audit_config,
     load_reviewed_range_catalog_incident_notification_export_config,
+    load_reviewed_range_catalog_incident_notification_export_incident_config,
     render_persisted_range_evaluation,
     verify_range_evidence_bundle,
     verify_reviewed_range_bundle,
@@ -281,6 +283,39 @@ def configure_research_parser(
     )
     reviewed_catalog_incident_notify_export_audit_status.add_argument("--database", required=True)
     reviewed_catalog_incident_notify_export_audit_status.add_argument("--export-id", required=True)
+    notification_export_incident_open = actions.add_parser(
+        "range-reviewed-bundle-catalog-export-incident-notification-export-incident-open"
+    )
+    notification_export_incident_open.add_argument("--database", required=True)
+    notification_export_incident_open.add_argument("--verification-id", required=True)
+    notification_export_incident_open.add_argument("--occurred-at", required=True)
+    notification_export_incident_open.add_argument("--actor-id", required=True)
+    notification_export_incident_open.add_argument("--note", default="")
+    notification_export_incident_open.add_argument("--config", required=True)
+    notification_export_incident_ack = actions.add_parser(
+        "range-reviewed-bundle-catalog-export-incident-notification-export-incident-acknowledge"
+    )
+    notification_export_incident_ack.add_argument("--database", required=True)
+    notification_export_incident_ack.add_argument("--incident-id", required=True)
+    notification_export_incident_ack.add_argument("--occurred-at", required=True)
+    notification_export_incident_ack.add_argument("--actor-id", required=True)
+    notification_export_incident_ack.add_argument("--note", default="")
+    notification_export_incident_ack.add_argument("--config", required=True)
+    notification_export_incident_resolve = actions.add_parser(
+        "range-reviewed-bundle-catalog-export-incident-notification-export-incident-resolve"
+    )
+    notification_export_incident_resolve.add_argument("--database", required=True)
+    notification_export_incident_resolve.add_argument("--incident-id", required=True)
+    notification_export_incident_resolve.add_argument("--recovery-verification-id", required=True)
+    notification_export_incident_resolve.add_argument("--occurred-at", required=True)
+    notification_export_incident_resolve.add_argument("--actor-id", required=True)
+    notification_export_incident_resolve.add_argument("--note", default="")
+    notification_export_incident_resolve.add_argument("--config", required=True)
+    notification_export_incident_status = actions.add_parser(
+        "range-reviewed-bundle-catalog-export-incident-notification-export-incident-status"
+    )
+    notification_export_incident_status.add_argument("--database", required=True)
+    notification_export_incident_status.add_argument("--incident-id", required=True)
 
 
 def _load_object(path: str | Path) -> dict[str, Any]:
@@ -1204,6 +1239,89 @@ def handle_research(args: argparse.Namespace) -> int:
                 "quarantine_enforced": False,
                 "approval_granted": False,
                 "promotion_authority": False,
+                "broker_write_performed": False,
+            }
+        elif command in {
+            "range-reviewed-bundle-catalog-export-incident-notification-export-incident-open",
+            "range-reviewed-bundle-catalog-export-incident-notification-export-incident-acknowledge",
+            "range-reviewed-bundle-catalog-export-incident-notification-export-incident-resolve",
+        }:
+            phase7v_registry = (
+                ReviewedRangeCatalogIncidentNotificationExportIncidentRegistry(repository)
+            )
+            phase7v_config = (
+                load_reviewed_range_catalog_incident_notification_export_incident_config(
+                    args.config
+                )
+            )
+            phase7v_occurred_at = datetime.fromisoformat(
+                args.occurred_at.replace("Z", "+00:00")
+            )
+            if command.endswith("-open"):
+                phase7v_event = phase7v_registry.open(
+                    verification_id=args.verification_id,
+                    occurred_at=phase7v_occurred_at,
+                    actor_id=args.actor_id,
+                    note=args.note,
+                    config=phase7v_config,
+                )
+            elif command.endswith("-acknowledge"):
+                phase7v_event = phase7v_registry.acknowledge(
+                    incident_id=args.incident_id,
+                    occurred_at=phase7v_occurred_at,
+                    actor_id=args.actor_id,
+                    note=args.note,
+                    config=phase7v_config,
+                )
+            else:
+                phase7v_event = phase7v_registry.resolve(
+                    incident_id=args.incident_id,
+                    recovery_verification_id=args.recovery_verification_id,
+                    occurred_at=phase7v_occurred_at,
+                    actor_id=args.actor_id,
+                    note=args.note,
+                    config=phase7v_config,
+                )
+            result = {
+                "incident_event_id": phase7v_event.incident_event_id,
+                "incident_id": phase7v_event.incident_id,
+                "notification_export_id": phase7v_event.notification_export_id,
+                "source_verification_id": phase7v_event.source_verification_id,
+                "event_type": phase7v_event.event_type,
+                "prior_state": phase7v_event.prior_state,
+                "new_state": phase7v_event.new_state,
+                "trusted_timestamp": False,
+                "authenticated_actor": False,
+                "artifact_mutated": False,
+                "artifact_deleted": False,
+                "quarantine_enforced": False,
+                "notification_sent": False,
+                "approval_granted": False,
+                "promotion_authority": False,
+                "network_used": False,
+                "broker_write_performed": False,
+            }
+        elif command == (
+            "range-reviewed-bundle-catalog-export-incident-notification-export-incident-status"
+        ):
+            phase7v_summary = (
+                ReviewedRangeCatalogIncidentNotificationExportIncidentRegistry(
+                    repository
+                ).status(args.incident_id)
+            )
+            result = {
+                "incident_id": phase7v_summary.incident_id,
+                "notification_export_id": phase7v_summary.notification_export_id,
+                "state": phase7v_summary.state,
+                "event_count": phase7v_summary.event_count,
+                "opened_at": phase7v_summary.opened_at,
+                "latest_at": phase7v_summary.latest_at,
+                "failed_verification_id": phase7v_summary.failed_verification_id,
+                "recovery_verification_id": phase7v_summary.recovery_verification_id,
+                "notification_sent": False,
+                "approval_granted": False,
+                "promotion_authority": False,
+                "network_used": False,
                 "broker_write_performed": False,
             }
         else:

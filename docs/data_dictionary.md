@@ -949,3 +949,12 @@ contains the exact Phase 7S intents and fixed disclosure fields but no operator 
 failure reasons, Phase 7U/7T/7S configuration hashes, version, explicit false authority flags, and
 disclosures. SQLite additionally stores canonical payload JSON and its hash. The append-only table
 is `reviewed_range_catalog_incident_notification_export_verifications`.
+
+## Phase 7V notification-export verification incident
+
+`ReviewedRangeCatalogIncidentNotificationExportIncidentEvent` stores a deterministic event and
+incident ID, Phase 7T export ID, exact Phase 7U source-verification ID, aware occurrence time,
+event/prior/new states, bounded caller actor and note, Phase 7V configuration hash, fixed version,
+false authority fields, and disclosures. The append-only SQLite table is
+`reviewed_range_catalog_incident_notification_export_incident_events`; canonical payload JSON and
+its hash detect stored corruption.

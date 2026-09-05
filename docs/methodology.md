@@ -1022,3 +1022,11 @@ receipt. A missing, unreadable, changed, or source-invalid artifact records the 
 reason; when bytes are readable their actual SHA-256 is retained. Results do not mutate or
 quarantine artifacts and do not establish delivery, identity, approval, efficacy, or trading
 authority.
+
+## Phase 7V notification-export verification incident methodology
+
+Phase 7V opens an incident only from an exact persisted failed Phase 7U receipt. Acknowledgement is
+an append-only caller assertion. Resolution requires a later successful Phase 7U verification for
+the same Phase 7T export, and event time cannot precede either the history or recovery evidence.
+Every status read reconstructs deterministic event identities and revalidates referenced receipts.
+The ledger does not send a notification or enforce artifact disposition.

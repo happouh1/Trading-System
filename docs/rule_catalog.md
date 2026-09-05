@@ -1071,3 +1071,12 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - Preserve history and make identical checks idempotent; never overwrite prior evidence.
 - Fail closed on stored receipt corruption.
 - Never deliver, retry, escalate, mutate, quarantine, approve, promote, route, or trade.
+
+## Phase 7V notification-export verification incident rules
+
+- Open only from one exact persisted failed Phase 7U receipt.
+- Permit `OPEN → ACKNOWLEDGED → RESOLVED` or `OPEN → RESOLVED`; reject every other transition.
+- Require a strictly later successful Phase 7U receipt for the same Phase 7T export to resolve.
+- Preserve append-only history and idempotent exact retries.
+- Revalidate canonical event data, deterministic identities, transitions, and source receipts.
+- Never notify, mutate, delete, quarantine, approve, promote, score, route, or trade.

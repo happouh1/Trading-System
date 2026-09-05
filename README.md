@@ -1060,3 +1060,16 @@ trading-system research range-reviewed-bundle-catalog-export-incident-notificati
 
 See `docs/proposals/phase_7u_incident_notification_export_verification_receipts_v1.md` and
 `docs/phase_7u_review.md`.
+
+## Phase 7V notification-export verification incidents
+
+Phase 7V records an append-only local incident lifecycle for a failed Phase 7U receipt. Opening and
+acknowledgement do not alter the artifact; resolution requires a later successful Phase 7U receipt
+for the same export. Actor IDs and times remain unauthenticated caller assertions.
+
+```text
+trading-system research range-reviewed-bundle-catalog-export-incident-notification-export-incident-open --database DB --verification-id FAILED_ID --occurred-at 2026-09-05T18:30:00Z --actor-id OPERATOR --config config/range_reclaim.phase7v.v1.yaml
+trading-system research range-reviewed-bundle-catalog-export-incident-notification-export-incident-acknowledge --database DB --incident-id ID --occurred-at 2026-09-05T18:35:00Z --actor-id OPERATOR --config config/range_reclaim.phase7v.v1.yaml
+trading-system research range-reviewed-bundle-catalog-export-incident-notification-export-incident-resolve --database DB --incident-id ID --recovery-verification-id VERIFIED_ID --occurred-at 2026-09-05T18:40:00Z --actor-id OPERATOR --config config/range_reclaim.phase7v.v1.yaml
+trading-system research range-reviewed-bundle-catalog-export-incident-notification-export-incident-status --database DB --incident-id ID
+```
