@@ -949,3 +949,12 @@ caller assertions while preserving offline verification during external-service 
 cross-catalog lineage rules could identify reuse without silently deduplicating declared membership?
 346. Which separately governed consumer, if any, may use a verified catalog while proving that
 catalog membership cannot itself grant promotion, scoring, alerting, options, or trading authority?
+
+347. Should a future portable catalog archive embed every Phase 7M artifact, and what aggregate
+byte, entry, nesting-depth, extraction, and decompression limits would be required?
+348. Which canonical cross-language JSON fixtures must pass before Phase 7P manifests may claim
+interoperability outside the Python implementation?
+349. Should relocation create a new path-bound receipt or a separate content-only receipt, and how
+would either avoid weakening the local completion evidence?
+350. Which signature, signer identity, revocation, and trusted-timestamp profile could authenticate
+Phase 7P bytes without implying catalog completeness, strategy efficacy, or promotion authority?

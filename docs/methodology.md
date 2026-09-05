@@ -965,3 +965,12 @@ predate receipt time. Construction and status revalidate the persisted Phase 7M 
 artifact bytes, complete Phase 7M container, and nested Phase 7K evidence. Member identity binds
 both persisted payload hashes. The catalog root binds the complete caller-declared sequence, but
 does not claim the sequence is a complete population or a ranked selection.
+
+## Phase 7P catalog-export methodology
+
+Phase 7P obtains a Phase 7O catalog only through full status-equivalent revalidation, renders a
+fixed canonical JSON manifest, and atomically replaces the requested local path. The receipt is
+persisted only after the file write completes. Verification reconstructs the canonical receipt
+and deterministic identity, repeats the full upstream verification chain, regenerates expected
+manifest bytes, and requires exact equality, byte count, and SHA-256 hash. The exported manifest
+contains membership metadata but deliberately does not embed Phase 7M artifact bytes.

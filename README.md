@@ -969,3 +969,17 @@ trading-system research range-reviewed-bundle-catalog-status --database DB --con
 Membership is not a complete population and grants no ranking, approval, promotion, or trading
 authority. See `docs/proposals/phase_7o_verified_reviewed_range_catalogs_v1.md` and
 `docs/phase_7o_review.md`.
+
+## Phase 7P atomic reviewed-catalog exports
+
+Phase 7P writes a verified Phase 7O catalog as canonical JSON and persists a receipt bound to the
+exact local bytes.
+
+```text
+trading-system research range-reviewed-bundle-catalog-export --database DB --catalog-id ID --config config/range_reclaim.phase7p.v1.yaml --catalog-config config/range_reclaim.phase7o.v1.yaml --bundle-config config/range_reclaim.phase7m.v1.yaml --source-config config/range_reclaim.phase7k.v1.yaml --output catalog.json
+trading-system research range-reviewed-bundle-catalog-export-status --database DB --export-id ID --config config/range_reclaim.phase7p.v1.yaml --catalog-config config/range_reclaim.phase7o.v1.yaml --bundle-config config/range_reclaim.phase7m.v1.yaml --source-config config/range_reclaim.phase7k.v1.yaml
+```
+
+The JSON is a portable membership manifest, not an evidence archive, signature, approval, or
+promotion record. See `docs/proposals/phase_7p_atomic_reviewed_range_catalog_exports_v1.md` and
+`docs/phase_7p_review.md`.

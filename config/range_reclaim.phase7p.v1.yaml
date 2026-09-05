@@ -1,0 +1,14 @@
+{
+  "export_version": "7P.1.0",
+  "source": "FULLY_REVALIDATED_PHASE7O_CATALOG",
+  "format": "CANONICAL_JSON_UTF8_LF",
+  "write_policy": "ATOMIC_SAME_DIRECTORY_REPLACE",
+  "verification": "SHA256_BYTES_AND_SOURCE_REVALIDATION",
+  "authority": {
+    "network_enabled": false, "signature_enabled": false, "trusted_timestamp_enabled": false,
+    "completeness_claim_enabled": false, "ranking_enabled": false, "approval_enabled": false,
+    "efficacy_claims_enabled": false, "promotion_enabled": false, "scoring_enabled": false,
+    "alerts_enabled": false, "options_routing_enabled": false, "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

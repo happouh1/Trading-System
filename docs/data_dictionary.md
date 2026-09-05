@@ -889,3 +889,11 @@ verification time, and both source-record payload hashes.
 canonically ordered entries, catalog root and count, source revision, configuration hash, fixed
 version, false completeness/ranking/approval/promotion fields, and disclosures. Migration 066 adds
 append-only parent and member tables with exact foreign-key lineage.
+
+## Phase 7P reviewed-catalog export receipts
+
+`ReviewedRangeCatalogExportReceipt` stores deterministic export and source catalog IDs, absolute
+local path, SHA-256 byte hash and count, catalog root and entry count, Phase 7O and Phase 7P
+configuration hashes, fixed version, false signature/time/completeness/ranking/approval/promotion
+fields, and disclosures. Migration 067 stores canonical receipt payloads append-only and references
+the exact Phase 7O catalog.

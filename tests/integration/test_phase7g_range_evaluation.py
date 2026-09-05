@@ -411,9 +411,64 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
         catalog_id,
     ]
     assert main(catalog_status_args) == 0
+    catalog_export_output = tmp_path / "reviewed-range-catalog.json"
+    catalog_export_args = [
+        "research",
+        "range-reviewed-bundle-catalog-export",
+        "--database",
+        str(database),
+        "--catalog-id",
+        catalog_id,
+        "--config",
+        str(ROOT / "config/range_reclaim.phase7p.v1.yaml"),
+        "--catalog-config",
+        str(ROOT / "config/range_reclaim.phase7o.v1.yaml"),
+        "--bundle-config",
+        str(ROOT / "config/range_reclaim.phase7m.v1.yaml"),
+        "--source-config",
+        str(ROOT / "config/range_reclaim.phase7k.v1.yaml"),
+        "--output",
+        str(catalog_export_output),
+    ]
+    assert main(catalog_export_args) == 0
+    assert main(catalog_export_args) == 0
+    with SQLiteRepository(database) as repository:
+        repository.migrate()
+        catalog_export_row = repository.connection.execute(
+            "SELECT catalog_export_id FROM reviewed_range_catalog_exports"
+        ).fetchone()
+        assert catalog_export_row is not None
+        catalog_export_id = str(catalog_export_row[0])
+        assert repository.connection.execute(
+            "SELECT COUNT(*) FROM reviewed_range_catalog_exports"
+        ).fetchone() == (1,)
+    catalog_export_status_args = [
+        "research",
+        "range-reviewed-bundle-catalog-export-status",
+        "--database",
+        str(database),
+        "--export-id",
+        catalog_export_id,
+        "--config",
+        str(ROOT / "config/range_reclaim.phase7p.v1.yaml"),
+        "--catalog-config",
+        str(ROOT / "config/range_reclaim.phase7o.v1.yaml"),
+        "--bundle-config",
+        str(ROOT / "config/range_reclaim.phase7m.v1.yaml"),
+        "--source-config",
+        str(ROOT / "config/range_reclaim.phase7k.v1.yaml"),
+    ]
+    assert main(catalog_export_status_args) == 0
+    catalog_export_bytes = catalog_export_output.read_bytes()
+    catalog_export_output.write_bytes(catalog_export_bytes + b"tampered")
+    with pytest.raises(ValueError, match="manifest content is corrupt"):
+        main(catalog_export_status_args)
+    catalog_export_output.write_bytes(catalog_export_bytes)
     reviewed_bundle_output.write_bytes(reviewed_bundle_output.read_bytes() + b"tampered")
     with pytest.raises(ValueError, match=r"artifact|container|source changed"):
         main(catalog_status_args)
+    with pytest.raises(ValueError, match=r"artifact|container|source changed"):
+        main(catalog_export_status_args)
     audit_args[audit_args.index("2026-09-05T15:00:00Z")] = "2026-09-05T16:00:00Z"
     assert main(audit_args) == 0
     assert main(

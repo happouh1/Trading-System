@@ -18,6 +18,7 @@ from trading_system.reporting import (
     RangeReportExportRegistry,
     ReviewedRangeBundleAuditRegistry,
     ReviewedRangeBundleRegistry,
+    ReviewedRangeCatalogExportRegistry,
     ReviewedRangeCatalogRegistry,
     build_range_bundle_review,
     load_range_bundle_review_config,
@@ -27,12 +28,14 @@ from trading_system.reporting import (
     load_reviewed_range_bundle_audit_config,
     load_reviewed_range_bundle_config,
     load_reviewed_range_catalog_config,
+    load_reviewed_range_catalog_export_config,
     render_persisted_range_evaluation,
     verify_range_evidence_bundle,
     verify_reviewed_range_bundle,
     write_atomic_range_report,
     write_range_evidence_bundle,
     write_reviewed_range_bundle,
+    write_reviewed_range_catalog_manifest,
 )
 from trading_system.research.contracts import (
     ExperimentSpec,
@@ -160,6 +163,23 @@ def configure_research_parser(
     reviewed_catalog_status.add_argument("--bundle-config", required=True)
     reviewed_catalog_status.add_argument("--source-config", required=True)
     reviewed_catalog_status.add_argument("--catalog-id", required=True)
+    reviewed_catalog_export = actions.add_parser("range-reviewed-bundle-catalog-export")
+    reviewed_catalog_export.add_argument("--database", required=True)
+    reviewed_catalog_export.add_argument("--catalog-id", required=True)
+    reviewed_catalog_export.add_argument("--config", required=True)
+    reviewed_catalog_export.add_argument("--catalog-config", required=True)
+    reviewed_catalog_export.add_argument("--bundle-config", required=True)
+    reviewed_catalog_export.add_argument("--source-config", required=True)
+    reviewed_catalog_export.add_argument("--output", required=True)
+    reviewed_catalog_export_status = actions.add_parser(
+        "range-reviewed-bundle-catalog-export-status"
+    )
+    reviewed_catalog_export_status.add_argument("--database", required=True)
+    reviewed_catalog_export_status.add_argument("--export-id", required=True)
+    reviewed_catalog_export_status.add_argument("--config", required=True)
+    reviewed_catalog_export_status.add_argument("--catalog-config", required=True)
+    reviewed_catalog_export_status.add_argument("--bundle-config", required=True)
+    reviewed_catalog_export_status.add_argument("--source-config", required=True)
 
 
 def _load_object(path: str | Path) -> dict[str, Any]:
@@ -768,6 +788,45 @@ def handle_research(args: argparse.Namespace) -> int:
                 "catalog_root": catalog_root,
                 "entry_count": entry_count,
                 "verified": True,
+                "membership_complete": False,
+                "ranking_performed": False,
+                "approval_granted": False,
+                "promotion_authority": False,
+                "network_used": False,
+                "broker_write_performed": False,
+            }
+        elif command in {
+            "range-reviewed-bundle-catalog-export",
+            "range-reviewed-bundle-catalog-export-status",
+        }:
+            catalog_registry = ReviewedRangeCatalogRegistry(
+                repository,
+                load_reviewed_range_catalog_config(args.catalog_config),
+                load_reviewed_range_bundle_config(args.bundle_config),
+                load_range_evidence_bundle_config(args.source_config),
+            )
+            catalog_export_config = load_reviewed_range_catalog_export_config(args.config)
+            export_registry = ReviewedRangeCatalogExportRegistry(
+                repository, catalog_registry
+            )
+            if command == "range-reviewed-bundle-catalog-export":
+                catalog = catalog_registry.load(args.catalog_id)
+                export_receipt = write_reviewed_range_catalog_manifest(
+                    catalog=catalog, output=args.output, config=catalog_export_config
+                )
+                inserted = export_registry.persist(export_receipt)
+            else:
+                export_receipt = export_registry.verify(args.export_id, catalog_export_config)
+                inserted = False
+            result = {
+                "catalog_export_id": export_receipt.catalog_export_id,
+                "catalog_id": export_receipt.catalog_id,
+                "content_hash": export_receipt.content_hash,
+                "byte_count": export_receipt.byte_count,
+                "entry_count": export_receipt.entry_count,
+                "record_inserted": inserted,
+                "verified": command.endswith("-status"),
+                "portable_evidence_archive": False,
                 "membership_complete": False,
                 "ranking_performed": False,
                 "approval_granted": False,

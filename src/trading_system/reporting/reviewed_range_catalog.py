@@ -291,7 +291,7 @@ class ReviewedRangeCatalogRegistry:
                 )
         return True
 
-    def status(self, catalog_id: str) -> tuple[str, int]:
+    def load(self, catalog_id: str) -> ReviewedRangeCatalog:
         row = self.repository.connection.execute(
             "SELECT catalog_name, cataloged_at, catalog_root, entry_count, source_revision, "
             "config_hash, payload_json, payload_hash "
@@ -374,7 +374,11 @@ class ReviewedRangeCatalogRegistry:
         )
         if expected_id != catalog_id or canonical_json(reconstructed) != canonical_json(payload):
             raise ValueError("stored Phase 7O catalog is corrupt")
-        return root, len(canonical_entries)
+        return reconstructed
+
+    def status(self, catalog_id: str) -> tuple[str, int]:
+        catalog = self.load(catalog_id)
+        return catalog.catalog_root, catalog.entry_count
 
 
 def _json_object(value: object, name: str) -> dict[str, object]:

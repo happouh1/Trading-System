@@ -983,3 +983,17 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   idempotent and conflicts fail closed.
 - `REVIEWED_CATALOG_NO_AUTHORITY`: catalogs establish no completeness, ranking, consensus,
   approval, efficacy, promotion, scoring, alert, options, brokerage, or trading authority.
+
+## Phase 7P atomic reviewed-catalog export rules
+
+- `REVIEWED_CATALOG_EXPORT_VERIFIED_SOURCE`: export and status fully revalidate the exact Phase 7O
+  catalog and its complete upstream integrity chain.
+- `REVIEWED_CATALOG_EXPORT_CANONICAL_BYTES`: output is canonical JSON, UTF-8, and one LF terminator.
+- `REVIEWED_CATALOG_EXPORT_ATOMIC`: a flushed and fsynced same-directory temporary file is replaced
+  atomically before receipt persistence.
+- `REVIEWED_CATALOG_EXPORT_CONTENT_BOUND`: receipt identity binds path, bytes, catalog root, and
+  both configuration hashes.
+- `REVIEWED_CATALOG_EXPORT_NOT_ARCHIVE`: the manifest does not claim to carry the underlying
+  evidence required for independent offline verification.
+- `REVIEWED_CATALOG_EXPORT_NO_AUTHORITY`: exports establish no completeness, ranking, consensus,
+  approval, efficacy, promotion, scoring, alert, options, brokerage, or trading authority.
