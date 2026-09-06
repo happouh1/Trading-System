@@ -1016,3 +1016,11 @@ Append-only exact-byte receipts for local Phase 8C Markdown exports.
 | `payload_hash` | Canonical receipt-integrity hash. |
 
 The receipt grants no statistical, approval, network, broker, or production authority.
+
+## Phase 8E terminal assessment
+
+`RangeConfirmatoryTerminalAssessment` is an immutable, non-persisted view of one exact verified
+Phase 8D export. It contains the assessment, export, and report IDs; content hash; byte count;
+configuration hash; version; verification and terminal markers; and explicit false flags for effect
+size, uncertainty interval, economic threshold, fold pooling, efficacy, selection, ranking,
+approval, network use, broker writes, and production authority.

@@ -1143,3 +1143,15 @@ trading-system research range-confirmatory-report-export-status --database DB --
 
 The export is local and non-authoritative. It performs no effect-size estimation, ranking, approval,
 network access, broker write, or trading action.
+
+## Phase 8E confirmatory terminal boundary
+
+Phase 8E revalidates an exact Phase 8D export and its complete upstream lineage, then returns one
+deterministic in-memory terminal assessment. It creates no new artifact or persistent record.
+
+```text
+trading-system research range-confirmatory-terminal-boundary-status --database DB --export-id EXPORT --config config/range_reclaim.phase8a.v1.yaml --adapter-config config/range_reclaim.phase8b.v1.yaml --report-config config/range_reclaim.phase8c.v1.yaml --export-config config/range_reclaim.phase8d.v1.yaml --boundary-config config/range_reclaim.phase8e.v1.yaml
+```
+
+The assessment states explicitly that effect size, uncertainty, economic significance, pooling,
+efficacy, selection, ranking, approval, broker access, and production authority remain absent.

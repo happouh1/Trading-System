@@ -259,12 +259,34 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
         str(ROOT / "config/range_reclaim.phase8d.v1.yaml"),
     ]
     assert main(phase8d_cli) == 0
+    phase8e_cli = [
+        "research",
+        "range-confirmatory-terminal-boundary-status",
+        "--database",
+        str(database),
+        "--export-id",
+        export_8d.export_id,
+        "--config",
+        str(ROOT / "config/range_reclaim.phase8a.v1.yaml"),
+        "--adapter-config",
+        str(ROOT / "config/range_reclaim.phase8b.v1.yaml"),
+        "--report-config",
+        str(ROOT / "config/range_reclaim.phase8c.v1.yaml"),
+        "--export-config",
+        str(ROOT / "config/range_reclaim.phase8d.v1.yaml"),
+        "--boundary-config",
+        str(ROOT / "config/range_reclaim.phase8e.v1.yaml"),
+    ]
+    assert main(phase8e_cli) == 0
     original_export = export_output_8d.read_bytes()
     export_output_8d.write_bytes(b"tampered\n")
     with pytest.raises(ValueError, match="Phase 8D export content is corrupt"):
         main(phase8d_cli)
+    with pytest.raises(ValueError, match="Phase 8D export content is corrupt"):
+        main(phase8e_cli)
     export_output_8d.write_bytes(original_export)
     assert main(phase8d_cli) == 0
+    assert main(phase8e_cli) == 0
     cli_export_output = tmp_path / "confirmatory-report-cli.md"
     assert main(
         [

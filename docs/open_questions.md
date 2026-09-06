@@ -1052,3 +1052,10 @@ govern Phase 8D local exports outside research fixtures?
 Phase 8D export may be treated as externally attestable rather than locally hash-verified?
 391. What separately governed consumer contract may import a Phase 8D export while proving that it
 cannot confer efficacy, parameter-selection, alerting, broker, or production authority?
+
+392. Who may approve a future preregistration, and what immutable timestamped evidence must prove
+that its estimator, interval, economic threshold, and pooling rules preceded result inspection?
+393. Which independent replication dataset and point-in-time universe are required before the
+Phase 8E terminal boundary may be superseded by a separately governed efficacy review?
+394. What architecture and review controls must prove that any future efficacy artifact remains
+unable to alter decisions, parameters, alerts, orders, or production state automatically?

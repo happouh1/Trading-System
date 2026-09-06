@@ -1138,3 +1138,13 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `R8D-007`: Status is read-only and fails on receipt, source, file, hash, or byte-count drift.
 - `R8D-008`: No effect size, efficacy, ranking, selection, approval, network, broker, or production
   authority is enabled.
+
+## Phase 8E confirmatory terminal-boundary rules
+
+- `R8E-001`: Accept only a currently verified Phase 8D export with complete source identity.
+- `R8E-002`: Bind assessment identity to the exact export, report, content, config, and version.
+- `R8E-003`: Compute the assessment in memory without persistence or artifact creation.
+- `R8E-004`: Fail closed on any receipt, file, source-lineage, version, hash, or size mismatch.
+- `R8E-005`: Explicitly disable effect size, uncertainty, economic thresholds, pooling, efficacy,
+  selection, ranking, approval, network, broker writes, and production authority.
+- `R8E-006`: Prohibit Phase 8 confirmatory modules from entering authority-bearing packages.

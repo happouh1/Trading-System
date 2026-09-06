@@ -1082,3 +1082,14 @@ The append-only receipt binds the source report and plan to the resolved output 
 exact byte count, and SHA-256 digest. A status check recomputes the source report and expected bytes,
 then compares the file byte-for-byte. It does not repair, rewrite, or materialize anything. This
 phase adds portability and tamper detection, not statistical interpretation or trading authority.
+
+## Phase 8E terminal-boundary methodology
+
+Phase 8E calls the read-only Phase 8D status path, which reconstructs Phase 8C and revalidates the
+causal Phase 8B family before comparing the export byte-for-byte. Only a verified source can produce
+an assessment. Its deterministic identity binds that exact export, report, hash, byte count,
+configuration, and version.
+
+The assessment exists only in memory and enumerates disabled analytical and operational authority.
+It intentionally ends the implemented confirmatory chain because the specification does not define
+an effect-size estimator, uncertainty model, economic threshold, or pooling rule.

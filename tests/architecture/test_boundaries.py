@@ -242,3 +242,40 @@ def test_phase7_terminal_boundary_cannot_enter_authority_packages() -> None:
                 ):
                     violations.append(f"{path}:{node.lineno}")
     assert not violations, f"Phase 7 terminal boundary entered authority code: {violations}"
+
+
+def test_phase8_confirmatory_boundary_cannot_enter_authority_packages() -> None:
+    forbidden = {
+        "trading_system.research.range_confirmatory_export",
+        "trading_system.research.range_confirmatory_export_registry",
+        "trading_system.research.range_confirmatory_report",
+        "trading_system.research.range_confirmatory_report_registry",
+        "trading_system.research.range_confirmatory_terminal_boundary",
+    }
+    violations: list[str] = []
+    for package in (
+        "decisions",
+        "execution_sim",
+        "operations",
+        "options",
+        "paper",
+        "portfolio",
+        "risk",
+        "webull",
+    ):
+        for path in (ROOT / "src" / "trading_system" / package).rglob("*.py"):
+            tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Import):
+                    names = {alias.name for alias in node.names}
+                elif isinstance(node, ast.ImportFrom):
+                    names = {node.module or ""}
+                else:
+                    continue
+                if any(
+                    name == banned or name.startswith(f"{banned}.")
+                    for name in names
+                    for banned in forbidden
+                ):
+                    violations.append(f"{path}:{node.lineno}")
+    assert not violations, f"Phase 8 confirmatory boundary entered authority code: {violations}"

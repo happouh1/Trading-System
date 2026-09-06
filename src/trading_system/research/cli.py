@@ -85,6 +85,10 @@ from trading_system.research.range_confirmatory_report import (
 from trading_system.research.range_confirmatory_report_registry import (
     RangeConfirmatoryReportRegistry,
 )
+from trading_system.research.range_confirmatory_terminal_boundary import (
+    assess_range_confirmatory_terminal_boundary,
+    load_range_confirmatory_terminal_config,
+)
 from trading_system.research.range_terminal_boundary import (
     assess_range_terminal_boundary,
     load_range_terminal_boundary_config,
@@ -391,6 +395,16 @@ def configure_research_parser(
     confirmatory_export_status.add_argument("--adapter-config", required=True)
     confirmatory_export_status.add_argument("--report-config", required=True)
     confirmatory_export_status.add_argument("--export-config", required=True)
+    confirmatory_terminal = actions.add_parser(
+        "range-confirmatory-terminal-boundary-status"
+    )
+    confirmatory_terminal.add_argument("--database", required=True)
+    confirmatory_terminal.add_argument("--export-id", required=True)
+    confirmatory_terminal.add_argument("--config", required=True)
+    confirmatory_terminal.add_argument("--adapter-config", required=True)
+    confirmatory_terminal.add_argument("--report-config", required=True)
+    confirmatory_terminal.add_argument("--export-config", required=True)
+    confirmatory_terminal.add_argument("--boundary-config", required=True)
 
 
 def _load_object(path: str | Path) -> dict[str, Any]:
@@ -1591,6 +1605,44 @@ def handle_research(args: argparse.Namespace) -> int:
                 "verified": verified,
                 "materialized": materialized,
                 "effect_size_reported": False,
+                "efficacy_claimed": False,
+                "parameter_selection_performed": False,
+                "ranking_performed": False,
+                "approval_granted": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "production_authority": False,
+            }
+        elif command == "range-confirmatory-terminal-boundary-status":
+            phase8a_config = load_range_confirmatory_config(args.config)
+            phase8b_config = load_range_confirmatory_adapter_config(args.adapter_config)
+            phase8c_config = load_range_confirmatory_report_config(args.report_config)
+            phase8d_config = load_range_confirmatory_export_config(args.export_config)
+            phase8e_config = load_range_confirmatory_terminal_config(
+                args.boundary_config
+            )
+            phase8d_status = RangeConfirmatoryExportRegistry(repository).status(
+                args.export_id,
+                phase8a_config,
+                phase8b_config,
+                phase8c_config,
+                phase8d_config,
+            )
+            phase8e_assessment = assess_range_confirmatory_terminal_boundary(
+                phase8e_config, phase8d_status
+            )
+            result = {
+                "assessment_id": phase8e_assessment.assessment_id,
+                "export_id": phase8e_assessment.export_id,
+                "report_id": phase8e_assessment.report_id,
+                "content_hash": phase8e_assessment.content_hash,
+                "byte_count": phase8e_assessment.byte_count,
+                "upstream_verified": phase8e_assessment.upstream_verified,
+                "terminal_boundary": phase8e_assessment.terminal_boundary,
+                "effect_size_reported": False,
+                "uncertainty_interval_reported": False,
+                "economic_threshold_applied": False,
+                "fold_pooling_performed": False,
                 "efficacy_claimed": False,
                 "parameter_selection_performed": False,
                 "ranking_performed": False,
