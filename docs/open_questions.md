@@ -1017,3 +1017,10 @@ another export/verification/incident recursion, and which architectural rule sho
 consume Phase 7W intents without exposing source secrets or granting trading authority?
 376. What acknowledgement, retry, deduplication, and ambiguous-delivery protocol is required before
 any Phase 7W delivery attempt or receipt may be recorded?
+
+377. Which separately governed product and approval process may define a network delivery adapter
+without extending the terminal Phase 7 research evidence chain or inheriting trading authority?
+378. Which authenticated recipient directory, credential store, endpoint allowlist, and provider
+receipt semantics are required before any local outbox intent may leave the offline boundary?
+379. Which independent security review must prove that a future delivery consumer cannot import,
+mutate, promote, score, route, or trade from Phase 7 evidence?

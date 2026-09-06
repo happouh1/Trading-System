@@ -194,3 +194,51 @@ def test_operations_control_plane_has_no_strategy_or_broker_dependency() -> None
             ):
                 violations.append(f"{path}:{node.lineno}")
     assert not violations, f"forbidden operations dependencies: {violations}"
+
+
+def test_phase7_terminal_boundary_cannot_enter_authority_packages() -> None:
+    terminal_modules = {
+        "trading_system.research.range_terminal_boundary",
+        (
+            "trading_system.reporting."
+            "reviewed_range_catalog_incident_notification_export_incident_notification"
+        ),
+    }
+    terminal_exports = {
+        "ReviewedRangeCatalogIncidentNotificationExportIncidentNotificationConfig",
+        "ReviewedRangeCatalogIncidentNotificationExportIncidentNotificationIntent",
+        "ReviewedRangeCatalogIncidentNotificationExportIncidentNotificationRegistry",
+        "ReviewedRangeCatalogIncidentNotificationExportIncidentNotificationSummary",
+        "load_reviewed_range_catalog_incident_notification_export_incident_notification_config",
+    }
+    violations: list[str] = []
+    for package in (
+        "decisions",
+        "execution_sim",
+        "operations",
+        "options",
+        "paper",
+        "portfolio",
+        "risk",
+        "webull",
+    ):
+        for path in (ROOT / "src" / "trading_system" / package).rglob("*.py"):
+            tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Import):
+                    names = {alias.name for alias in node.names}
+                elif isinstance(node, ast.ImportFrom):
+                    names = {node.module or ""}
+                    if node.module == "trading_system.reporting" and any(
+                        alias.name in terminal_exports for alias in node.names
+                    ):
+                        violations.append(f"{path}:{node.lineno}")
+                else:
+                    continue
+                if any(
+                    name == terminal or name.startswith(f"{terminal}.")
+                    for name in names
+                    for terminal in terminal_modules
+                ):
+                    violations.append(f"{path}:{node.lineno}")
+    assert not violations, f"Phase 7 terminal boundary entered authority code: {violations}"

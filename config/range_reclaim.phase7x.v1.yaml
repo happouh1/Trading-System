@@ -1,0 +1,24 @@
+{
+  "boundary_version": "7X.1.0",
+  "source": "VALIDATED_PHASE7W_LOCAL_INTENTS",
+  "terminal_policy": "NO_DOWNSTREAM_EXPORT_VERIFICATION_INCIDENT_OR_DELIVERY_CHAIN",
+  "allowed_route": "LOCAL_OPERATOR_OUTBOX",
+  "authority": {
+    "network_enabled": false,
+    "delivery_enabled": false,
+    "retry_enabled": false,
+    "escalation_enabled": false,
+    "credential_access_enabled": false,
+    "recipient_resolution_enabled": false,
+    "artifact_export_enabled": false,
+    "incident_creation_enabled": false,
+    "quarantine_enforcement_enabled": false,
+    "approval_enabled": false,
+    "efficacy_claims_enabled": false,
+    "promotion_enabled": false,
+    "scoring_enabled": false,
+    "options_routing_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

@@ -848,6 +848,19 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
         str(ROOT / "config/range_reclaim.phase7w.v1.yaml"),
     ]
     assert main(phase7w_status_args) == 0
+    phase7x_status_args = [
+        "research",
+        "range-phase7-terminal-boundary-status",
+        "--database",
+        str(database),
+        "--incident-id",
+        notification_export_incident_id,
+        "--source-config",
+        str(ROOT / "config/range_reclaim.phase7w.v1.yaml"),
+        "--config",
+        str(ROOT / "config/range_reclaim.phase7x.v1.yaml"),
+    ]
+    assert main(phase7x_status_args) == 0
     with SQLiteRepository(database) as repository:
         phase7w_intents = repository.connection.execute(
             "SELECT event_type, incident_state, delivery_attempt_count FROM "
@@ -919,6 +932,8 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
         repository.connection.commit()
     with pytest.raises(ValueError, match="stored Phase 7W notification intent is corrupt"):
         main(phase7w_status_args)
+    with pytest.raises(ValueError, match="stored Phase 7W notification intent is corrupt"):
+        main(phase7x_status_args)
     with SQLiteRepository(database) as repository:
         repository.connection.execute(
             "UPDATE reviewed_range_catalog_incident_notification_export_incident_events "

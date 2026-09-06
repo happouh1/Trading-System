@@ -1037,3 +1037,11 @@ Phase 7W revalidates the complete Phase 7V history and deterministically maps ea
 one ordered local outbox intent. It retains identifiers and state while omitting actor identity and
 free-text notes. Status reconstructs the expected set from current validated source history and
 requires exact equality with stored intents. No delivery mechanism is present.
+
+## Phase 7X terminal-boundary methodology
+
+Phase 7X consumes only the fully revalidated Phase 7W summary. It requires a nonempty, complete
+event-to-intent mapping and exactly zero delivery attempts. The deterministic assessment is
+computed in memory and is not persisted, exported, or recursively verified. Static dependency
+tests prohibit the terminal Phase 7 evidence from entering packages with decision, execution,
+paper, broker, portfolio, options, risk, or operations authority.

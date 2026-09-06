@@ -1088,3 +1088,11 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - Exclude actor IDs and notes; retain only identifiers, event state, and disclosure fields.
 - Require exact complete-set equality and fail closed on source or stored corruption.
 - Keep route local and delivery-attempt count zero; never retry, escalate, or trade.
+
+## Phase 7X terminal-boundary rules
+
+- `RANGE-7X-001`: require a nonempty Phase 7W source with exact event/intent cardinality.
+- `RANGE-7X-002`: fail closed when any delivery attempt is recorded.
+- `RANGE-7X-003`: derive assessment identity from complete ordered source evidence and config.
+- `RANGE-7X-004`: create no persistence, export, incident, notification, or delivery side effect.
+- `RANGE-7X-005`: prohibit Phase 7W/7X imports from authority-bearing packages.

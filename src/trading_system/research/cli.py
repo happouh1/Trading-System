@@ -68,6 +68,10 @@ from trading_system.research.orchestration import (
     ExperimentStage,
     assign_fold_rows,
 )
+from trading_system.research.range_terminal_boundary import (
+    assess_range_terminal_boundary,
+    load_range_terminal_boundary_config,
+)
 from trading_system.research.registry import ExperimentRegistry
 from trading_system.research.workflow import ExperimentWorkflow
 from trading_system.serialization import canonical_json, deterministic_id
@@ -330,6 +334,11 @@ def configure_research_parser(
     notification_export_incident_notify_status.add_argument("--database", required=True)
     notification_export_incident_notify_status.add_argument("--incident-id", required=True)
     notification_export_incident_notify_status.add_argument("--config", required=True)
+    phase7_terminal = actions.add_parser("range-phase7-terminal-boundary-status")
+    phase7_terminal.add_argument("--database", required=True)
+    phase7_terminal.add_argument("--incident-id", required=True)
+    phase7_terminal.add_argument("--source-config", required=True)
+    phase7_terminal.add_argument("--config", required=True)
 
 
 def _load_object(path: str | Path) -> dict[str, Any]:
@@ -1373,6 +1382,38 @@ def handle_research(args: argparse.Namespace) -> int:
                 "recipient_authenticated": False,
                 "artifact_mutated": False,
                 "quarantine_enforced": False,
+                "approval_granted": False,
+                "promotion_authority": False,
+                "broker_write_performed": False,
+            }
+        elif command == "range-phase7-terminal-boundary-status":
+            phase7x_config = load_range_terminal_boundary_config(args.config)
+            phase7w_config = (
+                load_reviewed_range_catalog_incident_notification_export_incident_notification_config(
+                    args.source_config
+                )
+            )
+            phase7w_summary = (
+                ReviewedRangeCatalogIncidentNotificationExportIncidentNotificationRegistry(
+                    repository
+                ).status(args.incident_id, phase7w_config)
+            )
+            phase7x_assessment = assess_range_terminal_boundary(
+                phase7x_config, phase7w_summary
+            )
+            result = {
+                "assessment_id": phase7x_assessment.assessment_id,
+                "incident_id": phase7x_assessment.incident_id,
+                "notification_export_id": phase7x_assessment.notification_export_id,
+                "intent_count": phase7x_assessment.intent_count,
+                "event_types": phase7x_assessment.event_types,
+                "route": phase7x_assessment.route,
+                "delivery_attempt_count": phase7x_assessment.delivery_attempt_count,
+                "terminal_boundary": phase7x_assessment.terminal_boundary,
+                "network_used": False,
+                "delivery_attempted": False,
+                "artifact_exported": False,
+                "incident_created": False,
                 "approval_granted": False,
                 "promotion_authority": False,
                 "broker_write_performed": False,

@@ -1083,3 +1083,15 @@ operator identity and notes and never attempts delivery.
 trading-system research range-reviewed-bundle-catalog-export-incident-notification-export-incident-notification-materialize --database DB --incident-id ID --config config/range_reclaim.phase7w.v1.yaml
 trading-system research range-reviewed-bundle-catalog-export-incident-notification-export-incident-notification-status --database DB --incident-id ID --config config/range_reclaim.phase7w.v1.yaml
 ```
+
+## Phase 7X terminal research boundary
+
+Phase 7X closes the range-reclaim evidence chain at the validated local Phase 7W operator outbox.
+The read-only `range-phase7-terminal-boundary-status` command emits a deterministic in-memory
+assessment only; it creates no new artifact, database record, notification, delivery attempt, or
+authority. Architecture tests prevent Phase 7W/7X evidence from entering decision, execution,
+paper, Webull, options, portfolio, risk, or operations authority packages.
+
+```text
+trading-system research range-phase7-terminal-boundary-status --database DB --incident-id ID --source-config config/range_reclaim.phase7w.v1.yaml --config config/range_reclaim.phase7x.v1.yaml
+```

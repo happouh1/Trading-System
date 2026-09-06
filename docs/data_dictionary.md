@@ -967,3 +967,11 @@ time/type/state, fixed local route, zero delivery attempts, configuration hash, 
 authority flags, and disclosures. It deliberately excludes Phase 7V actor IDs and notes. SQLite
 stores canonical payload JSON and hashes in
 `reviewed_range_catalog_incident_notification_export_incident_intents`.
+
+## Phase 7X terminal-boundary assessment
+
+`RangeTerminalBoundaryAssessment` is an immutable, non-persisted view of an exact validated Phase
+7W summary. It contains the assessment, incident, and notification-export IDs; intent count;
+ordered event types; fixed local route; zero delivery-attempt count; configuration hash; fixed
+version; terminal marker; and explicit false authority flags. It contains no actor ID, note,
+credential, recipient, endpoint, or delivery payload.
