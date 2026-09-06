@@ -1045,3 +1045,11 @@ event-to-intent mapping and exactly zero delivery attempts. The deterministic as
 computed in memory and is not persisted, exported, or recursively verified. Static dependency
 tests prohibit the terminal Phase 7 evidence from entering packages with decision, execution,
 paper, broker, portfolio, options, risk, or operations authority.
+
+## Phase 8A confirmatory-statistics methodology
+
+Phase 8A reduces each independent range `BOX_ID` to one mean net directional return, counts its
+sign, and calculates the exact one-sided binomial tail under probability 0.5. Zero cluster means
+are excluded from sign trials. Holm adjustment is deterministic across the entire supplied family,
+ordered by raw p-value and stable summary ID. The frozen Phase 7C familywise alpha determines only
+null rejection; rejection is not an efficacy, profitability, or promotion decision.

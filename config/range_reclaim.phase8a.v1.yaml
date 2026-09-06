@@ -1,0 +1,22 @@
+{
+  "analysis_version": "8A.1.0",
+  "source": "PHASE7G_TEST_COHORTS_PASSING_FROZEN_EVIDENCE_GATES",
+  "method": {
+    "test": "EXACT_ONE_SIDED_CLUSTER_MEAN_SIGN_TEST",
+    "alternative": "POSITIVE",
+    "cluster_unit": "BOX_ID",
+    "zero_treatment": "EXCLUDE_FROM_SIGN_COUNT",
+    "multiple_testing_correction": "HOLM",
+    "alpha_source": "PHASE7C_FROZEN_FAMILYWISE_ALPHA"
+  },
+  "authority": {
+    "efficacy_claims_enabled": false,
+    "parameter_selection_enabled": false,
+    "scoring_enabled": false,
+    "decision_changes_enabled": false,
+    "alerts_enabled": false,
+    "options_routing_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

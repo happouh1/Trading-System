@@ -1095,3 +1095,10 @@ paper, Webull, options, portfolio, risk, or operations authority packages.
 ```text
 trading-system research range-phase7-terminal-boundary-status --database DB --incident-id ID --source-config config/range_reclaim.phase7w.v1.yaml --config config/range_reclaim.phase7x.v1.yaml
 ```
+
+## Phase 8A confirmatory statistics foundation
+
+Phase 8A adds an offline deterministic reference for exact one-sided `BOX_ID` cluster-mean sign
+tests and Holm familywise correction. It accepts only explicitly supplied, sorted independent-box
+cohorts and inherits alpha from the frozen Phase 7C plan. It does not yet read or persist Phase 7G
+evidence and cannot select parameters, alter decisions, alert, route orders, or claim efficacy.

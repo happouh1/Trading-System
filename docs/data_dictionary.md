@@ -975,3 +975,11 @@ stores canonical payload JSON and hashes in
 ordered event types; fixed local route; zero delivery-attempt count; configuration hash; fixed
 version; terminal marker; and explicit false authority flags. It contains no actor ID, note,
 credential, recipient, endpoint, or delivery payload.
+
+## Phase 8A confirmatory statistics
+
+`RangeConfirmatoryCohort` identifies one frozen fold/timeframe/direction/horizon summary and its
+sorted unique `(BOX_ID, mean_net_directional_return)` inputs. `RangeConfirmatoryTest` stores sign
+counts, exact raw p-value, Holm-adjusted p-value, frozen familywise alpha, null-rejection flag,
+configuration hash, fixed version, and an explicit false production-authority flag. Phase 8A
+contracts are not persisted.

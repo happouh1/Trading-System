@@ -1096,3 +1096,11 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `RANGE-7X-003`: derive assessment identity from complete ordered source evidence and config.
 - `RANGE-7X-004`: create no persistence, export, incident, notification, or delivery side effect.
 - `RANGE-7X-005`: prohibit Phase 7W/7X imports from authority-bearing packages.
+
+## Phase 8A confirmatory-statistics rules
+
+- `RANGE-8A-001`: one independent `BOX_ID` contributes exactly one finite cluster mean.
+- `RANGE-8A-002`: use the exact one-sided positive sign-test tail; exclude zero signs.
+- `RANGE-8A-003`: apply Holm correction to the complete supplied hypothesis family.
+- `RANGE-8A-004`: normalize cohort order and reject duplicate or unsorted cluster identities.
+- `RANGE-8A-005`: statistical rejection grants no efficacy, selection, scoring, or trading authority.

@@ -1024,3 +1024,10 @@ without extending the terminal Phase 7 research evidence chain or inheriting tra
 receipt semantics are required before any local outbox intent may leave the offline boundary?
 379. Which independent security review must prove that a future delivery consumer cannot import,
 mutate, promote, score, route, or trade from Phase 7 evidence?
+
+380. Should the Phase 8B causal adapter compute each `BOX_ID` mean across observations, symbols,
+or nested range episodes, and which dependence analysis validates that cluster definition?
+381. Which preregistered minimum nonzero cluster count is required in addition to Phase 7C's total
+independent-box gate before a Phase 8A sign test may be interpreted?
+382. Which effect-size interval and economic threshold must accompany statistical rejection before
+any separately governed efficacy review may occur?
