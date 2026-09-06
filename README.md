@@ -1155,3 +1155,17 @@ trading-system research range-confirmatory-terminal-boundary-status --database D
 
 The assessment states explicitly that effect size, uncertainty, economic significance, pooling,
 efficacy, selection, ranking, approval, broker access, and production authority remain absent.
+
+## Phase 8F prospective replication preregistration
+
+Phase 8F can append an operator-supplied protocol for a new independent replication dataset. It
+binds the complete method definition to an exact verified Phase 8D export while disclosing that the
+source results already exist. The repository supplies no production protocol or method defaults.
+
+```text
+trading-system research range-replication-protocol-register --database DB --export-id EXPORT --manifest PROTOCOL.json --config config/range_reclaim.phase8a.v1.yaml --adapter-config config/range_reclaim.phase8b.v1.yaml --report-config config/range_reclaim.phase8c.v1.yaml --export-config config/range_reclaim.phase8d.v1.yaml --protocol-config config/range_reclaim.phase8f.v1.yaml
+trading-system research range-replication-protocol-status --database DB --protocol-id PROTOCOL --config config/range_reclaim.phase8a.v1.yaml --adapter-config config/range_reclaim.phase8b.v1.yaml --report-config config/range_reclaim.phase8c.v1.yaml --export-config config/range_reclaim.phase8d.v1.yaml --protocol-config config/range_reclaim.phase8f.v1.yaml
+```
+
+The committed manifest under `tests/fixtures` is synthetic test data and must not be used as a real
+statistical protocol.

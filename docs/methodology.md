@@ -1093,3 +1093,15 @@ configuration, and version.
 The assessment exists only in memory and enumerates disabled analytical and operational authority.
 It intentionally ends the implemented confirmatory chain because the specification does not define
 an effect-size estimator, uncertainty model, economic threshold, or pooling rule.
+
+## Phase 8F prospective replication preregistration methodology
+
+Phase 8F treats the existing Phase 8 report only as the frozen hypothesis-family source for a new
+independent replication. It does not represent a registration made before the existing results.
+Every protocol therefore carries disclosures that the source results exist and may have been
+inspected, and that the protocol applies only to future independent data.
+
+The framework accepts a complete method manifest supplied by an operator, canonicalizes only key
+order, whitespace, and the UTC timestamp representation, then hashes the complete definition. It
+does not parse statistical expressions, judge methodological adequacy, or execute the protocol.
+Registration and status both revalidate the exact Phase 8D export and its upstream causal evidence.

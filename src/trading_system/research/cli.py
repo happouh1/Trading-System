@@ -89,6 +89,12 @@ from trading_system.research.range_confirmatory_terminal_boundary import (
     assess_range_confirmatory_terminal_boundary,
     load_range_confirmatory_terminal_config,
 )
+from trading_system.research.range_replication_protocol import (
+    load_range_replication_protocol_config,
+)
+from trading_system.research.range_replication_protocol_registry import (
+    RangeReplicationProtocolRegistry,
+)
 from trading_system.research.range_terminal_boundary import (
     assess_range_terminal_boundary,
     load_range_terminal_boundary_config,
@@ -405,6 +411,23 @@ def configure_research_parser(
     confirmatory_terminal.add_argument("--report-config", required=True)
     confirmatory_terminal.add_argument("--export-config", required=True)
     confirmatory_terminal.add_argument("--boundary-config", required=True)
+    replication_register = actions.add_parser("range-replication-protocol-register")
+    replication_register.add_argument("--database", required=True)
+    replication_register.add_argument("--export-id", required=True)
+    replication_register.add_argument("--manifest", required=True)
+    replication_register.add_argument("--config", required=True)
+    replication_register.add_argument("--adapter-config", required=True)
+    replication_register.add_argument("--report-config", required=True)
+    replication_register.add_argument("--export-config", required=True)
+    replication_register.add_argument("--protocol-config", required=True)
+    replication_status = actions.add_parser("range-replication-protocol-status")
+    replication_status.add_argument("--database", required=True)
+    replication_status.add_argument("--protocol-id", required=True)
+    replication_status.add_argument("--config", required=True)
+    replication_status.add_argument("--adapter-config", required=True)
+    replication_status.add_argument("--report-config", required=True)
+    replication_status.add_argument("--export-config", required=True)
+    replication_status.add_argument("--protocol-config", required=True)
 
 
 def _load_object(path: str | Path) -> dict[str, Any]:
@@ -1646,6 +1669,72 @@ def handle_research(args: argparse.Namespace) -> int:
                 "efficacy_claimed": False,
                 "parameter_selection_performed": False,
                 "ranking_performed": False,
+                "approval_granted": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "production_authority": False,
+            }
+        elif command in {
+            "range-replication-protocol-register",
+            "range-replication-protocol-status",
+        }:
+            phase8a_config = load_range_confirmatory_config(args.config)
+            phase8b_config = load_range_confirmatory_adapter_config(args.adapter_config)
+            phase8c_config = load_range_confirmatory_report_config(args.report_config)
+            phase8d_config = load_range_confirmatory_export_config(args.export_config)
+            phase8f_config = load_range_replication_protocol_config(
+                args.protocol_config
+            )
+            phase8f_registry = RangeReplicationProtocolRegistry(repository)
+            if command == "range-replication-protocol-register":
+                protocol = phase8f_registry.register(
+                    args.export_id,
+                    _load_object(args.manifest),
+                    phase8a_config,
+                    phase8b_config,
+                    phase8c_config,
+                    phase8d_config,
+                    phase8f_config,
+                )
+                protocol_id = protocol.protocol_id
+                source_export_id = protocol.source_export_id
+                source_report_id = protocol.source_report_id
+                future_dataset_id = protocol.future_dataset_id
+                declared_at = protocol.declared_at
+                definition_hash = protocol.definition_hash
+                complete = True
+                registered = True
+            else:
+                protocol_status = phase8f_registry.status(
+                    args.protocol_id,
+                    phase8a_config,
+                    phase8b_config,
+                    phase8c_config,
+                    phase8d_config,
+                    phase8f_config,
+                )
+                protocol_id = protocol_status.protocol_id
+                source_export_id = protocol_status.source_export_id
+                source_report_id = protocol_status.source_report_id
+                future_dataset_id = protocol_status.future_dataset_id
+                declared_at = protocol_status.declared_at
+                definition_hash = protocol_status.definition_hash
+                complete = protocol_status.complete
+                registered = False
+            result = {
+                "protocol_id": protocol_id,
+                "source_export_id": source_export_id,
+                "source_report_id": source_report_id,
+                "future_dataset_id": future_dataset_id,
+                "declared_at": declared_at,
+                "definition_hash": definition_hash,
+                "complete": complete,
+                "registered": registered,
+                "prospective_replication_only": True,
+                "source_results_already_exist": True,
+                "analysis_performed": False,
+                "efficacy_claimed": False,
+                "parameter_selection_performed": False,
                 "approval_granted": False,
                 "network_used": False,
                 "broker_write_performed": False,

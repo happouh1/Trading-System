@@ -1024,3 +1024,23 @@ Phase 8D export. It contains the assessment, export, and report IDs; content has
 configuration hash; version; verification and terminal markers; and explicit false flags for effect
 size, uncertainty interval, economic threshold, fold pooling, efficacy, selection, ranking,
 approval, network use, broker writes, and production authority.
+
+## `range_replication_protocols` (Phase 8F)
+
+Append-only prospective independent-replication method commitments keyed by `protocol_id`.
+
+| Column | Meaning |
+|---|---|
+| `protocol_id` | Deterministic protocol identity. |
+| `source_export_id` | Currently verified Phase 8D source export. |
+| `source_report_id` | Exact Phase 8C hypothesis-family report. |
+| `future_dataset_id` | Operator-supplied identity for independent future data. |
+| `declared_at` | Canonical UTC caller assertion; not a trusted timestamp. |
+| `definition_hash` | Canonical hash of every operator-supplied method field. |
+| `protocol_config_hash` | Canonical Phase 8F policy hash. |
+| `payload_json` | Complete immutable protocol and negative-authority disclosures. |
+| `payload_hash` | Canonical stored-payload integrity hash. |
+
+The payload includes the dataset freeze, estimator, interval, economic threshold, transaction cost,
+capacity, pooling, dependence diagnostics, acceptance, universe, and review-reference definitions.
+The registry stores these strings but does not execute or approve them.

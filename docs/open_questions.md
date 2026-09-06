@@ -1059,3 +1059,12 @@ that its estimator, interval, economic threshold, and pooling rules preceded res
 Phase 8E terminal boundary may be superseded by a separately governed efficacy review?
 394. What architecture and review controls must prove that any future efficacy artifact remains
 unable to alter decisions, parameters, alerts, orders, or production state automatically?
+
+395. What real Phase 8F protocol definitions will an independent statistical reviewer approve for
+the estimator, interval, economic threshold, costs, capacity, pooling, and dependence diagnostics?
+396. Which genuinely unseen dataset revision and point-in-time universe will be reserved for the
+independent replication, and how will access before its freeze be prevented and audited?
+397. Which external timestamping or preregistration service will attest that the real protocol was
+fixed before anyone accessed the independent replication outcomes?
+398. What authenticated review authority may approve a real protocol, and how should its signed
+decision be linked without allowing approval to flow into trading or production automatically?

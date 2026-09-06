@@ -1,0 +1,23 @@
+{
+  "protocol_version": "8F.1.0",
+  "source": "VERIFIED_PHASE8D_EXPORT",
+  "registration_mode": "PROSPECTIVE_INDEPENDENT_REPLICATION_ONLY",
+  "hypothesis_scope": "EXACT_SOURCE_REPORT_FAMILY",
+  "required_disclosures": [
+    "SOURCE_RESULTS_ALREADY_EXIST_AND_MAY_HAVE_BEEN_INSPECTED",
+    "VALID_ONLY_FOR_NEW_INDEPENDENT_REPLICATION",
+    "LOCAL_DECLARED_AT_IS_NOT_A_TRUSTED_TIMESTAMP",
+    "NO_ANALYSIS_EFFICACY_SELECTION_OR_PRODUCTION_AUTHORITY"
+  ],
+  "authority": {
+    "analysis_enabled": false,
+    "effect_size_calculation_enabled": false,
+    "efficacy_claims_enabled": false,
+    "parameter_selection_enabled": false,
+    "ranking_enabled": false,
+    "approval_enabled": false,
+    "network_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

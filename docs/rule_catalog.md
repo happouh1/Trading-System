@@ -1148,3 +1148,16 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `R8E-005`: Explicitly disable effect size, uncertainty, economic thresholds, pooling, efficacy,
   selection, ranking, approval, network, broker writes, and production authority.
 - `R8E-006`: Prohibit Phase 8 confirmatory modules from entering authority-bearing packages.
+
+## Phase 8F prospective-replication protocol rules
+
+- `R8F-001`: Bind protocols only to a currently verified Phase 8D export and exact source report.
+- `R8F-002`: Require all dataset, estimator, interval, economic, cost, capacity, pooling,
+  dependence, acceptance, universe, review, and declared-time fields.
+- `R8F-003`: Disclose that source results exist and the protocol applies only to independent data.
+- `R8F-004`: Normalize manifest order and UTC representation without interpreting methodology.
+- `R8F-005`: Derive identity from the complete definition, source, config, and version.
+- `R8F-006`: Append idempotently and fail closed on payload, config, identity, or source drift.
+- `R8F-007`: Treat local `declared_at` as an unauthenticated caller assertion.
+- `R8F-008`: Perform no analysis and grant no efficacy, selection, ranking, approval, network,
+  broker, or production authority.

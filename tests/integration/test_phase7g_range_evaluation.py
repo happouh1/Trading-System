@@ -53,6 +53,12 @@ from trading_system.research.range_confirmatory_report import (
 from trading_system.research.range_confirmatory_report_registry import (
     RangeConfirmatoryReportRegistry,
 )
+from trading_system.research.range_replication_protocol import (
+    load_range_replication_protocol_config,
+)
+from trading_system.research.range_replication_protocol_registry import (
+    RangeReplicationProtocolRegistry,
+)
 
 ROOT = Path(__file__).parents[2]
 
@@ -198,6 +204,44 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
             phase8c_config,
             phase8d_config,
         ).verified
+        phase8f_config = load_range_replication_protocol_config(
+            ROOT / "config/range_reclaim.phase8f.v1.yaml"
+        )
+        manifest_8f = json.loads(
+            (ROOT / "tests/fixtures/range_replication_protocol.v1.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        assert isinstance(manifest_8f, dict)
+        protocol_registry_8f = RangeReplicationProtocolRegistry(
+            repository, export_registry_8d
+        )
+        protocol_8f = protocol_registry_8f.register(
+            export_8d.export_id,
+            manifest_8f,
+            phase8a_config,
+            phase8b_config,
+            phase8c_config,
+            phase8d_config,
+            phase8f_config,
+        )
+        assert protocol_registry_8f.register(
+            export_8d.export_id,
+            manifest_8f,
+            phase8a_config,
+            phase8b_config,
+            phase8c_config,
+            phase8d_config,
+            phase8f_config,
+        ) == protocol_8f
+        assert protocol_registry_8f.status(
+            protocol_8f.protocol_id,
+            phase8a_config,
+            phase8b_config,
+            phase8c_config,
+            phase8d_config,
+            phase8f_config,
+        ).complete
         report = build_range_evaluation_report(
             load_range_evaluation_report_config(
                 ROOT / "config/range_reclaim.phase7h.v1.yaml"
@@ -278,15 +322,47 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
         str(ROOT / "config/range_reclaim.phase8e.v1.yaml"),
     ]
     assert main(phase8e_cli) == 0
+    phase8f_cli = [
+        "research",
+        "range-replication-protocol-status",
+        "--database",
+        str(database),
+        "--protocol-id",
+        protocol_8f.protocol_id,
+        "--config",
+        str(ROOT / "config/range_reclaim.phase8a.v1.yaml"),
+        "--adapter-config",
+        str(ROOT / "config/range_reclaim.phase8b.v1.yaml"),
+        "--report-config",
+        str(ROOT / "config/range_reclaim.phase8c.v1.yaml"),
+        "--export-config",
+        str(ROOT / "config/range_reclaim.phase8d.v1.yaml"),
+        "--protocol-config",
+        str(ROOT / "config/range_reclaim.phase8f.v1.yaml"),
+    ]
+    assert main(phase8f_cli) == 0
     original_export = export_output_8d.read_bytes()
     export_output_8d.write_bytes(b"tampered\n")
     with pytest.raises(ValueError, match="Phase 8D export content is corrupt"):
         main(phase8d_cli)
     with pytest.raises(ValueError, match="Phase 8D export content is corrupt"):
         main(phase8e_cli)
+    with pytest.raises(ValueError, match="Phase 8D export content is corrupt"):
+        main(phase8f_cli)
     export_output_8d.write_bytes(original_export)
     assert main(phase8d_cli) == 0
     assert main(phase8e_cli) == 0
+    assert main(phase8f_cli) == 0
+    register_8f_cli = phase8f_cli.copy()
+    register_8f_cli[1] = "range-replication-protocol-register"
+    protocol_flag = register_8f_cli.index("--protocol-id")
+    register_8f_cli[protocol_flag : protocol_flag + 2] = [
+        "--export-id",
+        export_8d.export_id,
+        "--manifest",
+        str(ROOT / "tests/fixtures/range_replication_protocol.v1.json"),
+    ]
+    assert main(register_8f_cli) == 0
     cli_export_output = tmp_path / "confirmatory-report-cli.md"
     assert main(
         [
