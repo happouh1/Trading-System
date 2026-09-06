@@ -138,6 +138,26 @@ class RangeConfirmatoryRegistry:
             adapter_config.config_hash,
         )
 
+    def load_verified(
+        self,
+        plan_id: str,
+        analysis_config: RangeConfirmatoryConfig,
+        adapter_config: RangeConfirmatoryAdapterConfig,
+    ) -> tuple[RangeConfirmatoryTest, ...]:
+        status = self.status(plan_id, analysis_config, adapter_config)
+        if not status.complete:
+            raise ValueError("Phase 8B confirmatory family is incomplete")
+        rows = self.repository.connection.execute(
+            """SELECT payload_json, payload_hash FROM range_confirmatory_tests
+               WHERE plan_id = ? AND analysis_config_hash = ? AND adapter_config_hash = ?
+               ORDER BY summary_id""",
+            (plan_id, analysis_config.config_hash, adapter_config.config_hash),
+        ).fetchall()
+        return tuple(
+            _test_from_payload(_verified_payload(text, digest, "Phase 8B test"))
+            for text, digest in rows
+        )
+
     def _persist(
         self,
         item: RangeConfirmatoryTest,
@@ -319,6 +339,36 @@ def _integer(value: Mapping[str, Any], key: str) -> int:
     return result
 
 
+def _boolean(value: Mapping[str, Any], key: str) -> bool:
+    result = value.get(key)
+    if not isinstance(result, bool):
+        raise ValueError(f"{key} must be a boolean")
+    return result
+
+
 def _expect(value: Mapping[str, Any], key: str, expected: object, label: str) -> None:
     if value.get(key) != expected:
         raise ValueError(f"{label} {key} mismatch")
+
+
+def _test_from_payload(value: Mapping[str, Any]) -> RangeConfirmatoryTest:
+    return RangeConfirmatoryTest(
+        _string(value, "test_id"),
+        _string(value, "summary_id"),
+        _string(value, "plan_id"),
+        _string(value, "fold_id"),
+        Timeframe(_string(value, "timeframe")),
+        Direction(_string(value, "direction")),
+        _integer(value, "horizon_bars"),
+        _integer(value, "cluster_count"),
+        _integer(value, "positive_count"),
+        _integer(value, "negative_count"),
+        _integer(value, "zero_count"),
+        _decimal(value.get("raw_p_value"), "raw p-value"),
+        _decimal(value.get("holm_adjusted_p_value"), "adjusted p-value"),
+        _decimal(value.get("familywise_alpha"), "familywise alpha"),
+        _boolean(value, "null_rejected"),
+        _string(value, "config_hash"),
+        _string(value, "analysis_version"),
+        _boolean(value, "production_authority"),
+    )

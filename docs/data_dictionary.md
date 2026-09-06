@@ -990,3 +990,11 @@ and its Phase 7C plan, stores the fold and null-rejection flag, pins Phase 8A an
 hashes, and preserves canonical `payload_json` plus `payload_hash`. The payload contains cluster
 sign counts, exact raw and Holm-adjusted p-values, frozen familywise alpha, and an explicit false
 production-authority field.
+
+## `range_confirmatory_reports` (Phase 8C)
+
+Append-only complete-family report evidence keyed by `report_id`. Columns pin the Phase 7C plan,
+Phase 8A analysis config, Phase 8B adapter config, Phase 8C report config, family size, rejected-null
+count, canonical payload, and payload hash. Payload rows retain the source test identity, cohort
+dimensions, sign counts, exact p-values, alpha, and null-hypothesis status. The payload explicitly
+records false efficacy, selection, ranking, and production authority.

@@ -1116,3 +1116,13 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `R8B-007`: Append idempotently; conflicting identities or source drift fail closed.
 - `R8B-008`: A result grants no efficacy, selection, scoring, decision, alert, routing, or trading
   authority.
+
+## Phase 8C confirmatory-report rules
+
+- `R8C-001`: Require a complete, currently revalidated Phase 8B family.
+- `R8C-002`: Preserve every eligible hypothesis exactly once in `summary_id` order.
+- `R8C-003`: Report only source counts, exact p-values, frozen alpha, and null status.
+- `R8C-004`: Include mandatory no-effect-size, no-efficacy, no-selection, and no-authority
+  disclosures.
+- `R8C-005`: Append idempotently and fail closed on source or stored-payload drift.
+- `R8C-006`: Status recomputation is read-only and performs no artifact or source mutation.

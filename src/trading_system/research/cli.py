@@ -73,6 +73,12 @@ from trading_system.research.range_confirmatory_registry import (
     RangeConfirmatoryRegistry,
     load_range_confirmatory_adapter_config,
 )
+from trading_system.research.range_confirmatory_report import (
+    load_range_confirmatory_report_config,
+)
+from trading_system.research.range_confirmatory_report_registry import (
+    RangeConfirmatoryReportRegistry,
+)
 from trading_system.research.range_terminal_boundary import (
     assess_range_terminal_boundary,
     load_range_terminal_boundary_config,
@@ -350,6 +356,18 @@ def configure_research_parser(
         confirmatory.add_argument("--plan-id", required=True)
         confirmatory.add_argument("--config", required=True)
         confirmatory.add_argument("--adapter-config", required=True)
+    confirmatory_report = actions.add_parser("range-confirmatory-report-materialize")
+    confirmatory_report.add_argument("--database", required=True)
+    confirmatory_report.add_argument("--plan-id", required=True)
+    confirmatory_report.add_argument("--config", required=True)
+    confirmatory_report.add_argument("--adapter-config", required=True)
+    confirmatory_report.add_argument("--report-config", required=True)
+    confirmatory_report_status = actions.add_parser("range-confirmatory-report-status")
+    confirmatory_report_status.add_argument("--database", required=True)
+    confirmatory_report_status.add_argument("--report-id", required=True)
+    confirmatory_report_status.add_argument("--config", required=True)
+    confirmatory_report_status.add_argument("--adapter-config", required=True)
+    confirmatory_report_status.add_argument("--report-config", required=True)
 
 
 def _load_object(path: str | Path) -> dict[str, Any]:
@@ -1455,6 +1473,48 @@ def handle_research(args: argparse.Namespace) -> int:
                 "adapter_version": phase8b_status.adapter_version,
                 "efficacy_claimed": False,
                 "parameter_selection_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "production_authority": False,
+            }
+        elif command in {
+            "range-confirmatory-report-materialize", "range-confirmatory-report-status",
+        }:
+            phase8a_config = load_range_confirmatory_config(args.config)
+            phase8b_config = load_range_confirmatory_adapter_config(args.adapter_config)
+            phase8c_config = load_range_confirmatory_report_config(args.report_config)
+            phase8c_registry = RangeConfirmatoryReportRegistry(repository)
+            if command.endswith("-materialize"):
+                phase8c_report = phase8c_registry.materialize(
+                    args.plan_id, phase8a_config, phase8b_config, phase8c_config
+                )
+                report_id = phase8c_report.report_id
+                report_plan_id = phase8c_report.plan_id
+                family_size = phase8c_report.family_size
+                rejected_null_count = phase8c_report.rejected_null_count
+                complete = True
+                materialized = True
+            else:
+                phase8c_status = phase8c_registry.status(
+                    args.report_id, phase8a_config, phase8b_config, phase8c_config
+                )
+                report_id = phase8c_status.report_id
+                report_plan_id = phase8c_status.plan_id
+                family_size = phase8c_status.family_size
+                rejected_null_count = phase8c_status.rejected_null_count
+                complete = phase8c_status.complete
+                materialized = False
+            result = {
+                "report_id": report_id,
+                "plan_id": report_plan_id,
+                "family_size": family_size,
+                "rejected_null_count": rejected_null_count,
+                "complete": complete,
+                "materialized": materialized,
+                "efficacy_claimed": False,
+                "effect_size_reported": False,
+                "parameter_selection_performed": False,
+                "ranking_performed": False,
                 "network_used": False,
                 "broker_write_performed": False,
                 "production_authority": False,

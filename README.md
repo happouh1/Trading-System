@@ -1116,3 +1116,16 @@ trading-system research range-confirmatory-status --database DB --plan-id PLAN -
 
 The commands are offline and confer no efficacy, selection, scoring, alerting, routing, broker,
 or production authority.
+
+## Phase 8C confirmatory evidence reports
+
+Phase 8C materializes one canonical, immutable report for a complete verified Phase 8B family.
+It restates exact counts, raw and Holm-adjusted p-values, alpha, null-hypothesis status, and source
+hashes without adding an effect-size estimate, ranking, or efficacy interpretation.
+
+```text
+trading-system research range-confirmatory-report-materialize --database DB --plan-id PLAN --config config/range_reclaim.phase8a.v1.yaml --adapter-config config/range_reclaim.phase8b.v1.yaml --report-config config/range_reclaim.phase8c.v1.yaml
+trading-system research range-confirmatory-report-status --database DB --report-id REPORT --config config/range_reclaim.phase8a.v1.yaml --adapter-config config/range_reclaim.phase8b.v1.yaml --report-config config/range_reclaim.phase8c.v1.yaml
+```
+
+Null rejection in this artifact is not an efficacy claim or permission to change the system.

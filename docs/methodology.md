@@ -1062,3 +1062,11 @@ are averaged with Decimal arithmetic within `BOX_ID`; those cluster means are th
 observations. The Phase 7C familywise alpha is used unchanged. All eligible hypotheses enter one
 Holm family, including those whose cluster means are zero. Zero cluster means are excluded only
 from that hypothesis's sign count, as specified by Phase 8A.
+
+## Phase 8C non-interpretive confirmatory reporting
+
+One report contains the entire revalidated Phase 8B family in ascending `summary_id` order.
+The report maps only the Boolean test outcome to `REJECTED` or `NOT_REJECTED`; it does not map
+that status to strategy efficacy. It adds no estimator, interval, pooling, economic threshold,
+ranking, or selection. An empty eligible family remains a reproducible zero-row report rather
+than an error or an implied negative result.

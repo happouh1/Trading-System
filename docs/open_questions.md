@@ -1038,3 +1038,10 @@ preregistered pooled estimate, and what dependence model would justify any pooli
 Phase 8B p-values before a human efficacy review can begin?
 385. What immutable review, sign-off, and replication evidence would be required before any
 Phase 8B result could inform a separately versioned parameter-selection process?
+
+386. What preregistered estimator and interval should a future Phase 8D effect-size artifact use
+for clustered, potentially overlapping range episodes?
+387. What minimum economically meaningful return threshold must be fixed before examining the
+confirmatory results, and how should fees, slippage, and capacity enter it?
+388. May fold-level evidence ever be pooled, and which dependence diagnostics and weighting rules
+must be specified before that operation is allowed?

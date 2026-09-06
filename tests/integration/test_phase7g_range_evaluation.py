@@ -41,6 +41,12 @@ from trading_system.research.range_confirmatory_registry import (
     RangeConfirmatoryRegistry,
     load_range_confirmatory_adapter_config,
 )
+from trading_system.research.range_confirmatory_report import (
+    load_range_confirmatory_report_config,
+)
+from trading_system.research.range_confirmatory_report_registry import (
+    RangeConfirmatoryReportRegistry,
+)
 
 ROOT = Path(__file__).parents[2]
 
@@ -143,6 +149,19 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
         assert confirmatory.status(
             experiment.plan.plan_id, phase8a_config, phase8b_config
         ).complete
+        phase8c_config = load_range_confirmatory_report_config(
+            ROOT / "config/range_reclaim.phase8c.v1.yaml"
+        )
+        report_registry_8c = RangeConfirmatoryReportRegistry(repository, confirmatory)
+        report_8c = report_registry_8c.materialize(
+            experiment.plan.plan_id, phase8a_config, phase8b_config, phase8c_config
+        )
+        assert report_registry_8c.materialize(
+            experiment.plan.plan_id, phase8a_config, phase8b_config, phase8c_config
+        ) == report_8c
+        assert report_registry_8c.status(
+            report_8c.report_id, phase8a_config, phase8b_config, phase8c_config
+        ).complete
         report = build_range_evaluation_report(
             load_range_evaluation_report_config(
                 ROOT / "config/range_reclaim.phase7h.v1.yaml"
@@ -168,6 +187,47 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
     assert main(phase8b_cli) == 0
     phase8b_cli[1] = "range-confirmatory-materialize"
     assert main(phase8b_cli) == 0
+    phase8c_cli = [
+        "research",
+        "range-confirmatory-report-materialize",
+        "--database",
+        str(database),
+        "--plan-id",
+        experiment.plan.plan_id,
+        "--config",
+        str(ROOT / "config/range_reclaim.phase8a.v1.yaml"),
+        "--adapter-config",
+        str(ROOT / "config/range_reclaim.phase8b.v1.yaml"),
+        "--report-config",
+        str(ROOT / "config/range_reclaim.phase8c.v1.yaml"),
+    ]
+    assert main(phase8c_cli) == 0
+    phase8c_cli[1] = "range-confirmatory-report-status"
+    plan_flag = phase8c_cli.index("--plan-id")
+    phase8c_cli[plan_flag : plan_flag + 2] = ["--report-id", report_8c.report_id]
+    assert main(phase8c_cli) == 0
+    with SQLiteRepository(database) as repository:
+        report_hash_row = repository.connection.execute(
+            "SELECT payload_hash FROM range_confirmatory_reports WHERE report_id = ?",
+            (report_8c.report_id,),
+        ).fetchone()
+        assert report_hash_row is not None
+        report_hash = str(report_hash_row[0])
+        repository.connection.execute(
+            "UPDATE range_confirmatory_reports SET payload_hash = 'sha256:corrupt' "
+            "WHERE report_id = ?",
+            (report_8c.report_id,),
+        )
+        repository.connection.commit()
+    with pytest.raises(ValueError, match="Phase 8C report is corrupt"):
+        main(phase8c_cli)
+    with SQLiteRepository(database) as repository:
+        repository.connection.execute(
+            "UPDATE range_confirmatory_reports SET payload_hash = ? WHERE report_id = ?",
+            (report_hash, report_8c.report_id),
+        )
+        repository.connection.commit()
+    assert main(phase8c_cli) == 0
     output = tmp_path / "range-report.md"
     assert main(
         [
