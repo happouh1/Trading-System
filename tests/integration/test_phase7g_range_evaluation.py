@@ -35,6 +35,12 @@ from trading_system.patterns import (
     materialize_range_entries,
 )
 from trading_system.persistence import RunRecord, SQLiteRepository
+from trading_system.research.orchestration import DatasetPartition
+from trading_system.research.range_confirmatory import load_range_confirmatory_config
+from trading_system.research.range_confirmatory_registry import (
+    RangeConfirmatoryRegistry,
+    load_range_confirmatory_adapter_config,
+)
 
 ROOT = Path(__file__).parents[2]
 
@@ -51,6 +57,14 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
         0,
     )
     experiment = materialization()
+    experiment = replace(
+        experiment,
+        plan=replace(experiment.plan, minimum_observations=1, minimum_clusters=1),
+        assignments=tuple(
+            replace(item, partition=DatasetPartition.TEST, reason="FIXTURE_TEST_MEMBER")
+            for item in experiment.assignments
+        ),
+    )
     box = range_box()
     event_candle = daily_candle(48)
     event = replace(
@@ -111,6 +125,24 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
         assert registry.persist(evaluation) == expected
         assert registry.persist(evaluation) == (0, 0)
         assert registry.counts(experiment.plan.plan_id) == expected
+        phase8a_config = load_range_confirmatory_config(
+            ROOT / "config/range_reclaim.phase8a.v1.yaml"
+        )
+        phase8b_config = load_range_confirmatory_adapter_config(
+            ROOT / "config/range_reclaim.phase8b.v1.yaml"
+        )
+        confirmatory = RangeConfirmatoryRegistry(repository)
+        tests = confirmatory.materialize(
+            experiment.plan.plan_id, phase8a_config, phase8b_config
+        )
+        assert tests
+        assert all(item.fold_id and not item.production_authority for item in tests)
+        assert confirmatory.materialize(
+            experiment.plan.plan_id, phase8a_config, phase8b_config
+        ) == tests
+        assert confirmatory.status(
+            experiment.plan.plan_id, phase8a_config, phase8b_config
+        ).complete
         report = build_range_evaluation_report(
             load_range_evaluation_report_config(
                 ROOT / "config/range_reclaim.phase7h.v1.yaml"
@@ -121,6 +153,21 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
         assert report_registry.persist(report, evaluation)
         assert not report_registry.persist(report, evaluation)
         assert report_registry.count(experiment.plan.plan_id) == 1
+    phase8b_cli = [
+        "research",
+        "range-confirmatory-status",
+        "--database",
+        str(database),
+        "--plan-id",
+        experiment.plan.plan_id,
+        "--config",
+        str(ROOT / "config/range_reclaim.phase8a.v1.yaml"),
+        "--adapter-config",
+        str(ROOT / "config/range_reclaim.phase8b.v1.yaml"),
+    ]
+    assert main(phase8b_cli) == 0
+    phase8b_cli[1] = "range-confirmatory-materialize"
+    assert main(phase8b_cli) == 0
     output = tmp_path / "range-report.md"
     assert main(
         [
@@ -922,6 +969,9 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
             "UPDATE range_evidence_bundle_reviews SET payload_hash = 'sha256:corrupt'"
         )
         repository.connection.commit()
+    phase8b_cli[1] = "range-confirmatory-status"
+    with pytest.raises(ValueError, match="Phase 7G summary"):
+        main(phase8b_cli)
     with pytest.raises(ValueError, match="Phase 7L review is corrupt"):
         main(review_status_args)
     with SQLiteRepository(database) as repository:

@@ -1,0 +1,25 @@
+{
+  "adapter_version": "8B.1.0",
+  "sources": {
+    "cohorts": "PHASE7G_TEST_GATE_PASSED_ONLY",
+    "assignments": "PHASE7G_EXACT_COHORT_MEMBERSHIP",
+    "returns": "PHASE7F_NET_DIRECTIONAL_RETURN",
+    "alpha": "PHASE7C_FROZEN_FAMILYWISE_ALPHA",
+    "cluster_aggregation": "ARITHMETIC_MEAN_BY_BOX_ID"
+  },
+  "integrity": {
+    "recompute_payload_hashes": true,
+    "require_exact_counts": true,
+    "require_matching_lineage": true
+  },
+  "authority": {
+    "efficacy_claims_enabled": false,
+    "parameter_selection_enabled": false,
+    "scoring_enabled": false,
+    "decision_changes_enabled": false,
+    "alerts_enabled": false,
+    "options_routing_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

@@ -68,6 +68,11 @@ from trading_system.research.orchestration import (
     ExperimentStage,
     assign_fold_rows,
 )
+from trading_system.research.range_confirmatory import load_range_confirmatory_config
+from trading_system.research.range_confirmatory_registry import (
+    RangeConfirmatoryRegistry,
+    load_range_confirmatory_adapter_config,
+)
 from trading_system.research.range_terminal_boundary import (
     assess_range_terminal_boundary,
     load_range_terminal_boundary_config,
@@ -339,6 +344,12 @@ def configure_research_parser(
     phase7_terminal.add_argument("--incident-id", required=True)
     phase7_terminal.add_argument("--source-config", required=True)
     phase7_terminal.add_argument("--config", required=True)
+    for name in ("range-confirmatory-materialize", "range-confirmatory-status"):
+        confirmatory = actions.add_parser(name)
+        confirmatory.add_argument("--database", required=True)
+        confirmatory.add_argument("--plan-id", required=True)
+        confirmatory.add_argument("--config", required=True)
+        confirmatory.add_argument("--adapter-config", required=True)
 
 
 def _load_object(path: str | Path) -> dict[str, Any]:
@@ -1417,6 +1428,36 @@ def handle_research(args: argparse.Namespace) -> int:
                 "approval_granted": False,
                 "promotion_authority": False,
                 "broker_write_performed": False,
+            }
+        elif command in {"range-confirmatory-materialize", "range-confirmatory-status"}:
+            phase8a_config = load_range_confirmatory_config(args.config)
+            phase8b_config = load_range_confirmatory_adapter_config(args.adapter_config)
+            phase8b_registry = RangeConfirmatoryRegistry(repository)
+            materialized_count = 0
+            if command.endswith("-materialize"):
+                materialized_count = len(
+                    phase8b_registry.materialize(
+                        args.plan_id, phase8a_config, phase8b_config
+                    )
+                )
+            phase8b_status = phase8b_registry.status(
+                args.plan_id, phase8a_config, phase8b_config
+            )
+            result = {
+                "plan_id": phase8b_status.plan_id,
+                "eligible_cohort_count": phase8b_status.eligible_cohort_count,
+                "persisted_test_count": phase8b_status.persisted_test_count,
+                "rejected_null_count": phase8b_status.rejected_null_count,
+                "materialized_count": materialized_count,
+                "complete": phase8b_status.complete,
+                "analysis_config_hash": phase8b_status.analysis_config_hash,
+                "adapter_config_hash": phase8b_status.adapter_config_hash,
+                "adapter_version": phase8b_status.adapter_version,
+                "efficacy_claimed": False,
+                "parameter_selection_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "production_authority": False,
             }
         else:
             raise ValueError(f"unsupported research command: {command}")

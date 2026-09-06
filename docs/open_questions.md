@@ -1031,3 +1031,10 @@ or nested range episodes, and which dependence analysis validates that cluster d
 independent-box gate before a Phase 8A sign test may be interpreted?
 382. Which effect-size interval and economic threshold must accompany statistical rejection before
 any separately governed efficacy review may occur?
+
+383. Should a future confirmatory report present fold-specific tests separately from a
+preregistered pooled estimate, and what dependence model would justify any pooling?
+384. What independently specified effect-size estimator and uncertainty interval must accompany
+Phase 8B p-values before a human efficacy review can begin?
+385. What immutable review, sign-off, and replication evidence would be required before any
+Phase 8B result could inform a separately versioned parameter-selection process?

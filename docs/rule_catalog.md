@@ -1104,3 +1104,15 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `RANGE-8A-003`: apply Holm correction to the complete supplied hypothesis family.
 - `RANGE-8A-004`: normalize cohort order and reject duplicate or unsorted cluster identities.
 - `RANGE-8A-005`: statistical rejection grants no efficacy, selection, scoring, or trading authority.
+## Phase 8B research-adapter rules
+
+- `R8B-001`: Include only Phase 7G `TEST` cohort summaries with `gate_passed=true`.
+- `R8B-002`: Recompute canonical hashes for the Phase 7C plan, Phase 7G summaries and assignments,
+  Phase 7F outcomes, and persisted Phase 8B results.
+- `R8B-003`: Require exact summary observation and independent `BOX_ID` counts.
+- `R8B-004`: Require assignment/outcome agreement on entry, box, timeframe, direction, and horizon.
+- `R8B-005`: Compute one Decimal arithmetic mean of net directional returns per `BOX_ID`.
+- `R8B-006`: Evaluate the complete eligible family with the frozen Phase 7C alpha.
+- `R8B-007`: Append idempotently; conflicting identities or source drift fail closed.
+- `R8B-008`: A result grants no efficacy, selection, scoring, decision, alert, routing, or trading
+  authority.

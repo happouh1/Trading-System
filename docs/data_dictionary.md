@@ -983,3 +983,10 @@ sorted unique `(BOX_ID, mean_net_directional_return)` inputs. `RangeConfirmatory
 counts, exact raw p-value, Holm-adjusted p-value, frozen familywise alpha, null-rejection flag,
 configuration hash, fixed version, and an explicit false production-authority flag. Phase 8A
 contracts are not persisted.
+## `range_confirmatory_tests` (Phase 8B)
+
+Append-only confirmatory-test evidence keyed by `test_id`. Each row links to one Phase 7G summary
+and its Phase 7C plan, stores the fold and null-rejection flag, pins Phase 8A and Phase 8B config
+hashes, and preserves canonical `payload_json` plus `payload_hash`. The payload contains cluster
+sign counts, exact raw and Holm-adjusted p-values, frozen familywise alpha, and an explicit false
+production-authority field.

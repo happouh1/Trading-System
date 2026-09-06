@@ -1053,3 +1053,12 @@ sign, and calculates the exact one-sided binomial tail under probability 0.5. Ze
 are excluded from sign trials. Holm adjustment is deterministic across the entire supplied family,
 ordered by raw p-value and stable summary ID. The frozen Phase 7C familywise alpha determines only
 null rejection; rejection is not an efficacy, profitability, or promotion decision.
+## Phase 8B causal confirmatory materialization
+
+The confirmatory family is the canonical set of Phase 7G `TEST` summaries for one Phase 7C plan
+where the frozen evidence gate passed. Membership is not inferred from descriptive performance.
+Each Phase 7G assignment is matched to its hash-verified Phase 7F outcome. Net directional returns
+are averaged with Decimal arithmetic within `BOX_ID`; those cluster means are the Phase 8A sign
+observations. The Phase 7C familywise alpha is used unchanged. All eligible hypotheses enter one
+Holm family, including those whose cluster means are zero. Zero cluster means are excluded only
+from that hypothesis's sign count, as specified by Phase 8A.

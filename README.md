@@ -1102,3 +1102,17 @@ Phase 8A adds an offline deterministic reference for exact one-sided `BOX_ID` cl
 tests and Holm familywise correction. It accepts only explicitly supplied, sorted independent-box
 cohorts and inherits alpha from the frozen Phase 7C plan. It does not yet read or persist Phase 7G
 evidence and cannot select parameters, alter decisions, alert, route orders, or claim efficacy.
+
+## Phase 8B causal confirmatory registry
+
+Phase 8B reads the frozen Phase 7C alpha and only Phase 7G `TEST` cohorts that passed their
+evidence gates, verifies every source payload and Phase 7F outcome link, aggregates returns by
+`BOX_ID`, evaluates the complete Holm family, and stores immutable results.
+
+```text
+trading-system research range-confirmatory-materialize --database DB --plan-id PLAN --config config/range_reclaim.phase8a.v1.yaml --adapter-config config/range_reclaim.phase8b.v1.yaml
+trading-system research range-confirmatory-status --database DB --plan-id PLAN --config config/range_reclaim.phase8a.v1.yaml --adapter-config config/range_reclaim.phase8b.v1.yaml
+```
+
+The commands are offline and confer no efficacy, selection, scoring, alerting, routing, broker,
+or production authority.
