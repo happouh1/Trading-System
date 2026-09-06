@@ -1045,3 +1045,10 @@ for clustered, potentially overlapping range episodes?
 confirmatory results, and how should fees, slippage, and capacity enter it?
 388. May fold-level evidence ever be pooled, and which dependence diagnostics and weighting rules
 must be specified before that operation is allowed?
+
+389. Which approved directory, file permissions, retention policy, and cleanup process should
+govern Phase 8D local exports outside research fixtures?
+390. Are digital signatures, a trusted timestamp, and an authenticated verifier required before a
+Phase 8D export may be treated as externally attestable rather than locally hash-verified?
+391. What separately governed consumer contract may import a Phase 8D export while proving that it
+cannot confer efficacy, parameter-selection, alerting, broker, or production authority?

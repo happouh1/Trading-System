@@ -69,6 +69,12 @@ from trading_system.research.orchestration import (
     assign_fold_rows,
 )
 from trading_system.research.range_confirmatory import load_range_confirmatory_config
+from trading_system.research.range_confirmatory_export import (
+    load_range_confirmatory_export_config,
+)
+from trading_system.research.range_confirmatory_export_registry import (
+    RangeConfirmatoryExportRegistry,
+)
 from trading_system.research.range_confirmatory_registry import (
     RangeConfirmatoryRegistry,
     load_range_confirmatory_adapter_config,
@@ -368,6 +374,23 @@ def configure_research_parser(
     confirmatory_report_status.add_argument("--config", required=True)
     confirmatory_report_status.add_argument("--adapter-config", required=True)
     confirmatory_report_status.add_argument("--report-config", required=True)
+    confirmatory_export = actions.add_parser("range-confirmatory-report-export")
+    confirmatory_export.add_argument("--database", required=True)
+    confirmatory_export.add_argument("--report-id", required=True)
+    confirmatory_export.add_argument("--config", required=True)
+    confirmatory_export.add_argument("--adapter-config", required=True)
+    confirmatory_export.add_argument("--report-config", required=True)
+    confirmatory_export.add_argument("--export-config", required=True)
+    confirmatory_export.add_argument("--output", required=True)
+    confirmatory_export_status = actions.add_parser(
+        "range-confirmatory-report-export-status"
+    )
+    confirmatory_export_status.add_argument("--database", required=True)
+    confirmatory_export_status.add_argument("--export-id", required=True)
+    confirmatory_export_status.add_argument("--config", required=True)
+    confirmatory_export_status.add_argument("--adapter-config", required=True)
+    confirmatory_export_status.add_argument("--report-config", required=True)
+    confirmatory_export_status.add_argument("--export-config", required=True)
 
 
 def _load_object(path: str | Path) -> dict[str, Any]:
@@ -1515,6 +1538,63 @@ def handle_research(args: argparse.Namespace) -> int:
                 "effect_size_reported": False,
                 "parameter_selection_performed": False,
                 "ranking_performed": False,
+                "network_used": False,
+                "broker_write_performed": False,
+                "production_authority": False,
+            }
+        elif command in {
+            "range-confirmatory-report-export",
+            "range-confirmatory-report-export-status",
+        }:
+            phase8a_config = load_range_confirmatory_config(args.config)
+            phase8b_config = load_range_confirmatory_adapter_config(args.adapter_config)
+            phase8c_config = load_range_confirmatory_report_config(args.report_config)
+            phase8d_config = load_range_confirmatory_export_config(args.export_config)
+            phase8d_registry = RangeConfirmatoryExportRegistry(repository)
+            if command == "range-confirmatory-report-export":
+                phase8d_export = phase8d_registry.export(
+                    args.report_id,
+                    args.output,
+                    phase8a_config,
+                    phase8b_config,
+                    phase8c_config,
+                    phase8d_config,
+                )
+                export_id = phase8d_export.export_id
+                report_id = phase8d_export.report_id
+                output_path = phase8d_export.output_path
+                content_hash = phase8d_export.content_hash
+                byte_count = phase8d_export.byte_count
+                verified = True
+                materialized = True
+            else:
+                phase8d_status = phase8d_registry.status(
+                    args.export_id,
+                    phase8a_config,
+                    phase8b_config,
+                    phase8c_config,
+                    phase8d_config,
+                )
+                export_id = phase8d_status.export_id
+                report_id = phase8d_status.report_id
+                output_path = phase8d_status.output_path
+                content_hash = phase8d_status.content_hash
+                byte_count = phase8d_status.byte_count
+                verified = phase8d_status.verified
+                materialized = False
+            result = {
+                "export_id": export_id,
+                "report_id": report_id,
+                "output_path": output_path,
+                "content_hash": content_hash,
+                "byte_count": byte_count,
+                "verified": verified,
+                "materialized": materialized,
+                "effect_size_reported": False,
+                "efficacy_claimed": False,
+                "parameter_selection_performed": False,
+                "ranking_performed": False,
+                "approval_granted": False,
                 "network_used": False,
                 "broker_write_performed": False,
                 "production_authority": False,

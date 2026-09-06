@@ -37,6 +37,12 @@ from trading_system.patterns import (
 from trading_system.persistence import RunRecord, SQLiteRepository
 from trading_system.research.orchestration import DatasetPartition
 from trading_system.research.range_confirmatory import load_range_confirmatory_config
+from trading_system.research.range_confirmatory_export import (
+    load_range_confirmatory_export_config,
+)
+from trading_system.research.range_confirmatory_export_registry import (
+    RangeConfirmatoryExportRegistry,
+)
 from trading_system.research.range_confirmatory_registry import (
     RangeConfirmatoryRegistry,
     load_range_confirmatory_adapter_config,
@@ -162,6 +168,36 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
         assert report_registry_8c.status(
             report_8c.report_id, phase8a_config, phase8b_config, phase8c_config
         ).complete
+        phase8d_config = load_range_confirmatory_export_config(
+            ROOT / "config/range_reclaim.phase8d.v1.yaml"
+        )
+        export_output_8d = tmp_path / "confirmatory-report.md"
+        export_registry_8d = RangeConfirmatoryExportRegistry(
+            repository, report_registry_8c
+        )
+        export_8d = export_registry_8d.export(
+            report_8c.report_id,
+            export_output_8d,
+            phase8a_config,
+            phase8b_config,
+            phase8c_config,
+            phase8d_config,
+        )
+        assert export_registry_8d.export(
+            report_8c.report_id,
+            export_output_8d,
+            phase8a_config,
+            phase8b_config,
+            phase8c_config,
+            phase8d_config,
+        ) == export_8d
+        assert export_registry_8d.status(
+            export_8d.export_id,
+            phase8a_config,
+            phase8b_config,
+            phase8c_config,
+            phase8d_config,
+        ).verified
         report = build_range_evaluation_report(
             load_range_evaluation_report_config(
                 ROOT / "config/range_reclaim.phase7h.v1.yaml"
@@ -206,6 +242,51 @@ def test_phase7g_registry_is_append_only_and_restart_safe(tmp_path: Path) -> Non
     plan_flag = phase8c_cli.index("--plan-id")
     phase8c_cli[plan_flag : plan_flag + 2] = ["--report-id", report_8c.report_id]
     assert main(phase8c_cli) == 0
+    phase8d_cli = [
+        "research",
+        "range-confirmatory-report-export-status",
+        "--database",
+        str(database),
+        "--export-id",
+        export_8d.export_id,
+        "--config",
+        str(ROOT / "config/range_reclaim.phase8a.v1.yaml"),
+        "--adapter-config",
+        str(ROOT / "config/range_reclaim.phase8b.v1.yaml"),
+        "--report-config",
+        str(ROOT / "config/range_reclaim.phase8c.v1.yaml"),
+        "--export-config",
+        str(ROOT / "config/range_reclaim.phase8d.v1.yaml"),
+    ]
+    assert main(phase8d_cli) == 0
+    original_export = export_output_8d.read_bytes()
+    export_output_8d.write_bytes(b"tampered\n")
+    with pytest.raises(ValueError, match="Phase 8D export content is corrupt"):
+        main(phase8d_cli)
+    export_output_8d.write_bytes(original_export)
+    assert main(phase8d_cli) == 0
+    cli_export_output = tmp_path / "confirmatory-report-cli.md"
+    assert main(
+        [
+            "research",
+            "range-confirmatory-report-export",
+            "--database",
+            str(database),
+            "--report-id",
+            report_8c.report_id,
+            "--config",
+            str(ROOT / "config/range_reclaim.phase8a.v1.yaml"),
+            "--adapter-config",
+            str(ROOT / "config/range_reclaim.phase8b.v1.yaml"),
+            "--report-config",
+            str(ROOT / "config/range_reclaim.phase8c.v1.yaml"),
+            "--export-config",
+            str(ROOT / "config/range_reclaim.phase8d.v1.yaml"),
+            "--output",
+            str(cli_export_output),
+        ]
+    ) == 0
+    assert cli_export_output.is_file()
     with SQLiteRepository(database) as repository:
         report_hash_row = repository.connection.execute(
             "SELECT payload_hash FROM range_confirmatory_reports WHERE report_id = ?",

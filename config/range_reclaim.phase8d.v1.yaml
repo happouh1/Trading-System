@@ -1,0 +1,17 @@
+{
+  "export_version": "8D.1.0",
+  "source": "PHASE8C_COMPLETE_VERIFIED_REPORT",
+  "format": "MARKDOWN_UTF8_LF",
+  "ordering": "SOURCE_REPORT_ORDER",
+  "write_policy": "ATOMIC_REPLACE",
+  "required_sections": ["IDENTITY", "DISCLOSURES", "CONFIRMATORY_FAMILY"],
+  "authority": {
+    "efficacy_claims_enabled": false,
+    "parameter_selection_enabled": false,
+    "ranking_enabled": false,
+    "approval_enabled": false,
+    "network_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

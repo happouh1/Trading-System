@@ -1126,3 +1126,15 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   disclosures.
 - `R8C-005`: Append idempotently and fail closed on source or stored-payload drift.
 - `R8C-006`: Status recomputation is read-only and performs no artifact or source mutation.
+
+## Phase 8D confirmatory-export rules
+
+- `R8D-001`: Export only a complete Phase 8C report that passes current upstream verification.
+- `R8D-002`: Render canonical UTF-8 Markdown with LF line endings and source-report row order.
+- `R8D-003`: Include identity, disclosures, and the entire confirmatory family.
+- `R8D-004`: Replace the destination atomically from a same-directory temporary file.
+- `R8D-005`: Bind the receipt to the absolute path, exact bytes, SHA-256 hash, source, and config.
+- `R8D-006`: Persist receipts append-only and return the same receipt for the same identity.
+- `R8D-007`: Status is read-only and fails on receipt, source, file, hash, or byte-count drift.
+- `R8D-008`: No effect size, efficacy, ranking, selection, approval, network, broker, or production
+  authority is enabled.

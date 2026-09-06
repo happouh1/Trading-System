@@ -1070,3 +1070,15 @@ The report maps only the Boolean test outcome to `REJECTED` or `NOT_REJECTED`; i
 that status to strategy efficacy. It adds no estimator, interval, pooling, economic threshold,
 ranking, or selection. An empty eligible family remains a reproducible zero-row report rather
 than an error or an implied negative result.
+
+## Phase 8D deterministic export methodology
+
+Phase 8D renders only a complete report that the Phase 8C registry can reconstruct and verify from
+its causal source chain. Rendering is a pure transformation into UTF-8 bytes with LF line endings;
+rows retain the Phase 8C canonical order. The writer uses a temporary file in the destination
+directory, flushes and synchronizes it, and atomically replaces the destination.
+
+The append-only receipt binds the source report and plan to the resolved output path, export policy,
+exact byte count, and SHA-256 digest. A status check recomputes the source report and expected bytes,
+then compares the file byte-for-byte. It does not repair, rewrite, or materialize anything. This
+phase adds portability and tamper detection, not statistical interpretation or trading authority.

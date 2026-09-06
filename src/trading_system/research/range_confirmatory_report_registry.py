@@ -130,3 +130,19 @@ class RangeConfirmatoryReportRegistry:
         return RangeConfirmatoryReportStatus(
             report_id, plan_id, int(row[4]), int(row[5]), complete,
         )
+
+    def load_verified(
+        self,
+        report_id: str,
+        analysis_config: RangeConfirmatoryConfig,
+        adapter_config: RangeConfirmatoryAdapterConfig,
+        report_config: RangeConfirmatoryReportConfig,
+    ) -> RangeConfirmatoryReport:
+        status = self.status(
+            report_id, analysis_config, adapter_config, report_config
+        )
+        if not status.complete:
+            raise ValueError("Phase 8C report is incomplete or has source drift")
+        return self._build(
+            status.plan_id, analysis_config, adapter_config, report_config
+        )

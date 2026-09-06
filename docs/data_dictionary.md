@@ -998,3 +998,21 @@ Phase 8A analysis config, Phase 8B adapter config, Phase 8C report config, famil
 count, canonical payload, and payload hash. Payload rows retain the source test identity, cohort
 dimensions, sign counts, exact p-values, alpha, and null-hypothesis status. The payload explicitly
 records false efficacy, selection, ranking, and production authority.
+
+## `range_confirmatory_report_exports` (Phase 8D)
+
+Append-only exact-byte receipts for local Phase 8C Markdown exports.
+
+| Column | Meaning |
+|---|---|
+| `export_id` | Deterministic export identity. |
+| `report_id` | Verified Phase 8C source report. |
+| `plan_id` | Frozen experiment-plan lineage. |
+| `output_path` | Resolved absolute local destination. |
+| `content_hash` | SHA-256 digest of the exact exported bytes. |
+| `byte_count` | Exact exported byte length. |
+| `export_config_hash` | Canonical Phase 8D policy hash. |
+| `payload_json` | Canonical immutable export receipt. |
+| `payload_hash` | Canonical receipt-integrity hash. |
+
+The receipt grants no statistical, approval, network, broker, or production authority.

@@ -1129,3 +1129,17 @@ trading-system research range-confirmatory-report-status --database DB --report-
 ```
 
 Null rejection in this artifact is not an efficacy claim or permission to change the system.
+
+## Phase 8D atomic confirmatory report exports
+
+Phase 8D writes a complete verified Phase 8C report as deterministic UTF-8/LF Markdown and records
+an append-only receipt containing its absolute path, exact byte count, and SHA-256 content hash.
+Status revalidates the upstream report and exact file bytes without changing either artifact.
+
+```text
+trading-system research range-confirmatory-report-export --database DB --report-id REPORT --config config/range_reclaim.phase8a.v1.yaml --adapter-config config/range_reclaim.phase8b.v1.yaml --report-config config/range_reclaim.phase8c.v1.yaml --export-config config/range_reclaim.phase8d.v1.yaml --output report.md
+trading-system research range-confirmatory-report-export-status --database DB --export-id EXPORT --config config/range_reclaim.phase8a.v1.yaml --adapter-config config/range_reclaim.phase8b.v1.yaml --report-config config/range_reclaim.phase8c.v1.yaml --export-config config/range_reclaim.phase8d.v1.yaml
+```
+
+The export is local and non-authoritative. It performs no effect-size estimation, ranking, approval,
+network access, broker write, or trading action.
