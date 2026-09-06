@@ -1010,3 +1010,10 @@ how would it avoid recursive incident/notification layers and duplicate operator
 open, and what independently governed override evidence would be required?
 373. What retention, redaction, correction, and deletion policy applies to Phase 7V free-text notes
 before any incident evidence leaves the approved local boundary?
+
+374. Should Phase 7W be the terminal local notification-intent boundary rather than starting
+another export/verification/incident recursion, and which architectural rule should enforce that?
+375. Which separately authorized delivery adapter, recipient directory, and credential store may
+consume Phase 7W intents without exposing source secrets or granting trading authority?
+376. What acknowledgement, retry, deduplication, and ambiguous-delivery protocol is required before
+any Phase 7W delivery attempt or receipt may be recorded?

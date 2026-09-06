@@ -958,3 +958,12 @@ event/prior/new states, bounded caller actor and note, Phase 7V configuration ha
 false authority fields, and disclosures. The append-only SQLite table is
 `reviewed_range_catalog_incident_notification_export_incident_events`; canonical payload JSON and
 its hash detect stored corruption.
+
+## Phase 7W notification-export incident intent
+
+`ReviewedRangeCatalogIncidentNotificationExportIncidentNotificationIntent` stores a deterministic
+intent ID, Phase 7V incident/event IDs, Phase 7T export and Phase 7U verification lineage, source
+time/type/state, fixed local route, zero delivery attempts, configuration hash, version, false
+authority flags, and disclosures. It deliberately excludes Phase 7V actor IDs and notes. SQLite
+stores canonical payload JSON and hashes in
+`reviewed_range_catalog_incident_notification_export_incident_intents`.

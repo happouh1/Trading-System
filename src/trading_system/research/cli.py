@@ -22,6 +22,7 @@ from trading_system.reporting import (
     ReviewedRangeCatalogExportIncidentRegistry,
     ReviewedRangeCatalogExportRegistry,
     ReviewedRangeCatalogIncidentNotificationExportAuditRegistry,
+    ReviewedRangeCatalogIncidentNotificationExportIncidentNotificationRegistry,
     ReviewedRangeCatalogIncidentNotificationExportIncidentRegistry,
     ReviewedRangeCatalogIncidentNotificationExportRegistry,
     ReviewedRangeCatalogIncidentNotificationRegistry,
@@ -41,6 +42,7 @@ from trading_system.reporting import (
     load_reviewed_range_catalog_incident_notification_export_audit_config,
     load_reviewed_range_catalog_incident_notification_export_config,
     load_reviewed_range_catalog_incident_notification_export_incident_config,
+    load_reviewed_range_catalog_incident_notification_export_incident_notification_config,
     render_persisted_range_evaluation,
     verify_range_evidence_bundle,
     verify_reviewed_range_bundle,
@@ -316,6 +318,18 @@ def configure_research_parser(
     )
     notification_export_incident_status.add_argument("--database", required=True)
     notification_export_incident_status.add_argument("--incident-id", required=True)
+    notification_export_incident_notify = actions.add_parser(
+        "range-reviewed-bundle-catalog-export-incident-notification-export-incident-notification-materialize"
+    )
+    notification_export_incident_notify.add_argument("--database", required=True)
+    notification_export_incident_notify.add_argument("--incident-id", required=True)
+    notification_export_incident_notify.add_argument("--config", required=True)
+    notification_export_incident_notify_status = actions.add_parser(
+        "range-reviewed-bundle-catalog-export-incident-notification-export-incident-notification-status"
+    )
+    notification_export_incident_notify_status.add_argument("--database", required=True)
+    notification_export_incident_notify_status.add_argument("--incident-id", required=True)
+    notification_export_incident_notify_status.add_argument("--config", required=True)
 
 
 def _load_object(path: str | Path) -> dict[str, Any]:
@@ -1322,6 +1336,45 @@ def handle_research(args: argparse.Namespace) -> int:
                 "approval_granted": False,
                 "promotion_authority": False,
                 "network_used": False,
+                "broker_write_performed": False,
+            }
+        elif command in {
+            "range-reviewed-bundle-catalog-export-incident-notification-export-incident-notification-materialize",
+            "range-reviewed-bundle-catalog-export-incident-notification-export-incident-notification-status",
+        }:
+            phase7w_config = (
+                load_reviewed_range_catalog_incident_notification_export_incident_notification_config(
+                    args.config
+                )
+            )
+            phase7w_registry = (
+                ReviewedRangeCatalogIncidentNotificationExportIncidentNotificationRegistry(
+                    repository
+                )
+            )
+            if command.endswith("-materialize"):
+                phase7w_intents = phase7w_registry.materialize(
+                    args.incident_id, phase7w_config
+                )
+                materialized_count = len(phase7w_intents)
+            else:
+                materialized_count = 0
+            phase7w_summary = phase7w_registry.status(args.incident_id, phase7w_config)
+            result = {
+                "incident_id": phase7w_summary.incident_id,
+                "notification_export_id": phase7w_summary.notification_export_id,
+                "intent_count": phase7w_summary.intent_count,
+                "event_types": phase7w_summary.event_types,
+                "materialized_count": materialized_count,
+                "route": "LOCAL_OPERATOR_OUTBOX",
+                "delivery_attempt_count": phase7w_summary.delivery_attempt_count,
+                "network_used": False,
+                "delivery_attempted": False,
+                "recipient_authenticated": False,
+                "artifact_mutated": False,
+                "quarantine_enforced": False,
+                "approval_granted": False,
+                "promotion_authority": False,
                 "broker_write_performed": False,
             }
         else:

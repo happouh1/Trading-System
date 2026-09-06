@@ -1073,3 +1073,13 @@ trading-system research range-reviewed-bundle-catalog-export-incident-notificati
 trading-system research range-reviewed-bundle-catalog-export-incident-notification-export-incident-resolve --database DB --incident-id ID --recovery-verification-id VERIFIED_ID --occurred-at 2026-09-05T18:40:00Z --actor-id OPERATOR --config config/range_reclaim.phase7v.v1.yaml
 trading-system research range-reviewed-bundle-catalog-export-incident-notification-export-incident-status --database DB --incident-id ID
 ```
+
+## Phase 7W offline incident intents
+
+Phase 7W converts each validated Phase 7V event into one minimal local outbox intent. It excludes
+operator identity and notes and never attempts delivery.
+
+```text
+trading-system research range-reviewed-bundle-catalog-export-incident-notification-export-incident-notification-materialize --database DB --incident-id ID --config config/range_reclaim.phase7w.v1.yaml
+trading-system research range-reviewed-bundle-catalog-export-incident-notification-export-incident-notification-status --database DB --incident-id ID --config config/range_reclaim.phase7w.v1.yaml
+```

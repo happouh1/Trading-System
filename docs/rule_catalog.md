@@ -1080,3 +1080,11 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - Preserve append-only history and idempotent exact retries.
 - Revalidate canonical event data, deterministic identities, transitions, and source receipts.
 - Never notify, mutate, delete, quarantine, approve, promote, score, route, or trade.
+
+## Phase 7W offline notification-intent rules
+
+- Materialize exactly one intent per validated Phase 7V event in causal event order.
+- Bind identity to the exact event and Phase 7W configuration.
+- Exclude actor IDs and notes; retain only identifiers, event state, and disclosure fields.
+- Require exact complete-set equality and fail closed on source or stored corruption.
+- Keep route local and delivery-attempt count zero; never retry, escalate, or trade.

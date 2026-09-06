@@ -1030,3 +1030,10 @@ an append-only caller assertion. Resolution requires a later successful Phase 7U
 the same Phase 7T export, and event time cannot precede either the history or recovery evidence.
 Every status read reconstructs deterministic event identities and revalidates referenced receipts.
 The ledger does not send a notification or enforce artifact disposition.
+
+## Phase 7W offline notification-intent methodology
+
+Phase 7W revalidates the complete Phase 7V history and deterministically maps each exact event to
+one ordered local outbox intent. It retains identifiers and state while omitting actor identity and
+free-text notes. Status reconstructs the expected set from current validated source history and
+requires exact equality with stored intents. No delivery mechanism is present.
