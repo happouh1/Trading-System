@@ -1192,3 +1192,22 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `R8H-007`: Revalidate every payload hash and bind canonical counts and hashes before test freeze.
 - `R8H-008`: Expose no real collection, outcome-read analysis, efficacy, selection, alert, broker,
   live-data, or production authority.
+
+## Phase 8I/8J replication-boundary rules
+
+- `R8IJ-001`: Register immutable provider, corporate-action, adjustment, calendar, and known-at
+  revisions without selecting or accessing a provider.
+- `R8IJ-002`: Represent universe membership point-in-time with stable instrument identities,
+  effective intervals, canonical order, and no survivorship reconstruction.
+- `R8IJ-003`: Bind provider and universe evidence once, before collection starts, and reject future
+  or mismatched evidence.
+- `R8IJ-004`: Prevent one principal from holding conflicting collector, steward, reviewer, or auditor
+  roles while permitting same-role credential rotation.
+- `R8IJ-005`: Verify Ed25519 attestations only inside credential validity and through an injected
+  trusted-timestamp verifier.
+- `R8IJ-006`: Persist outcomes only as AES-256-GCM ciphertext after registered availability; never
+  persist encryption keys or plaintext.
+- `R8IJ-007`: Require reviewer role, frozen dataset, and separate release authority before decrypting.
+- `R8IJ-008`: Hash-chain all access decisions and fail closed on payload, membership, or chain drift.
+- `R8IJ-009`: Keep real collection, blinding claims, outcome release, analysis, efficacy, selection,
+  alerts, brokerage, and production authority disabled.

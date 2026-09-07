@@ -1071,3 +1071,18 @@ stores the deterministic hashes and counts that bind a completed synthetic datas
 
 These tables provide test integrity, not access isolation. No outcome-read or statistics adapter is
 exposed, and no row grants efficacy or production authority.
+
+## Phase 8I/8J data and security boundary records
+
+`replication_provider_manifests` stores immutable provider, dataset, corporate-action, adjustment,
+calendar, coverage, known-at, content-hash, and signature-reference evidence.
+`replication_universe_snapshots` and `replication_universe_memberships` store canonical point-in-time
+instrument membership with stable instrument identity and effective intervals.
+`replication_data_bindings` binds one registered Phase 8H collection to exactly one provider revision
+and universe snapshot before collection begins.
+
+`replication_role_credentials` stores public verification credentials and validity windows, never
+private keys. `replication_signed_attestations` stores verified signed evidence.
+`replication_sealed_outcomes` stores AES-GCM ciphertext, nonce, key identity, and associated-data hash,
+never plaintext or key material. `replication_access_events` is a chronological hash chain of allowed
+and denied access decisions. These tables do not themselves establish external trust or real blinding.

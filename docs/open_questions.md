@@ -1096,3 +1096,21 @@ without allowing result-dependent exclusion? The test-only reference currently r
 Phase 8H deliberately supplies no real collection CLI, provider adapter, outcome-reading path, or
 security claim. Those decisions require independent review before the reference can be adapted to
 real prospective data.
+
+## Added for the Phase 8I/8J data and security boundaries
+
+406. Which licensed provider supplies revisioned raw and split-adjusted bars, corporate actions,
+delistings, and stable instrument identities with sufficient historical point-in-time coverage?
+407. Which universe definition and correction policy applies, including IPOs, mergers, symbol and
+exchange changes, suspensions, bankruptcies, and missing membership intervals?
+408. Which identity provider enforces non-overlapping collector, outcome-steward, analysis-reviewer,
+and security-auditor roles, including credential rotation and revocation?
+409. Which KMS/HSM owns AES keys, how are key versions rotated, and which separate storage domains
+prevent collectors or ordinary operators from reading outcome ciphertext or metadata?
+410. Which external trusted-timestamp and signing service is accepted, and what outage, revocation,
+clock-drift, retention, and audit rules apply?
+411. Who performs the independent security review and signs the deployment attestation required
+before `real_collection_ready` or `real_blinding_attested` may become true?
+
+Until questions 406–411 are resolved, Phase 8I/8J remains a local reference implementation and no
+real replication, efficacy, strategy-selection, or trading claim is permitted.

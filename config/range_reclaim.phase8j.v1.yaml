@@ -1,0 +1,27 @@
+{
+  "security_boundary_version": "8J.1.0",
+  "mode": "EXTERNAL_TRUST_INTERFACE_REFERENCE",
+  "algorithms": {
+    "content_hash": "SHA-256",
+    "signature": "Ed25519",
+    "outcome_encryption": "AES-256-GCM"
+  },
+  "role_policy": {
+    "required_roles": ["COLLECTOR", "OUTCOME_STEWARD", "ANALYSIS_REVIEWER"],
+    "distinct_principals": true,
+    "least_privilege": true,
+    "append_only_access_log": true,
+    "trusted_timestamp_required": true
+  },
+  "authority": {
+    "external_trust_service_configured": false,
+    "real_blinding_attested": false,
+    "outcome_release_enabled": false,
+    "analysis_enabled": false,
+    "efficacy_claims_enabled": false,
+    "parameter_selection_enabled": false,
+    "alerts_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "data_boundary_version": "8I.1.0",
+  "mode": "PROVIDER_NEUTRAL_ATTESTED_MANIFEST",
+  "requirements": {
+    "point_in_time_membership": true,
+    "immutable_provider_revision": true,
+    "corporate_action_revision": true,
+    "causal_known_at": true,
+    "signed_manifest_required_for_real_use": true
+  },
+  "authority": {
+    "provider_selected": false,
+    "network_ingestion_enabled": false,
+    "real_dataset_approved": false,
+    "analysis_enabled": false,
+    "parameter_selection_enabled": false,
+    "alerts_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

@@ -1192,3 +1192,15 @@ The reference has no operating CLI or outcome-read API. Its SQLite partitions an
 integrity and restart behavior; they are not a security boundary and do not prove real blinding or
 independent replication. Analysis, efficacy, selection, alerts, brokerage, and live trading remain
 disabled.
+
+## Phase 8I/8J replication data and security boundaries
+
+Phase 8I adds immutable provider revisions, adjustment/corporate-action lineage, point-in-time
+instrument membership, and pre-collection data bindings. Phase 8J adds distinct security roles,
+Ed25519 evidence verification, AES-256-GCM outcome envelopes, injected trusted-time verification,
+and a hash-chained access ledger.
+
+This is a provider-neutral reference, not an active data feed or deployed blinding service. No
+provider, identity system, KMS, trusted timestamp service, network path, outcome release, analysis,
+brokerage, or production authority is configured. See
+`docs/proposals/phase_8ij_real_data_security_boundaries_v1.md` and `docs/phase_8ij_review.md`.

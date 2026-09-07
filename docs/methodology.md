@@ -1136,3 +1136,16 @@ Net directional return is calculated with exact Decimals as gross directional re
 of itemized costs. Input collections are canonicalized where order is semantically irrelevant and
 rejected where identity order is part of the contract. A frozen test manifest is nonreleased and
 cannot trigger Phase 8G, strategy selection, or any operational action.
+
+## Phase 8I/8J data and security methodology
+
+Data lineage is registered as immutable content-addressed provider revisions and historical universe
+snapshots. A collection may bind only evidence already known before its fixed start. Membership uses
+stable instrument IDs and effective intervals, so delisted or renamed instruments are not silently
+removed by current-symbol lookup.
+
+Security evidence uses public-key verification and an injected trusted-timestamp verifier. Outcome
+payloads are authenticated-encrypted with collection, prediction, key, time, and version metadata as
+associated data. The registry stores ciphertext only. Access decisions form a chronological hash
+chain, including denied attempts. Decryption is separately gated on reviewer role, frozen state, and
+release authorization; the committed configuration grants none of them.

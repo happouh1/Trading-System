@@ -11,6 +11,7 @@ requires-python = ">=3.12,<3.13"
 license = {text = "Proprietary"}
 authors = [{name = "Trading System Team"}]
 dependencies = [
+  "cryptography>=42,<47",
   "exchange-calendars>=4.8,<5",
   "pyarrow>=17,<22",
   "scikit-learn>=1.5,<2",
