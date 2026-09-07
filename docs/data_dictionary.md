@@ -1056,3 +1056,18 @@ terminal state, reasons, configuration hash, and false authority flags.
 The terminal state is `REPLICATED`, `NOT_REPLICATED`, or `INCONCLUSIVE`. These objects are not
 persisted and do not represent efficacy approval. `INVALID` remains an operational protocol-run
 state for a future attested adapter rather than a state manufactured by this pure kernel.
+
+## Phase 8H test-only replication collection
+
+`range_replication_collections` stores one immutable test collection identity, its registered Phase
+8F protocol, fixed collection window, configuration hash, payload hash, and forward-only lifecycle
+state. Dataset IDs must begin with `TEST_ONLY_`.
+
+`range_replication_collection_events` is the append-only lifecycle audit stream.
+`range_replication_predictions` stores immutable, causally timestamped prediction payloads captured
+during the fixed collection window. `range_replication_outcomes_blinded_test_only` stores immutable
+outcomes only after collection close and outcome availability. `range_replication_collection_freezes`
+stores the deterministic hashes and counts that bind a completed synthetic dataset.
+
+These tables provide test integrity, not access isolation. No outcome-read or statistics adapter is
+exposed, and no row grants efficacy or production authority.

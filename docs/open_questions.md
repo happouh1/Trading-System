@@ -1080,3 +1080,19 @@ timestamp will satisfy the Phase 8G prerequisites before any real analysis is ex
 The Phase 8G reference kernel intentionally has no CLI, persistence, or real-dataset adapter. Its
 sample gates and positive economic threshold are mandatory caller inputs for synthetic verification,
 not committed trading defaults. Questions 395–401 therefore remain open for a real registration.
+
+## Added for the Phase 8H test-only replication collection
+
+402. What independently reviewed storage and encryption boundary will keep real replication
+outcomes inaccessible to collectors and analysts until the registered release condition?
+403. Which authenticated role directory and separation-of-duties policy will identify the
+collector, outcome steward, and independent reviewer?
+404. Which point-in-time universe and market-data providers, trusted timestamp/signature service,
+source-revision policy, access attestation, and retention policy will govern a real collection?
+405. How must missing, delayed, corrected, delisted, or otherwise unavailable outcomes be represented
+without allowing result-dependent exclusion? The test-only reference currently requires a strict
+1:1 prediction/outcome count before freeze.
+
+Phase 8H deliberately supplies no real collection CLI, provider adapter, outcome-reading path, or
+security claim. Those decisions require independent review before the reference can be adapted to
+real prospective data.

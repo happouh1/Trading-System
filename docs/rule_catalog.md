@@ -1177,3 +1177,18 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   `REPLICATED`; otherwise return `NOT_REPLICATED` when validity gates pass.
 - `R8G-008`: Expose no CLI, persistence, real data, efficacy, selection, ranking, alert, broker, or
   production authority.
+
+## Phase 8H test-only replication-collection rules
+
+- `R8H-001`: Accept only strict Phase 8H configuration with all authority flags false and dataset
+  identifiers prefixed `TEST_ONLY_`.
+- `R8H-002`: Bind each collection to one complete, non-authoritative Phase 8F protocol status and a
+  fixed UTC collection window.
+- `R8H-003`: Advance lifecycle state forward only and record every transition append-only.
+- `R8H-004`: Accept immutable predictions only during collection, within the fixed window, and
+  before their declared outcome availability.
+- `R8H-005`: Accept immutable outcomes only after collection close and declared availability.
+- `R8H-006`: Require exactly one outcome per prediction before outcome completion.
+- `R8H-007`: Revalidate every payload hash and bind canonical counts and hashes before test freeze.
+- `R8H-008`: Expose no real collection, outcome-read analysis, efficacy, selection, alert, broker,
+  live-data, or production authority.

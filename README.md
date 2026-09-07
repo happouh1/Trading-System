@@ -1180,3 +1180,15 @@ gates from its caller; the repository provides no real values.
 There is deliberately no Phase 8G CLI, database adapter, real-dataset reader, or production path.
 The immutable configuration requires independent review, trusted timestamp, and unseen-dataset
 attestations while disabling efficacy, selection, ranking, alerts, brokerage, and live trading.
+
+## Phase 8H test-only replication collection
+
+Phase 8H adds an offline reference lifecycle for synthetic prospective predictions, later outcome
+attachment, and an immutable freeze manifest. It accepts only `TEST_ONLY_` dataset identities,
+requires predictions before their outcomes are available, and permits outcomes only after collection
+has closed and each outcome has become knowable.
+
+The reference has no operating CLI or outcome-read API. Its SQLite partitions and hashes test
+integrity and restart behavior; they are not a security boundary and do not prove real blinding or
+independent replication. Analysis, efficacy, selection, alerts, brokerage, and live trading remain
+disabled.

@@ -1123,3 +1123,16 @@ must arrive in canonical identity order or are rejected.
 These functions are mathematical reference code only. They have no CLI, persistence, dataset
 adapter, parameter defaults, result promotion, or operational authority. A real run remains blocked
 on the Phase 8G review checklist and a separately attested Phase 8F protocol.
+
+## Phase 8H test-only collection methodology
+
+The reference lifecycle is `REGISTERED → COLLECTING → COLLECTION_CLOSED → OUTCOMES_COMPLETE →
+FROZEN`. Predictions are append-only and accepted only while collecting, inside the predeclared
+window, and before their outcome-availability timestamps. Outcomes are accepted only after the
+collection closes and after their individual availability timestamps. Completion requires a 1:1
+prediction/outcome count, and freezing revalidates all stored payload hashes.
+
+Net directional return is calculated with exact Decimals as gross directional return minus the sum
+of itemized costs. Input collections are canonicalized where order is semantically irrelevant and
+rejected where identity order is part of the contract. A frozen test manifest is nonreleased and
+cannot trigger Phase 8G, strategy selection, or any operational action.

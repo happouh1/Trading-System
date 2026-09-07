@@ -1,0 +1,23 @@
+{
+  "collection_version": "8H.1.0",
+  "mode": "OFFLINE_TEST_ONLY_REFERENCE",
+  "source": "COMPLETE_PHASE8F_PROTOCOL_REQUIRED",
+  "rules": {
+    "dataset_id_prefix": "TEST_ONLY_",
+    "prediction_before_outcome_availability": true,
+    "outcome_after_registered_availability": true,
+    "append_only": true,
+    "complete_outcomes_before_freeze": true,
+    "real_blinding_claimed": false
+  },
+  "authority": {
+    "real_collection_enabled": false,
+    "outcome_read_api_enabled": false,
+    "analysis_enabled": false,
+    "efficacy_claims_enabled": false,
+    "parameter_selection_enabled": false,
+    "alerts_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}
