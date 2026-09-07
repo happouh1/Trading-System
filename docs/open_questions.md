@@ -1068,3 +1068,15 @@ independent replication, and how will access before its freeze be prevented and 
 fixed before anyone accessed the independent replication outcomes?
 398. What authenticated review authority may approve a real protocol, and how should its signed
 decision be linked without allowing approval to flow into trading or production automatically?
+
+## Added for the Phase 8G disabled statistical reference kernel
+
+399. Which independently reviewed positive economic threshold and prospective precision analysis
+will replace the deliberately absent Phase 8G real-protocol values?
+400. Which independently attested dataset, point-in-time universe, access-control record, and trusted
+timestamp will satisfy the Phase 8G prerequisites before any real analysis is exposed?
+401. What reviewed dependence limit and family-level acceptance rule will govern the real protocol?
+
+The Phase 8G reference kernel intentionally has no CLI, persistence, or real-dataset adapter. Its
+sample gates and positive economic threshold are mandatory caller inputs for synthetic verification,
+not committed trading defaults. Questions 395–401 therefore remain open for a real registration.

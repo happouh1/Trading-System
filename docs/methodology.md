@@ -1105,3 +1105,21 @@ The framework accepts a complete method manifest supplied by an operator, canoni
 order, whitespace, and the UTC timestamp representation, then hashes the complete definition. It
 does not parse statistical expressions, judge methodological adequacy, or execute the protocol.
 Registration and status both revalidate the exact Phase 8D export and its upstream causal evidence.
+
+## Phase 8G disabled statistical-kernel methodology
+
+The Phase 8G kernel accepts only already clustered, sorted, finite Decimal inputs. It retains zeros
+when calculating the sample median and excludes them only from the inherited Phase 8A sign count.
+It calculates an exact binomial order-statistic lower bound independently for every family member,
+using a Bonferroni per-hypothesis alpha, and retains Holm adjustment for the sign-test family.
+
+A result is `REPLICATED` only when caller-supplied sample gates and validity gates pass, the
+Holm-adjusted sign-test p-value passes, and the simultaneous lower bound is strictly greater than a
+caller-supplied positive economic threshold. Failed validity, sample-size, or interval-availability
+gates produce `INCONCLUSIVE`; passing validity with an unmet statistical or economic gate produces
+`NOT_REPLICATED`. Input permutations are normalized by hypothesis identity, while cluster members
+must arrive in canonical identity order or are rejected.
+
+These functions are mathematical reference code only. They have no CLI, persistence, dataset
+adapter, parameter defaults, result promotion, or operational authority. A real run remains blocked
+on the Phase 8G review checklist and a separately attested Phase 8F protocol.

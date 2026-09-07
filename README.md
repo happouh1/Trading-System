@@ -1169,3 +1169,14 @@ trading-system research range-replication-protocol-status --database DB --protoc
 
 The committed manifest under `tests/fixtures` is synthetic test data and must not be used as a real
 statistical protocol.
+
+## Phase 8G disabled statistical reference kernel
+
+Phase 8G supplies pure, deterministic reference functions for the proposed median `BOX_ID` effect,
+an exact one-sided order-statistic lower bound, the existing exact sign test, and complete-family
+Holm adjustment. The kernel requires a strictly positive economic threshold and explicit sample
+gates from its caller; the repository provides no real values.
+
+There is deliberately no Phase 8G CLI, database adapter, real-dataset reader, or production path.
+The immutable configuration requires independent review, trusted timestamp, and unseen-dataset
+attestations while disabling efficacy, selection, ranking, alerts, brokerage, and live trading.

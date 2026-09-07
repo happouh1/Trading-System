@@ -1161,3 +1161,19 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `R8F-007`: Treat local `declared_at` as an unauthenticated caller assertion.
 - `R8F-008`: Perform no analysis and grant no efficacy, selection, ranking, approval, network,
   broker, or production authority.
+
+## Phase 8G disabled statistical-kernel rules
+
+- `R8G-001`: Accept unique hypotheses and canonically ordered unique `BOX_ID` Decimal returns only.
+- `R8G-002`: Estimate effect as the median of all box means, retaining exact zeros.
+- `R8G-003`: Compute the largest exact binomial order-statistic lower bound meeting the registered
+  one-sided coverage; return unavailable when no nontrivial bound exists.
+- `R8G-004`: Use Bonferroni alpha allocation for simultaneous effect bounds and Holm adjustment for
+  the complete inherited sign-test family.
+- `R8G-005`: Require a finite strictly positive economic threshold and explicit positive total and
+  nonzero cluster gates; provide no repository defaults for them.
+- `R8G-006`: Classify validity, sample, and unavailable-interval failures as `INCONCLUSIVE`.
+- `R8G-007`: Require both the statistical and strictly-greater-than-economic lower-bound gates for
+  `REPLICATED`; otherwise return `NOT_REPLICATED` when validity gates pass.
+- `R8G-008`: Expose no CLI, persistence, real data, efficacy, selection, ranking, alert, broker, or
+  production authority.

@@ -1044,3 +1044,15 @@ Append-only prospective independent-replication method commitments keyed by `pro
 The payload includes the dataset freeze, estimator, interval, economic threshold, transaction cost,
 capacity, pooling, dependence diagnostics, acceptance, universe, and review-reference definitions.
 The registry stores these strings but does not execute or approve them.
+
+## Phase 8G in-memory statistical contracts
+
+`RangeReplicationHypothesis` contains a unique hypothesis identity, sorted unique `(BOX_ID,
+mean_net_directional_return)` pairs, and sorted validity-failure reason codes. Values are finite
+Decimals. `RangeReplicationResult` contains deterministic identity, cluster counts, median net R,
+optional exact lower bound, positive economic threshold, raw and Holm-adjusted p-values, alpha,
+terminal state, reasons, configuration hash, and false authority flags.
+
+The terminal state is `REPLICATED`, `NOT_REPLICATED`, or `INCONCLUSIVE`. These objects are not
+persisted and do not represent efficacy approval. `INVALID` remains an operational protocol-run
+state for a future attested adapter rather than a state manufactured by this pure kernel.

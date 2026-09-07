@@ -253,6 +253,7 @@ def test_phase8_confirmatory_boundary_cannot_enter_authority_packages() -> None:
         "trading_system.research.range_confirmatory_terminal_boundary",
         "trading_system.research.range_replication_protocol",
         "trading_system.research.range_replication_protocol_registry",
+        "trading_system.research.range_replication_statistics",
     }
     violations: list[str] = []
     for package in (

@@ -1,0 +1,30 @@
+{
+  "analysis_version": "8G.1.0",
+  "source": "INDEPENDENTLY_ATTESTED_REGISTERED_PHASE8F_PROTOCOL_REQUIRED",
+  "method": {
+    "effect_estimator": "MEDIAN_BOX_ID_MEAN_NET_DIRECTIONAL_RETURN",
+    "effect_interval": "EXACT_ONE_SIDED_ORDER_STATISTIC_LOWER_BOUND",
+    "interval_multiplicity": "BONFERRONI_COMPLETE_FAMILY",
+    "hypothesis_test": "PHASE8A_EXACT_ONE_SIDED_SIGN_TEST",
+    "test_multiplicity": "HOLM_COMPLETE_FAMILY",
+    "pooling": "PROHIBITED"
+  },
+  "prerequisites": {
+    "real_protocol_required": true,
+    "reviewer_placeholders_forbidden": true,
+    "independent_review_attestation_required": true,
+    "trusted_timestamp_required": true,
+    "unseen_dataset_attestation_required": true
+  },
+  "authority": {
+    "cli_enabled": false,
+    "persistence_enabled": false,
+    "real_dataset_access_enabled": false,
+    "efficacy_claims_enabled": false,
+    "parameter_selection_enabled": false,
+    "ranking_enabled": false,
+    "alerts_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}
