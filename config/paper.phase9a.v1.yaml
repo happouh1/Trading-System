@@ -1,0 +1,26 @@
+{
+  "control_version": "9A.1.0",
+  "mode": "OFFLINE_READ_ONLY_OPERATOR_REFERENCE",
+  "health": {
+    "heartbeat_max_age_seconds": 900,
+    "checkpoint_max_age_seconds": 86400,
+    "heartbeat_required": true,
+    "checkpoint_required": true,
+    "unmatched_reconciliation_is_attention": true,
+    "any_incident_is_attention": true
+  },
+  "schedule": {
+    "health_check_cadence_seconds": 300,
+    "reconciliation_check_cadence_seconds": 900,
+    "replication_status_check_cadence_seconds": 3600
+  },
+  "authority": {
+    "process_execution_enabled": false,
+    "network_enabled": false,
+    "external_notifications_enabled": false,
+    "research_promotion_enabled": false,
+    "automatic_recovery_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

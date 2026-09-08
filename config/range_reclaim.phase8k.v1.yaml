@@ -1,0 +1,25 @@
+{
+  "runner_version": "8K.1.0",
+  "mode": "OFFLINE_TEST_ONLY_REPLICATION_REHEARSAL",
+  "method": {
+    "statistics_kernel": "PHASE8G_EXACT_UNMODIFIED",
+    "input_order": "CANONICAL_HYPOTHESIS_ID",
+    "analyses_per_freeze": 1,
+    "persist_raw_outcomes": false
+  },
+  "prerequisites": {
+    "frozen_collection_required": true,
+    "complete_family_required": true,
+    "explicit_thresholds_required": true,
+    "independent_real_release_required_for_real_claims": true
+  },
+  "authority": {
+    "real_dataset_access_enabled": false,
+    "efficacy_claims_enabled": false,
+    "parameter_selection_enabled": false,
+    "ranking_enabled": false,
+    "alerts_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

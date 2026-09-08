@@ -1149,3 +1149,18 @@ payloads are authenticated-encrypted with collection, prediction, key, time, and
 associated data. The registry stores ciphertext only. Access decisions form a chronological hash
 chain, including denied attempts. Decryption is separately gated on reviewer role, frozen state, and
 release authorization; the committed configuration grants none of them.
+
+## Combined Phase 8K/9A methodology
+
+Phase 8K accepts an immutable test-only freeze, a complete caller-supplied hypothesis family, and
+explicit statistical thresholds. It sorts hypotheses by identity, hashes the entire family and all
+thresholds, invokes the Phase 8G kernel exactly once, and seals a root over the canonical result
+hashes. Persistence is append-only and the freeze identity is unique. Replaying the exact run is
+idempotent; changing inputs after a run is a conflict. The runner deliberately accepts no real
+release and makes no efficacy or selection claim.
+
+Phase 9A observes existing paper state without mutating it. Health is `HALTED` when the paper runtime
+is halted, `ATTENTION` when required evidence is missing/stale or incidents/unmatched reconciliation
+exist, and `HEALTHY` otherwise. Replication crosses the package boundary only as an optional opaque
+hash, so its contents cannot influence trade decisions. Scheduled jobs are deterministic planning
+records and are never executed by this phase.

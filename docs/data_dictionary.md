@@ -1086,3 +1086,19 @@ private keys. `replication_signed_attestations` stores verified signed evidence.
 `replication_sealed_outcomes` stores AES-GCM ciphertext, nonce, key identity, and associated-data hash,
 never plaintext or key material. `replication_access_events` is a chronological hash chain of allowed
 and denied access decisions. These tables do not themselves establish external trust or real blinding.
+
+## Phase 8K replication-run records
+
+`range_replication_runs` stores one sealed test-only analysis identity per immutable freeze, its
+execution time, complete-family input hash, result-root hash, explicit configuration hashes, and
+negative-authority disclosures. `range_replication_run_results` stores hypothesis identity,
+terminal statistical state, and the canonical result hash. Raw outcome values are not duplicated in
+either table. The unique `freeze_id` constraint enforces one analysis per frozen dataset.
+
+## Phase 9A paper-operator records
+
+`paper_operator_snapshots` stores immutable read-only health materializations for a paper session,
+including runtime state, health state, an optional opaque replication-status hash, and the complete
+canonical payload. `paper_operator_jobs` stores planning-only due times for health, reconciliation,
+and replication-status checks. Neither table is a command queue and neither grants execution,
+notification, recovery, broker, or production authority.

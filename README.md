@@ -1204,3 +1204,15 @@ This is a provider-neutral reference, not an active data feed or deployed blindi
 provider, identity system, KMS, trusted timestamp service, network path, outcome release, analysis,
 brokerage, or production authority is configured. See
 `docs/proposals/phase_8ij_real_data_security_boundaries_v1.md` and `docs/phase_8ij_review.md`.
+
+## Combined Phase 8K/9A engineering reference
+
+Phase 8K adds a one-shot, test-only replication runner around the unchanged Phase 8G statistical
+kernel. It canonicalizes a complete hypothesis family, binds it to one immutable Phase 8H freeze,
+stores only result hashes and non-authoritative states, and rejects a second analysis of that freeze.
+
+Phase 9A adds read-only paper-session health snapshots and deterministic job plans. It inspects
+heartbeats, checkpoints, reconciliations, incidents, and an optional opaque replication-status hash.
+The paper package never imports replication code, and the replication result cannot create an order
+or change runtime state. Process execution, network access, external notifications, automatic
+recovery, research promotion, broker writes, and live trading remain disabled.

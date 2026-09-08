@@ -1211,3 +1211,28 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `R8IJ-008`: Hash-chain all access decisions and fail closed on payload, membership, or chain drift.
 - `R8IJ-009`: Keep real collection, blinding claims, outcome release, analysis, efficacy, selection,
   alerts, brokerage, and production authority disabled.
+
+## Phase 8K one-shot replication-runner rules
+
+- `R8K-001`: Accept only an immutable, unreleased, test-only Phase 8H freeze.
+- `R8K-002`: Require the complete family and explicit alpha, economic, total-cluster, and nonzero
+  cluster thresholds; provide no trading defaults.
+- `R8K-003`: Canonicalize family order and bind every input to a deterministic family hash.
+- `R8K-004`: Invoke the unchanged Phase 8G statistical kernel and seal canonical result hashes.
+- `R8K-005`: Permit exactly one analysis identity per freeze; exact restart is idempotent and any
+  changed input or stored-payload drift fails closed.
+- `R8K-006`: Do not persist duplicate raw outcomes or claim efficacy, selection, ranking, alert,
+  broker, live-trading, or production authority.
+
+## Phase 9A paper-operator control rules
+
+- `R9A-001`: Observe existing paper-session state without changing runtime state or creating intents.
+- `R9A-002`: Mark missing or stale required heartbeat/checkpoint evidence as `ATTENTION`.
+- `R9A-003`: Mark any incident or unmatched reconciliation as `ATTENTION`; preserve `HALTED` as the
+  terminal operator health when the runtime itself is halted.
+- `R9A-004`: Accept replication status only as an opaque canonical hash; never import research code
+  into paper authority packages or interpret the result.
+- `R9A-005`: Materialize deterministic planning-only health, reconciliation, and replication-status
+  jobs without executing processes or sending notifications.
+- `R9A-006`: Keep network, recovery, research promotion, broker writes, live trading, and production
+  authority disabled.

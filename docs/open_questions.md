@@ -1114,3 +1114,19 @@ before `real_collection_ready` or `real_blinding_attested` may become true?
 
 Until questions 406–411 are resolved, Phase 8I/8J remains a local reference implementation and no
 real replication, efficacy, strategy-selection, or trading claim is permitted.
+
+## Added for combined Phase 8K/9A engineering
+
+412. Which independent reviewer, approved thresholds, real released freeze, and signed analysis
+authorization may replace the test-only Phase 8K rehearsal inputs?
+413. What reviewed result-release artifact may communicate replication conclusions while remaining
+unable to modify strategy parameters, rankings, alerts, orders, or production configuration?
+414. Which service manager will run Phase 9A checks, and what authenticated notification channel,
+escalation roster, acknowledgement policy, and outage procedure should it use?
+415. What market-calendar-aware freshness rules should replace the fixed reference heartbeat and
+checkpoint ages for weekends, holidays, shortened sessions, and planned maintenance?
+416. What independently reviewed gate defines completion of paper burn-in, and who may authorize a
+separate transition from read-only reference controls to supervised paper execution?
+
+Until questions 412–416 are resolved, Phase 8K remains a test-only one-shot rehearsal and Phase 9A
+remains a read-only planning and health-materialization reference.
