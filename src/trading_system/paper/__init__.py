@@ -12,6 +12,21 @@ from trading_system.paper.burn_in import (
     load_paper_burn_in_config,
 )
 from trading_system.paper.burn_in_registry import PaperBurnInRegistry
+from trading_system.paper.certification import (
+    CertificationAssessment,
+    CertificationAttestation,
+    CertificationCredential,
+    CertificationDossier,
+    CertificationEvidence,
+    CertificationState,
+    PaperCertificationConfig,
+    build_certification_attestation,
+    build_certification_credential,
+    build_certification_dossier,
+    evaluate_certification,
+    load_paper_certification_config,
+)
+from trading_system.paper.certification_registry import PaperCertificationRegistry
 from trading_system.paper.config import PaperConfig, load_paper_config
 from trading_system.paper.contracts import (
     AdapterResult,
@@ -38,6 +53,12 @@ from trading_system.paper.runtime import PaperRuntime
 __all__ = [
     "AdapterResult",
     "BurnInState",
+    "CertificationAssessment",
+    "CertificationAttestation",
+    "CertificationCredential",
+    "CertificationDossier",
+    "CertificationEvidence",
+    "CertificationState",
     "CompletedBarEnvelope",
     "IntentStatus",
     "InternalSimulatorAdapter",
@@ -47,6 +68,8 @@ __all__ = [
     "PaperBurnInConfig",
     "PaperBurnInProtocol",
     "PaperBurnInRegistry",
+    "PaperCertificationConfig",
+    "PaperCertificationRegistry",
     "PaperConfig",
     "PaperMode",
     "PaperOperatorConfig",
@@ -60,9 +83,14 @@ __all__ = [
     "RejectingAdapter",
     "RuntimeState",
     "build_burn_in_protocol",
+    "build_certification_attestation",
+    "build_certification_credential",
+    "build_certification_dossier",
     "build_operator_jobs",
     "evaluate_burn_in",
+    "evaluate_certification",
     "load_paper_burn_in_config",
+    "load_paper_certification_config",
     "load_paper_config",
     "load_paper_operator_config",
     "stage_shadow_decision",

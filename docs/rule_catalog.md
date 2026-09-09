@@ -1249,3 +1249,15 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `R9B-006`: Treat any halted snapshot as a failure and retain all breached reason codes.
 - `R9B-007`: Make no readiness claim and perform no automatic promotion, process execution,
   notification, broker write, live trading, or production action.
+
+## Phase 9C certification-evidence rules
+
+- `R9C-001`: Accept only a canonical passing Phase 9B assessment.
+- `R9C-002`: Require operator-supplied evidence categories and reviewer roles; provide no defaults.
+- `R9C-003`: Reject evidence known after dossier declaration.
+- `R9C-004`: Verify Ed25519 signatures against the exact dossier and valid reviewer credential.
+- `R9C-005`: Require distinct principals across reviewer roles.
+- `R9C-006`: Return `INCOMPLETE`, `BLOCKED`, or `REVIEW_READY`; never return certified or deployed.
+- `R9C-007`: Permit one assessment per dossier and fail closed on stored evidence drift.
+- `R9C-008`: Keep certification grants, deployment, promotion, network, broker writes, and live
+  trading disabled.

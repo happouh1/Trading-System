@@ -1142,3 +1142,15 @@ broker condition, or failure mode, and what coverage minimum applies to each str
 orders, changing thresholds, or promoting a deployment?
 
 The repository intentionally supplies no answers or defaults for questions 417–420.
+
+## Added for Phase 9C signed certification evidence
+
+421. Which evidence categories and exact artifact schemas must a real certification dossier require?
+422. Which identity authority issues and revokes reviewer credentials, and which roles must remain
+separate across operations, risk, security, compliance, and brokerage review?
+423. Which trusted timestamp, signature-retention, credential-rotation, and revocation policies apply?
+424. Who may convert `REVIEW_READY` evidence into a separate production certification decision?
+425. What deployment environment, capital ceiling, rollback condition, and supervised approval are
+required before a later staged rollout can be considered?
+
+Phase 9C intentionally leaves questions 421–425 unanswered and grants no certification authority.

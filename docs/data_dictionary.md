@@ -1109,3 +1109,10 @@ notification, recovery, broker, or production authority.
 and tolerance limits, definition hash, and configuration hash. `paper_burn_in_assessments` stores
 one terminal evidence result per protocol, the canonical root of its Phase 9A snapshots, result
 state, reasons, and false readiness/promotion/authority disclosures.
+
+## Phase 9C certification-evidence records
+
+`paper_certification_dossiers` binds one passing burn-in assessment to a canonical evidence set and
+operator-supplied reviewer roles. `paper_certification_attestations` stores signed reviewer evidence
+by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `INCOMPLETE`, or
+`BLOCKED` evaluation per dossier. None of these records is a deployment authorization.

@@ -1,0 +1,21 @@
+{
+  "certification_version": "9C.1.0",
+  "mode": "OFFLINE_SIGNED_CERTIFICATION_EVIDENCE",
+  "policy": {
+    "require_passing_phase9b_assessment": true,
+    "evidence_requirements_operator_supplied": true,
+    "review_roles_operator_supplied": true,
+    "distinct_reviewer_principals": true,
+    "signature_algorithm": "Ed25519",
+    "assessments_per_dossier": 1
+  },
+  "authority": {
+    "default_evidence_requirements_enabled": false,
+    "certification_grant_enabled": false,
+    "deployment_enabled": false,
+    "automatic_promotion_enabled": false,
+    "network_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

@@ -1177,3 +1177,15 @@ An open window or insufficient observations is `INCONCLUSIVE`. A complete datase
 operator limit, or containing any halted snapshot, is `FAIL`; only a complete dataset meeting every
 declared limit is `PASS`. Even `PASS` makes no readiness claim and cannot alter configuration or
 execution state.
+
+## Phase 9C certification-evidence methodology
+
+A dossier may be built only from a passing Phase 9B assessment. Evidence categories and reviewer
+roles are supplied explicitly; the repository provides no default checklist. Evidence must already
+be knowable when the dossier is declared. Each required role must be represented by a distinct
+principal whose Ed25519 signature verifies over the exact dossier, credential, role, and signing
+time within its validity window.
+
+Missing reviews produce `INCOMPLETE`; invalid signatures or failed reviewer separation produce
+`BLOCKED`; a complete valid set produces `REVIEW_READY`. No state means certified, deployed, or
+authorized to trade.

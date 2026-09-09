@@ -1223,3 +1223,10 @@ Phase 9B evaluates immutable Phase 9A snapshots against an operator-supplied pro
 its observation window. The operator must explicitly provide every duration and tolerance; the
 repository contains no default pass thresholds. Results are deterministic `PASS`, `FAIL`, or
 `INCONCLUSIVE` evidence and cannot promote configuration, enable brokerage, or authorize production.
+
+## Phase 9C signed certification evidence
+
+Phase 9C binds a passing Phase 9B assessment to operator-supplied evidence categories and reviewer
+roles. Distinct reviewers sign the exact dossier with Ed25519 credentials. A complete valid dossier
+is only `REVIEW_READY`: it is not self-certifying and cannot deploy, promote configuration, write to
+a broker, or enable live trading.
