@@ -1164,3 +1164,16 @@ is halted, `ATTENTION` when required evidence is missing/stale or incidents/unma
 exist, and `HEALTHY` otherwise. Replication crosses the package boundary only as an optional opaque
 hash, so its contents cannot influence trade decisions. Scheduled jobs are deterministic planning
 records and are never executed by this phase.
+
+## Phase 9B paper burn-in methodology
+
+An operator protocol must be declared before a fixed UTC observation window and must supply all
+limits explicitly. Phase 9B sorts immutable Phase 9A snapshots by observation time and identity,
+rejects duplicates, cross-session records, future evidence, and out-of-window records, then seals a
+canonical snapshot root. Attention includes both `ATTENTION` and `HALTED`; incident and unmatched
+reconciliation measures use the maximum cumulative count rather than summing repeated snapshots.
+
+An open window or insufficient observations is `INCONCLUSIVE`. A complete dataset exceeding an
+operator limit, or containing any halted snapshot, is `FAIL`; only a complete dataset meeting every
+declared limit is `PASS`. Even `PASS` makes no readiness claim and cannot alter configuration or
+execution state.

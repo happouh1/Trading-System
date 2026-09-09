@@ -1236,3 +1236,16 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   jobs without executing processes or sending notifications.
 - `R9A-006`: Keep network, recovery, research promotion, broker writes, live trading, and production
   authority disabled.
+
+## Phase 9B paper burn-in rules
+
+- `R9B-001`: Require an immutable operator protocol declared before its fixed burn-in window.
+- `R9B-002`: Require explicit observation, attention, incident, and reconciliation limits; provide
+  no system defaults.
+- `R9B-003`: Consume only unique immutable Phase 9A snapshots for the same session and causal window.
+- `R9B-004`: Seal the canonical snapshot root and permit one assessment per protocol.
+- `R9B-005`: Return `INCONCLUSIVE` for an open window or insufficient observations, `FAIL` for a
+  completed breached protocol, and `PASS` only when every declared gate is met.
+- `R9B-006`: Treat any halted snapshot as a failure and retain all breached reason codes.
+- `R9B-007`: Make no readiness claim and perform no automatic promotion, process execution,
+  notification, broker write, live trading, or production action.

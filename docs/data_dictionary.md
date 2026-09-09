@@ -1102,3 +1102,10 @@ including runtime state, health state, an optional opaque replication-status has
 canonical payload. `paper_operator_jobs` stores planning-only due times for health, reconciliation,
 and replication-status checks. Neither table is a command queue and neither grants execution,
 notification, recovery, broker, or production authority.
+
+## Phase 9B burn-in records
+
+`paper_burn_in_protocols` stores the preregistered session, UTC window, operator-supplied observation
+and tolerance limits, definition hash, and configuration hash. `paper_burn_in_assessments` stores
+one terminal evidence result per protocol, the canonical root of its Phase 9A snapshots, result
+state, reasons, and false readiness/promotion/authority disclosures.

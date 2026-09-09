@@ -1216,3 +1216,10 @@ heartbeats, checkpoints, reconciliations, incidents, and an optional opaque repl
 The paper package never imports replication code, and the replication result cannot create an order
 or change runtime state. Process execution, network access, external notifications, automatic
 recovery, research promotion, broker writes, and live trading remain disabled.
+
+## Phase 9B paper burn-in evidence
+
+Phase 9B evaluates immutable Phase 9A snapshots against an operator-supplied protocol declared before
+its observation window. The operator must explicitly provide every duration and tolerance; the
+repository contains no default pass thresholds. Results are deterministic `PASS`, `FAIL`, or
+`INCONCLUSIVE` evidence and cannot promote configuration, enable brokerage, or authorize production.

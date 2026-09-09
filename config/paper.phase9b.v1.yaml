@@ -1,0 +1,21 @@
+{
+  "burn_in_version": "9B.1.0",
+  "mode": "OFFLINE_PAPER_BURN_IN_EVIDENCE",
+  "method": {
+    "threshold_source": "PREREGISTERED_OPERATOR_PROTOCOL",
+    "observation_source": "IMMUTABLE_PHASE9A_SNAPSHOTS",
+    "attention_measure": "ATTENTION_OR_HALTED_SNAPSHOT_FRACTION",
+    "incident_measure": "MAXIMUM_CUMULATIVE_INCIDENT_COUNT",
+    "reconciliation_measure": "MAXIMUM_CUMULATIVE_UNMATCHED_COUNT",
+    "assessments_per_protocol": 1
+  },
+  "authority": {
+    "default_thresholds_enabled": false,
+    "automatic_pass_promotion_enabled": false,
+    "process_execution_enabled": false,
+    "network_enabled": false,
+    "external_notifications_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

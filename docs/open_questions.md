@@ -1130,3 +1130,15 @@ separate transition from read-only reference controls to supervised paper execut
 
 Until questions 412–416 are resolved, Phase 8K remains a test-only one-shot rehearsal and Phase 9A
 remains a read-only planning and health-materialization reference.
+
+## Added for Phase 9B paper burn-in evidence
+
+417. What calendar duration, market-session coverage, minimum snapshot count, maximum attention
+fraction, incident limit, and unmatched-reconciliation limit must the real burn-in protocol use?
+418. Must the real protocol stratify evidence by symbol, timeframe, market regime, long/short side,
+broker condition, or failure mode, and what coverage minimum applies to each stratum?
+419. Who must sign the protocol before collection and independently review the sealed result?
+420. What separate certification process may consume a passing result without automatically enabling
+orders, changing thresholds, or promoting a deployment?
+
+The repository intentionally supplies no answers or defaults for questions 417–420.
