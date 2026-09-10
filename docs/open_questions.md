@@ -1225,3 +1225,13 @@ Phase 9I intentionally leaves questions 451–455 unanswered and presents record
 460. Which broker reconciliation must be obtained after authentication but before any sandbox action?
 
 Phase 9J intentionally leaves questions 456–460 unanswered and grants no launch authority.
+
+## Added for Phase 9K read-only database upgrade planning
+
+461. Where must an operator-approved backup be stored, how is it encrypted, and how long is it kept?
+462. What exclusive-access or quiet-period proof is required before changing the real SQLite file?
+463. What exact restore verification and rollback procedure applies if any migration step fails?
+464. Which local identity, second factor, and explicit confirmation authorize a one-time upgrade?
+465. Should upgrade validation run on a copy before a separately reviewed copy-and-promote step?
+
+Phase 9K intentionally leaves questions 461–465 unanswered and performs no database mutation.

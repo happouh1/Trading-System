@@ -1266,3 +1266,10 @@ The local dashboard now shows whether the selected paper session has matching bu
 certification, staged-rollout, signed-review, and supervision-lease evidence. Completeness is
 informational only: launch authorization, process execution, brokerage access, and trading remain
 disabled even when every evidence category is satisfied.
+
+## Phase 9K read-only database preparation
+
+The desktop operator home now checks local SQLite integrity and shows whether the six evidence
+tables used by the readiness display are present. If preparation is required, the page lists the
+missing tables and states that a backup is mandatory. Phase 9K does not create a backup, execute a
+migration, load Webull credentials, use the network, or enable trading.

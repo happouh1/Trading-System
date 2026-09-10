@@ -1,0 +1,23 @@
+{
+  "upgrade_version": "9K.1.0",
+  "mode": "OFFLINE_SCHEMA_UPGRADE_PLAN",
+  "readiness_config": "config/desktop.phase9j.v1.yaml",
+  "required_tables": [
+    "paper_burn_in_assessments",
+    "paper_certification_assessments",
+    "paper_operator_snapshots",
+    "paper_rollout_gate_assessments",
+    "paper_sandbox_lease_assessments",
+    "paper_stage_authorization_assessments"
+  ],
+  "authority": {
+    "backup_creation_enabled": false,
+    "migration_execution_enabled": false,
+    "database_write_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false
+  }
+}

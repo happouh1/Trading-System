@@ -1233,3 +1233,12 @@ a static query over the existing Phase 9B–9F tables, ordered by its evaluation
 ID. The latest record is hash-verified and compared with the versioned expected state. Missing tables
 or records yield `MISSING`; a different state yields `UNSATISFIED`. Completeness never becomes launch
 authority.
+
+## Phase 9K database-upgrade planning methodology
+
+The inspector resolves the database through the validated Phase 9J to 9I configuration chain and
+opens it with SQLite `mode=ro`. It hashes the file, runs `PRAGMA quick_check`, inventories tables in
+name order, and hashes the canonical `(name, SQL)` schema sequence. A missing or invalid database is
+`BLOCKED`; an intact database missing required evidence tables is `REQUIRED`; an intact complete
+schema is `NOT_REQUIRED`. Only `REQUIRED` makes `backup_required=true`. No branch creates a backup or
+executes a migration.

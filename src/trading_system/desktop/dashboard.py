@@ -12,6 +12,7 @@ from types import MappingProxyType
 from trading_system.desktop.launcher import DesktopLaunchStatus
 from trading_system.desktop.local_status import LocalOperationsStatus
 from trading_system.desktop.readiness import LocalLaunchReadiness
+from trading_system.desktop.upgrade_plan import LocalSchemaUpgradePlan
 from trading_system.serialization import canonical_hash, deterministic_id
 
 
@@ -104,6 +105,7 @@ def render_desktop_dashboard(
     project_root: str | Path,
     operations: LocalOperationsStatus | None = None,
     readiness: LocalLaunchReadiness | None = None,
+    upgrade_plan: LocalSchemaUpgradePlan | None = None,
 ) -> DesktopDashboardArtifact:
     root = Path(project_root).resolve()
     output_value = config.values["output"]
@@ -114,13 +116,19 @@ def render_desktop_dashboard(
     if root not in output_path.parents:
         raise DesktopDashboardConfigError("Phase 9H output escapes the project root")
     content = _dashboard_html(
-        status, str(display["title"]), str(display["subtitle"]), operations, readiness
+        status,
+        str(display["title"]),
+        str(display["subtitle"]),
+        operations,
+        readiness,
+        upgrade_plan,
     )
     content_hash = canonical_hash(content)
     identity = (
         status.status_id,
         None if operations is None else operations.status_id,
         None if readiness is None else readiness.readiness_id,
+        None if upgrade_plan is None else upgrade_plan.plan_id,
         config.config_hash,
         output_value,
         content_hash,
@@ -144,6 +152,7 @@ def _dashboard_html(
     subtitle: str,
     operations: LocalOperationsStatus | None,
     readiness: LocalLaunchReadiness | None,
+    upgrade_plan: LocalSchemaUpgradePlan | None,
 ) -> str:
     ready = status.operator_home_ready
     installation_readiness = "READY" if ready else "NEEDS ATTENTION"
@@ -158,6 +167,7 @@ def _dashboard_html(
     )
     operations_section = _operations_html(operations)
     readiness_section = _readiness_html(readiness)
+    upgrade_section = _upgrade_html(upgrade_plan)
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -212,6 +222,7 @@ def _dashboard_html(
       </section>
 {operations_section}
 {readiness_section}
+{upgrade_section}
     </div>
     <footer>Read-only local dashboard | Status {html.escape(status.status_id)}</footer>
   </main>
@@ -262,6 +273,26 @@ def _readiness_html(readiness: LocalLaunchReadiness | None) -> str:
           <li><span>Launch authorization</span><strong>DISABLED</strong></li>
         </ul>
         <p>This matrix cannot start processes or authorize trading.</p>
+      </section>"""
+
+
+def _upgrade_html(plan: LocalSchemaUpgradePlan | None) -> str:
+    if plan is None:
+        return ""
+    integrity = ", ".join(plan.quick_check) if plan.quick_check else "Unavailable"
+    missing = ", ".join(plan.missing_tables) if plan.missing_tables else "None"
+    backup = "YES" if plan.backup_required else "NO"
+    badge_class = "ready" if plan.plan_status == "NOT_REQUIRED" else "attention"
+    return f"""      <section><h2>Local database preparation</h2>
+        <p class="badge {badge_class}">{html.escape(plan.plan_status)}</p>
+        <ul>
+          <li><span>Database</span><strong>{html.escape(plan.database_state)}</strong></li>
+          <li><span>Integrity check</span><strong>{html.escape(integrity)}</strong></li>
+          <li><span>Backup required</span><strong>{backup}</strong></li>
+          <li><span>Migration execution</span><strong>DISABLED</strong></li>
+        </ul>
+        <p>Missing evidence tables: {html.escape(missing)}</p>
+        <p>This plan does not create a backup or change the database.</p>
       </section>"""
 
 

@@ -1321,3 +1321,13 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `P9J-COMPLETE-NOT-AUTHORIZED`: a complete matrix must keep launch authorization false.
 - `P9J-NO-AUTHORITY`: no database writes, credentials, network, scheduling, broker writes, sandbox
   execution, or live trading.
+
+## Phase 9K database-upgrade planning rules
+
+- `P9K-READ-ONLY`: open the configured SQLite database with `mode=ro`; never migrate implicitly.
+- `P9K-INTEGRITY-FIRST`: a missing, unreadable, or failed-integrity database is `BLOCKED`.
+- `P9K-CANONICAL-INVENTORY`: sort and hash the current schema and required table inventory.
+- `P9K-EXPLICIT-GAPS`: list every missing Phase 9A–9F evidence table deterministically.
+- `P9K-BACKUP-GATE`: mark a valid required upgrade as backup-required without creating the backup.
+- `P9K-NO-AUTHORITY`: no backup creation, migration, database write, credential loading, network,
+  broker write, sandbox execution, or live trading.

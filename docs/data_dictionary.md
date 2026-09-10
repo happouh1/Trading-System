@@ -1159,3 +1159,10 @@ by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `
   `SATISFIED`, `UNSATISFIED`, or `MISSING` status.
 - `LocalLaunchReadiness`: ordered evidence matrix, blocker codes, completeness flag, source hash, and
   explicit false launch/execution fields.
+
+## Phase 9K database-upgrade planning records
+
+- `UpgradePlanConfig`: immutable required-table inventory, readiness-config source, and explicit
+  false backup, migration, database-write, network, credential, brokerage, and trading authority.
+- `LocalSchemaUpgradePlan`: deterministic database state, plan state, sorted current/required/missing
+  tables, SQLite integrity result, file and schema hashes, backup requirement, and false action flags.
