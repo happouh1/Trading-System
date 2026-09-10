@@ -11,6 +11,7 @@ from pathlib import Path
 from trading_system import PACKAGE_VERSION
 from trading_system.backtest import summarize
 from trading_system.config import load_config
+from trading_system.desktop.cli import configure_desktop_parser, handle_desktop
 from trading_system.learning import write_observations
 from trading_system.market_data import XNYSCalendar, read_ohlcv
 from trading_system.modeling.cli import configure_model_parser, handle_model
@@ -54,6 +55,7 @@ def _parser() -> argparse.ArgumentParser:
     configure_portfolio_parser(commands)
     configure_options_parser(commands)
     configure_operations_parser(commands)
+    configure_desktop_parser(commands)
     return parser
 
 
@@ -160,6 +162,7 @@ def main(argv: list[str] | None = None) -> int:
         "portfolio": handle_portfolio,
         "options": handle_options,
         "operations": handle_operations,
+        "desktop": handle_desktop,
     }
     return handlers[args.command](args)
 

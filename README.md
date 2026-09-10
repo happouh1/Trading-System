@@ -1,5 +1,12 @@
 # Trading System
 
+Phase 9G adds a Windows desktop shortcut installer and plain-language operator home. The icon opens
+an installation/readiness screen only; credentials, networking, broker writes, and trading stay off.
+
+```text
+powershell -NoProfile -File scripts/install-desktop-shortcut.ps1
+```
+
 Phase 9F adds offline, revocable sandbox supervision leases bound to verified Phase 9E evidence and
 Phase 9D limits. An open window remains non-executable and grants no broker or live authority.
 

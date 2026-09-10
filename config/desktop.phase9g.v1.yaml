@@ -1,0 +1,22 @@
+{
+  "launcher_version": "9G.1.0",
+  "mode": "READ_ONLY_OPERATOR_HOME",
+  "display": {
+    "title": "Trading System",
+    "shortcut_name": "Trading System.lnk"
+  },
+  "paths": {
+    "python": ".venv/Scripts/python.exe",
+    "thresholds": "config/thresholds.phase1e.v1.yaml",
+    "paper_config": "config/paper.phase3b.v1.yaml",
+    "webull_config": "config/webull.sandbox.v1.yaml"
+  },
+  "authority": {
+    "process_scheduler_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false
+  }
+}

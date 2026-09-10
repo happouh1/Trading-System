@@ -1,5 +1,10 @@
 # Phase 1A data dictionary
 
+## Phase 9G desktop-launch records
+
+- `DesktopLaunchConfig`: immutable display, path, and disabled-authority configuration.
+- `DesktopLaunchStatus`: deterministic required/missing paths and read-only readiness result.
+
 ## Phase 9F sandbox lease records
 
 - `SandboxStageLease`: immutable stage, inherited ceilings, and operator-supplied validity window.

@@ -1,5 +1,10 @@
 # Phase 1A methodology
 
+## Phase 9G desktop-launch methodology
+
+The launcher resolves the project from its own repository location and checks every configured file
+without network access. Missing prerequisites fail closed. The operator home is informational only.
+
 ## Phase 9F sandbox lease methodology
 
 A lease inherits exact Phase 9D ceilings, is bound to Phase 9E verified signatures, and is evaluated

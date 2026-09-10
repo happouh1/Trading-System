@@ -1184,3 +1184,13 @@ Phase 9E intentionally leaves questions 431–435 unanswered and grants no activ
 440. What sandbox evidence must be completed before any production-facing design is considered?
 
 Phase 9F intentionally leaves questions 436–440 unanswered and grants no execution authority.
+
+## Added for Phase 9G desktop operator home
+
+441. Which reviewed command may eventually start a supervised sandbox run from the operator home?
+442. What authenticated local identity and re-confirmation are required before execution controls appear?
+443. Which health, lease, incident, and broker-reconciliation summaries belong on a future dashboard?
+444. Should the packaged release use an application executable and signed custom icon instead of PowerShell?
+445. What installation, update, rollback, and code-signing process applies outside this development checkout?
+
+Phase 9G intentionally leaves questions 441–445 unanswered and keeps the desktop default read-only.

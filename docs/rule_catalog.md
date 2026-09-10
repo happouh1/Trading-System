@@ -1,5 +1,14 @@
 # Rule catalog
 
+## Phase 9G desktop operator-home rules
+
+- `R9G-01`: resolve all launcher paths relative to the repository, never the current shell directory.
+- `R9G-02`: reject absolute, parent-traversing, or noncanonical configured paths.
+- `R9G-03`: fail closed when Python or a required configuration is absent.
+- `R9G-04`: keep the default operator screen local, read-only, and free of credentials.
+- `R9G-05`: never start scheduling, networking, broker writes, sandbox execution, or live trading.
+- `R9G-06`: keep the shortcut free of secrets and point it only to the repository-owned launcher.
+
 ## Phase 9F sandbox lease rules
 
 - `R9F-01`: require Phase 9E `SIGNATURES_VERIFIED` evidence for the exact plan and stage.
