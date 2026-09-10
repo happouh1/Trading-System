@@ -1,0 +1,16 @@
+{
+  "status_version": "9I.1.0",
+  "mode": "OFFLINE_LOCAL_STATUS",
+  "dashboard_config": "config/desktop.phase9h.v1.yaml",
+  "database": "webull-sandbox.sqlite",
+  "session_selection": "LATEST_CREATED",
+  "authority": {
+    "database_write_enabled": false,
+    "process_scheduler_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false
+  }
+}

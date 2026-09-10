@@ -1214,3 +1214,15 @@ The dashboard is rendered from a Phase 9G readiness status and a versioned Phase
 Identical inputs produce byte-identical UTF-8 HTML. Output is written through a same-directory
 temporary file and atomically replaced. The browser opens only after a ready status; rendering and
 opening the local page use no broker credentials or network authority.
+## Phase 9I local operations status methodology
+
+Local status inspection opens the configured SQLite file with `mode=ro`, verifies required tables,
+and selects the latest paper session by descending creation timestamp and session ID. Current runtime
+state comes from the latest persisted transition. Health and reason codes come only from the latest
+hash-verified Phase 9A snapshot. Counts and evidence timestamps are scoped to the selected session.
+No wall-clock freshness inference is made, so operators can distinguish recorded evidence from live
+process or broker state.
+
+Databases created before Phase 9A may lack `paper_operator_snapshots`. Their session, transition,
+count, heartbeat, and checkpoint evidence remains readable, while recorded health is explicitly
+`UNAVAILABLE`; inspection never migrates the operator's database implicitly.

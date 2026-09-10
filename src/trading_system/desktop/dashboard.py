@@ -10,6 +10,7 @@ from pathlib import Path
 from types import MappingProxyType
 
 from trading_system.desktop.launcher import DesktopLaunchStatus
+from trading_system.desktop.local_status import LocalOperationsStatus
 from trading_system.serialization import canonical_hash, deterministic_id
 
 
@@ -100,6 +101,7 @@ def render_desktop_dashboard(
     status: DesktopLaunchStatus,
     *,
     project_root: str | Path,
+    operations: LocalOperationsStatus | None = None,
 ) -> DesktopDashboardArtifact:
     root = Path(project_root).resolve()
     output_value = config.values["output"]
@@ -109,9 +111,17 @@ def render_desktop_dashboard(
     output_path = (root / output_value).resolve()
     if root not in output_path.parents:
         raise DesktopDashboardConfigError("Phase 9H output escapes the project root")
-    content = _dashboard_html(status, str(display["title"]), str(display["subtitle"]))
+    content = _dashboard_html(
+        status, str(display["title"]), str(display["subtitle"]), operations
+    )
     content_hash = canonical_hash(content)
-    identity = (status.status_id, config.config_hash, output_value, content_hash)
+    identity = (
+        status.status_id,
+        None if operations is None else operations.status_id,
+        config.config_hash,
+        output_value,
+        content_hash,
+    )
     artifact = DesktopDashboardArtifact(
         deterministic_id("desktop_dashboard_artifact", identity),
         str(output_path),
@@ -125,7 +135,12 @@ def render_desktop_dashboard(
     return artifact
 
 
-def _dashboard_html(status: DesktopLaunchStatus, title: str, subtitle: str) -> str:
+def _dashboard_html(
+    status: DesktopLaunchStatus,
+    title: str,
+    subtitle: str,
+    operations: LocalOperationsStatus | None,
+) -> str:
     ready = status.operator_home_ready
     readiness = "READY" if ready else "NEEDS ATTENTION"
     readiness_class = "ready" if ready else "attention"
@@ -137,6 +152,7 @@ def _dashboard_html(status: DesktopLaunchStatus, title: str, subtitle: str) -> s
         + "</strong></li>"
         for name, _ in status.required_paths
     )
+    operations_section = _operations_html(operations)
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -188,12 +204,36 @@ def _dashboard_html(status: DesktopLaunchStatus, title: str, subtitle: str) -> s
           <li><span>Scheduler</span><strong class="disabled">DISABLED</strong></li>
         </ul>
       </section>
+{operations_section}
     </div>
     <footer>Read-only local dashboard | Status {html.escape(status.status_id)}</footer>
   </main>
 </body>
 </html>
 """
+
+
+def _operations_html(operations: LocalOperationsStatus | None) -> str:
+    if operations is None:
+        return ""
+    session = "No local session" if operations.session_id is None else operations.session_id
+    reasons = "None" if not operations.reason_codes else ", ".join(operations.reason_codes)
+    return f"""      <section><h2>Latest local paper session</h2>
+        <ul>
+          <li><span>Database</span><strong>{html.escape(operations.database_state)}</strong></li>
+          <li><span>Session</span><strong>{html.escape(session)}</strong></li>
+          <li><span>Runtime</span><strong>{html.escape(operations.runtime_state)}</strong></li>
+          <li><span>Recorded health</span>
+            <strong>{html.escape(operations.operator_health)}</strong></li>
+          <li><span>Intents</span><strong>{operations.intent_count}</strong></li>
+          <li><span>Incidents</span><strong>{operations.incident_count}</strong></li>
+          <li><span>Unmatched checks</span>
+            <strong>{operations.unmatched_reconciliation_count}</strong></li>
+        </ul>
+        <p>Attention: {html.escape(reasons)}</p>
+        <p>Last heartbeat: {html.escape(operations.latest_heartbeat_at or "Unavailable")}</p>
+        <p>Last checkpoint: {html.escape(operations.latest_checkpoint_at or "Unavailable")}</p>
+      </section>"""
 
 
 def _canonical_relative_path(value: object) -> bool:

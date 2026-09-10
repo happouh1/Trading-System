@@ -1204,3 +1204,14 @@ Phase 9G intentionally leaves questions 441–445 unanswered and keeps the deskt
 450. What accessibility and usability review is required before broader operator deployment?
 
 Phase 9H intentionally leaves questions 446–450 unanswered and adds no execution authority.
+
+## Added for Phase 9I local operations status
+
+451. Which signed source should attest that a locally recorded session is still actively supervised?
+452. What wall-clock source and freshness thresholds should govern future live health indicators?
+453. May a future dashboard load read-only broker reconciliation after local re-authentication?
+454. Which incident categories are safe to summarize without exposing sensitive details?
+455. Should operators explicitly select a session rather than using deterministic latest-session
+     selection?
+
+Phase 9I intentionally leaves questions 451–455 unanswered and presents recorded local evidence only.

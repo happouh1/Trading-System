@@ -1145,3 +1145,9 @@ by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `
   authority declarations.
 - `DesktopDashboardArtifact`: deterministic artifact ID, local output path, content hash, source
   status ID, and explicit false execution/network flags.
+## Phase 9I local operations status records
+
+- `LocalStatusConfig`: versioned database path, deterministic latest-session selection rule, source
+  dashboard configuration, and explicit false authority declarations.
+- `LocalOperationsStatus`: immutable database availability, latest paper-session identity, persisted
+  runtime and health evidence, counts, timestamps, reason codes, and source hash.

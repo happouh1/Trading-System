@@ -1254,3 +1254,9 @@ fail-closed installation check. The page is static, deterministic, and offline: 
 credentials, remote resources, scheduler controls, or trading authority. Re-running
 `scripts/install-desktop-shortcut.ps1` is not required because the existing shortcut targets the
 versioned launcher script.
+## Phase 9I local operations status
+
+The desktop dashboard now reads the latest persisted paper-session evidence from
+`webull-sandbox.sqlite` using a strictly read-only SQLite connection. It shows runtime state,
+recorded health, intents, incidents, unmatched reconciliations, heartbeat, and checkpoint. Missing
+or incomplete evidence is displayed as attention and never activates network or trading controls.

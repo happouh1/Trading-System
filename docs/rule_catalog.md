@@ -1303,3 +1303,12 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `P9H-DASHBOARD-FAIL-CLOSED`: missing prerequisites prevent automatic browser launch.
 - `P9H-DASHBOARD-NO-AUTHORITY`: credentials, network, scheduling, broker writes, sandbox execution,
   and live trading remain disabled.
+## Phase 9I local operations status rules
+
+- `P9I-SQLITE-READ-ONLY`: status inspection must use a read-only SQLite connection and no migration.
+- `P9I-LATEST-SESSION`: select by descending `(created_at, session_id)`.
+- `P9I-RECORDED-ONLY`: do not infer live health or brokerage state from local evidence.
+- `P9I-HASH-VERIFY`: reject a latest operator snapshot whose canonical payload hash does not match.
+- `P9I-UNAVAILABLE-IS-ATTENTION`: missing database, schema, session, or snapshot remains explicit.
+- `P9I-NO-AUTHORITY`: database writes, credentials, network, scheduling, sandbox execution, and live
+  trading remain disabled.
