@@ -1,5 +1,10 @@
 # Phase 1A methodology
 
+## Phase 9E signed stage-review methodology
+
+Each signature covers the exact request, plan, stage, validity window, reviewer identity, and role.
+Evaluation is deterministic and causal. Verified signatures remain evidence rather than authority.
+
 ## Phase 7F fixed-horizon outcome methodology
 
 The entry candle is horizon bar one. Each configured horizon exits at its terminal completed close

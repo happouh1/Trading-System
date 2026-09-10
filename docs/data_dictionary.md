@@ -1,5 +1,12 @@
 # Phase 1A data dictionary
 
+## Phase 9E stage-review records
+
+- `StageAuthorizationRequest`: exact Phase 9D stage scope, validity, roles, and immutable hashes.
+- `StageReviewCredential`: Ed25519 public identity credential with a bounded validity interval.
+- `StageReviewAttestation`: signature over one exact request and reviewer identity.
+- `StageAuthorizationAssessment`: verified, incomplete, or blocked evidence with authority fixed false.
+
 ## Phase 7F range entry outcomes
 
 - `RangeEntryOutcome`: immutable direction-aware horizon result containing exit evidence, gross

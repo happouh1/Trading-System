@@ -1,5 +1,8 @@
 # Trading System
 
+Phase 9E adds offline Ed25519 stage-review evidence bound to one Phase 9D plan and stage. Its
+strongest state is `SIGNATURES_VERIFIED`; it cannot activate deployment or trading.
+
 Phase 7F labels hypothetical range entries at every mature preregistered horizon, including gross
 and two-sided-slippage-adjusted returns plus box-normalized excursions. It adds no optimized exit,
 score, alert, or trading authority. See `docs/phase_7f_review.md`.

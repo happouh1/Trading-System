@@ -1,5 +1,14 @@
 # Rule catalog
 
+## Phase 9E signed stage-review rules
+
+- `R9E-01`: accept only a Phase 9D `READY_FOR_HUMAN_REVIEW` assessment.
+- `R9E-02`: bind signatures to one request, plan, stage, validity window, role, and principal.
+- `R9E-03`: require valid Ed25519 signatures from distinct principals for every declared role.
+- `R9E-04`: block invalid, expired, replayed, or separation-violating evidence.
+- `R9E-05`: missing signatures remain incomplete.
+- `R9E-06`: verified signatures never activate stages, deployments, brokers, or live trading.
+
 ## Phase 7F fixed-horizon outcome rules
 
 - `R7F-01`: retain every mature configured Phase 7B horizon.

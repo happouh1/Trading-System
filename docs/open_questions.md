@@ -1164,3 +1164,13 @@ Phase 9C intentionally leaves questions 421–425 unanswered and grants no certi
 430. What evidence and cooling-off interval are required before a later stage may be considered?
 
 Phase 9D intentionally supplies no operational values or activation authority for questions 426–430.
+
+## Added for Phase 9E signed stage review
+
+431. Which identity authority issues, revokes, and rotates real stage-review credentials?
+432. Which roles and separation-of-duty combinations are mandatory for each rollout stage?
+433. What maximum request lifetime and trusted timestamp source are acceptable in production?
+434. Which separately authenticated service may consume verified signatures to activate a stage?
+435. How must emergency revocation, account-level limits, and broker-side controls override activation?
+
+Phase 9E intentionally leaves questions 431–435 unanswered and grants no activation authority.

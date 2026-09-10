@@ -63,6 +63,21 @@ from trading_system.paper.rollout import (
 )
 from trading_system.paper.rollout_registry import PaperRolloutRegistry
 from trading_system.paper.runtime import PaperRuntime
+from trading_system.paper.stage_authorization import (
+    StageAuthorizationAssessment,
+    StageAuthorizationConfig,
+    StageAuthorizationRequest,
+    StageAuthorizationState,
+    StageReviewAttestation,
+    StageReviewCredential,
+    build_stage_authorization_request,
+    build_stage_review_attestation,
+    build_stage_review_credential,
+    evaluate_stage_authorization,
+    load_stage_authorization_config,
+    stage_review_message,
+)
+from trading_system.paper.stage_authorization_registry import StageAuthorizationRegistry
 
 __all__ = [
     "AdapterResult",
@@ -102,6 +117,13 @@ __all__ = [
     "RolloutStage",
     "RolloutStageEvidence",
     "RuntimeState",
+    "StageAuthorizationAssessment",
+    "StageAuthorizationConfig",
+    "StageAuthorizationRegistry",
+    "StageAuthorizationRequest",
+    "StageAuthorizationState",
+    "StageReviewAttestation",
+    "StageReviewCredential",
     "StagedRolloutPlan",
     "build_burn_in_protocol",
     "build_certification_attestation",
@@ -110,14 +132,20 @@ __all__ = [
     "build_operator_jobs",
     "build_rollout_stage",
     "build_rollout_stage_evidence",
+    "build_stage_authorization_request",
+    "build_stage_review_attestation",
+    "build_stage_review_credential",
     "build_staged_rollout_plan",
     "evaluate_burn_in",
     "evaluate_certification",
     "evaluate_rollout_stage",
+    "evaluate_stage_authorization",
     "load_paper_burn_in_config",
     "load_paper_certification_config",
     "load_paper_config",
     "load_paper_operator_config",
     "load_paper_rollout_config",
+    "load_stage_authorization_config",
+    "stage_review_message",
     "stage_shadow_decision",
 ]
