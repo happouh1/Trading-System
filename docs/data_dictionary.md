@@ -1151,3 +1151,11 @@ by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `
   dashboard configuration, and explicit false authority declarations.
 - `LocalOperationsStatus`: immutable database availability, latest paper-session identity, persisted
   runtime and health evidence, counts, timestamps, reason codes, and source hash.
+## Phase 9J launch evidence records
+
+- `LaunchReadinessConfig`: immutable required evidence states, local-status source, and false
+  authority declarations.
+- `ReadinessEvidence`: one category's expected state, observed state, source record ID, and canonical
+  `SATISFIED`, `UNSATISFIED`, or `MISSING` status.
+- `LocalLaunchReadiness`: ordered evidence matrix, blocker codes, completeness flag, source hash, and
+  explicit false launch/execution fields.

@@ -1260,3 +1260,9 @@ The desktop dashboard now reads the latest persisted paper-session evidence from
 `webull-sandbox.sqlite` using a strictly read-only SQLite connection. It shows runtime state,
 recorded health, intents, incidents, unmatched reconciliations, heartbeat, and checkpoint. Missing
 or incomplete evidence is displayed as attention and never activates network or trading controls.
+## Phase 9J launch evidence matrix
+
+The local dashboard now shows whether the selected paper session has matching burn-in,
+certification, staged-rollout, signed-review, and supervision-lease evidence. Completeness is
+informational only: launch authorization, process execution, brokerage access, and trading remain
+disabled even when every evidence category is satisfied.

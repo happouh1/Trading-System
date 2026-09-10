@@ -11,6 +11,7 @@ from types import MappingProxyType
 
 from trading_system.desktop.launcher import DesktopLaunchStatus
 from trading_system.desktop.local_status import LocalOperationsStatus
+from trading_system.desktop.readiness import LocalLaunchReadiness
 from trading_system.serialization import canonical_hash, deterministic_id
 
 
@@ -102,6 +103,7 @@ def render_desktop_dashboard(
     *,
     project_root: str | Path,
     operations: LocalOperationsStatus | None = None,
+    readiness: LocalLaunchReadiness | None = None,
 ) -> DesktopDashboardArtifact:
     root = Path(project_root).resolve()
     output_value = config.values["output"]
@@ -112,12 +114,13 @@ def render_desktop_dashboard(
     if root not in output_path.parents:
         raise DesktopDashboardConfigError("Phase 9H output escapes the project root")
     content = _dashboard_html(
-        status, str(display["title"]), str(display["subtitle"]), operations
+        status, str(display["title"]), str(display["subtitle"]), operations, readiness
     )
     content_hash = canonical_hash(content)
     identity = (
         status.status_id,
         None if operations is None else operations.status_id,
+        None if readiness is None else readiness.readiness_id,
         config.config_hash,
         output_value,
         content_hash,
@@ -140,9 +143,10 @@ def _dashboard_html(
     title: str,
     subtitle: str,
     operations: LocalOperationsStatus | None,
+    readiness: LocalLaunchReadiness | None,
 ) -> str:
     ready = status.operator_home_ready
-    readiness = "READY" if ready else "NEEDS ATTENTION"
+    installation_readiness = "READY" if ready else "NEEDS ATTENTION"
     readiness_class = "ready" if ready else "attention"
     component_rows = "\n".join(
         "        <li><span>"
@@ -153,6 +157,7 @@ def _dashboard_html(
         for name, _ in status.required_paths
     )
     operations_section = _operations_html(operations)
+    readiness_section = _readiness_html(readiness)
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -190,7 +195,8 @@ def _dashboard_html(
   <main>
     <header><h1>{html.escape(title)}</h1><p>{html.escape(subtitle)}</p></header>
     <div class="grid">
-      <section><h2>System readiness</h2><p class="badge {readiness_class}">{readiness}</p>
+      <section><h2>System readiness</h2>
+        <p class="badge {readiness_class}">{installation_readiness}</p>
         <ul>
 {component_rows}
         </ul>
@@ -205,6 +211,7 @@ def _dashboard_html(
         </ul>
       </section>
 {operations_section}
+{readiness_section}
     </div>
     <footer>Read-only local dashboard | Status {html.escape(status.status_id)}</footer>
   </main>
@@ -233,6 +240,28 @@ def _operations_html(operations: LocalOperationsStatus | None) -> str:
         <p>Attention: {html.escape(reasons)}</p>
         <p>Last heartbeat: {html.escape(operations.latest_heartbeat_at or "Unavailable")}</p>
         <p>Last checkpoint: {html.escape(operations.latest_checkpoint_at or "Unavailable")}</p>
+      </section>"""
+
+
+def _readiness_html(readiness: LocalLaunchReadiness | None) -> str:
+    if readiness is None:
+        return ""
+    rows = "\n".join(
+        "          <li><span>"
+        + html.escape(item.category.replace("_", " ").title())
+        + "</span><strong>"
+        + html.escape(item.evidence_status)
+        + "</strong></li>"
+        for item in readiness.evidence
+    )
+    completeness = "COMPLETE" if readiness.evidence_complete else "INCOMPLETE"
+    return f"""      <section><h2>Launch evidence</h2>
+        <p class="badge attention">{completeness}</p>
+        <ul>
+{rows}
+          <li><span>Launch authorization</span><strong>DISABLED</strong></li>
+        </ul>
+        <p>This matrix cannot start processes or authorize trading.</p>
       </section>"""
 
 

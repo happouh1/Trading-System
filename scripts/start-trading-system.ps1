@@ -5,7 +5,7 @@ param(
 $ErrorActionPreference = "Stop"
 $projectRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..")).Path
 $pythonPath = Join-Path $projectRoot ".venv\Scripts\python.exe"
-$configPath = Join-Path $projectRoot "config\desktop.phase9i.v1.yaml"
+$configPath = Join-Path $projectRoot "config\desktop.phase9j.v1.yaml"
 
 if (-not (Test-Path -LiteralPath $pythonPath -PathType Leaf)) {
     Write-Host "Trading System needs its Python environment." -ForegroundColor Red
@@ -19,7 +19,7 @@ if (-not $SelfTest) {
     Clear-Host
 }
 
-$rendered = & $pythonPath -m trading_system.cli desktop render-status `
+$rendered = & $pythonPath -m trading_system.cli desktop render-readiness `
     --config $configPath `
     --project-root $projectRoot
 $result = $LASTEXITCODE

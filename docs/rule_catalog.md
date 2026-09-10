@@ -1312,3 +1312,12 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `P9I-UNAVAILABLE-IS-ATTENTION`: missing database, schema, session, or snapshot remains explicit.
 - `P9I-NO-AUTHORITY`: database writes, credentials, network, scheduling, sandbox execution, and live
   trading remain disabled.
+## Phase 9J launch evidence rules
+
+- `P9J-SESSION-SCOPE`: evidence must belong to the Phase 9I selected paper session.
+- `P9J-LATEST-EVIDENCE`: select by descending evaluation timestamp and record ID.
+- `P9J-HASH-VERIFY`: reject evidence whose canonical payload hash does not match.
+- `P9J-EXPLICIT-GAPS`: distinguish `MISSING` from `UNSATISFIED` evidence.
+- `P9J-COMPLETE-NOT-AUTHORIZED`: a complete matrix must keep launch authorization false.
+- `P9J-NO-AUTHORITY`: no database writes, credentials, network, scheduling, broker writes, sandbox
+  execution, or live trading.

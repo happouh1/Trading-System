@@ -1215,3 +1215,13 @@ Phase 9H intentionally leaves questions 446–450 unanswered and adds no executi
      selection?
 
 Phase 9I intentionally leaves questions 451–455 unanswered and presents recorded local evidence only.
+
+## Added for Phase 9J launch evidence matrix
+
+456. Which independently authenticated service may convert reviewed evidence into launch authority?
+457. Must evidence be re-evaluated against a trusted current time immediately before launch?
+458. Which evidence categories expire, and what revocation source overrides a previously valid record?
+459. What local operator identity, second factor, and human confirmation are required for sandbox use?
+460. Which broker reconciliation must be obtained after authentication but before any sandbox action?
+
+Phase 9J intentionally leaves questions 456–460 unanswered and grants no launch authority.

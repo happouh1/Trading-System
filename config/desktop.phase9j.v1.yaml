@@ -1,0 +1,22 @@
+{
+  "readiness_version": "9J.1.0",
+  "mode": "OFFLINE_EVIDENCE_MATRIX",
+  "local_status_config": "config/desktop.phase9i.v1.yaml",
+  "requirements": {
+    "burn_in": "PASS",
+    "certification": "REVIEW_READY",
+    "rollout_gate": "READY_FOR_HUMAN_REVIEW",
+    "stage_review": "SIGNATURES_VERIFIED",
+    "supervision_lease": "SUPERVISION_WINDOW_OPEN"
+  },
+  "authority": {
+    "launch_authorization_enabled": false,
+    "database_write_enabled": false,
+    "process_scheduler_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false
+  }
+}

@@ -11,6 +11,10 @@ from trading_system.desktop.dashboard import (
 )
 from trading_system.desktop.launcher import inspect_desktop_launcher, load_desktop_launch_config
 from trading_system.desktop.local_status import inspect_local_operations, load_local_status_config
+from trading_system.desktop.readiness import (
+    assess_local_launch_readiness,
+    load_launch_readiness_config,
+)
 from trading_system.serialization import canonical_json
 
 
@@ -27,9 +31,42 @@ def configure_desktop_parser(commands: argparse._SubParsersAction[argparse.Argum
     render_status = actions.add_parser("render-status")
     render_status.add_argument("--config", required=True)
     render_status.add_argument("--project-root", default=".")
+    render_readiness = actions.add_parser("render-readiness")
+    render_readiness.add_argument("--config", required=True)
+    render_readiness.add_argument("--project-root", default=".")
 
 
 def handle_desktop(args: argparse.Namespace) -> int:
+    if args.desktop_command == "render-readiness":
+        root = Path(args.project_root).resolve()
+        readiness_config = load_launch_readiness_config(args.config)
+        local_path = readiness_config.values["local_status_config"]
+        if not isinstance(local_path, str):
+            raise TypeError("validated Phase 9J local status config path must be text")
+        local_config = load_local_status_config(root / local_path)
+        dashboard_path = local_config.values["dashboard_config"]
+        if not isinstance(dashboard_path, str):
+            raise TypeError("validated Phase 9I dashboard config path must be text")
+        dashboard_config = load_desktop_dashboard_config(root / dashboard_path)
+        operator_path = dashboard_config.values["operator_config"]
+        if not isinstance(operator_path, str):
+            raise TypeError("validated Phase 9H operator config path must be text")
+        status = inspect_desktop_launcher(
+            load_desktop_launch_config(root / operator_path), project_root=root
+        )
+        operations = inspect_local_operations(local_config, project_root=root)
+        readiness = assess_local_launch_readiness(
+            readiness_config, operations, project_root=root
+        )
+        artifact = render_desktop_dashboard(
+            dashboard_config,
+            status,
+            project_root=root,
+            operations=operations,
+            readiness=readiness,
+        )
+        print(canonical_json(artifact))
+        return 0 if status.operator_home_ready else 1
     if args.desktop_command == "render-status":
         root = Path(args.project_root).resolve()
         local_config = load_local_status_config(args.config)

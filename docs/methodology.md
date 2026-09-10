@@ -1226,3 +1226,10 @@ process or broker state.
 Databases created before Phase 9A may lack `paper_operator_snapshots`. Their session, transition,
 count, heartbeat, and checkpoint evidence remains readable, while recorded health is explicitly
 `UNAVAILABLE`; inspection never migrates the operator's database implicitly.
+## Phase 9J launch evidence methodology
+
+The assessment uses the Phase 9I selected session and read-only SQLite connection. Each category has
+a static query over the existing Phase 9B–9F tables, ordered by its evaluation timestamp and record
+ID. The latest record is hash-verified and compared with the versioned expected state. Missing tables
+or records yield `MISSING`; a different state yields `UNSATISFIED`. Completeness never becomes launch
+authority.
