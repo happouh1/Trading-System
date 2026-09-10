@@ -1174,3 +1174,13 @@ by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `
 - `UpgradeRehearsalResult`: source, backup, migrated-copy, and restored-copy hashes; canonical table
   and row-count evidence; integrity and foreign-key results; contained artifact paths; and false
   promotion, production-migration, network, brokerage, and trading fields.
+
+## Phase 9M database-upgrade review records
+
+- `DatabaseUpgradeReviewCredential`: reviewer principal, role, Ed25519 public key, and validity
+  interval; private keys are never stored.
+- `DatabaseUpgradeReviewRequest`: exact Phase 9K and 9L evidence hashes, source hash, operator policy
+  hashes, maintenance window, reviewer roles, and explicit false authorization fields.
+- `DatabaseUpgradeReviewAttestation`: reviewer signature bound to the exact request and signing time.
+- `DatabaseUpgradeReviewAssessment`: verified roles, canonical reasons, terminal review-evidence state,
+  and explicit false backup, migration, promotion, process, network, broker, and trading actions.

@@ -1251,3 +1251,12 @@ online backup operation to create a consistent copy, migrates a second copy, and
 copy from the backup. Verification requires an unchanged source hash, preserved existing row counts,
 all Phase 9K required tables, successful `quick_check`, zero foreign-key violations, and identical
 backup/restore hashes. Deterministic targets are reused only when every artifact hash matches.
+
+## Phase 9M database-upgrade review methodology
+
+The request hashes the complete Phase 9K plan and Phase 9L result together with the planned source
+hash, operator-authored backup, recovery, and quiescence procedure hashes, a bounded UTC maintenance
+window, and sorted reviewer roles. Each attestation signs those exact values plus its credential,
+principal, role, and signing time. Evaluation verifies Ed25519 signatures, credential and window
+validity, role completeness, and separation of reviewer principals. The terminal result records only
+review evidence; every operational-authority field remains false.

@@ -25,6 +25,20 @@ from trading_system.desktop.readiness import (
     assess_local_launch_readiness,
     load_launch_readiness_config,
 )
+from trading_system.desktop.upgrade_authorization import (
+    DatabaseUpgradeReviewAssessment,
+    DatabaseUpgradeReviewAttestation,
+    DatabaseUpgradeReviewConfig,
+    DatabaseUpgradeReviewCredential,
+    DatabaseUpgradeReviewRequest,
+    DatabaseUpgradeReviewState,
+    build_database_upgrade_review_attestation,
+    build_database_upgrade_review_credential,
+    build_database_upgrade_review_request,
+    database_upgrade_review_message,
+    evaluate_database_upgrade_review,
+    load_database_upgrade_review_config,
+)
 from trading_system.desktop.upgrade_plan import (
     LocalSchemaUpgradePlan,
     UpgradePlanConfig,
@@ -39,6 +53,12 @@ from trading_system.desktop.upgrade_rehearsal import (
 )
 
 __all__ = [
+    "DatabaseUpgradeReviewAssessment",
+    "DatabaseUpgradeReviewAttestation",
+    "DatabaseUpgradeReviewConfig",
+    "DatabaseUpgradeReviewCredential",
+    "DatabaseUpgradeReviewRequest",
+    "DatabaseUpgradeReviewState",
     "DesktopDashboardArtifact",
     "DesktopDashboardConfig",
     "DesktopLaunchConfig",
@@ -53,9 +73,15 @@ __all__ = [
     "UpgradeRehearsalConfig",
     "UpgradeRehearsalResult",
     "assess_local_launch_readiness",
+    "build_database_upgrade_review_attestation",
+    "build_database_upgrade_review_credential",
+    "build_database_upgrade_review_request",
     "build_local_schema_upgrade_plan",
+    "database_upgrade_review_message",
+    "evaluate_database_upgrade_review",
     "inspect_desktop_launcher",
     "inspect_local_operations",
+    "load_database_upgrade_review_config",
     "load_desktop_dashboard_config",
     "load_desktop_launch_config",
     "load_launch_readiness_config",

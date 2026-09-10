@@ -1245,3 +1245,13 @@ Phase 9K intentionally leaves questions 461–465 unanswered and performs no dat
 470. Must a real migration use copy-and-promote, in-place migration, or another reviewed procedure?
 
 Phase 9L intentionally leaves questions 466–470 unanswered and rejects the real database as input.
+
+## Added for Phase 9M signed database-upgrade review evidence
+
+471. Which real principals and roles must review backup, recovery, security, and operations evidence?
+472. Which identity authority issues, rotates, and revokes database-upgrade reviewer credentials?
+473. Which trusted clock and maximum maintenance-window duration apply to a real upgrade?
+474. Which separately authenticated component may consume reviewed evidence as execution authority?
+475. What emergency stop, rollback deadline, and post-upgrade observation period are mandatory?
+
+Phase 9M leaves questions 471–475 unanswered and grants no real-upgrade or trading authority.

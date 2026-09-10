@@ -1343,3 +1343,15 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `P9L-RESTART-SAFE`: reuse existing deterministic artifacts only when all hashes match.
 - `P9L-NO-AUTHORITY`: never promote a restore, migrate the real database, use credentials or network,
   write to a broker, or enable sandbox or live trading.
+
+## Phase 9M database-upgrade review rules
+
+- `P9M-PREREQUISITES`: require an upgrade-required Phase 9K plan and verified Phase 9L rehearsal.
+- `P9M-SCHEMA-BINDING`: require the plan and rehearsal to name the same required tables.
+- `P9M-PROCEDURE-BINDING`: require operator-supplied backup, recovery, and quiescence hashes.
+- `P9M-EXACT-SIGNATURE`: sign every material request field with Ed25519.
+- `P9M-SEPARATION`: require distinct principals for operator-supplied reviewer roles.
+- `P9M-TIME-BOUND`: reject signatures and assessments outside the maintenance window.
+- `P9M-REVIEW-NOT-AUTHORITY`: verified evidence must not authorize or execute any operation.
+- `P9M-NO-TRADING`: credentials, network, process launch, broker writes, sandbox execution, and live
+  trading remain disabled.

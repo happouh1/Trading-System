@@ -1,0 +1,28 @@
+{
+  "authorization_version": "9M.1.0",
+  "mode": "OFFLINE_DATABASE_UPGRADE_REVIEW",
+  "policy": {
+    "require_phase9k_upgrade_required": true,
+    "require_phase9l_verified_rehearsal": true,
+    "require_matching_required_tables": true,
+    "require_backup_policy_hash": true,
+    "require_recovery_procedure_hash": true,
+    "require_quiescence_procedure_hash": true,
+    "review_roles_operator_supplied": true,
+    "distinct_reviewer_principals": true,
+    "signature_algorithm": "Ed25519",
+    "bounded_maintenance_window": true
+  },
+  "authority": {
+    "default_review_roles_enabled": false,
+    "real_backup_enabled": false,
+    "real_migration_enabled": false,
+    "restore_promotion_enabled": false,
+    "process_launch_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false
+  }
+}

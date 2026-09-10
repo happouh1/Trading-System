@@ -1280,3 +1280,10 @@ An explicit offline CLI can now rehearse SQLite backup, current-schema migration
 fixtures under `fixtures/upgrade-rehearsal`. It preserves existing row counts, verifies integrity and
 foreign keys, and rejects the real operator database. Rehearsal artifacts are ignored local files and
 cannot be promoted or used to enable execution.
+
+## Phase 9M signed database-upgrade review
+
+The system can now bind an upgrade-required plan, verified test rehearsal, source hash, operator
+procedures, maintenance window, and distinct reviewer roles into an Ed25519-signed review package.
+Successful signature verification means evidence is ready for review only; it cannot create a real
+backup, migrate or promote a database, launch processes, connect to Webull, or trade.
