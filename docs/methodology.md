@@ -1,5 +1,10 @@
 # Phase 1A methodology
 
+## Phase 9F sandbox lease methodology
+
+A lease inherits exact Phase 9D ceilings, is bound to Phase 9E verified signatures, and is evaluated
+only as of causal time. Expiration and revocation close eligibility without performing execution.
+
 ## Phase 9E signed stage-review methodology
 
 Each signature covers the exact request, plan, stage, validity window, reviewer identity, and role.

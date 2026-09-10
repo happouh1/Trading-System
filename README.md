@@ -1,5 +1,8 @@
 # Trading System
 
+Phase 9F adds offline, revocable sandbox supervision leases bound to verified Phase 9E evidence and
+Phase 9D limits. An open window remains non-executable and grants no broker or live authority.
+
 Phase 9E adds offline Ed25519 stage-review evidence bound to one Phase 9D plan and stage. Its
 strongest state is `SIGNATURES_VERIFIED`; it cannot activate deployment or trading.
 

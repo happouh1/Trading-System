@@ -1,0 +1,21 @@
+{
+  "lease_version": "9F.1.0",
+  "mode": "OFFLINE_SANDBOX_SUPERVISION_LEASE",
+  "policy": {
+    "require_phase9e_signatures_verified": true,
+    "exact_plan_and_stage_scope": true,
+    "lease_window_operator_supplied": true,
+    "limits_inherited_from_phase9d": true,
+    "revocation_reason_required": true,
+    "status_is_causal": true
+  },
+  "authority": {
+    "lease_defaults_enabled": false,
+    "process_launch_enabled": false,
+    "network_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "deployment_enabled": false,
+    "live_trading_enabled": false
+  }
+}

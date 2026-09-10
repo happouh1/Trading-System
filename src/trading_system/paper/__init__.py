@@ -63,6 +63,18 @@ from trading_system.paper.rollout import (
 )
 from trading_system.paper.rollout_registry import PaperRolloutRegistry
 from trading_system.paper.runtime import PaperRuntime
+from trading_system.paper.sandbox_lease import (
+    SandboxLeaseAssessment,
+    SandboxLeaseConfig,
+    SandboxLeaseRevocation,
+    SandboxLeaseState,
+    SandboxStageLease,
+    build_sandbox_lease_revocation,
+    build_sandbox_stage_lease,
+    evaluate_sandbox_lease,
+    load_sandbox_lease_config,
+)
+from trading_system.paper.sandbox_lease_registry import SandboxLeaseRegistry
 from trading_system.paper.stage_authorization import (
     StageAuthorizationAssessment,
     StageAuthorizationConfig,
@@ -117,6 +129,12 @@ __all__ = [
     "RolloutStage",
     "RolloutStageEvidence",
     "RuntimeState",
+    "SandboxLeaseAssessment",
+    "SandboxLeaseConfig",
+    "SandboxLeaseRegistry",
+    "SandboxLeaseRevocation",
+    "SandboxLeaseState",
+    "SandboxStageLease",
     "StageAuthorizationAssessment",
     "StageAuthorizationConfig",
     "StageAuthorizationRegistry",
@@ -132,6 +150,8 @@ __all__ = [
     "build_operator_jobs",
     "build_rollout_stage",
     "build_rollout_stage_evidence",
+    "build_sandbox_lease_revocation",
+    "build_sandbox_stage_lease",
     "build_stage_authorization_request",
     "build_stage_review_attestation",
     "build_stage_review_credential",
@@ -139,12 +159,14 @@ __all__ = [
     "evaluate_burn_in",
     "evaluate_certification",
     "evaluate_rollout_stage",
+    "evaluate_sandbox_lease",
     "evaluate_stage_authorization",
     "load_paper_burn_in_config",
     "load_paper_certification_config",
     "load_paper_config",
     "load_paper_operator_config",
     "load_paper_rollout_config",
+    "load_sandbox_lease_config",
     "load_stage_authorization_config",
     "stage_review_message",
     "stage_shadow_decision",

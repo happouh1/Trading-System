@@ -1174,3 +1174,13 @@ Phase 9D intentionally supplies no operational values or activation authority fo
 435. How must emergency revocation, account-level limits, and broker-side controls override activation?
 
 Phase 9E intentionally leaves questions 431–435 unanswered and grants no activation authority.
+
+## Added for Phase 9F sandbox supervision leases
+
+436. What maximum lease duration, renewal policy, and cooling-off period apply in sandbox operation?
+437. Which service may consume an open supervision window and who may launch that service?
+438. How are inherited capital limits reconciled against broker buying power and open exposure?
+439. Which authenticated emergency channel may revoke a lease and how quickly must it propagate?
+440. What sandbox evidence must be completed before any production-facing design is considered?
+
+Phase 9F intentionally leaves questions 436–440 unanswered and grants no execution authority.

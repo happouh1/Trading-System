@@ -1,5 +1,11 @@
 # Phase 1A data dictionary
 
+## Phase 9F sandbox lease records
+
+- `SandboxStageLease`: immutable stage, inherited ceilings, and operator-supplied validity window.
+- `SandboxLeaseRevocation`: irreversible, reason-coded revocation bound to the exact lease hash.
+- `SandboxLeaseAssessment`: causal state snapshot with all execution authority fixed false.
+
 ## Phase 9E stage-review records
 
 - `StageAuthorizationRequest`: exact Phase 9D stage scope, validity, roles, and immutable hashes.

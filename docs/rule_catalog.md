@@ -1,5 +1,14 @@
 # Rule catalog
 
+## Phase 9F sandbox lease rules
+
+- `R9F-01`: require Phase 9E `SIGNATURES_VERIFIED` evidence for the exact plan and stage.
+- `R9F-02`: inherit capital and position ceilings from the immutable Phase 9D stage.
+- `R9F-03`: use an operator-supplied bounded UTC validity window with no defaults.
+- `R9F-04`: assess scheduled, open, expired, or revoked state using causal evidence only.
+- `R9F-05`: require a reason-coded, immutable revocation and reject future revocation evidence.
+- `R9F-06`: no lease state launches processes, accesses networks, or permits any trading.
+
 ## Phase 9E signed stage-review rules
 
 - `R9E-01`: accept only a Phase 9D `READY_FOR_HUMAN_REVIEW` assessment.
