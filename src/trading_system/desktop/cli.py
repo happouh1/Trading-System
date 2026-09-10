@@ -5,6 +5,10 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from trading_system.desktop.dashboard import (
+    load_desktop_dashboard_config,
+    render_desktop_dashboard,
+)
 from trading_system.desktop.launcher import inspect_desktop_launcher, load_desktop_launch_config
 from trading_system.serialization import canonical_json
 
@@ -16,9 +20,23 @@ def configure_desktop_parser(commands: argparse._SubParsersAction[argparse.Argum
         command = actions.add_parser(name)
         command.add_argument("--config", required=True)
         command.add_argument("--project-root", default=".")
+    render = actions.add_parser("render")
+    render.add_argument("--config", required=True)
+    render.add_argument("--project-root", default=".")
 
 
 def handle_desktop(args: argparse.Namespace) -> int:
+    if args.desktop_command == "render":
+        dashboard_config = load_desktop_dashboard_config(args.config)
+        root = Path(args.project_root).resolve()
+        operator_path = dashboard_config.values["operator_config"]
+        if not isinstance(operator_path, str):
+            raise TypeError("validated Phase 9H operator config path must be text")
+        operator_config = load_desktop_launch_config(root / operator_path)
+        status = inspect_desktop_launcher(operator_config, project_root=root)
+        artifact = render_desktop_dashboard(dashboard_config, status, project_root=root)
+        print(canonical_json(artifact))
+        return 0 if status.operator_home_ready else 1
     config = load_desktop_launch_config(args.config)
     status = inspect_desktop_launcher(config, project_root=args.project_root)
     if args.desktop_command == "status":

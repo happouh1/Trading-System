@@ -1,0 +1,18 @@
+{
+  "dashboard_version": "9H.1.0",
+  "mode": "READ_ONLY_LOCAL_DASHBOARD",
+  "operator_config": "config/desktop.phase9g.v1.yaml",
+  "output": ".operator-home/trading-system.html",
+  "display": {
+    "title": "Trading System",
+    "subtitle": "Operator Home"
+  },
+  "authority": {
+    "process_scheduler_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false
+  }
+}
