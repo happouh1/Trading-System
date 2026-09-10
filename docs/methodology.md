@@ -1189,3 +1189,7 @@ time within its validity window.
 Missing reviews produce `INCOMPLETE`; invalid signatures or failed reviewer separation produce
 `BLOCKED`; a complete valid set produces `REVIEW_READY`. No state means certified, deployed, or
 authorized to trade.
+# Phase 9D staged-rollout methodology
+
+Phase 9D binds an immutable staged plan to a Phase 9C review-ready assessment. Evidence is causal,
+trigger names are preregistered, and evaluation is deterministic. Outputs are review artifacts only.

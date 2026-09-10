@@ -1261,3 +1261,10 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `R9C-007`: Permit one assessment per dossier and fail closed on stored evidence drift.
 - `R9C-008`: Keep certification grants, deployment, promotion, network, broker writes, and live
   trading disabled.
+# Phase 9D rollout review rules
+
+- A plan requires a Phase 9C `REVIEW_READY` assessment.
+- Stage sequence is consecutive; exposure ceilings are nondecreasing and operator supplied.
+- Undeclared rollback triggers and non-causal evidence are rejected.
+- Incidents or declared trigger breaches block; insufficient observations remain incomplete.
+- No output activates, advances, rolls back, deploys, or submits an order.

@@ -1154,3 +1154,13 @@ separate across operations, risk, security, compliance, and brokerage review?
 required before a later staged rollout can be considered?
 
 Phase 9C intentionally leaves questions 421–425 unanswered and grants no certification authority.
+
+## Added for Phase 9D staged-rollout review
+
+426. Who may approve and activate a reviewed stage, and what cryptographic authorization is required?
+427. What real capital and position ceilings apply to each stage, account, strategy, and instrument?
+428. Which objective rollback triggers, observation minimums, and incident severities govern each stage?
+429. What independent reconciliation, supervision, notification, and emergency-stop services are required?
+430. What evidence and cooling-off interval are required before a later stage may be considered?
+
+Phase 9D intentionally supplies no operational values or activation authority for questions 426–430.

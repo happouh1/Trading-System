@@ -1116,3 +1116,8 @@ state, reasons, and false readiness/promotion/authority disclosures.
 operator-supplied reviewer roles. `paper_certification_attestations` stores signed reviewer evidence
 by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `INCOMPLETE`, or
 `BLOCKED` evaluation per dossier. None of these records is a deployment authorization.
+# Phase 9D rollout records
+
+- `StagedRolloutPlan`: immutable ordered stages and operator-supplied exposure ceilings.
+- `RolloutStageEvidence`: causal observation count, unresolved incidents, and declared breaches.
+- `RolloutGateAssessment`: deterministic review state with every authority flag fixed false.

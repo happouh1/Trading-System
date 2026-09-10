@@ -48,6 +48,20 @@ from trading_system.paper.operator_control import (
 )
 from trading_system.paper.operator_control_registry import PaperOperatorRegistry
 from trading_system.paper.registry import PaperRegistry
+from trading_system.paper.rollout import (
+    PaperRolloutConfig,
+    RolloutGateAssessment,
+    RolloutGateState,
+    RolloutStage,
+    RolloutStageEvidence,
+    StagedRolloutPlan,
+    build_rollout_stage,
+    build_rollout_stage_evidence,
+    build_staged_rollout_plan,
+    evaluate_rollout_stage,
+    load_paper_rollout_config,
+)
+from trading_system.paper.rollout_registry import PaperRolloutRegistry
 from trading_system.paper.runtime import PaperRuntime
 
 __all__ = [
@@ -77,21 +91,33 @@ __all__ = [
     "PaperOperatorRegistry",
     "PaperOperatorSnapshot",
     "PaperRegistry",
+    "PaperRolloutConfig",
+    "PaperRolloutRegistry",
     "PaperRuntime",
     "PaperSession",
     "ReconciliationResult",
     "RejectingAdapter",
+    "RolloutGateAssessment",
+    "RolloutGateState",
+    "RolloutStage",
+    "RolloutStageEvidence",
     "RuntimeState",
+    "StagedRolloutPlan",
     "build_burn_in_protocol",
     "build_certification_attestation",
     "build_certification_credential",
     "build_certification_dossier",
     "build_operator_jobs",
+    "build_rollout_stage",
+    "build_rollout_stage_evidence",
+    "build_staged_rollout_plan",
     "evaluate_burn_in",
     "evaluate_certification",
+    "evaluate_rollout_stage",
     "load_paper_burn_in_config",
     "load_paper_certification_config",
     "load_paper_config",
     "load_paper_operator_config",
+    "load_paper_rollout_config",
     "stage_shadow_decision",
 ]

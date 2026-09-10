@@ -1,0 +1,22 @@
+{
+  "rollout_version": "9D.1.0",
+  "mode": "OFFLINE_STAGED_ROLLOUT_REVIEW",
+  "policy": {
+    "require_phase9c_review_ready": true,
+    "stage_limits_operator_supplied": true,
+    "rollback_triggers_operator_supplied": true,
+    "strictly_increasing_stage_sequence": true,
+    "nondecreasing_exposure_ceilings": true,
+    "assessments_per_stage": 1
+  },
+  "authority": {
+    "default_stage_limits_enabled": false,
+    "stage_activation_enabled": false,
+    "automatic_advancement_enabled": false,
+    "automatic_rollback_enabled": false,
+    "deployment_enabled": false,
+    "network_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false
+  }
+}

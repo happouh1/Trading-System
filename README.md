@@ -1230,3 +1230,7 @@ Phase 9C binds a passing Phase 9B assessment to operator-supplied evidence categ
 roles. Distinct reviewers sign the exact dossier with Ed25519 credentials. A complete valid dossier
 is only `REVIEW_READY`: it is not self-certifying and cannot deploy, promote configuration, write to
 a broker, or enable live trading.
+# Phase 9D staged-rollout review
+
+Phase 9D adds deterministic, offline staged-rollout plans and safety-gate assessments. All limits
+and rollback codes are operator supplied. Review-ready output cannot activate deployment or trading.
