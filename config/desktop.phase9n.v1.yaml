@@ -1,0 +1,33 @@
+{
+  "preflight_version": "9N.1.0",
+  "mode": "READ_ONLY_REAL_DATABASE_BACKUP_PREFLIGHT",
+  "upgrade_plan_config": "config/desktop.phase9k.v1.yaml",
+  "policy": {
+    "require_phase9m_review_evidence_verified": true,
+    "require_source_hash_match": true,
+    "require_maintenance_window": true,
+    "require_quiescence_evidence_hash": true,
+    "reject_sqlite_sidecars": true,
+    "require_sqlite_quick_check": true,
+    "require_zero_foreign_key_violations": true,
+    "destination_root_operator_supplied": true,
+    "destination_must_exist": true,
+    "destination_must_be_directory": true,
+    "destination_symlink_rejected": true,
+    "minimum_free_bytes_operator_supplied": true,
+    "target_conflicts_rejected": true
+  },
+  "authority": {
+    "directory_creation_enabled": false,
+    "backup_creation_enabled": false,
+    "database_write_enabled": false,
+    "migration_execution_enabled": false,
+    "restore_promotion_enabled": false,
+    "process_launch_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false
+  }
+}

@@ -1255,3 +1255,13 @@ Phase 9L intentionally leaves questions 466–470 unanswered and rejects the rea
 475. What emergency stop, rollback deadline, and post-upgrade observation period are mandatory?
 
 Phase 9M leaves questions 471–475 unanswered and grants no real-upgrade or trading authority.
+
+## Added for Phase 9N read-only real-database backup preflight
+
+476. Which encrypted, access-controlled real backup root is approved, and what retention applies?
+477. What authoritative evidence proves all writers are quiescent and sidecars are safely absent?
+478. What minimum free-space multiplier or fixed headroom must supplement source size?
+479. Which separately authenticated component may consume readiness and create a backup?
+480. How is an identical existing backup registered, retained, and independently restored-tested?
+
+Phase 9N leaves questions 476–480 unanswered and creates no directory or backup.

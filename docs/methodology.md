@@ -1260,3 +1260,14 @@ window, and sorted reviewer roles. Each attestation signs those exact values plu
 principal, role, and signing time. Evaluation verifies Ed25519 signatures, credential and window
 validity, role completeness, and separation of reviewer principals. The terminal result records only
 review evidence; every operational-authority field remains false.
+
+## Phase 9N real-database backup-preflight methodology
+
+The preflight derives the source database only through the validated Phase 9N → 9K → 9J → 9I
+configuration chain. It checks SQLite sidecars before opening the source so inspection cannot create
+a shared-memory sidecar. With no sidecar present, it uses a read-only URI and query-only connection
+to run `quick_check` and `foreign_key_check`, then compares the source hash with the signed request.
+The operator supplies canonical, project-contained destination paths, a minimum-free-bytes rule, and
+a quiescence-evidence hash. Both destination directories must already exist; no directory is created.
+An existing deterministic target is accepted only when its content hash exactly matches the source.
+The result records readiness evidence only and never performs the backup.

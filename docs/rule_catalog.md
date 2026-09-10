@@ -1355,3 +1355,16 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `P9M-REVIEW-NOT-AUTHORITY`: verified evidence must not authorize or execute any operation.
 - `P9M-NO-TRADING`: credentials, network, process launch, broker writes, sandbox execution, and live
   trading remain disabled.
+
+## Phase 9N real-database backup-preflight rules
+
+- `P9N-CONFIGURED-SOURCE`: derive the database only through the validated operator configuration chain.
+- `P9N-REVIEW-BOUND`: require matching `REVIEW_EVIDENCE_VERIFIED` Phase 9M evidence in its window.
+- `P9N-SOURCE-BOUND`: require the current source hash to match the reviewed source hash.
+- `P9N-SIDECAR-FIRST`: detect WAL, SHM, and journal files before opening SQLite and stop if present.
+- `P9N-INTEGRITY`: require `quick_check=ok` and zero foreign-key violations through read-only SQLite.
+- `P9N-DESTINATION`: require contained, existing, regular, non-symlink operator destinations.
+- `P9N-CAPACITY`: require the operator minimum to cover the source and available destination space.
+- `P9N-CONFLICT`: reject a deterministic target unless it is a byte-equivalent prior backup.
+- `P9N-NO-AUTHORITY`: never create a directory or backup, write or migrate a database, promote a
+  restore, launch a process, load credentials, use network, write to a broker, or enable trading.

@@ -1287,3 +1287,11 @@ The system can now bind an upgrade-required plan, verified test rehearsal, sourc
 procedures, maintenance window, and distinct reviewer roles into an Ed25519-signed review package.
 Successful signature verification means evidence is ready for review only; it cannot create a real
 backup, migrate or promote a database, launch processes, connect to Webull, or trade.
+
+## Phase 9N read-only backup preflight
+
+The system can now inspect whether the configured operator database and an operator-supplied,
+pre-existing backup destination are ready for a separately reviewed backup operation. It verifies
+signed Phase 9M evidence, the maintenance window, source identity, SQLite integrity, sidecar absence,
+destination containment, free-space policy, and deterministic target conflicts. It creates no
+directory or backup and performs no database, network, broker, sandbox, or live-trading action.

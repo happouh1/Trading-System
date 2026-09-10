@@ -1184,3 +1184,15 @@ by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `
 - `DatabaseUpgradeReviewAttestation`: reviewer signature bound to the exact request and signing time.
 - `DatabaseUpgradeReviewAssessment`: verified roles, canonical reasons, terminal review-evidence state,
   and explicit false backup, migration, promotion, process, network, broker, and trading actions.
+
+## Phase 9N backup-preflight records
+
+- `BackupPreflightConfig`: immutable source-plan reference, mandatory safety policy, and explicit
+  false directory, backup, database-write, migration, restore, process, network, credential,
+  brokerage, sandbox, and live authority.
+- `RealDatabaseBackupPreflight`: deterministic source and destination identities, source hash and
+  size, integrity and foreign-key results, sidecar inventory, free-space policy result, target state,
+  canonical blockers, Phase 9M evidence references, and explicit false action fields.
+- `READY_FOR_BACKUP_REVIEW`: all preflight checks passed; this is evidence, not permission to back up.
+- `BACKUP_ALREADY_PRESENT`: the deterministic target is a regular file with the exact source hash.
+- `BLOCKED`: one or more canonical safety checks failed.
