@@ -1273,3 +1273,10 @@ The desktop operator home now checks local SQLite integrity and shows whether th
 tables used by the readiness display are present. If preparation is required, the page lists the
 missing tables and states that a backup is mandatory. Phase 9K does not create a backup, execute a
 migration, load Webull credentials, use the network, or enable trading.
+
+## Phase 9L test-only upgrade rehearsal
+
+An explicit offline CLI can now rehearse SQLite backup, current-schema migration, and restoration on
+fixtures under `fixtures/upgrade-rehearsal`. It preserves existing row counts, verifies integrity and
+foreign keys, and rejects the real operator database. Rehearsal artifacts are ignored local files and
+cannot be promoted or used to enable execution.

@@ -31,6 +31,12 @@ from trading_system.desktop.upgrade_plan import (
     build_local_schema_upgrade_plan,
     load_upgrade_plan_config,
 )
+from trading_system.desktop.upgrade_rehearsal import (
+    UpgradeRehearsalConfig,
+    UpgradeRehearsalResult,
+    load_upgrade_rehearsal_config,
+    rehearse_schema_upgrade,
+)
 
 __all__ = [
     "DesktopDashboardArtifact",
@@ -44,6 +50,8 @@ __all__ = [
     "LocalStatusConfig",
     "ReadinessEvidence",
     "UpgradePlanConfig",
+    "UpgradeRehearsalConfig",
+    "UpgradeRehearsalResult",
     "assess_local_launch_readiness",
     "build_local_schema_upgrade_plan",
     "inspect_desktop_launcher",
@@ -53,5 +61,7 @@ __all__ = [
     "load_launch_readiness_config",
     "load_local_status_config",
     "load_upgrade_plan_config",
+    "load_upgrade_rehearsal_config",
+    "rehearse_schema_upgrade",
     "render_desktop_dashboard",
 ]

@@ -1331,3 +1331,15 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `P9K-BACKUP-GATE`: mark a valid required upgrade as backup-required without creating the backup.
 - `P9K-NO-AUTHORITY`: no backup creation, migration, database write, credential loading, network,
   broker write, sandbox execution, or live trading.
+
+## Phase 9L test-only upgrade-rehearsal rules
+
+- `P9L-TEST-SOURCES`: accept only contained fixture files with `TEST_ONLY_` revisions.
+- `P9L-SOURCE-IMMUTABLE`: open the source read-only and require its before/after hashes to match.
+- `P9L-COPY-ONLY`: execute migrations only against an isolated copy.
+- `P9L-PRESERVE-DATA`: require every pre-existing table's row count to remain unchanged.
+- `P9L-VERIFY`: require all evidence tables, successful integrity checks, zero foreign-key violations,
+  and a byte-identical restored backup.
+- `P9L-RESTART-SAFE`: reuse existing deterministic artifacts only when all hashes match.
+- `P9L-NO-AUTHORITY`: never promote a restore, migrate the real database, use credentials or network,
+  write to a broker, or enable sandbox or live trading.

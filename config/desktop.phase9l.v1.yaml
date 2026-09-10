@@ -1,0 +1,26 @@
+{
+  "rehearsal_version": "9L.1.0",
+  "mode": "TEST_ONLY_COPY_MIGRATION_REHEARSAL",
+  "upgrade_config": "config/desktop.phase9k.v1.yaml",
+  "allowed_source_root": "fixtures/upgrade-rehearsal",
+  "output_directory": ".upgrade-rehearsal/phase9l",
+  "verification": {
+    "sqlite_quick_check": true,
+    "foreign_key_check": true,
+    "preserve_source_hash": true,
+    "preserve_existing_row_counts": true,
+    "verify_required_tables": true,
+    "verify_restore_hash": true
+  },
+  "authority": {
+    "real_database_source_enabled": false,
+    "source_database_write_enabled": false,
+    "restore_promotion_enabled": false,
+    "production_migration_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false
+  }
+}

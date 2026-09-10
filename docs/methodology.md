@@ -1242,3 +1242,12 @@ name order, and hashes the canonical `(name, SQL)` schema sequence. A missing or
 `BLOCKED`; an intact database missing required evidence tables is `REQUIRED`; an intact complete
 schema is `NOT_REQUIRED`. Only `REQUIRED` makes `backup_required=true`. No branch creates a backup or
 executes a migration.
+
+## Phase 9L test-only upgrade-rehearsal methodology
+
+The rehearsal accepts only a regular SQLite file contained beneath the configured test-fixture root
+and a revision beginning with `TEST_ONLY_`. It records the source hash and row counts, uses SQLite's
+online backup operation to create a consistent copy, migrates a second copy, and restores a third
+copy from the backup. Verification requires an unchanged source hash, preserved existing row counts,
+all Phase 9K required tables, successful `quick_check`, zero foreign-key violations, and identical
+backup/restore hashes. Deterministic targets are reused only when every artifact hash matches.

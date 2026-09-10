@@ -19,6 +19,10 @@ from trading_system.desktop.upgrade_plan import (
     build_local_schema_upgrade_plan,
     load_upgrade_plan_config,
 )
+from trading_system.desktop.upgrade_rehearsal import (
+    load_upgrade_rehearsal_config,
+    rehearse_schema_upgrade,
+)
 from trading_system.serialization import canonical_json
 
 
@@ -41,9 +45,23 @@ def configure_desktop_parser(commands: argparse._SubParsersAction[argparse.Argum
     render_upgrade = actions.add_parser("render-upgrade-plan")
     render_upgrade.add_argument("--config", required=True)
     render_upgrade.add_argument("--project-root", default=".")
+    rehearse = actions.add_parser("rehearse-upgrade")
+    rehearse.add_argument("--config", required=True)
+    rehearse.add_argument("--project-root", default=".")
+    rehearse.add_argument("--source", required=True)
+    rehearse.add_argument("--source-revision", required=True)
 
 
 def handle_desktop(args: argparse.Namespace) -> int:
+    if args.desktop_command == "rehearse-upgrade":
+        result = rehearse_schema_upgrade(
+            load_upgrade_rehearsal_config(args.config),
+            project_root=args.project_root,
+            source_path=args.source,
+            source_revision=args.source_revision,
+        )
+        print(canonical_json(result))
+        return 0
     if args.desktop_command == "render-upgrade-plan":
         root = Path(args.project_root).resolve()
         upgrade_config = load_upgrade_plan_config(args.config)

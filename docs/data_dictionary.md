@@ -1166,3 +1166,11 @@ by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `
   false backup, migration, database-write, network, credential, brokerage, and trading authority.
 - `LocalSchemaUpgradePlan`: deterministic database state, plan state, sorted current/required/missing
   tables, SQLite integrity result, file and schema hashes, backup requirement, and false action flags.
+
+## Phase 9L upgrade-rehearsal records
+
+- `UpgradeRehearsalConfig`: immutable test-source boundary, ignored output location, mandatory
+  verification controls, and explicit false real-migration and trading authority.
+- `UpgradeRehearsalResult`: source, backup, migrated-copy, and restored-copy hashes; canonical table
+  and row-count evidence; integrity and foreign-key results; contained artifact paths; and false
+  promotion, production-migration, network, brokerage, and trading fields.

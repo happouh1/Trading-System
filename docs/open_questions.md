@@ -1235,3 +1235,13 @@ Phase 9J intentionally leaves questions 456–460 unanswered and grants no launc
 465. Should upgrade validation run on a copy before a separately reviewed copy-and-promote step?
 
 Phase 9K intentionally leaves questions 461–465 unanswered and performs no database mutation.
+
+## Added for Phase 9L test-only upgrade rehearsal
+
+466. Which encrypted, access-controlled location may hold a backup of the real operator database?
+467. Which row-level invariants beyond table counts must be verified for a real upgrade?
+468. How will write quiescence and ownership of the SQLite WAL and journal files be proven?
+469. Who independently reviews the rehearsal evidence and authorizes a real backup attempt?
+470. Must a real migration use copy-and-promote, in-place migration, or another reviewed procedure?
+
+Phase 9L intentionally leaves questions 466–470 unanswered and rejects the real database as input.
