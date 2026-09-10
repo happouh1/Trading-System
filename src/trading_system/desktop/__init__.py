@@ -1,4 +1,4 @@
-"""Phase 9G read-only desktop operator home."""
+"""Read-only desktop operator surfaces."""
 
 from trading_system.desktop.dashboard import (
     DesktopDashboardArtifact,

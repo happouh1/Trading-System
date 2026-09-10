@@ -151,13 +151,20 @@ def _dashboard_html(status: DesktopLaunchStatus, title: str, subtitle: str) -> s
     header {{ margin-bottom: 28px; }}
     h1 {{ margin: 0; font-size: clamp(2rem, 5vw, 3.5rem); }}
     header p {{ color: #9fb0c8; font-size: 1.15rem; }}
-    .grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; }}
-    section {{ background: #101d2e; border: 1px solid #263a53; border-radius: 16px; padding: 22px; }}
+    .grid {{
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px;
+    }}
+    section {{
+      background: #101d2e; border: 1px solid #263a53; border-radius: 16px; padding: 22px;
+    }}
     .badge {{ display: inline-block; border-radius: 999px; padding: 7px 11px; font-weight: 700; }}
     .ready {{ color: #71e5ad; background: #123c30; }}
     .attention {{ color: #ffd27d; background: #4a3510; }}
     ul {{ list-style: none; margin: 12px 0 0; padding: 0; }}
-    li {{ display: flex; justify-content: space-between; gap: 14px; padding: 10px 0; border-bottom: 1px solid #263a53; }}
+    li {{
+      display: flex; justify-content: space-between; gap: 14px; padding: 10px 0;
+      border-bottom: 1px solid #263a53;
+    }}
     li:last-child {{ border-bottom: 0; }}
     .disabled {{ color: #71e5ad; }}
     footer {{ margin-top: 22px; color: #8194ad; font-size: .9rem; }}

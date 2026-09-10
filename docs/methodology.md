@@ -1208,3 +1208,9 @@ authorized to trade.
 
 Phase 9D binds an immutable staged plan to a Phase 9C review-ready assessment. Evidence is causal,
 trigger names are preregistered, and evaluation is deterministic. Outputs are review artifacts only.
+## Phase 9H local dashboard methodology
+
+The dashboard is rendered from a Phase 9G readiness status and a versioned Phase 9H configuration.
+Identical inputs produce byte-identical UTF-8 HTML. Output is written through a same-directory
+temporary file and atomically replaced. The browser opens only after a ready status; rendering and
+opening the local page use no broker credentials or network authority.

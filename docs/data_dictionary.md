@@ -1139,3 +1139,9 @@ by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `
 - `StagedRolloutPlan`: immutable ordered stages and operator-supplied exposure ceilings.
 - `RolloutStageEvidence`: causal observation count, unresolved incidents, and declared breaches.
 - `RolloutGateAssessment`: deterministic review state with every authority flag fixed false.
+## Phase 9H local dashboard records
+
+- `DesktopDashboardConfig`: immutable versioned dashboard paths, display labels, and disabled
+  authority declarations.
+- `DesktopDashboardArtifact`: deterministic artifact ID, local output path, content hash, source
+  status ID, and explicit false execution/network flags.

@@ -1247,3 +1247,10 @@ a broker, or enable live trading.
 
 Phase 9D adds deterministic, offline staged-rollout plans and safety-gate assessments. All limits
 and rollback codes are operator supplied. Review-ready output cannot activate deployment or trading.
+## Phase 9H local operator dashboard
+
+The existing **Trading System** desktop shortcut now opens a responsive local dashboard after a
+fail-closed installation check. The page is static, deterministic, and offline: it contains no
+credentials, remote resources, scheduler controls, or trading authority. Re-running
+`scripts/install-desktop-shortcut.ps1` is not required because the existing shortcut targets the
+versioned launcher script.

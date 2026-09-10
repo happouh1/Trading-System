@@ -87,6 +87,6 @@ def test_shortcut_scripts_are_repository_relative_and_contain_no_secrets() -> No
     combined = launcher + installer
     assert "WEBULL_APP_SECRET" not in combined
     assert "WEBULL_APP_KEY" not in combined
-    assert "trading_system.cli desktop home" in launcher
+    assert "trading_system.cli desktop render" in launcher
     assert "WScript.Shell" in installer
     assert "start-trading-system.ps1" in installer

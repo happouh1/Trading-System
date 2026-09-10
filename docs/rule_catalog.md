@@ -1295,3 +1295,11 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - Undeclared rollback triggers and non-causal evidence are rejected.
 - Incidents or declared trigger breaches block; insufficient observations remain incomplete.
 - No output activates, advances, rolls back, deploys, or submits an order.
+## Phase 9H local dashboard rules
+
+- `P9H-DASHBOARD-DETERMINISTIC`: identical validated inputs produce identical HTML and hashes.
+- `P9H-DASHBOARD-LOCAL`: output must be an HTML file contained inside the project root.
+- `P9H-DASHBOARD-STATIC`: the page contains no scripts or remote resources.
+- `P9H-DASHBOARD-FAIL-CLOSED`: missing prerequisites prevent automatic browser launch.
+- `P9H-DASHBOARD-NO-AUTHORITY`: credentials, network, scheduling, broker writes, sandbox execution,
+  and live trading remain disabled.
