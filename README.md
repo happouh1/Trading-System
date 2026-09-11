@@ -1360,3 +1360,11 @@ manual reconciliation; it is never retried automatically. Exact receipts are ide
 receipts fail closed, and receipts cannot be recorded without the exact accepted consumption event.
 All receipts are explicitly simulated. No backup, operator-database access, process, network,
 credential, broker, sandbox-execution, or live-trading authority is enabled.
+
+## Phase 9W read-only test-ledger integrity audit
+
+The system can now audit one persisted Phase 9U/9V capability chain without changing it. The audit
+checks SQLite and foreign-key integrity, recomputes capability, event, and receipt identifiers,
+verifies contiguous event ordering and legal state transitions, and fails closed on missing or
+altered evidence. It has no repair function and cannot access the operator database, execute a
+backup, use the network, contact a broker, or trade.

@@ -1,0 +1,32 @@
+{
+  "audit_version": "9W.1.0",
+  "mode": "READ_ONLY_TEST_CAPABILITY_LEDGER_INTEGRITY_AUDIT",
+  "ledger_config": "config/desktop.phase9u.v1.yaml",
+  "recovery_config": "config/desktop.phase9v.v1.yaml",
+  "policy": {
+    "require_sqlite_integrity": true,
+    "require_foreign_key_integrity": true,
+    "recompute_capability_identity": true,
+    "recompute_event_identities": true,
+    "require_contiguous_event_sequence": true,
+    "require_valid_state_chain": true,
+    "recompute_receipt_identity": true,
+    "tampering_fails_closed": true,
+    "read_only_audit": true
+  },
+  "authority": {
+    "test_ledger_write_enabled": false,
+    "repair_enabled": false,
+    "production_audit_enabled": false,
+    "operator_database_access_enabled": false,
+    "backup_creation_enabled": false,
+    "database_migration_enabled": false,
+    "restore_execution_enabled": false,
+    "process_launch_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false
+  }
+}

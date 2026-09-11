@@ -1345,3 +1345,13 @@ Phase 9U leaves questions 511–515 unanswered and writes only to a contained di
 520. What timeout and escalation policy applies while an operation remains in doubt?
 
 Phase 9V leaves questions 516–520 unanswered and records only simulated test receipts.
+
+## Added for Phase 9W read-only test-ledger integrity audit
+
+521. Which independent production service verifies ledger and receipt integrity?
+522. How are audit results signed, timestamped, and retained outside the audited datastore?
+523. What incident process applies when capability, event, or receipt tampering is detected?
+524. Which immutable source is authoritative for rebuilding a corrupted production read model?
+525. How frequently must full-ledger and per-capability integrity audits run?
+
+Phase 9W leaves questions 521–525 unanswered and audits only the isolated test ledger.

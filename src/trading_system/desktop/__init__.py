@@ -12,6 +12,13 @@ from trading_system.desktop.backup_authorization import (
     evaluate_backup_authorization_evidence,
     load_backup_authorization_config,
 )
+from trading_system.desktop.backup_capability_integrity import (
+    BackupCapabilityIntegrityConfig,
+    TestBackupLedgerIntegrityAssessment,
+    TestBackupLedgerIntegrityState,
+    audit_test_backup_capability_ledger,
+    load_backup_capability_integrity_config,
+)
 from trading_system.desktop.backup_capability_ledger import (
     BackupCapabilityLedgerConfig,
     TestOnlyBackupCapabilityLedger,
@@ -140,6 +147,7 @@ __all__ = [
     "BackupAuthorizationConfig",
     "BackupAuthorizationEvidenceState",
     "BackupAuthorizationRequest",
+    "BackupCapabilityIntegrityConfig",
     "BackupCapabilityLedgerConfig",
     "BackupCapabilityRecoveryConfig",
     "BackupCapabilityRehearsalConfig",
@@ -179,6 +187,8 @@ __all__ = [
     "RealDatabaseBackupPreflightState",
     "TestBackupCapabilityEventType",
     "TestBackupCapabilityState",
+    "TestBackupLedgerIntegrityAssessment",
+    "TestBackupLedgerIntegrityState",
     "TestBackupReceiptOutcome",
     "TestBackupRecoveryAssessment",
     "TestBackupRecoveryState",
@@ -193,6 +203,7 @@ __all__ = [
     "assess_local_launch_readiness",
     "assess_production_backup_readiness",
     "assess_real_database_backup_preflight",
+    "audit_test_backup_capability_ledger",
     "backup_authorization_message",
     "bind_backup_capability_config_hash",
     "build_backup_authorization_attestation",
@@ -215,6 +226,7 @@ __all__ = [
     "inspect_local_operations",
     "issue_test_backup_capability",
     "load_backup_authorization_config",
+    "load_backup_capability_integrity_config",
     "load_backup_capability_ledger_config",
     "load_backup_capability_recovery_config",
     "load_backup_capability_rehearsal_config",

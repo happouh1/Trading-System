@@ -1470,3 +1470,17 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `P9V-SIMULATED-ONLY`: a receipt records a simulated result and never claims a real backup.
 - `P9V-NO-PRODUCTION`: keep every production, database, process, network, broker, and trading action
   disabled.
+
+## Phase 9W read-only test-ledger integrity rules
+
+- `P9W-SQLITE`: require successful SQLite and foreign-key integrity checks.
+- `P9W-CAPABILITY-ID`: recompute the exact Phase 9T capability identifier.
+- `P9W-EVENT-IDS`: recompute every persisted Phase 9T event identifier.
+- `P9W-CONTIGUOUS`: require event sequences to begin at one and contain no gaps.
+- `P9W-STATE-CHAIN`: replay only legal causal state transitions and match the persisted state.
+- `P9W-RECEIPT-ID`: recompute any Phase 9V receipt and bind it to accepted consumption evidence.
+- `P9W-MISSING-FAILS`: classify missing or invalid selected evidence as integrity failure.
+- `P9W-NO-REPAIR`: report corruption without modifying or replacing evidence.
+- `P9W-DETERMINISTIC`: sort unique reasons and hash the complete assessment identity.
+- `P9W-NO-PRODUCTION`: never access the operator database or perform an operational or trading
+  action.

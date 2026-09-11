@@ -1327,3 +1327,18 @@ by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `
 - Deterministic read model with states `READY_FOR_TEST_CONSUMPTION`,
   `IN_DOUBT_MANUAL_RECONCILIATION`, `TEST_COMPLETED`, `TEST_FAILED_REVIEW_REQUIRED`, and `BLOCKED`.
 - Every execution, retry, database, network, broker, and trading authority field remains false.
+
+## Phase 9W read-only test-ledger integrity records
+
+### `BackupCapabilityIntegrityConfig`
+
+- Strict read-only policy requiring SQLite, foreign-key, identity, sequence, transition-chain, and
+  receipt-integrity verification with repair authority disabled.
+
+### `TestBackupLedgerIntegrityAssessment`
+
+- Deterministic assessment for one capability chain with `INTEGRITY_VERIFIED` or
+  `INTEGRITY_FAILED`, sorted unique reason codes, causal UTC time, and exact Phase 9U, 9V, and 9W
+  configuration hashes.
+- Explicitly reports that no repair, production action, backup, operator-database write, network,
+  broker write, or live-trading action occurred.

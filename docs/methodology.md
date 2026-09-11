@@ -1362,3 +1362,16 @@ accepted test consumption performs no backup or other external action.
    not execution authority.
 6. Perform no backup, operator-database operation, restore, process launch, credential load, network
    request, broker write, sandbox execution, or live trade.
+
+## Phase 9W read-only test-ledger integrity methodology
+
+1. Open an already-contained Phase 9U ledger and its Phase 9V recovery journal.
+2. Run SQLite integrity and foreign-key checks using read-only statements.
+3. Reconstruct the selected capability and recompute its Phase 9T deterministic identifier.
+4. Require a contiguous event sequence beginning with the exact issue event; recompute every event
+   identifier and replay the legal state chain through its persisted terminal state.
+5. If a receipt exists, recompute its Phase 9V identity and bind it to the accepted consumption event
+   and original test executor.
+6. Sort all failure reasons into a deterministic assessment. Never repair altered evidence.
+7. Keep operator-database, backup, restore, process, network, credential, broker, sandbox-execution,
+   and live-trading authority disabled.
