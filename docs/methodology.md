@@ -1298,3 +1298,13 @@ source. The source is opened read-only; SQLite's backup API creates isolated bac
 copies beneath an ignored output root. Verification requires an unchanged source hash, successful
 integrity checks, zero foreign-key violations, and identical canonical schema-and-row snapshots.
 Deterministic restarts reuse only byte-identical artifacts; conflicts fail closed.
+
+## Phase 9R production-backup readiness methodology
+
+The assessment consumes immutable Phase 9P request and verification records, a Phase 9Q verified
+test-only rehearsal result, and operator-supplied evidence for the exact required control catalog.
+Phase 9P and Phase 9Q identities must bind to the same request. Control identities must be unique and
+known; evidence is valid only inside its UTC interval. Missing or unverified controls yield
+`NOT_READY`, while expired controls or prerequisite mismatches yield `BLOCKED`. Input order is
+normalized before deterministic identity generation. A complete result advances only to a separate
+execution-authorization review; all operational and trading authority remains false.

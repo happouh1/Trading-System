@@ -1224,3 +1224,18 @@ by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `
 - `AuthorizedBackupRehearsalResult`: request and manifest identities, test revision, source before and
   after hashes, test backup/restore hashes, canonical logical snapshot hash, row counts, integrity
   evidence, contained artifact paths, restart state, and explicit false production-action fields.
+
+## Phase 9R production-backup readiness records
+
+- `BackupReadinessConfig`: immutable required-control catalog, evidence policy, Phase 9Q reference,
+  and explicit false execution, backup, database, process, network, credential, broker, sandbox, and
+  live-trading authority.
+- `ProductionBackupControlEvidence`: one control identifier, verification state, evidence hash,
+  reviewer identity, and bounded UTC validity interval.
+- `ProductionBackupReadinessAssessment`: exact Phase 9P request and assessment identities, Phase 9Q
+  rehearsal identity, canonical verified/missing/unverified controls and blockers, evidence hashes,
+  deterministic identity, and explicit false action fields.
+- `READY_FOR_EXECUTION_AUTHORIZATION_REVIEW`: all required evidence is current and exact; this is
+  review readiness only and is not an executable capability.
+- `NOT_READY`: required evidence is missing or explicitly unverified.
+- `BLOCKED`: prerequisite evidence is invalid, mismatched, or expired.

@@ -1316,3 +1316,12 @@ The complete Phase 9O–9P backup workflow can now be exercised against isolated
 rehearsal creates only ignored test artifacts, preserves the source hash, rejects sidecars, verifies
 backup and restored-copy integrity, compares logical contents, and fails on restart conflicts. The
 real operator database remains an invalid input.
+
+## Phase 9R production-backup readiness matrix
+
+The system can now combine verified Phase 9P authorization evidence, a successful Phase 9Q
+test-only rehearsal, and eleven time-bounded operator-supplied security and operations controls into
+a deterministic readiness assessment. Missing controls remain not ready; expired, mismatched, or
+invalid evidence blocks review. Even a complete matrix is only ready for a separate execution-
+authorization review and cannot create a backup, write a database, launch a process, use credentials
+or network access, or enable any broker or trading operation.

@@ -1,0 +1,41 @@
+{
+  "readiness_version": "9R.1.0",
+  "mode": "OFFLINE_PRODUCTION_BACKUP_READINESS_MATRIX",
+  "rehearsal_config": "config/desktop.phase9q.v1.yaml",
+  "required_controls": [
+    "ATOMIC_WRITE_DURABILITY_VERIFIED",
+    "CRASH_RECOVERY_APPROVED",
+    "ENCRYPTED_DESTINATION_APPROVED",
+    "EXECUTOR_AUTHENTICATION_READY",
+    "IDENTITY_REVOCATION_READY",
+    "IMMUTABLE_AUDIT_STORE_READY",
+    "KEY_CUSTODY_APPROVED",
+    "REHEARSAL_INDEPENDENTLY_CERTIFIED",
+    "RETENTION_POLICY_APPROVED",
+    "TRUSTED_CLOCK_READY",
+    "TRUSTED_NONCE_SERVICE_READY"
+  ],
+  "policy": {
+    "require_phase9p_verified_evidence": true,
+    "require_phase9q_verified_rehearsal": true,
+    "require_exact_request_binding": true,
+    "control_evidence_operator_supplied": true,
+    "control_evidence_time_bounded": true,
+    "missing_controls_not_ready": true,
+    "invalid_or_expired_controls_block": true
+  },
+  "authority": {
+    "execution_authorization_enabled": false,
+    "backup_creation_enabled": false,
+    "directory_creation_enabled": false,
+    "database_write_enabled": false,
+    "migration_execution_enabled": false,
+    "restore_execution_enabled": false,
+    "process_launch_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false
+  }
+}

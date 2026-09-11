@@ -1295,3 +1295,13 @@ Phase 9P leaves questions 486–490 unanswered and emits no executable capabilit
 495. Which immutable audit store receives production backup receipts and verification evidence?
 
 Phase 9Q leaves questions 491–495 unanswered and excludes the operator database.
+
+## Added for Phase 9R production-backup readiness matrix
+
+496. Which approved providers and artifact formats establish each of the eleven required controls?
+497. What freshness periods and immediate revocation rules apply to each control-evidence category?
+498. Which independent authority may sign the terminal production-backup readiness assessment?
+499. Which separately authenticated component may exchange readiness for a single-use capability?
+500. Does backup unreadiness block schema migration while allowing existing read-only operation?
+
+Phase 9R leaves questions 496–500 unanswered and grants no backup or trading authority.

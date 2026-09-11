@@ -1402,3 +1402,16 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `P9Q-RESTART-SAFE`: reuse only identical deterministic artifacts; reject conflicts.
 - `P9Q-NO-PRODUCTION`: no real authorization, production backup, source write, migration, promotion,
   process, credential, network, broker, sandbox, or live-trading action.
+
+## Phase 9R production-backup readiness rules
+
+- `P9R-PREREQUISITES`: require verified Phase 9P evidence and a verified test-only Phase 9Q rehearsal.
+- `P9R-EXACT-BINDING`: require both prerequisite records to bind to the exact authorization request.
+- `P9R-CONTROL-CATALOG`: accept only unique evidence identities from the fixed required catalog.
+- `P9R-TIME-BOUND`: accept control evidence only while its UTC validity interval is active.
+- `P9R-MISSING-NOT-READY`: classify missing or unverified controls as `NOT_READY`.
+- `P9R-INVALID-BLOCKS`: classify expired or mismatched evidence as `BLOCKED`.
+- `P9R-DETERMINISTIC`: sort all evidence and reasons before producing the assessment identity.
+- `P9R-REVIEW-NOT-AUTHORITY`: completeness permits only a future authorization review.
+- `P9R-NO-ACTION`: never execute a backup, create a directory, write or migrate a database, restore,
+  launch a process, load credentials, use network, write to a broker, or enable trading.
