@@ -1,5 +1,17 @@
 """Read-only desktop operator surfaces."""
 
+from trading_system.desktop.backup_authorization import (
+    BackupAuthorizationAssessment,
+    BackupAuthorizationAttestation,
+    BackupAuthorizationConfig,
+    BackupAuthorizationEvidenceState,
+    BackupAuthorizationRequest,
+    backup_authorization_message,
+    build_backup_authorization_attestation,
+    build_backup_authorization_request,
+    evaluate_backup_authorization_evidence,
+    load_backup_authorization_config,
+)
 from trading_system.desktop.backup_manifest import (
     BackupManifestConfig,
     RealDatabaseBackupManifest,
@@ -67,6 +79,11 @@ from trading_system.desktop.upgrade_rehearsal import (
 )
 
 __all__ = [
+    "BackupAuthorizationAssessment",
+    "BackupAuthorizationAttestation",
+    "BackupAuthorizationConfig",
+    "BackupAuthorizationEvidenceState",
+    "BackupAuthorizationRequest",
     "BackupManifestConfig",
     "BackupPreflightConfig",
     "DatabaseUpgradeReviewAssessment",
@@ -94,15 +111,20 @@ __all__ = [
     "UpgradeRehearsalResult",
     "assess_local_launch_readiness",
     "assess_real_database_backup_preflight",
+    "backup_authorization_message",
+    "build_backup_authorization_attestation",
+    "build_backup_authorization_request",
     "build_database_upgrade_review_attestation",
     "build_database_upgrade_review_credential",
     "build_database_upgrade_review_request",
     "build_local_schema_upgrade_plan",
     "build_real_database_backup_manifest",
     "database_upgrade_review_message",
+    "evaluate_backup_authorization_evidence",
     "evaluate_database_upgrade_review",
     "inspect_desktop_launcher",
     "inspect_local_operations",
+    "load_backup_authorization_config",
     "load_backup_manifest_config",
     "load_backup_preflight_config",
     "load_database_upgrade_review_config",

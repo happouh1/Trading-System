@@ -1279,3 +1279,12 @@ ordered before/after source checks, target integrity checks, target hash compari
 Encryption, retention, restore-test policy, and proposed execution component remain operator-supplied
 identities. Blocked preflight reasons propagate; an identical existing target receives a separate
 review state. The manifest contains no executable credential or authority and performs no I/O.
+
+## Phase 9P signed backup-authorization evidence methodology
+
+The request accepts only a Phase 9O manifest in `READY_FOR_AUTHORIZATION_REVIEW`, hashes the complete
+manifest, and repeats its preflight, source, target, and execution-component identities. It adds an
+operator nonce, bounded UTC window, and sorted operator-supplied roles. Each Ed25519 attestation binds
+all material fields, credential identity, principal, role, and signing time. Evaluation verifies the
+signature, credential and request windows, role completeness, and distinct principals. The terminal
+state records evidence only and does not expose an execution capability.

@@ -1379,3 +1379,14 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `P9O-BLOCKER-PROPAGATION`: preserve Phase 9N blockers and fail closed.
 - `P9O-NO-AUTHORITY`: no authorization, directory, backup, database, migration, restore, process,
   credential, network, broker, sandbox, or live-trading action.
+
+## Phase 9P signed backup-authorization evidence rules
+
+- `P9P-READY-MANIFEST`: accept only a review-ready Phase 9O manifest with exact source and target.
+- `P9P-EXACT-BINDING`: sign manifest, preflight, source, target, component, nonce, and time window.
+- `P9P-OPERATOR-NONCE`: require an explicit non-empty nonce; provide no default.
+- `P9P-SEPARATION`: require distinct principals for all operator-supplied reviewer roles.
+- `P9P-TIME-BOUND`: reject signing or evaluation outside the request and credential windows.
+- `P9P-FAIL-CLOSED`: missing evidence is incomplete; invalid, replay-altered, or expired evidence blocks.
+- `P9P-EVIDENCE-NOT-CAPABILITY`: verified evidence is not executable backup authority.
+- `P9P-NO-TRADING`: no process, credential, network, broker, sandbox, or live-trading action.

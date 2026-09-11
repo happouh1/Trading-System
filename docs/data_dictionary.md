@@ -1206,3 +1206,13 @@ by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `
   component, canonical blockers, and explicit false authority fields.
 - `READY_FOR_AUTHORIZATION_REVIEW`: the proposal is complete but has no execution authority.
 - `EXISTING_BACKUP_REVIEW_REQUIRED`: Phase 9N found an identical target that requires human review.
+
+## Phase 9P backup-authorization evidence records
+
+- `BackupAuthorizationRequest`: exact manifest/preflight/source/target bindings, execution-component
+  identity, operator nonce, bounded window, required reviewer roles, and false authority fields.
+- `BackupAuthorizationAttestation`: Ed25519 signature by a credentialed principal over the complete
+  request and signing time.
+- `BackupAuthorizationAssessment`: verified roles, canonical reasons, evidence state, request hash,
+  and explicit false execution, backup, database, process, network, broker, and trading actions.
+- `BACKUP_AUTHORIZATION_EVIDENCE_VERIFIED`: signatures are valid review evidence, not permission.

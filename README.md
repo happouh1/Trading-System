@@ -1302,3 +1302,10 @@ The system can now turn Phase 9N evidence into a content-bound description of a 
 manifest fixes the SQLite backup method and verification sequence and binds operator-supplied
 encryption, retention, restore-test, and execution-component identities. It is review material only:
 it does not authorize or execute a backup or any trading operation.
+
+## Phase 9P signed backup-authorization evidence
+
+The system can now create and verify Ed25519 attestations over the exact Phase 9O manifest, source,
+target, execution-component identity, operator nonce, and bounded UTC window. Required roles remain
+operator supplied and reviewers must be distinct. Successful verification is evidence only; it does
+not become an executable permission or create a backup.

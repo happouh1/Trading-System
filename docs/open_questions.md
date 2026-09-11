@@ -1275,3 +1275,13 @@ Phase 9N leaves questions 476–480 unanswered and creates no directory or backu
 485. Who reviews the restore test, and where may its isolated temporary database exist?
 
 Phase 9O leaves questions 481–485 unanswered and grants no backup or trading authority.
+
+## Added for Phase 9P signed backup-authorization evidence
+
+486. Which trusted service issues and atomically consumes one-time nonces to prevent replay?
+487. What maximum authorization-window duration and trusted clock are required?
+488. Which real reviewer roles and identity authority may attest to a backup request?
+489. How are credential revocations checked immediately before any future execution?
+490. How does the named execution component authenticate itself and receive a single-use capability?
+
+Phase 9P leaves questions 486–490 unanswered and emits no executable capability.

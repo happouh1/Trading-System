@@ -1,0 +1,29 @@
+{
+  "authorization_version": "9P.1.0",
+  "mode": "OFFLINE_BACKUP_AUTHORIZATION_EVIDENCE",
+  "backup_manifest_config": "config/desktop.phase9o.v1.yaml",
+  "policy": {
+    "require_phase9o_ready_for_authorization_review": true,
+    "require_exact_manifest_hash": true,
+    "require_exact_source_and_target": true,
+    "require_operator_nonce": true,
+    "review_roles_operator_supplied": true,
+    "distinct_reviewer_principals": true,
+    "signature_algorithm": "Ed25519",
+    "bounded_authorization_window": true
+  },
+  "authority": {
+    "execution_authority_enabled": false,
+    "backup_creation_enabled": false,
+    "directory_creation_enabled": false,
+    "database_write_enabled": false,
+    "migration_execution_enabled": false,
+    "restore_execution_enabled": false,
+    "process_launch_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false
+  }
+}
