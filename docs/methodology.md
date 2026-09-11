@@ -1288,3 +1288,13 @@ operator nonce, bounded UTC window, and sorted operator-supplied roles. Each Ed2
 all material fields, credential identity, principal, role, and signing time. Evaluation verifies the
 signature, credential and request windows, role completeness, and distinct principals. The terminal
 state records evidence only and does not expose an execution capability.
+
+## Phase 9Q test-only authorized-backup rehearsal methodology
+
+The rehearsal accepts only regular SQLite files beneath the configured fixture root and revisions
+beginning with `TEST_ONLY_`. It requires matching verified Phase 9P evidence inside its validity
+window and revalidates the complete Phase 9O binding. SQLite sidecars are rejected before opening the
+source. The source is opened read-only; SQLite's backup API creates isolated backup and restored
+copies beneath an ignored output root. Verification requires an unchanged source hash, successful
+integrity checks, zero foreign-key violations, and identical canonical schema-and-row snapshots.
+Deterministic restarts reuse only byte-identical artifacts; conflicts fail closed.

@@ -1,0 +1,32 @@
+{
+  "rehearsal_version": "9Q.1.0",
+  "mode": "TEST_ONLY_AUTHORIZED_BACKUP_REHEARSAL",
+  "authorization_config": "config/desktop.phase9p.v1.yaml",
+  "allowed_source_root": "fixtures/backup-authorization-rehearsal",
+  "output_directory": ".p9q-backup-rehearsal",
+  "verification": {
+    "require_verified_phase9p_evidence": true,
+    "require_test_only_revision": true,
+    "require_source_hash_match": true,
+    "reject_sqlite_sidecars": true,
+    "preserve_source_hash": true,
+    "sqlite_quick_check": true,
+    "foreign_key_check": true,
+    "logical_restore_equivalence": true,
+    "deterministic_restart": true
+  },
+  "authority": {
+    "real_database_source_enabled": false,
+    "real_backup_authorized": false,
+    "production_backup_enabled": false,
+    "source_database_write_enabled": false,
+    "restore_promotion_enabled": false,
+    "migration_execution_enabled": false,
+    "process_launch_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false
+  }
+}

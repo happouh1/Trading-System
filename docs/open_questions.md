@@ -1285,3 +1285,13 @@ Phase 9O leaves questions 481–485 unanswered and grants no backup or trading a
 490. How does the named execution component authenticate itself and receive a single-use capability?
 
 Phase 9P leaves questions 486–490 unanswered and emits no executable capability.
+
+## Added for Phase 9Q test-only authorized-backup rehearsal
+
+491. Which independent reviewer certifies that rehearsal invariants cover every production table?
+492. How will a production executor atomically consume and persist the one-time nonce?
+493. Which encrypted destination and key service replace the ignored test output directory?
+494. What crash-recovery procedure applies between backup creation and restore-test completion?
+495. Which immutable audit store receives production backup receipts and verification evidence?
+
+Phase 9Q leaves questions 491–495 unanswered and excludes the operator database.

@@ -61,5 +61,7 @@ tests/.tmp-phase3d-*/
 .p9n-*/
 .p9o-*/
 .p9p-*/
+.p9q-*/
+.p9q-backup-rehearsal/
 .upgrade-rehearsal/
 .operator-home/

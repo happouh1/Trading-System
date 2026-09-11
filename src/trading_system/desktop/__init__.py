@@ -26,6 +26,12 @@ from trading_system.desktop.backup_preflight import (
     assess_real_database_backup_preflight,
     load_backup_preflight_config,
 )
+from trading_system.desktop.backup_rehearsal import (
+    AuthorizedBackupRehearsalResult,
+    BackupRehearsalConfig,
+    load_backup_rehearsal_config,
+    rehearse_authorized_backup,
+)
 from trading_system.desktop.dashboard import (
     DesktopDashboardArtifact,
     DesktopDashboardConfig,
@@ -79,6 +85,7 @@ from trading_system.desktop.upgrade_rehearsal import (
 )
 
 __all__ = [
+    "AuthorizedBackupRehearsalResult",
     "BackupAuthorizationAssessment",
     "BackupAuthorizationAttestation",
     "BackupAuthorizationConfig",
@@ -86,6 +93,7 @@ __all__ = [
     "BackupAuthorizationRequest",
     "BackupManifestConfig",
     "BackupPreflightConfig",
+    "BackupRehearsalConfig",
     "DatabaseUpgradeReviewAssessment",
     "DatabaseUpgradeReviewAttestation",
     "DatabaseUpgradeReviewConfig",
@@ -127,6 +135,7 @@ __all__ = [
     "load_backup_authorization_config",
     "load_backup_manifest_config",
     "load_backup_preflight_config",
+    "load_backup_rehearsal_config",
     "load_database_upgrade_review_config",
     "load_desktop_dashboard_config",
     "load_desktop_launch_config",
@@ -134,6 +143,7 @@ __all__ = [
     "load_local_status_config",
     "load_upgrade_plan_config",
     "load_upgrade_rehearsal_config",
+    "rehearse_authorized_backup",
     "rehearse_schema_upgrade",
     "render_desktop_dashboard",
 ]

@@ -1216,3 +1216,11 @@ by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `
 - `BackupAuthorizationAssessment`: verified roles, canonical reasons, evidence state, request hash,
   and explicit false execution, backup, database, process, network, broker, and trading actions.
 - `BACKUP_AUTHORIZATION_EVIDENCE_VERIFIED`: signatures are valid review evidence, not permission.
+
+## Phase 9Q authorized-backup rehearsal records
+
+- `BackupRehearsalConfig`: immutable test-fixture boundary, ignored output directory, verification
+  controls, and explicit false real-backup and trading authority.
+- `AuthorizedBackupRehearsalResult`: request and manifest identities, test revision, source before and
+  after hashes, test backup/restore hashes, canonical logical snapshot hash, row counts, integrity
+  evidence, contained artifact paths, restart state, and explicit false production-action fields.

@@ -1309,3 +1309,10 @@ The system can now create and verify Ed25519 attestations over the exact Phase 9
 target, execution-component identity, operator nonce, and bounded UTC window. Required roles remain
 operator supplied and reviewers must be distinct. Successful verification is evidence only; it does
 not become an executable permission or create a backup.
+
+## Phase 9Q test-only authorized-backup rehearsal
+
+The complete Phase 9O–9P backup workflow can now be exercised against isolated SQLite fixtures. The
+rehearsal creates only ignored test artifacts, preserves the source hash, rejects sidecars, verifies
+backup and restored-copy integrity, compares logical contents, and fails on restart conflicts. The
+real operator database remains an invalid input.

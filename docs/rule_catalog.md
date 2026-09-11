@@ -1390,3 +1390,15 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `P9P-FAIL-CLOSED`: missing evidence is incomplete; invalid, replay-altered, or expired evidence blocks.
 - `P9P-EVIDENCE-NOT-CAPABILITY`: verified evidence is not executable backup authority.
 - `P9P-NO-TRADING`: no process, credential, network, broker, sandbox, or live-trading action.
+
+## Phase 9Q test-only authorized-backup rehearsal rules
+
+- `P9Q-TEST-BOUNDARY`: accept only contained fixture sources with `TEST_ONLY_` revisions.
+- `P9Q-EVIDENCE`: require matching Phase 9O manifest and verified, unexpired Phase 9P assessment.
+- `P9Q-SIDECAR-FIRST`: reject journal, SHM, or WAL files before opening SQLite.
+- `P9Q-SOURCE-IMMUTABLE`: require reviewed and before/after source hashes to match.
+- `P9Q-BACKUP-RESTORE`: use SQLite backup only for isolated test backup and restore artifacts.
+- `P9Q-LOGICAL-EQUIVALENCE`: require matching canonical schema, row contents, and row counts.
+- `P9Q-RESTART-SAFE`: reuse only identical deterministic artifacts; reject conflicts.
+- `P9Q-NO-PRODUCTION`: no real authorization, production backup, source write, migration, promotion,
+  process, credential, network, broker, sandbox, or live-trading action.
