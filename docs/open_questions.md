@@ -1305,3 +1305,13 @@ Phase 9Q leaves questions 491–495 unanswered and excludes the operator databas
 500. Does backup unreadiness block schema migration while allowing existing read-only operation?
 
 Phase 9R leaves questions 496–500 unanswered and grants no backup or trading authority.
+
+## Added for Phase 9S signed production-backup readiness certification
+
+501. Which real principals and roles may certify a complete production-backup readiness matrix?
+502. Which identity authority issues, rotates, and immediately revokes reviewer credentials?
+503. Which trusted clock and maximum certification-window duration apply in production?
+504. Which immutable audit service retains requests, credentials, signatures, and assessments?
+505. Which separately authenticated component may consume certification as a single-use capability?
+
+Phase 9S leaves questions 501–505 unanswered and emits no executable capability.

@@ -1308,3 +1308,14 @@ known; evidence is valid only inside its UTC interval. Missing or unverified con
 `NOT_READY`, while expired controls or prerequisite mismatches yield `BLOCKED`. Input order is
 normalized before deterministic identity generation. A complete result advances only to a separate
 execution-authorization review; all operational and trading authority remains false.
+
+## Phase 9S signed readiness-certification methodology
+
+The request accepts only a Phase 9R assessment in
+`READY_FOR_EXECUTION_AUTHORIZATION_REVIEW`. It hashes the complete assessment and repeats its
+authorization-request identity and hash, rehearsal identity, and ordered control-evidence hashes.
+The operator supplies a nonce, bounded UTC window, and required reviewer roles. Each Ed25519
+attestation binds every material request field to one credential, principal, role, and signing time.
+Evaluation verifies request and credential windows, exact hashes, role completeness, signatures,
+and distinct reviewer principals. Results are canonical and input-order independent. Verification
+does not expose an executable credential or perform any operational action.

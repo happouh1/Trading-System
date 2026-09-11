@@ -1239,3 +1239,20 @@ by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `
   review readiness only and is not an executable capability.
 - `NOT_READY`: required evidence is missing or explicitly unverified.
 - `BLOCKED`: prerequisite evidence is invalid, mismatched, or expired.
+
+## Phase 9S production-backup readiness-certification records
+
+- `BackupReadinessCertificationConfig`: exact Phase 9R reference, signature and reviewer policy,
+  and explicit false execution, backup, database, process, network, credential, broker, sandbox, and
+  live-trading authority.
+- `ProductionBackupReadinessCredential`: reviewer principal, role, Ed25519 public key, and bounded
+  UTC validity interval; private keys are never stored.
+- `ProductionBackupReadinessCertificationRequest`: exact Phase 9R assessment and control hashes,
+  originating authorization-request and rehearsal identities, operator nonce, certification window,
+  required roles, deterministic identity, and false authority fields.
+- `ProductionBackupReadinessAttestation`: reviewer signature over the complete request, credential,
+  principal, role, and signing time.
+- `ProductionBackupReadinessCertificationAssessment`: verified roles, canonical reasons, evidence
+  state, exact request hash, and explicit false action fields.
+- `READINESS_CERTIFICATION_EVIDENCE_VERIFIED`: valid independent signatures are evidence only, not
+  an execution capability.

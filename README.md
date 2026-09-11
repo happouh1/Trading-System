@@ -1325,3 +1325,11 @@ a deterministic readiness assessment. Missing controls remain not ready; expired
 invalid evidence blocks review. Even a complete matrix is only ready for a separate execution-
 authorization review and cannot create a backup, write a database, launch a process, use credentials
 or network access, or enable any broker or trading operation.
+
+## Phase 9S signed production-backup readiness certification
+
+Independent operator-supplied reviewers can now sign the exact Phase 9R readiness assessment,
+control-evidence hashes, originating authorization request, rehearsal identity, nonce, and bounded
+UTC window with Ed25519. Missing signatures remain incomplete; invalid, altered, expired, or
+non-independent evidence blocks certification. Verified certification remains evidence only and
+cannot authorize or create a backup, change a database, launch a process, access a broker, or trade.

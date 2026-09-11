@@ -1,0 +1,29 @@
+{
+  "certification_version": "9S.1.0",
+  "mode": "OFFLINE_PRODUCTION_BACKUP_READINESS_CERTIFICATION",
+  "readiness_config": "config/desktop.phase9r.v1.yaml",
+  "policy": {
+    "require_phase9r_ready_for_review": true,
+    "require_exact_assessment_hash": true,
+    "require_exact_control_evidence_hashes": true,
+    "require_operator_nonce": true,
+    "review_roles_operator_supplied": true,
+    "distinct_reviewer_principals": true,
+    "signature_algorithm": "Ed25519",
+    "bounded_certification_window": true
+  },
+  "authority": {
+    "execution_authority_enabled": false,
+    "backup_creation_enabled": false,
+    "directory_creation_enabled": false,
+    "database_write_enabled": false,
+    "migration_execution_enabled": false,
+    "restore_execution_enabled": false,
+    "process_launch_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false
+  }
+}

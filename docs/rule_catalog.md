@@ -1415,3 +1415,17 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `P9R-REVIEW-NOT-AUTHORITY`: completeness permits only a future authorization review.
 - `P9R-NO-ACTION`: never execute a backup, create a directory, write or migrate a database, restore,
   launch a process, load credentials, use network, write to a broker, or enable trading.
+
+## Phase 9S signed readiness-certification rules
+
+- `P9S-READY-MATRIX`: accept only a review-ready Phase 9R assessment.
+- `P9S-EXACT-BINDING`: bind the complete matrix, control hashes, authorization request, and rehearsal.
+- `P9S-OPERATOR-NONCE`: require an explicit non-empty nonce and provide no default.
+- `P9S-OPERATOR-ROLES`: require a non-empty, operator-supplied role set.
+- `P9S-ED25519`: verify every attestation against the exact canonical certification message.
+- `P9S-SEPARATION`: reject one principal satisfying multiple required roles.
+- `P9S-TIME-BOUND`: require request, signature, credential, and evaluation times to be valid UTC.
+- `P9S-FAIL-CLOSED`: missing signatures are incomplete; invalid or expired evidence blocks.
+- `P9S-EVIDENCE-NOT-CAPABILITY`: verified certification evidence is not execution authority.
+- `P9S-NO-ACTION`: never back up, create directories, write or migrate a database, restore, launch a
+  process, load credentials, use network, write to a broker, or enable trading.
