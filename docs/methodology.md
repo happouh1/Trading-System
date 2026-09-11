@@ -1271,3 +1271,11 @@ The operator supplies canonical, project-contained destination paths, a minimum-
 a quiescence-evidence hash. Both destination directories must already exist; no directory is created.
 An existing deterministic target is accepted only when its content hash exactly matches the source.
 The result records readiness evidence only and never performs the backup.
+
+## Phase 9O offline backup-manifest methodology
+
+The builder hashes the complete Phase 9N preflight and binds it to a fixed SQLite backup method,
+ordered before/after source checks, target integrity checks, target hash comparison, and restore test.
+Encryption, retention, restore-test policy, and proposed execution component remain operator-supplied
+identities. Blocked preflight reasons propagate; an identical existing target receives a separate
+review state. The manifest contains no executable credential or authority and performs no I/O.

@@ -1295,3 +1295,10 @@ pre-existing backup destination are ready for a separately reviewed backup opera
 signed Phase 9M evidence, the maintenance window, source identity, SQLite integrity, sidecar absence,
 destination containment, free-space policy, and deterministic target conflicts. It creates no
 directory or backup and performs no database, network, broker, sandbox, or live-trading action.
+
+## Phase 9O offline backup manifest
+
+The system can now turn Phase 9N evidence into a content-bound description of a future backup. The
+manifest fixes the SQLite backup method and verification sequence and binds operator-supplied
+encryption, retention, restore-test, and execution-component identities. It is review material only:
+it does not authorize or execute a backup or any trading operation.

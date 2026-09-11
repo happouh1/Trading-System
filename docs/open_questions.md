@@ -1265,3 +1265,13 @@ Phase 9M leaves questions 471–475 unanswered and grants no real-upgrade or tra
 480. How is an identical existing backup registered, retained, and independently restored-tested?
 
 Phase 9N leaves questions 476–480 unanswered and creates no directory or backup.
+
+## Added for Phase 9O offline real-database backup manifest
+
+481. Which encryption implementation, key custodian, and recovery-key process are approved?
+482. What retention duration, immutable-storage requirement, and deletion approval apply?
+483. Which separately authenticated component may consume a reviewed manifest?
+484. Which exclusive-create, flush, and filesystem durability guarantees are mandatory?
+485. Who reviews the restore test, and where may its isolated temporary database exist?
+
+Phase 9O leaves questions 481–485 unanswered and grants no backup or trading authority.

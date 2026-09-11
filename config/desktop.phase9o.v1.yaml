@@ -1,0 +1,39 @@
+{
+  "manifest_version": "9O.1.0",
+  "mode": "OFFLINE_REAL_DATABASE_BACKUP_MANIFEST",
+  "backup_preflight_config": "config/desktop.phase9n.v1.yaml",
+  "backup_method": "SQLITE_BACKUP_API_TO_EXCLUSIVE_NEW_FILE",
+  "verification_steps": [
+    "SOURCE_HASH_BEFORE",
+    "SQLITE_BACKUP_API",
+    "SOURCE_HASH_AFTER",
+    "TARGET_QUICK_CHECK",
+    "TARGET_FOREIGN_KEY_CHECK",
+    "TARGET_HASH_MATCH",
+    "RESTORE_TEST"
+  ],
+  "policy": {
+    "require_phase9n_preflight": true,
+    "require_content_addressed_target": true,
+    "require_encryption_policy_hash": true,
+    "require_retention_policy_hash": true,
+    "require_restore_test_policy_hash": true,
+    "execution_component_operator_supplied": true,
+    "existing_backup_requires_review": true,
+    "blocked_preflight_propagates": true
+  },
+  "authority": {
+    "backup_authorization_enabled": false,
+    "directory_creation_enabled": false,
+    "backup_creation_enabled": false,
+    "database_write_enabled": false,
+    "migration_execution_enabled": false,
+    "restore_execution_enabled": false,
+    "process_launch_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false
+  }
+}

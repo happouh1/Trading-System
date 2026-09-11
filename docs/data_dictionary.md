@@ -1196,3 +1196,13 @@ by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `
 - `READY_FOR_BACKUP_REVIEW`: all preflight checks passed; this is evidence, not permission to back up.
 - `BACKUP_ALREADY_PRESENT`: the deterministic target is a regular file with the exact source hash.
 - `BLOCKED`: one or more canonical safety checks failed.
+
+## Phase 9O backup-manifest records
+
+- `BackupManifestConfig`: immutable backup method, ordered verification procedure, mandatory policy
+  bindings, and explicit false authorization and action declarations.
+- `RealDatabaseBackupManifest`: Phase 9N evidence hash, source and content-addressed target identities,
+  ordered verification steps, encryption/retention/restore-test policy hashes, proposed execution
+  component, canonical blockers, and explicit false authority fields.
+- `READY_FOR_AUTHORIZATION_REVIEW`: the proposal is complete but has no execution authority.
+- `EXISTING_BACKUP_REVIEW_REQUIRED`: Phase 9N found an identical target that requires human review.

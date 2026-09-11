@@ -1,5 +1,12 @@
 """Read-only desktop operator surfaces."""
 
+from trading_system.desktop.backup_manifest import (
+    BackupManifestConfig,
+    RealDatabaseBackupManifest,
+    RealDatabaseBackupManifestState,
+    build_real_database_backup_manifest,
+    load_backup_manifest_config,
+)
 from trading_system.desktop.backup_preflight import (
     BackupPreflightConfig,
     RealDatabaseBackupPreflight,
@@ -60,6 +67,7 @@ from trading_system.desktop.upgrade_rehearsal import (
 )
 
 __all__ = [
+    "BackupManifestConfig",
     "BackupPreflightConfig",
     "DatabaseUpgradeReviewAssessment",
     "DatabaseUpgradeReviewAttestation",
@@ -77,6 +85,8 @@ __all__ = [
     "LocalSchemaUpgradePlan",
     "LocalStatusConfig",
     "ReadinessEvidence",
+    "RealDatabaseBackupManifest",
+    "RealDatabaseBackupManifestState",
     "RealDatabaseBackupPreflight",
     "RealDatabaseBackupPreflightState",
     "UpgradePlanConfig",
@@ -88,10 +98,12 @@ __all__ = [
     "build_database_upgrade_review_credential",
     "build_database_upgrade_review_request",
     "build_local_schema_upgrade_plan",
+    "build_real_database_backup_manifest",
     "database_upgrade_review_message",
     "evaluate_database_upgrade_review",
     "inspect_desktop_launcher",
     "inspect_local_operations",
+    "load_backup_manifest_config",
     "load_backup_preflight_config",
     "load_database_upgrade_review_config",
     "load_desktop_dashboard_config",

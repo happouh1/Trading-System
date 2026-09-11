@@ -1368,3 +1368,14 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `P9N-CONFLICT`: reject a deterministic target unless it is a byte-equivalent prior backup.
 - `P9N-NO-AUTHORITY`: never create a directory or backup, write or migrate a database, promote a
   restore, launch a process, load credentials, use network, write to a broker, or enable trading.
+
+## Phase 9O offline backup-manifest rules
+
+- `P9O-PREFLIGHT-BINDING`: hash and retain the exact Phase 9N preflight identity.
+- `P9O-CONTENT-TARGET`: require the target name to contain the reviewed source-hash prefix.
+- `P9O-FIXED-PROCEDURE`: use the versioned SQLite backup and verification sequence unchanged.
+- `P9O-POLICY-BINDING`: require encryption, retention, and restore-test SHA-256 identities.
+- `P9O-EXISTING-REVIEW`: classify an identical existing target separately; never overwrite it.
+- `P9O-BLOCKER-PROPAGATION`: preserve Phase 9N blockers and fail closed.
+- `P9O-NO-AUTHORITY`: no authorization, directory, backup, database, migration, restore, process,
+  credential, network, broker, sandbox, or live-trading action.
