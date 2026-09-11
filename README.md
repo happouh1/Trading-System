@@ -1341,3 +1341,13 @@ memory. It accepts only verified Phase 9S evidence, binds one test executor and 
 certification window, records deterministic immutable events, and rejects replay, expiry, or binding
 mismatches. The token is marked test-only and cannot authorize or perform a production backup,
 database operation, process launch, network request, broker write, or trade.
+
+## Phase 9U isolated persistent capability ledger
+
+Phase 9T test capabilities can now be registered, consumed, and audited across process restarts in
+a disposable SQLite ledger below `.p9u-capability-ledger`. Registration is exact and idempotent,
+events are append-only, and `BEGIN IMMEDIATE` serializes competing consumers so only one exact
+consumer can succeed. The ledger is bound to the Phase 9T configuration hash and rejects path
+escapes, symbolic-link traversal, the operator database, and weakened authority settings. It is a
+test-only persistence rehearsal: it cannot create a backup, access or migrate the operator database,
+restore data, launch a process, load credentials, use the network, contact a broker, or trade.

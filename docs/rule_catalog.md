@@ -1443,3 +1443,16 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `P9T-TEST-ONLY`: never create or expose a production execution capability.
 - `P9T-NO-ACTION`: never back up, create directories, write or migrate a database, restore, launch a
   process, load credentials, use network, write to a broker, or enable trading.
+
+## Phase 9U isolated persistent capability-ledger rules
+
+- `P9U-TEST-ROOT`: accept only SQLite files contained beneath the configured disposable test root.
+- `P9U-BOUND-CONFIG`: bind the exact Phase 9T configuration hash before filesystem mutation.
+- `P9U-BEGIN-IMMEDIATE`: serialize registration and consumption with immediate SQLite transactions.
+- `P9U-EXACT-REGISTRATION`: make identical registration idempotent and reject conflicting evidence.
+- `P9U-SINGLE-USE`: permit exactly one accepted `ISSUED` to `CONSUMED` transition.
+- `P9U-APPEND-ONLY`: append immutable ordered evidence for every attempted consumption.
+- `P9U-RESTART`: preserve capability state and ordered evidence across connection restarts.
+- `P9U-CONCURRENT-REPLAY`: competing exact consumers yield one success and one replay rejection.
+- `P9U-NO-PRODUCTION`: exclude the operator database and every backup, restore, process, network,
+  credential, broker, sandbox-execution, and live-trading authority.

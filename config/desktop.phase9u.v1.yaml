@@ -1,0 +1,31 @@
+{
+  "ledger_version": "9U.1.0",
+  "mode": "TEST_ONLY_PERSISTENT_CAPABILITY_LEDGER",
+  "capability_config": "config/desktop.phase9t.v1.yaml",
+  "allowed_database_root": ".p9u-capability-ledger",
+  "policy": {
+    "sqlite_begin_immediate": true,
+    "foreign_keys_enabled": true,
+    "append_only_events": true,
+    "idempotent_exact_registration": true,
+    "single_use_state_transition": true,
+    "restart_recovery_required": true,
+    "reject_symlinks": true,
+    "test_database_only": true
+  },
+  "authority": {
+    "test_directory_creation_enabled": true,
+    "test_database_write_enabled": true,
+    "production_capability_enabled": false,
+    "operator_database_access_enabled": false,
+    "backup_creation_enabled": false,
+    "database_migration_enabled": false,
+    "restore_execution_enabled": false,
+    "process_launch_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false
+  }
+}

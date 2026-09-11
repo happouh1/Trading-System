@@ -1329,3 +1329,20 @@ subsequent transition produce deterministic immutable records. The first exact, 
 changes a copied token from `ISSUED` to `CONSUMED`; replay leaves it consumed and emits rejection.
 Expiry or executor/hash mismatch produces `BLOCKED`. This is an in-memory protocol rehearsal only:
 accepted test consumption performs no backup or other external action.
+
+## Phase 9U isolated persistent capability-ledger methodology
+
+1. Load the strict Phase 9U configuration and bind the exact Phase 9T capability configuration
+   hash before creating any directory or database.
+2. Resolve the requested ledger beneath `.p9u-capability-ledger`; reject absolute paths, parent
+   traversal, symbolic-link components, non-SQLite targets, and the operator database name.
+3. Initialize private test-only metadata, capability, and event tables. These tables are deliberately
+   absent from the production migration chain.
+4. Register only an `ISSUED` Phase 9T capability with its exact deterministic issue event. An exact
+   replay is idempotent; any conflicting evidence fails closed.
+5. Use `BEGIN IMMEDIATE` for registration and consumption. A state transition updates the expected
+   prior state and appends the next immutable event in one transaction.
+6. Reopen the database to prove restart recovery. Concurrent exact consumers must produce one
+   accepted consumption and one deterministic replay rejection.
+7. Keep all production backup, operator-database, restore, process, network, credential, broker,
+   sandbox-execution, and live-trading authority disabled.

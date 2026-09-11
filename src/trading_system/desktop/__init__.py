@@ -12,6 +12,12 @@ from trading_system.desktop.backup_authorization import (
     evaluate_backup_authorization_evidence,
     load_backup_authorization_config,
 )
+from trading_system.desktop.backup_capability_ledger import (
+    BackupCapabilityLedgerConfig,
+    TestOnlyBackupCapabilityLedger,
+    bind_backup_capability_config_hash,
+    load_backup_capability_ledger_config,
+)
 from trading_system.desktop.backup_capability_rehearsal import (
     BackupCapabilityRehearsalConfig,
     TestBackupCapabilityEventType,
@@ -124,6 +130,7 @@ __all__ = [
     "BackupAuthorizationConfig",
     "BackupAuthorizationEvidenceState",
     "BackupAuthorizationRequest",
+    "BackupCapabilityLedgerConfig",
     "BackupCapabilityRehearsalConfig",
     "BackupManifestConfig",
     "BackupPreflightConfig",
@@ -163,6 +170,7 @@ __all__ = [
     "TestBackupCapabilityState",
     "TestOnlyBackupCapability",
     "TestOnlyBackupCapabilityEvent",
+    "TestOnlyBackupCapabilityLedger",
     "UpgradePlanConfig",
     "UpgradeRehearsalConfig",
     "UpgradeRehearsalResult",
@@ -170,6 +178,7 @@ __all__ = [
     "assess_production_backup_readiness",
     "assess_real_database_backup_preflight",
     "backup_authorization_message",
+    "bind_backup_capability_config_hash",
     "build_backup_authorization_attestation",
     "build_backup_authorization_request",
     "build_database_upgrade_review_attestation",
@@ -189,6 +198,7 @@ __all__ = [
     "inspect_local_operations",
     "issue_test_backup_capability",
     "load_backup_authorization_config",
+    "load_backup_capability_ledger_config",
     "load_backup_capability_rehearsal_config",
     "load_backup_manifest_config",
     "load_backup_preflight_config",

@@ -1268,3 +1268,38 @@ by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `
 - `ISSUED`: the test token is available for exactly one in-memory rehearsal transition.
 - `CONSUMED`: the test token was accepted once; subsequent use is rejected without changing state.
 - `BLOCKED`: expiry or an exact-binding mismatch permanently blocks that immutable token value.
+
+## Phase 9U isolated persistent capability-ledger records
+
+### `BackupCapabilityLedgerConfig`
+
+- Immutable validated Phase 9U configuration and its canonical hash.
+- Binds the disposable ledger root, exact Phase 9T capability-configuration hash, transaction
+  policy, and an authority map that keeps all production, backup, database, network, broker, and
+  trading permissions false.
+
+### `test_backup_ledger_metadata`
+
+- Single-row identity record for ledger version, Phase 9U configuration hash, and the bound Phase
+  9T capability-configuration hash.
+- A restart with conflicting metadata fails closed.
+
+### `test_backup_capabilities`
+
+- One current test-only capability state per deterministic capability identifier.
+- Persists certification identity, request identity and hash, test executor, nonce, issue and expiry
+  timestamps, state, and Phase 9T configuration hash.
+- The `(certification_request_id, test_nonce)` pair is unique.
+
+### `test_backup_capability_events`
+
+- Append-only ordered transition evidence for issue, consumption, replay rejection, expiry, and
+  binding rejection.
+- Persists the deterministic event identifier, capability identifier, sequence, prior and new state,
+  acceptance result, reason, request hash, and configuration hash.
+
+### `TestOnlyBackupCapabilityLedger`
+
+- Contained SQLite repository for exact registration, restart recovery, event reads, and atomic
+  single-use consumption.
+- It is not part of the operator database or the production migration chain.

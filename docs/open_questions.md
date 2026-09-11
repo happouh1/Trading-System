@@ -1325,3 +1325,13 @@ Phase 9S leaves questions 501–505 unanswered and emits no executable capabilit
 510. Which immutable audit service reconciles issuance, consumption, and terminal backup evidence?
 
 Phase 9T leaves questions 506–510 unanswered and creates only in-memory test records.
+
+## Added for Phase 9U isolated persistent capability ledger
+
+511. Which production datastore provides linearizable issuance, consumption, and disaster recovery?
+512. How is a production ledger encrypted, authenticated, access controlled, and key rotated?
+513. What recovery rule applies if capability consumption commits but its backup receipt does not?
+514. What retention, compaction, replication, and immutable-audit requirements govern ledger events?
+515. What quorum or failover policy prevents duplicate consumption during a partition or promotion?
+
+Phase 9U leaves questions 511–515 unanswered and writes only to a contained disposable test ledger.
