@@ -1,0 +1,30 @@
+{
+  "recovery_version": "9V.1.0",
+  "mode": "TEST_ONLY_CAPABILITY_RECEIPT_RECOVERY",
+  "ledger_config": "config/desktop.phase9u.v1.yaml",
+  "policy": {
+    "require_persistent_phase9u_capability": true,
+    "require_consumed_state_for_receipt": true,
+    "require_exact_consumption_event": true,
+    "idempotent_exact_receipt": true,
+    "reject_conflicting_receipt": true,
+    "missing_receipt_is_in_doubt": true,
+    "automatic_retry_disabled": true,
+    "restart_recovery_required": true
+  },
+  "authority": {
+    "test_ledger_write_enabled": true,
+    "production_receipt_enabled": false,
+    "automatic_retry_enabled": false,
+    "operator_database_access_enabled": false,
+    "backup_creation_enabled": false,
+    "database_migration_enabled": false,
+    "restore_execution_enabled": false,
+    "process_launch_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false
+  }
+}

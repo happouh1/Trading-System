@@ -1351,3 +1351,12 @@ consumer can succeed. The ledger is bound to the Phase 9T configuration hash and
 escapes, symbolic-link traversal, the operator database, and weakened authority settings. It is a
 test-only persistence rehearsal: it cannot create a backup, access or migrate the operator database,
 restore data, launch a process, load credentials, use the network, contact a broker, or trade.
+
+## Phase 9V test-only terminal receipt recovery
+
+The contained Phase 9U ledger can now persist a simulated terminal receipt and deterministically
+classify recovery after restart. A consumed capability with no receipt is `IN_DOUBT` and requires
+manual reconciliation; it is never retried automatically. Exact receipts are idempotent, conflicting
+receipts fail closed, and receipts cannot be recorded without the exact accepted consumption event.
+All receipts are explicitly simulated. No backup, operator-database access, process, network,
+credential, broker, sandbox-execution, or live-trading authority is enabled.

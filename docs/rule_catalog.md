@@ -1456,3 +1456,17 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `P9U-CONCURRENT-REPLAY`: competing exact consumers yield one success and one replay rejection.
 - `P9U-NO-PRODUCTION`: exclude the operator database and every backup, restore, process, network,
   credential, broker, sandbox-execution, and live-trading authority.
+
+## Phase 9V test-only terminal receipt recovery rules
+
+- `P9V-CONSUMED-ONLY`: record a receipt only for an exactly consumed Phase 9U capability.
+- `P9V-EXACT-EVENT`: bind the receipt to the sole accepted consumption event and test executor.
+- `P9V-CAUSAL-UTC`: require receipt and assessment times to be UTC and causally ordered.
+- `P9V-ONE-RECEIPT`: allow one immutable receipt per capability.
+- `P9V-IDEMPOTENT`: accept an exact receipt replay without inserting another record.
+- `P9V-CONFLICT-BLOCKS`: reject any conflicting receipt for the same capability.
+- `P9V-IN-DOUBT`: classify consumed-without-receipt as manual reconciliation required.
+- `P9V-NO-AUTO-RETRY`: never convert an in-doubt state into permission to retry.
+- `P9V-SIMULATED-ONLY`: a receipt records a simulated result and never claims a real backup.
+- `P9V-NO-PRODUCTION`: keep every production, database, process, network, broker, and trading action
+  disabled.

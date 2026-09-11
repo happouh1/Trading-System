@@ -1303,3 +1303,27 @@ by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `
 - Contained SQLite repository for exact registration, restart recovery, event reads, and atomic
   single-use consumption.
 - It is not part of the operator database or the production migration chain.
+
+## Phase 9V test-only terminal receipt and recovery records
+
+### `BackupCapabilityRecoveryConfig`
+
+- Immutable strict policy for receipt evidence, crash-gap classification, restart recovery, and
+  disabled automatic retry and production authority.
+
+### `TestOnlyBackupExecutionReceipt`
+
+- Immutable simulated terminal result bound to one capability, its exact accepted consumption
+  event, test executor, result hash, UTC recording time, and Phase 9V configuration hash.
+- Outcomes are `SIMULATED_SUCCESS` and `SIMULATED_FAILURE`; neither claims a real backup occurred.
+
+### `test_backup_execution_receipts`
+
+- Private test-ledger table with one immutable terminal receipt per capability.
+- Exact repeats are idempotent; a different receipt for the same capability is rejected.
+
+### `TestBackupRecoveryAssessment`
+
+- Deterministic read model with states `READY_FOR_TEST_CONSUMPTION`,
+  `IN_DOUBT_MANUAL_RECONCILIATION`, `TEST_COMPLETED`, `TEST_FAILED_REVIEW_REQUIRED`, and `BLOCKED`.
+- Every execution, retry, database, network, broker, and trading authority field remains false.

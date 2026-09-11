@@ -1335,3 +1335,13 @@ Phase 9T leaves questions 506–510 unanswered and creates only in-memory test r
 515. What quorum or failover policy prevents duplicate consumption during a partition or promotion?
 
 Phase 9U leaves questions 511–515 unanswered and writes only to a contained disposable test ledger.
+
+## Added for Phase 9V test-only terminal receipt recovery
+
+516. Which production system is authoritative when capability state and backup storage disagree?
+517. What evidence proves whether an in-doubt external backup operation actually completed?
+518. Who may resolve an in-doubt state, and what independent approvals are required?
+519. How are terminal receipts authenticated, durably replicated, and linked to immutable audit logs?
+520. What timeout and escalation policy applies while an operation remains in doubt?
+
+Phase 9V leaves questions 516–520 unanswered and records only simulated test receipts.

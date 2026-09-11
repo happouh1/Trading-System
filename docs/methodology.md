@@ -1346,3 +1346,19 @@ accepted test consumption performs no backup or other external action.
    accepted consumption and one deterministic replay rejection.
 7. Keep all production backup, operator-database, restore, process, network, credential, broker,
    sandbox-execution, and live-trading authority disabled.
+
+## Phase 9V test-only terminal receipt recovery methodology
+
+1. Open only the contained Phase 9U test ledger and initialize a private receipt table bound to the
+   Phase 9V and Phase 9U configuration hashes.
+2. Accept a receipt only when the capability is `CONSUMED`, exactly one accepted consumption event
+   exists, the event and executor match, and the receipt time is causal UTC.
+3. Insert one immutable simulated receipt in an immediate transaction. Treat an exact replay as
+   idempotent and reject any conflicting outcome or content.
+4. On restart, classify issued capabilities as ready for a test transition, blocked capabilities as
+   blocked, consumed capabilities without receipts as in doubt, and receipts as simulated terminal
+   success or failure.
+5. Never automatically retry an in-doubt capability. Recovery output is evidence for manual review,
+   not execution authority.
+6. Perform no backup, operator-database operation, restore, process launch, credential load, network
+   request, broker write, sandbox execution, or live trade.
