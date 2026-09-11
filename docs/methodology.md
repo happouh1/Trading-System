@@ -1319,3 +1319,13 @@ attestation binds every material request field to one credential, principal, rol
 Evaluation verifies request and credential windows, exact hashes, role completeness, signatures,
 and distinct reviewer principals. Results are canonical and input-order independent. Verification
 does not expose an executable credential or perform any operational action.
+
+## Phase 9T test-only single-use capability methodology
+
+Issuance requires a Phase 9S assessment in `READINESS_CERTIFICATION_EVIDENCE_VERIFIED` with an exact
+request ID, request hash, and configuration binding. The caller supplies a non-empty test executor
+identity, test nonce, issue time, and expiry contained within the Phase 9S window. Issuance and every
+subsequent transition produce deterministic immutable records. The first exact, timely consumption
+changes a copied token from `ISSUED` to `CONSUMED`; replay leaves it consumed and emits rejection.
+Expiry or executor/hash mismatch produces `BLOCKED`. This is an in-memory protocol rehearsal only:
+accepted test consumption performs no backup or other external action.

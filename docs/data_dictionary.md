@@ -1256,3 +1256,15 @@ by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `
   state, exact request hash, and explicit false action fields.
 - `READINESS_CERTIFICATION_EVIDENCE_VERIFIED`: valid independent signatures are evidence only, not
   an execution capability.
+
+## Phase 9T test-only backup-capability rehearsal records
+
+- `BackupCapabilityRehearsalConfig`: exact Phase 9S reference, single-use and replay policy, and
+  explicit false production-capability, operational, brokerage, sandbox, and trading authority.
+- `TestOnlyBackupCapability`: certification assessment/request binding, test executor, test nonce,
+  bounded UTC lifetime, immutable state, deterministic identity, and explicit test-only marker.
+- `TestOnlyBackupCapabilityEvent`: append-only issue, consume, replay-rejection, expiry-rejection, or
+  binding-rejection evidence with prior/new states and explicit false operational-action fields.
+- `ISSUED`: the test token is available for exactly one in-memory rehearsal transition.
+- `CONSUMED`: the test token was accepted once; subsequent use is rejected without changing state.
+- `BLOCKED`: expiry or an exact-binding mismatch permanently blocks that immutable token value.

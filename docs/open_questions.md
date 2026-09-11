@@ -1315,3 +1315,13 @@ Phase 9R leaves questions 496–500 unanswered and grants no backup or trading a
 505. Which separately authenticated component may consume certification as a single-use capability?
 
 Phase 9S leaves questions 501–505 unanswered and emits no executable capability.
+
+## Added for Phase 9T test-only single-use capability rehearsal
+
+506. Which production ledger atomically issues, consumes, persists, and recovers single-use tokens?
+507. How is the real executor authenticated and bound to its host or hardware identity?
+508. What trusted clock and maximum lifetime govern a production capability?
+509. How is recovery handled if a token is consumed but the backup receipt is never committed?
+510. Which immutable audit service reconciles issuance, consumption, and terminal backup evidence?
+
+Phase 9T leaves questions 506–510 unanswered and creates only in-memory test records.

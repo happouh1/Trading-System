@@ -1429,3 +1429,17 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `P9S-EVIDENCE-NOT-CAPABILITY`: verified certification evidence is not execution authority.
 - `P9S-NO-ACTION`: never back up, create directories, write or migrate a database, restore, launch a
   process, load credentials, use network, write to a broker, or enable trading.
+
+## Phase 9T test-only single-use capability rules
+
+- `P9T-VERIFIED-CERTIFICATION`: issue only from exact verified Phase 9S evidence.
+- `P9T-TEST-IDENTITY`: require explicit test executor and nonce values; provide no defaults.
+- `P9T-WINDOW`: contain the token lifetime inside the Phase 9S certification window.
+- `P9T-EXACT-CONSUMER`: bind consumption to the original request hash and test executor.
+- `P9T-SINGLE-USE`: permit one accepted transition from `ISSUED` to `CONSUMED`.
+- `P9T-REPLAY-REJECTION`: retain consumed state and emit deterministic rejection on reuse.
+- `P9T-FAIL-CLOSED`: expiry or a binding mismatch transitions an issued token to `BLOCKED`.
+- `P9T-APPEND-ONLY`: represent every attempted transition as a new immutable event.
+- `P9T-TEST-ONLY`: never create or expose a production execution capability.
+- `P9T-NO-ACTION`: never back up, create directories, write or migrate a database, restore, launch a
+  process, load credentials, use network, write to a broker, or enable trading.

@@ -1,0 +1,30 @@
+{
+  "rehearsal_version": "9T.1.0",
+  "mode": "TEST_ONLY_SINGLE_USE_BACKUP_CAPABILITY_REHEARSAL",
+  "certification_config": "config/desktop.phase9s.v1.yaml",
+  "policy": {
+    "require_verified_phase9s_certification": true,
+    "require_exact_certification_binding": true,
+    "require_test_executor_identity": true,
+    "require_test_nonce": true,
+    "bounded_capability_window": true,
+    "single_use": true,
+    "reject_replay": true,
+    "append_only_events": true
+  },
+  "authority": {
+    "production_capability_enabled": false,
+    "execution_authority_enabled": false,
+    "backup_creation_enabled": false,
+    "directory_creation_enabled": false,
+    "database_write_enabled": false,
+    "migration_execution_enabled": false,
+    "restore_execution_enabled": false,
+    "process_launch_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false
+  }
+}

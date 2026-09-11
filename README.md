@@ -1333,3 +1333,11 @@ control-evidence hashes, originating authorization request, rehearsal identity, 
 UTC window with Ed25519. Missing signatures remain incomplete; invalid, altered, expired, or
 non-independent evidence blocks certification. Verified certification remains evidence only and
 cannot authorize or create a backup, change a database, launch a process, access a broker, or trade.
+
+## Phase 9T test-only single-use capability rehearsal
+
+The repository can now rehearse issuing and consuming a certification-bound capability entirely in
+memory. It accepts only verified Phase 9S evidence, binds one test executor and nonce, enforces the
+certification window, records deterministic immutable events, and rejects replay, expiry, or binding
+mismatches. The token is marked test-only and cannot authorize or perform a production backup,
+database operation, process launch, network request, broker write, or trade.
