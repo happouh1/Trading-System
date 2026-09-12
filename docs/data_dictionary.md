@@ -1384,3 +1384,19 @@ by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `
 - Order-independent aggregate with state `IN_PROGRESS`, `FAIL`, or `PASS`; observed totals; rejected
   order fraction; missing coverage; sorted reason codes; and an observation Merkle-style root hash.
 - Is evidence only and never performs automatic promotion or a broker write.
+
+## Phase 10 final decision records
+
+### `FinalDecisionRequest`
+
+- Immutable operator target with at least two sorted distinct reviewer identities and SHA-256-bound
+  capital, risk, and evidence-retention policies.
+- Requires the exact acknowledgement `LIVE_TRADING_NOT_AUTHORIZED`.
+
+### `FinalDecisionAssessment`
+
+- Deterministic classification with state `BLOCKED`, `RESEARCH_ONLY_RECOMMENDED`,
+  `SUPERVISED_PAPER_ELIGIBLE`, or `SEPARATE_LIVE_AUTHORIZATION_REVIEW_ELIGIBLE`.
+- Binds Phase 9X, Phase 9Y, request, and Phase 10 configuration hashes.
+- Every file-write, process, credential, network, broker-write, sandbox-execution,
+  production-deployment, and live-trading field remains false.

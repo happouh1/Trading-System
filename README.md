@@ -1416,3 +1416,23 @@ python -m trading_system.cli desktop burn-in-evaluate `
 
 Engineering is ready, but the real prospective window is not yet preregistered or observed. Even a
 future `PASS` is evidence for Phase 10 review, not permission to trade live.
+
+## Phase 10 final system decision
+
+The final offline gate now combines the current Phase 9X audit, a completed Phase 9Y assessment, and
+an operator request reviewed by at least two distinct people. Capital, risk, and evidence-retention
+policies must be content hashed. Results distinguish research-only, supervised-paper eligibility,
+and eligibility for a separate live-authorization review; none enables deployment or trading.
+
+Check the current real status with:
+
+```powershell
+python -m trading_system.cli desktop final-decision-status `
+  --config config/desktop.phase10.v1.yaml `
+  --release-config config/desktop.phase9x.v1.yaml `
+  --project-root . `
+  --as-of <current-UTC-timestamp>
+```
+
+The current result is `BLOCKED` because the real Phase 9Y evidence and final reviewed request are
+missing. Engineering test fixtures cannot satisfy this operational gate.

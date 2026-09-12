@@ -1403,3 +1403,15 @@ accepted test consumption performs no backup or other external action.
    only after the window closes with every requirement met.
 7. Keep assessment evidence-only; do not collect automatically, promote, launch, connect, submit,
    or enable production or live trading.
+
+## Phase 10 final system decision methodology
+
+1. Recompute and bind the current Phase 9X release assessment.
+2. Require a causally prior Phase 9Y pass; classify absent or nonpassing evidence as blocked.
+3. Require a causally prior operator request with two distinct reviewers, content-bound capital,
+   risk, and retention policies, and an explicit no-live-authority acknowledgement.
+4. Map the requested scope to research-only, supervised-paper eligibility, or eligibility for a
+   separate live-authorization review.
+5. Sort blockers and hash every source plus the complete final assessment identity.
+6. Never translate any classification into process, credential, network, broker, sandbox,
+   deployment, capital, or live-trading authority.

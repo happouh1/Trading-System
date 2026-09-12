@@ -1518,3 +1518,16 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `P9Y-DETERMINISTIC`: sort evidence and reason codes and hash the complete assessment identity.
 - `P9Y-EVIDENCE-ONLY`: never promote, launch, connect, write to a broker, release production, or
   enable live trading.
+
+## Phase 10 final system decision rules
+
+- `P10-PHASE9X`: require a current ready Phase 9X assessment.
+- `P10-PHASE9Y`: require a completed causal Phase 9Y pass.
+- `P10-REQUEST`: require an explicit, causal, content-hashed final decision request.
+- `P10-INDEPENDENCE`: require at least two sorted distinct reviewer identities.
+- `P10-POLICIES`: bind capital, risk, and evidence-retention policies by SHA-256.
+- `P10-ACKNOWLEDGEMENT`: require `LIVE_TRADING_NOT_AUTHORIZED`.
+- `P10-SCOPE`: distinguish research-only, supervised paper, and separate live-review eligibility.
+- `P10-BLOCK`: missing, future, incomplete, or nonpassing evidence fails closed.
+- `P10-NO-AUTO-DEPLOY`: no classification automatically deploys or changes the system.
+- `P10-NO-LIVE`: even live-review eligibility grants no live-trading authority.

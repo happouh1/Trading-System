@@ -1,0 +1,24 @@
+{
+  "decision_version": "10.1.0",
+  "mode": "OFFLINE_FINAL_SYSTEM_DECISION",
+  "policy": {
+    "require_current_phase9x_ready": true,
+    "require_phase9y_pass": true,
+    "require_two_distinct_reviewers": true,
+    "require_capital_policy_hash": true,
+    "require_risk_policy_hash": true,
+    "require_evidence_retention_hash": true,
+    "live_target_is_review_only": true,
+    "automatic_deployment_enabled": false
+  },
+  "authority": {
+    "file_write_enabled": false,
+    "process_launch_enabled": false,
+    "credential_loading_enabled": false,
+    "network_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "production_deployment_enabled": false,
+    "live_trading_enabled": false
+  }
+}

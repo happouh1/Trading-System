@@ -1378,3 +1378,14 @@ Phase 9X leaves questions 526–530 unanswered, authorizes no burn-in, and does 
 
 Phase 9Y engineering leaves questions 531–535 unanswered. No observation window has started and no
 production or live-trading conclusion may be drawn.
+
+## Added for Phase 10 final system decision
+
+536. Who are the named independent final reviewers and how are their identities authenticated?
+537. What approved documents supply the capital, risk, and retention policy hashes?
+538. If supervised paper is selected, who operates it and what ongoing stop conditions apply?
+539. What external legal, compliance, security, and brokerage review governs any later live proposal?
+540. What evidence expiration and mandatory re-review period applies to a final classification?
+
+Phase 10 engineering leaves questions 536–540 unanswered. The current decision is blocked pending
+real Phase 9Y evidence and an independently reviewed request.

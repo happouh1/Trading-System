@@ -10,6 +10,12 @@ from trading_system.desktop.dashboard import (
     load_desktop_dashboard_config,
     render_desktop_dashboard,
 )
+from trading_system.desktop.final_decision import (
+    build_final_decision_request,
+    evaluate_final_decision,
+    load_final_decision_config,
+    load_final_decision_request,
+)
 from trading_system.desktop.launcher import inspect_desktop_launcher, load_desktop_launch_config
 from trading_system.desktop.local_status import inspect_local_operations, load_local_status_config
 from trading_system.desktop.prospective_burn_in import (
@@ -75,9 +81,56 @@ def configure_desktop_parser(commands: argparse._SubParsersAction[argparse.Argum
         if name == "burn-in-evaluate":
             burn_in.add_argument("--evidence", required=True)
             burn_in.add_argument("--as-of", required=True)
+    final_status = actions.add_parser("final-decision-status")
+    final_status.add_argument("--config", required=True)
+    final_status.add_argument("--release-config", required=True)
+    final_status.add_argument("--project-root", default=".")
+    final_status.add_argument("--as-of", required=True)
+    final_decision = actions.add_parser("final-decision")
+    final_decision.add_argument("--config", required=True)
+    final_decision.add_argument("--release-config", required=True)
+    final_decision.add_argument("--burn-in-config", required=True)
+    final_decision.add_argument("--burn-in-request", required=True)
+    final_decision.add_argument("--burn-in-evidence", required=True)
+    final_decision.add_argument("--request", required=True)
+    final_decision.add_argument("--project-root", default=".")
+    final_decision.add_argument("--as-of", required=True)
 
 
 def handle_desktop(args: argparse.Namespace) -> int:
+    if args.desktop_command in {"final-decision-status", "final-decision"}:
+        evaluated_at = datetime.fromisoformat(str(args.as_of).replace("Z", "+00:00"))
+        release = audit_release_readiness(
+            load_release_audit_config(args.release_config), project_root=args.project_root
+        )
+        final_config = load_final_decision_config(args.config)
+        if args.desktop_command == "final-decision-status":
+            final_assessment = evaluate_final_decision(
+                final_config, release, evaluated_at=evaluated_at
+            )
+        else:
+            burn_in_plan = build_prospective_burn_in_plan(
+                load_prospective_burn_in_config(args.burn_in_config),
+                release,
+                load_operator_request(args.burn_in_request),
+            )
+            burn_in_assessment = evaluate_prospective_burn_in(
+                burn_in_plan,
+                load_prospective_burn_in_observations(args.burn_in_evidence),
+                evaluated_at=evaluated_at,
+            )
+            final_request = build_final_decision_request(
+                final_config, load_final_decision_request(args.request)
+            )
+            final_assessment = evaluate_final_decision(
+                final_config,
+                release,
+                evaluated_at=evaluated_at,
+                burn_in=burn_in_assessment,
+                request=final_request,
+            )
+        print(canonical_json(final_assessment))
+        return 0
     if args.desktop_command in {"burn-in-plan", "burn-in-evaluate"}:
         release = audit_release_readiness(
             load_release_audit_config(args.release_config), project_root=args.project_root
