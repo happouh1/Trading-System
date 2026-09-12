@@ -1,0 +1,24 @@
+{
+  "burn_in_version": "9Y.1.0",
+  "mode": "OFFLINE_PROSPECTIVE_SANDBOX_BURN_IN_CONTROL",
+  "method": {
+    "release_gate": "CURRENT_PHASE9X_ASSESSMENT",
+    "threshold_source": "PREREGISTERED_OPERATOR_REQUEST",
+    "evidence_source": "OPERATOR_SUPPLIED_SANDBOX_OBSERVATIONS",
+    "coverage_required": true,
+    "causal_window_required": true,
+    "default_thresholds_enabled": false,
+    "automatic_collection_enabled": false,
+    "automatic_promotion_enabled": false
+  },
+  "authority": {
+    "file_write_enabled": false,
+    "process_launch_enabled": false,
+    "credential_loading_enabled": false,
+    "network_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "production_release_enabled": false,
+    "live_trading_enabled": false
+  }
+}

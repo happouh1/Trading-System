@@ -1501,3 +1501,20 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `P9X-LIMITED-READINESS`: readiness permits only review of Phase 9Y planning.
 - `P9X-NO-AUTHORITY`: never write a file, launch a process, load credentials, use the network,
   contact a broker, execute sandbox activity, release production, or trade.
+
+## Phase 9Y prospective sandbox burn-in rules
+
+- `P9Y-PHASE9X-GATE`: require a current ready Phase 9X assessment with no execution authority.
+- `P9Y-NO-DEFAULTS`: require every minimum, coverage set, and tolerance from the operator request.
+- `P9Y-PREREGISTER`: require declaration strictly before the UTC observation window.
+- `P9Y-SANDBOX-ONLY`: reject evidence not explicitly identified as `WEBULL_SANDBOX`.
+- `P9Y-CAUSAL`: reject future-known and out-of-window observations.
+- `P9Y-UNIQUE`: reject duplicate deterministic observation identities.
+- `P9Y-COVERAGE`: require the declared regimes, symbols, timeframes, and strategy categories.
+- `P9Y-QUANTITY`: require declared distinct sessions, market days, and completed trades.
+- `P9Y-TOLERANCES`: fail when incidents, unmatched reconciliations, stale data, rejected-order
+  fraction, or unresolved recoveries exceed the preregistered limit.
+- `P9Y-WINDOW`: never pass before the declared window closes.
+- `P9Y-DETERMINISTIC`: sort evidence and reason codes and hash the complete assessment identity.
+- `P9Y-EVIDENCE-ONLY`: never promote, launch, connect, write to a broker, release production, or
+  enable live trading.

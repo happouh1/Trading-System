@@ -1388,3 +1388,31 @@ python -m trading_system.cli desktop release-audit `
 `READY_FOR_PROSPECTIVE_SANDBOX_BURN_IN` means only that Phase 9Y planning may proceed. The audit
 does not start a process, load credentials, use the network, contact Webull, authorize sandbox
 execution, approve production release, or place a trade.
+
+## Phase 9Y prospective sandbox burn-in control
+
+The system can now preregister a forward-only Webull sandbox burn-in and evaluate its evidence. The
+operator must supply every duration, quantity, coverage, and tolerance requirement; the software has
+no hidden defaults. Evidence is rejected if it is live, duplicated, future-known, or outside the
+declared UTC window. A completed assessment is `IN_PROGRESS`, `FAIL`, or `PASS`.
+
+The commands are intentionally offline:
+
+```powershell
+python -m trading_system.cli desktop burn-in-plan `
+  --config config/desktop.phase9y.v1.yaml `
+  --release-config config/desktop.phase9x.v1.yaml `
+  --request <operator-preregistered-request.json> `
+  --project-root .
+
+python -m trading_system.cli desktop burn-in-evaluate `
+  --config config/desktop.phase9y.v1.yaml `
+  --release-config config/desktop.phase9x.v1.yaml `
+  --request <operator-preregistered-request.json> `
+  --evidence <sandbox-observations.json> `
+  --as-of <UTC-timestamp> `
+  --project-root .
+```
+
+Engineering is ready, but the real prospective window is not yet preregistered or observed. Even a
+future `PASS` is evidence for Phase 10 review, not permission to trade live.

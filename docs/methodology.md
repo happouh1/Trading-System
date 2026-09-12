@@ -1388,3 +1388,18 @@ accepted test consumption performs no backup or other external action.
 6. Interpret readiness only as eligibility to plan the separate prospective sandbox burn-in.
 7. Perform no process launch, credential load, network request, broker write, sandbox execution,
    production release, or live trade.
+
+## Phase 9Y prospective sandbox burn-in methodology
+
+1. Re-run Phase 9X against the current repository and require the ready state with no authority.
+2. Before the observation window, load every minimum, coverage requirement, and tolerance from the
+   operator request; provide no defaults or threshold optimization.
+3. Bind the request, current Phase 9X assessment, and Phase 9Y configuration into one immutable plan.
+4. Accept only explicitly identified Webull sandbox observations whose UTC times are inside the plan
+   window and no later than the evaluation time.
+5. Normalize input order, reject duplicate identities, aggregate distinct sessions and market days,
+   sum operational counts, calculate the rejected-order fraction, and union observed coverage.
+6. Report missing quantities and coverage as in progress, tolerance breaches as failure, and pass
+   only after the window closes with every requirement met.
+7. Keep assessment evidence-only; do not collect automatically, promote, launch, connect, submit,
+   or enable production or live trading.

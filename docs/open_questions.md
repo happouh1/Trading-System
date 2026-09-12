@@ -1367,3 +1367,14 @@ Phase 9W leaves questions 521–525 unanswered and audits only the isolated test
      approved live execution, and what capital and loss limits would govern it?
 
 Phase 9X leaves questions 526–530 unanswered, authorizes no burn-in, and does not approve production.
+
+## Added for Phase 9Y prospective sandbox burn-in control
+
+531. What exact operator-approved values will populate the Phase 9Y preregistration request?
+532. Which signed source produces each immutable sandbox observation and upstream evidence hash?
+533. How will XNYS session identity and market-regime classification be independently verified?
+534. Where will the prospective evidence package be retained and who verifies its completeness?
+535. Who may accept or reject the final Phase 9Y assessment before Phase 10 begins?
+
+Phase 9Y engineering leaves questions 531–535 unanswered. No observation window has started and no
+production or live-trading conclusion may be drawn.

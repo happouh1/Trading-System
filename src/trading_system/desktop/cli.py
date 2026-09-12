@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from datetime import datetime
 from pathlib import Path
 
 from trading_system.desktop.dashboard import (
@@ -11,6 +12,13 @@ from trading_system.desktop.dashboard import (
 )
 from trading_system.desktop.launcher import inspect_desktop_launcher, load_desktop_launch_config
 from trading_system.desktop.local_status import inspect_local_operations, load_local_status_config
+from trading_system.desktop.prospective_burn_in import (
+    build_prospective_burn_in_plan,
+    evaluate_prospective_burn_in,
+    load_operator_request,
+    load_prospective_burn_in_config,
+    load_prospective_burn_in_observations,
+)
 from trading_system.desktop.readiness import (
     assess_local_launch_readiness,
     load_launch_readiness_config,
@@ -58,9 +66,38 @@ def configure_desktop_parser(commands: argparse._SubParsersAction[argparse.Argum
     release_audit = actions.add_parser("release-audit")
     release_audit.add_argument("--config", required=True)
     release_audit.add_argument("--project-root", default=".")
+    for name in ("burn-in-plan", "burn-in-evaluate"):
+        burn_in = actions.add_parser(name)
+        burn_in.add_argument("--config", required=True)
+        burn_in.add_argument("--release-config", required=True)
+        burn_in.add_argument("--request", required=True)
+        burn_in.add_argument("--project-root", default=".")
+        if name == "burn-in-evaluate":
+            burn_in.add_argument("--evidence", required=True)
+            burn_in.add_argument("--as-of", required=True)
 
 
 def handle_desktop(args: argparse.Namespace) -> int:
+    if args.desktop_command in {"burn-in-plan", "burn-in-evaluate"}:
+        release = audit_release_readiness(
+            load_release_audit_config(args.release_config), project_root=args.project_root
+        )
+        plan = build_prospective_burn_in_plan(
+            load_prospective_burn_in_config(args.config),
+            release,
+            load_operator_request(args.request),
+        )
+        if args.desktop_command == "burn-in-plan":
+            print(canonical_json(plan))
+            return 0
+        evaluated_at = datetime.fromisoformat(str(args.as_of).replace("Z", "+00:00"))
+        burn_in_assessment = evaluate_prospective_burn_in(
+            plan,
+            load_prospective_burn_in_observations(args.evidence),
+            evaluated_at=evaluated_at,
+        )
+        print(canonical_json(burn_in_assessment))
+        return 0
     if args.desktop_command == "release-audit":
         assessment = audit_release_readiness(
             load_release_audit_config(args.config), project_root=args.project_root

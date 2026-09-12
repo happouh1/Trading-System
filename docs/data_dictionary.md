@@ -1363,3 +1363,24 @@ by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `
   `BLOCKED`.
 - Every process, credential, network, broker-write, sandbox-execution, production-release, and
   live-trading authority field remains false.
+
+## Phase 9Y prospective sandbox burn-in records
+
+### `ProspectiveBurnInPlan`
+
+- Immutable preregistration of operator-supplied UTC window, minimum sessions/days/trades, required
+  regime/symbol/timeframe/strategy coverage, and maximum operational-error tolerances.
+- Binds the complete current Phase 9X assessment and Phase 9Y configuration hashes.
+- Contains no execution, production-release, or live-trading authority.
+
+### `ProspectiveBurnInObservation`
+
+- Deterministic `WEBULL_SANDBOX` evidence with one session, market day, causal observation time,
+  coverage, completed-trade/order counts, incident and reconciliation counts, stale-data and recovery
+  counts, and upstream evidence hash.
+
+### `ProspectiveBurnInAssessment`
+
+- Order-independent aggregate with state `IN_PROGRESS`, `FAIL`, or `PASS`; observed totals; rejected
+  order fraction; missing coverage; sorted reason codes; and an observation Merkle-style root hash.
+- Is evidence only and never performs automatic promotion or a broker write.
