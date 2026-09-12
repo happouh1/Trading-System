@@ -1484,3 +1484,20 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `P9W-DETERMINISTIC`: sort unique reasons and hash the complete assessment identity.
 - `P9W-NO-PRODUCTION`: never access the operator database or perform an operational or trading
   action.
+
+## Phase 9X release consolidation audit rules
+
+- `P9X-CONTAINMENT`: require every inventory path to remain relative to and resolve within the
+  repository root.
+- `P9X-REGULAR-FILE`: require every inventory member to be a nonempty regular file.
+- `P9X-NO-SYMLINK`: reject symbolic links in every inventory path.
+- `P9X-CONTENT-IDENTITY`: hash every valid inventory member with SHA-256.
+- `P9X-PYTHON`: require the exact Python `>=3.12,<3.13` packaging contract.
+- `P9X-DESKTOP-SAFE`: require every Phase 9G authority switch to remain false.
+- `P9X-PAPER-SHADOW`: require Phase 3B to default to `SHADOW` and `INTERNAL_SIMULATOR`.
+- `P9X-WEBULL-SANDBOX`: require sandbox API/event endpoints, disabled automatic SDK retry, and a
+  disabled streaming socket.
+- `P9X-FAIL-CLOSED`: any absent or invalid prerequisite produces sorted blockers and `BLOCKED`.
+- `P9X-LIMITED-READINESS`: readiness permits only review of Phase 9Y planning.
+- `P9X-NO-AUTHORITY`: never write a file, launch a process, load credentials, use the network,
+  contact a broker, execute sandbox activity, release production, or trade.

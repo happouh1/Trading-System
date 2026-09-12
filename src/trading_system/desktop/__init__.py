@@ -113,6 +113,14 @@ from trading_system.desktop.readiness import (
     assess_local_launch_readiness,
     load_launch_readiness_config,
 )
+from trading_system.desktop.release_audit import (
+    ReleaseAuditAssessment,
+    ReleaseAuditConfig,
+    ReleaseAuditState,
+    ReleaseComponentEvidence,
+    audit_release_readiness,
+    load_release_audit_config,
+)
 from trading_system.desktop.upgrade_authorization import (
     DatabaseUpgradeReviewAssessment,
     DatabaseUpgradeReviewAttestation,
@@ -185,6 +193,10 @@ __all__ = [
     "RealDatabaseBackupManifestState",
     "RealDatabaseBackupPreflight",
     "RealDatabaseBackupPreflightState",
+    "ReleaseAuditAssessment",
+    "ReleaseAuditConfig",
+    "ReleaseAuditState",
+    "ReleaseComponentEvidence",
     "TestBackupCapabilityEventType",
     "TestBackupCapabilityState",
     "TestBackupLedgerIntegrityAssessment",
@@ -203,6 +215,7 @@ __all__ = [
     "assess_local_launch_readiness",
     "assess_production_backup_readiness",
     "assess_real_database_backup_preflight",
+    "audit_release_readiness",
     "audit_test_backup_capability_ledger",
     "backup_authorization_message",
     "bind_backup_capability_config_hash",
@@ -240,6 +253,7 @@ __all__ = [
     "load_desktop_launch_config",
     "load_launch_readiness_config",
     "load_local_status_config",
+    "load_release_audit_config",
     "load_upgrade_plan_config",
     "load_upgrade_rehearsal_config",
     "production_backup_readiness_certification_message",

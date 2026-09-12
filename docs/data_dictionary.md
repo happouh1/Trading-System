@@ -1342,3 +1342,24 @@ by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `
   configuration hashes.
 - Explicitly reports that no repair, production action, backup, operator-database write, network,
   broker write, or live-trading action occurred.
+
+## Phase 9X release consolidation audit records
+
+### `ReleaseAuditConfig`
+
+- Immutable strict inventory, policy, and disabled-authority configuration.
+- Binds required subsystem entry points, governing documents, and desktop, paper, and Webull safety
+  configurations to one canonical configuration hash.
+
+### `ReleaseComponentEvidence`
+
+- One deterministic file observation containing component name, repository-relative path, SHA-256
+  content identity, byte size, validity, and canonical reason.
+- Invalid observations contain no content hash or size and fail closed.
+
+### `ReleaseAuditAssessment`
+
+- Sorted component evidence and blockers with states `READY_FOR_PROSPECTIVE_SANDBOX_BURN_IN` or
+  `BLOCKED`.
+- Every process, credential, network, broker-write, sandbox-execution, production-release, and
+  live-trading authority field remains false.

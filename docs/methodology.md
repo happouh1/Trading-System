@@ -1375,3 +1375,16 @@ accepted test consumption performs no backup or other external action.
 6. Sort all failure reasons into a deterministic assessment. Never repair altered evidence.
 7. Keep operator-database, backup, restore, process, network, credential, broker, sandbox-execution,
    and live-trading authority disabled.
+
+## Phase 9X release consolidation audit methodology
+
+1. Load only the strict versioned Phase 9X configuration and resolve the supplied repository root.
+2. Reject path escapes and symbolic-link traversal, then require every configured component and
+   governing document to be a nonempty regular file.
+3. Compute a SHA-256 identity for every verified file and sort the evidence by component name.
+4. Verify the Python 3.12 packaging contract and re-evaluate desktop, paper, and Webull safety
+   defaults directly from their versioned configurations.
+5. Produce a deterministic readiness identity and sorted blocker list without changing any file.
+6. Interpret readiness only as eligibility to plan the separate prospective sandbox burn-in.
+7. Perform no process launch, credential load, network request, broker write, sandbox execution,
+   production release, or live trade.

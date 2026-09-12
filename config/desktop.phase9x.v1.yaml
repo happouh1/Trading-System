@@ -1,0 +1,59 @@
+{
+  "release_audit_version": "9X.1.0",
+  "mode": "READ_ONLY_RELEASE_CONSOLIDATION_AUDIT",
+  "required_components": {
+    "CI": ".github/workflows/ci.yml",
+    "DATA_AND_FEATURES": "src/trading_system/features/__init__.py",
+    "DECISIONS": "src/trading_system/decisions/__init__.py",
+    "DESKTOP_OPERATOR_HOME": "scripts/start-trading-system.ps1",
+    "DOMAIN_CONTRACTS": "src/trading_system/domain/__init__.py",
+    "LEARNING": "src/trading_system/learning/__init__.py",
+    "MARKET_DATA": "src/trading_system/market_data/__init__.py",
+    "OPERATIONS": "src/trading_system/operations/__init__.py",
+    "OPTIONS_RESEARCH": "src/trading_system/options/__init__.py",
+    "PAPER_RUNTIME": "src/trading_system/paper/__init__.py",
+    "PATTERNS": "src/trading_system/patterns/__init__.py",
+    "PORTFOLIO_RESEARCH": "src/trading_system/portfolio/__init__.py",
+    "PYTHON_PACKAGING": "pyproject.toml",
+    "REPLAY_AND_BACKTEST": "src/trading_system/replay/__init__.py",
+    "RESEARCH": "src/trading_system/research/__init__.py",
+    "RISK": "src/trading_system/risk/__init__.py",
+    "SCORING": "src/trading_system/scoring/__init__.py",
+    "STRUCTURE": "src/trading_system/structure/__init__.py",
+    "WEBULL_SANDBOX": "src/trading_system/webull/__init__.py"
+  },
+  "required_documents": [
+    "README.md",
+    "docs/data_dictionary.md",
+    "docs/methodology.md",
+    "docs/open_questions.md",
+    "docs/phase_9w_review.md",
+    "docs/rule_catalog.md"
+  ],
+  "safety_configs": {
+    "desktop": "config/desktop.phase9g.v1.yaml",
+    "paper": "config/paper.phase3b.v1.yaml",
+    "webull": "config/webull.sandbox.v1.yaml"
+  },
+  "policy": {
+    "require_python_312": true,
+    "require_nonempty_regular_files": true,
+    "reject_symlinks": true,
+    "require_shadow_paper_default": true,
+    "require_sandbox_webull_endpoint": true,
+    "require_streaming_disabled": true,
+    "require_automatic_retry_disabled": true,
+    "deterministic_file_hash_inventory": true,
+    "read_only_audit": true
+  },
+  "authority": {
+    "file_write_enabled": false,
+    "process_launch_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false,
+    "production_release_enabled": false
+  }
+}

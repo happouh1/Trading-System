@@ -1368,3 +1368,23 @@ checks SQLite and foreign-key integrity, recomputes capability, event, and recei
 verifies contiguous event ordering and legal state transitions, and fails closed on missing or
 altered evidence. It has no repair function and cannot access the operator database, execute a
 backup, use the network, contact a broker, or trade.
+
+## Phase 9X release consolidation audit
+
+The desktop interface now exposes one deterministic, read-only release audit across the repository's
+implemented market-data, feature, structure, pattern, decision, risk, replay, research, options,
+portfolio, paper, Webull sandbox, operations, and recovery foundations. It verifies nonempty contained
+files, records SHA-256 identities, and rechecks the Python 3.12, shadow-paper, sandbox-endpoint,
+disabled-retry, disabled-streaming, and disabled-desktop-authority contracts.
+
+Run it from the repository with:
+
+```powershell
+python -m trading_system.cli desktop release-audit `
+  --config config/desktop.phase9x.v1.yaml `
+  --project-root .
+```
+
+`READY_FOR_PROSPECTIVE_SANDBOX_BURN_IN` means only that Phase 9Y planning may proceed. The audit
+does not start a process, load credentials, use the network, contact Webull, authorize sandbox
+execution, approve production release, or place a trade.

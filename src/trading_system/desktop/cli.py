@@ -15,6 +15,11 @@ from trading_system.desktop.readiness import (
     assess_local_launch_readiness,
     load_launch_readiness_config,
 )
+from trading_system.desktop.release_audit import (
+    ReleaseAuditState,
+    audit_release_readiness,
+    load_release_audit_config,
+)
 from trading_system.desktop.upgrade_plan import (
     build_local_schema_upgrade_plan,
     load_upgrade_plan_config,
@@ -50,9 +55,23 @@ def configure_desktop_parser(commands: argparse._SubParsersAction[argparse.Argum
     rehearse.add_argument("--project-root", default=".")
     rehearse.add_argument("--source", required=True)
     rehearse.add_argument("--source-revision", required=True)
+    release_audit = actions.add_parser("release-audit")
+    release_audit.add_argument("--config", required=True)
+    release_audit.add_argument("--project-root", default=".")
 
 
 def handle_desktop(args: argparse.Namespace) -> int:
+    if args.desktop_command == "release-audit":
+        assessment = audit_release_readiness(
+            load_release_audit_config(args.config), project_root=args.project_root
+        )
+        print(canonical_json(assessment))
+        return (
+            0
+            if assessment.state
+            is ReleaseAuditState.READY_FOR_PROSPECTIVE_SANDBOX_BURN_IN
+            else 1
+        )
     if args.desktop_command == "rehearse-upgrade":
         result = rehearse_schema_upgrade(
             load_upgrade_rehearsal_config(args.config),
