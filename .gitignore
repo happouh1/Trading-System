@@ -48,6 +48,7 @@ tests/.tmp-phase3d-*/
 .tmp-pytest-*/
 .tmp-phase5d-*/
 .tmp-phase5f-*/
+.tmp-phase11a-*/
 .tmp/
 .p9e-*/
 .p9f-*/

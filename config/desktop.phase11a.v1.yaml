@@ -1,0 +1,26 @@
+{
+  "workstation_version": "11A.1.0",
+  "mode": "READ_ONLY_LOCAL_WORKSTATION",
+  "launcher_config": "config/desktop.phase9g.v1.yaml",
+  "local_status_config": "config/desktop.phase9i.v1.yaml",
+  "release_config": "config/desktop.phase9x.v1.yaml",
+  "burn_in_config": "config/desktop.phase9y.v1.yaml",
+  "burn_in_request": ".operator-home/phase9y/burn-in-request-20260914.json",
+  "burn_in_evidence": ".operator-home/phase9y/burn-in-observations-20260914.json",
+  "output": ".operator-home/trading-workstation.html",
+  "display": {
+    "title": "Trading System",
+    "subtitle": "Multi-Timeframe Research Workstation",
+    "symbols": ["AAPL", "MSFT", "SPY"],
+    "timeframes": ["1W", "1D", "4H", "1H"]
+  },
+  "authority": {
+    "database_write_enabled": false,
+    "process_scheduler_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false
+  }
+}
