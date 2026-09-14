@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import sqlite3
 from dataclasses import replace
 from datetime import UTC, datetime
@@ -171,19 +172,23 @@ def test_alert_workstation_render_is_deterministic_and_safe(tmp_path: Path) -> N
         (alert,),
         canonical_hash(("phase11b", alert.alert_id)),
     )
-    output = (tmp_path / "workstation.html").relative_to(ROOT).as_posix()
-    first = render_alert_workstation(_config(output), snapshot, project_root=ROOT)
-    document = Path(first.output_path).read_text(encoding="utf-8")
-    second = render_alert_workstation(_config(output), snapshot, project_root=ROOT)
-    assert first == second
-    assert "Decision alerts" in document
-    assert "WAIT_FOR_TRIGGER" in document
-    assert "Local display only" in document
-    assert "<script" not in document
-    assert "http://" not in document and "https://" not in document
-    assert not first.network_used
-    assert not first.external_notification_sent
-    assert not first.broker_write_performed
+    directory = ROOT / ".tmp-phase11b-render" / canonical_hash(str(tmp_path)).split(":", 1)[1]
+    output = (directory / "workstation.html").relative_to(ROOT).as_posix()
+    try:
+        first = render_alert_workstation(_config(output), snapshot, project_root=ROOT)
+        document = Path(first.output_path).read_text(encoding="utf-8")
+        second = render_alert_workstation(_config(output), snapshot, project_root=ROOT)
+        assert first == second
+        assert "Decision alerts" in document
+        assert "WAIT_FOR_TRIGGER" in document
+        assert "Local display only" in document
+        assert "<script" not in document
+        assert "http://" not in document and "https://" not in document
+        assert not first.network_used
+        assert not first.external_notification_sent
+        assert not first.broker_write_performed
+    finally:
+        shutil.rmtree(directory, ignore_errors=True)
 
 
 def test_alert_contract_rejects_authority_and_invalid_direction() -> None:
