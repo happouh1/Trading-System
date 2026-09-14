@@ -1,5 +1,25 @@
 # Trading System
 
+Phase 11C adds a deterministic post-close collector for the preregistered Webull sandbox burn-in.
+It opens SQLite read-only, requires same-session sandbox verification, hashes every causal source
+row, and atomically appends one Phase 9Y observation. The operator must explicitly declare the
+observed regime and coverage; the command cannot contact Webull or submit an order.
+
+```powershell
+& .\scripts\collect-burn-in-evidence.ps1 `
+  -SessionId burn-in-20260914-01 `
+  -MarketDay 2026-09-14 `
+  -ObservedAt 2026-09-14T20:00:00Z `
+  -Regime BULLISH `
+  -Symbols AAPL,MSFT,SPY `
+  -Timeframes 1H,DAILY `
+  -Strategies BREAKOUT,RECLAIM
+```
+
+Do not run this before the XNYS close, and declare only coverage actually observed in that session.
+See `docs/proposals/phase_11c_burn_in_evidence_collection_v1.md` and
+`docs/phase_11c_review.md`.
+
 Phase 9G adds a Windows desktop shortcut installer and plain-language operator home. The icon opens
 an installation/readiness screen only; credentials, networking, broker writes, and trading stay off.
 

@@ -1,0 +1,18 @@
+{
+  "collector_version": "11C.1.0",
+  "mode": "LOCAL_SANDBOX_BURN_IN_EVIDENCE_COLLECTION",
+  "plan": ".operator-home/phase9y/burn-in-plan-20260914.json",
+  "evidence_output": ".operator-home/phase9y/burn-in-observations-20260914.json",
+  "environment": "WEBULL_SANDBOX",
+  "calendar": "XNYS",
+  "authority": {
+    "database_read_enabled": true,
+    "local_evidence_write_enabled": true,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_order_submission_enabled": false,
+    "live_trading_enabled": false,
+    "automatic_promotion_enabled": false
+  }
+}

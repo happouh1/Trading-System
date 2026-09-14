@@ -1389,3 +1389,14 @@ production or live-trading conclusion may be drawn.
 
 Phase 10 engineering leaves questions 536–540 unanswered. The current decision is blocked pending
 real Phase 9Y evidence and an independently reviewed request.
+## Added for Phase 11C burn-in evidence collection
+
+541. Which independently reviewed source assigns the daily `BEARISH`, `BULLISH`, or `RANGE` regime?
+542. Which operator attests that declared symbol, timeframe, and strategy coverage was genuinely
+     observed rather than merely configured?
+543. Should a future signed collector receipt be retained separately from the Phase 9Y evidence file?
+544. Which after-close scheduler and authenticated notification channel should request collection?
+545. How should corrected session evidence be represented without overwriting a prior observation?
+
+Phase 11C leaves these governance choices unresolved. It therefore requires explicit classification,
+does not schedule itself, and rejects conflicting recollection instead of replacing evidence.

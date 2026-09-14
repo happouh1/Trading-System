@@ -88,6 +88,14 @@ from trading_system.desktop.backup_rehearsal import (
     load_backup_rehearsal_config,
     rehearse_authorized_backup,
 )
+from trading_system.desktop.burn_in_collector import (
+    BurnInCollectionResult,
+    BurnInCollectorConfig,
+    BurnInCollectorConfigError,
+    collect_burn_in_observation,
+    load_burn_in_collector_config,
+    load_burn_in_collector_plan,
+)
 from trading_system.desktop.dashboard import (
     DesktopDashboardArtifact,
     DesktopDashboardConfig,
@@ -187,6 +195,9 @@ __all__ = [
     "BackupReadinessCertificationConfig",
     "BackupReadinessConfig",
     "BackupRehearsalConfig",
+    "BurnInCollectionResult",
+    "BurnInCollectorConfig",
+    "BurnInCollectorConfigError",
     "DatabaseUpgradeReviewAssessment",
     "DatabaseUpgradeReviewAttestation",
     "DatabaseUpgradeReviewConfig",
@@ -265,6 +276,7 @@ __all__ = [
     "build_prospective_burn_in_plan",
     "build_real_database_backup_manifest",
     "build_test_backup_execution_receipt",
+    "collect_burn_in_observation",
     "consume_test_backup_capability",
     "database_upgrade_review_message",
     "evaluate_backup_authorization_evidence",
@@ -285,6 +297,8 @@ __all__ = [
     "load_backup_readiness_certification_config",
     "load_backup_readiness_config",
     "load_backup_rehearsal_config",
+    "load_burn_in_collector_config",
+    "load_burn_in_collector_plan",
     "load_database_upgrade_review_config",
     "load_desktop_dashboard_config",
     "load_desktop_launch_config",

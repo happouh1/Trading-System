@@ -1400,3 +1400,10 @@ by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `
 - Binds Phase 9X, Phase 9Y, request, and Phase 10 configuration hashes.
 - Every file-write, process, credential, network, broker-write, sandbox-execution,
   production-deployment, and live-trading field remains false.
+## Phase 11C burn-in collection
+
+`BurnInCollectorConfig` grants only read-only database access and atomic local evidence-file writes.
+`BurnInCollectionResult` binds the resulting Phase 9Y observation, insertion status, source-row
+count, evidence path, evidence-file hash, and collector configuration hash. The upstream
+`evidence_hash` covers the plan, explicit classifications, derived metrics, and sorted causal source
+row identities/payload hashes. No new database table is introduced.

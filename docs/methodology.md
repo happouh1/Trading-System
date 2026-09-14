@@ -1415,3 +1415,13 @@ accepted test consumption performs no backup or other external action.
 5. Sort blockers and hash every source plus the complete final assessment identity.
 6. Never translate any classification into process, credential, network, broker, sandbox,
    deployment, capital, or live-trading authority.
+## Phase 11C burn-in evidence collection
+
+Phase 11C materializes one observation only after the corresponding XNYS regular session closes.
+It loads the immutable preregistered plan artifact rather than reconstructing it against a later
+release inventory. It reads the paper/Webull SQLite database in query-only mode, requires causal same-session sandbox
+verification, and hashes sorted source-row identities and payload hashes. Operational totals are
+derived from persisted lifecycle events through the observation timestamp. Non-derivable coverage
+labels remain explicit operator inputs constrained by the preregistered Phase 9Y plan. Evidence is
+written with an atomic same-directory replacement; identical reruns are idempotent and conflicting
+same-session reruns fail closed.

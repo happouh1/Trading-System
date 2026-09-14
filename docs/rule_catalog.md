@@ -1531,3 +1531,14 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `P10-BLOCK`: missing, future, incomplete, or nonpassing evidence fails closed.
 - `P10-NO-AUTO-DEPLOY`: no classification automatically deploys or changes the system.
 - `P10-NO-LIVE`: even live-review eligibility grants no live-trading authority.
+## Phase 11C operational evidence rules
+
+- `BURN-COLLECT-001`: reject collection before the authoritative XNYS regular-session close.
+- `BURN-COLLECT-000`: load and validate the immutable preregistered plan artifact; never rebuild it.
+- `BURN-COLLECT-002`: require a causal same-session Webull sandbox verification.
+- `BURN-COLLECT-003`: open the source database read-only and include no future-timestamped row.
+- `BURN-COLLECT-004`: accept only explicit coverage values contained in the preregistered plan.
+- `BURN-COLLECT-005`: bind metrics and sorted source payload hashes into the observation hash.
+- `BURN-COLLECT-006`: identical collection is idempotent; conflicting same-session evidence fails.
+- `BURN-COLLECT-007`: collector authority excludes network, credentials, broker writes, sandbox order
+  submission, promotion, and live trading.

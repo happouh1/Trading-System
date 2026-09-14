@@ -3,9 +3,14 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 
+from trading_system.desktop.burn_in_collector import (
+    collect_burn_in_observation,
+    load_burn_in_collector_config,
+    load_burn_in_collector_plan,
+)
 from trading_system.desktop.dashboard import (
     load_desktop_dashboard_config,
     render_desktop_dashboard,
@@ -81,6 +86,17 @@ def configure_desktop_parser(commands: argparse._SubParsersAction[argparse.Argum
         if name == "burn-in-evaluate":
             burn_in.add_argument("--evidence", required=True)
             burn_in.add_argument("--as-of", required=True)
+    collect = actions.add_parser("burn-in-collect")
+    collect.add_argument("--config", required=True)
+    collect.add_argument("--database", required=True)
+    collect.add_argument("--session-id", required=True)
+    collect.add_argument("--market-day", required=True)
+    collect.add_argument("--observed-at", required=True)
+    collect.add_argument("--regime", required=True)
+    collect.add_argument("--symbols", required=True)
+    collect.add_argument("--timeframes", required=True)
+    collect.add_argument("--strategies", required=True)
+    collect.add_argument("--project-root", default=".")
     final_status = actions.add_parser("final-decision-status")
     final_status.add_argument("--config", required=True)
     final_status.add_argument("--release-config", required=True)
@@ -98,6 +114,23 @@ def configure_desktop_parser(commands: argparse._SubParsersAction[argparse.Argum
 
 
 def handle_desktop(args: argparse.Namespace) -> int:
+    if args.desktop_command == "burn-in-collect":
+        collector_config = load_burn_in_collector_config(args.config)
+        collection_result = collect_burn_in_observation(
+            collector_config,
+            load_burn_in_collector_plan(collector_config, project_root=args.project_root),
+            project_root=args.project_root,
+            database=args.database,
+            session_id=args.session_id,
+            market_day=date.fromisoformat(str(args.market_day)),
+            observed_at=datetime.fromisoformat(str(args.observed_at).replace("Z", "+00:00")),
+            regime=str(args.regime),
+            symbols=_csv(args.symbols),
+            timeframes=_csv(args.timeframes),
+            strategy_categories=_csv(args.strategies),
+        )
+        print(canonical_json(collection_result))
+        return 0
     if args.desktop_command in {"final-decision-status", "final-decision"}:
         evaluated_at = datetime.fromisoformat(str(args.as_of).replace("Z", "+00:00"))
         release = audit_release_readiness(
@@ -285,3 +318,10 @@ def handle_desktop(args: argparse.Namespace) -> int:
 
 def default_project_root() -> Path:
     return Path(__file__).parents[3]
+
+
+def _csv(value: object) -> tuple[str, ...]:
+    result = tuple(part.strip() for part in str(value).split(",") if part.strip())
+    if not result:
+        raise ValueError("Phase 11C classification list must be non-empty")
+    return result

@@ -50,6 +50,8 @@ tests/.tmp-phase3d-*/
 .tmp-phase5f-*/
 .tmp-phase11a-*/
 .tmp-phase11b-*/
+.tmp-phase11c-*/
+.pt/
 .tmp/
 .p9e-*/
 .p9f-*/
