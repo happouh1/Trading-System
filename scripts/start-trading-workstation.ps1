@@ -5,7 +5,7 @@ param(
 $ErrorActionPreference = "Stop"
 $projectRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..")).Path
 $pythonPath = Join-Path $projectRoot ".venv\Scripts\python.exe"
-$configPath = Join-Path $projectRoot "config\desktop.phase11a.v1.yaml"
+$configPath = Join-Path $projectRoot "config\desktop.phase11b.v1.yaml"
 
 if (-not (Test-Path -LiteralPath $pythonPath -PathType Leaf)) {
     Write-Host "Trading Workstation needs its Python environment." -ForegroundColor Red
@@ -15,7 +15,7 @@ if (-not (Test-Path -LiteralPath $pythonPath -PathType Leaf)) {
 }
 
 $asOf = [DateTime]::UtcNow.ToString("o")
-$rendered = & $pythonPath -m trading_system.desktop.workstation `
+$rendered = & $pythonPath -m trading_system.desktop.workstation_alerts `
     --config $configPath `
     --project-root $projectRoot `
     --as-of $asOf

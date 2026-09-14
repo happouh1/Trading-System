@@ -1,0 +1,16 @@
+{
+  "workstation_alert_version": "11B.1.0",
+  "mode": "READ_ONLY_LOCAL_DECISION_ALERTS",
+  "base_config": "config/desktop.phase11a.v1.yaml",
+  "output": ".operator-home/trading-workstation.html",
+  "max_alerts": 40,
+  "authority": {
+    "database_write_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "external_notifications_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false
+  }
+}
