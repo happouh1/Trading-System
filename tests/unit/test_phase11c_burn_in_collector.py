@@ -326,10 +326,15 @@ def test_config_rejects_network_and_escaping_output(tmp_path: Path) -> None:
         load_burn_in_collector_config(path)
 
 
-def test_saved_plan_identity_is_loaded_without_reconstruction() -> None:
-    config = load_burn_in_collector_config(CONFIG)
-    plan = load_burn_in_collector_plan(config, project_root=ROOT)
-    assert plan.plan_id == "prospective_burn_in_plan_7702b2dc024250d271ecca8afca344d9"
+def test_saved_plan_identity_is_loaded_without_reconstruction(tmp_path: Path) -> None:
+    raw = json.loads(CONFIG.read_text(encoding="utf-8"))
+    raw["plan"] = "plan.json"
+    config_path = tmp_path / "collector.json"
+    config_path.write_text(json.dumps(raw), encoding="utf-8")
+    (tmp_path / "plan.json").write_text(canonical_json(_plan()), encoding="utf-8")
+    config = load_burn_in_collector_config(config_path)
+    plan = load_burn_in_collector_plan(config, project_root=tmp_path)
+    assert plan.plan_id == "plan-1"
     assert plan.window_start == datetime(2026, 9, 14, 13, 30, tzinfo=UTC)
 
 
@@ -417,14 +422,12 @@ def test_cli_collects_without_network_or_broker_write(
     output = directory / "observations.json"
     raw = json.loads(CONFIG.read_text(encoding="utf-8"))
     raw["evidence_output"] = output.relative_to(ROOT).as_posix()
+    plan_path = directory / "plan.json"
+    plan_path.parent.mkdir(parents=True, exist_ok=True)
+    plan_path.write_text(canonical_json(_plan()), encoding="utf-8")
+    raw["plan"] = plan_path.relative_to(ROOT).as_posix()
     runtime_lock = directory / "runtime-lock.json"
-    runtime_lock.parent.mkdir(parents=True, exist_ok=True)
-    runtime_lock_payload = _runtime_lock()
-    runtime_lock_payload["plan_id"] = load_burn_in_collector_plan(
-        load_burn_in_collector_config(CONFIG),
-        project_root=ROOT,
-    ).plan_id
-    runtime_lock.write_text(json.dumps(runtime_lock_payload), encoding="utf-8")
+    runtime_lock.write_text(json.dumps(_runtime_lock()), encoding="utf-8")
     raw["runtime_lock"] = runtime_lock.relative_to(ROOT).as_posix()
     collector_config = tmp_path / "collector.json"
     collector_config.write_text(json.dumps(raw), encoding="utf-8")
