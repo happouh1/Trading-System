@@ -1413,3 +1413,20 @@ row identities/payload hashes. No new database table is introduced.
 ID, plan path and content hash, evidence path/presence/content hash, and Phase 11C configuration
 hash. Its authority flags prove that status inspection performed no file, network, credential,
 broker, sandbox-execution, promotion, or live-trading action.
+
+## Phase 11E burn-in runtime continuity
+
+### `BurnInRuntimeLock`
+
+- Immutable expected code version, configuration hash, data revision, and calendar version derived
+  from the initial persisted burn-in session.
+- Binds the Phase 9Y plan, baseline session ID, strict schema version, lock hash, and mandatory
+  retrospective-baseline disclosure.
+
+### `BurnInRuntimeValidation`
+
+- Deterministic per-session comparison with sorted mismatch fields and a content-derived validation
+  ID.
+- `matched` is true only when all four runtime identity fields match exactly.
+- Authority fields prove the validation used no database write, network, credentials, broker write,
+  or live-trading action.

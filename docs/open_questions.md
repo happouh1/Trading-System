@@ -1410,3 +1410,15 @@ does not schedule itself, and rejects conflicting recollection instead of replac
 550. Which independent reviewer confirms that the workstation and final decision use the same plan?
 
 Phase 11D leaves these governance choices unresolved and grants no execution or promotion authority.
+
+## Added for Phase 11E burn-in runtime continuity lock
+
+551. Will an independent reviewer accept a baseline observed after the prospective window opened?
+552. Which signed release artifact should replace the current persisted-session baseline next cycle?
+553. Must each future burn-in session use the same code commit, or may reviewed emergency fixes
+     create a new, separately preregistered cohort?
+554. Who may approve a runtime-lock replacement, and how is the superseded lock retained?
+555. Should the session-start command enforce the same lock before inserting a new session row?
+
+Phase 11E leaves these governance choices unresolved. It enforces continuity during collection but
+does not convert the retrospective baseline into preregistered evidence.

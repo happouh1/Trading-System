@@ -13,6 +13,10 @@ from decimal import Decimal
 from pathlib import Path
 from types import MappingProxyType
 
+from trading_system.desktop.burn_in_runtime_lock import (
+    load_burn_in_runtime_lock,
+    validate_burn_in_runtime,
+)
 from trading_system.desktop.prospective_burn_in import (
     ProspectiveBurnInObservation,
     ProspectiveBurnInPlan,
@@ -40,6 +44,8 @@ class BurnInCollectionResult:
     evidence_path: str
     evidence_file_hash: str
     collector_config_hash: str
+    runtime_validation_id: str
+    runtime_lock_hash: str
     collector_version: str = "11C.1.0"
     database_opened_read_only: bool = True
     local_evidence_write_performed: bool = True
@@ -55,6 +61,8 @@ class BurnInCollectionResult:
             or not self.evidence_path
             or not _sha(self.evidence_file_hash)
             or not _sha(self.collector_config_hash)
+            or not self.runtime_validation_id
+            or not _sha(self.runtime_lock_hash)
             or self.collector_version != "11C.1.0"
             or not self.database_opened_read_only
             or self.local_evidence_write_performed != self.inserted
@@ -104,6 +112,7 @@ def load_burn_in_collector_config(path: str | Path) -> BurnInCollectorConfig:
         "mode",
         "plan",
         "evidence_output",
+        "runtime_lock",
         "environment",
         "calendar",
         "authority",
@@ -128,6 +137,7 @@ def load_burn_in_collector_config(path: str | Path) -> BurnInCollectorConfig:
         or raw["calendar"] != "XNYS"
         or not _relative_json(raw["plan"])
         or not _relative_json(raw["evidence_output"])
+        or not _relative_json(raw["runtime_lock"])
         or authority != expected_authority
     ):
         raise BurnInCollectorConfigError("Phase 11C configuration is invalid or unsafe")
@@ -248,12 +258,25 @@ def collect_burn_in_observation(
 
     root = Path(project_root).resolve()
     output = _contained(root, config.values["evidence_output"])
+    runtime_lock = load_burn_in_runtime_lock(_contained(root, config.values["runtime_lock"]))
     database_path = Path(database).resolve()
     if not database_path.is_file():
         raise ValueError("Phase 11C database does not exist")
     connection = sqlite3.connect(f"file:{database_path.as_posix()}?mode=ro", uri=True)
     try:
         connection.execute("PRAGMA query_only = ON")
+        runtime_validation = validate_burn_in_runtime(
+            connection,
+            runtime_lock,
+            session_id=session_id,
+            plan_id=plan.plan_id,
+            validated_at=observed_at,
+        )
+        if not runtime_validation.matched:
+            raise ValueError(
+                "Phase 11E burn-in runtime drift: "
+                + ", ".join(runtime_validation.mismatch_fields)
+            )
         source_rows = _source_rows(connection, session_id, observed_at)
         _validate_session(connection, session_id, observed_at)
         metrics = _metrics(connection, session_id, observed_at)
@@ -272,6 +295,8 @@ def collect_burn_in_observation(
             selected_strategies,
             metrics,
             source_rows,
+            runtime_validation.validation_id,
+            runtime_lock.lock_hash,
             config.config_hash,
         )
     )
@@ -303,6 +328,8 @@ def collect_burn_in_observation(
         str(output),
         file_hash,
         config.config_hash,
+        runtime_validation.validation_id,
+        runtime_lock.lock_hash,
         local_evidence_write_performed=inserted,
     )
 

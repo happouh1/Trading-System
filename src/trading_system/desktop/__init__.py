@@ -96,6 +96,13 @@ from trading_system.desktop.burn_in_collector import (
     load_burn_in_collector_config,
     load_burn_in_collector_plan,
 )
+from trading_system.desktop.burn_in_runtime_lock import (
+    BurnInRuntimeLock,
+    BurnInRuntimeLockConfigError,
+    BurnInRuntimeValidation,
+    load_burn_in_runtime_lock,
+    validate_burn_in_runtime,
+)
 from trading_system.desktop.burn_in_status import (
     ImmutableBurnInStatus,
     inspect_immutable_burn_in,
@@ -202,6 +209,9 @@ __all__ = [
     "BurnInCollectionResult",
     "BurnInCollectorConfig",
     "BurnInCollectorConfigError",
+    "BurnInRuntimeLock",
+    "BurnInRuntimeLockConfigError",
+    "BurnInRuntimeValidation",
     "DatabaseUpgradeReviewAssessment",
     "DatabaseUpgradeReviewAttestation",
     "DatabaseUpgradeReviewConfig",
@@ -305,6 +315,7 @@ __all__ = [
     "load_backup_rehearsal_config",
     "load_burn_in_collector_config",
     "load_burn_in_collector_plan",
+    "load_burn_in_runtime_lock",
     "load_database_upgrade_review_config",
     "load_desktop_dashboard_config",
     "load_desktop_launch_config",
@@ -322,4 +333,5 @@ __all__ = [
     "rehearse_authorized_backup",
     "rehearse_schema_upgrade",
     "render_desktop_dashboard",
+    "validate_burn_in_runtime",
 ]

@@ -1,5 +1,11 @@
 # Trading System
 
+Phase 11E locks every collected burn-in session to the initial persisted runtime identity: code
+version, configuration hash, data revision, and calendar version. Runtime drift fails closed before
+evidence is written. Because the window had already opened, the baseline is truthfully disclosed as
+retrospective rather than preregistered. See
+`docs/proposals/phase_11e_burn_in_runtime_continuity_lock_v1.md` and `docs/phase_11e_review.md`.
+
 Phase 11D makes burn-in progress read-only and identity-safe. The CLI and workstation now evaluate
 the immutable preregistered plan artifact instead of rebuilding a different plan from later
 repository state.

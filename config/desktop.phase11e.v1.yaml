@@ -1,0 +1,23 @@
+{
+  "runtime_lock_version": "11E.1.0",
+  "mode": "CONTINUITY_LOCK_FROM_INITIAL_SESSION",
+  "plan_id": "prospective_burn_in_plan_7702b2dc024250d271ecca8afca344d9",
+  "baseline": {
+    "session_id": "burn-in-20260914-01",
+    "code_version": "0.2.0",
+    "config_hash": "sha256:e707870227ebeb06c60dd94d6283dc8a63160685ebb15447b0dbf89480f8ff7c",
+    "data_revision": "WEBULL_SANDBOX_BURNIN_20260914",
+    "calendar_version": "exchange-calendars-4"
+  },
+  "retrospective_baseline_disclosed": true,
+  "authority": {
+    "database_read_enabled": true,
+    "database_write_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false,
+    "automatic_promotion_enabled": false
+  }
+}

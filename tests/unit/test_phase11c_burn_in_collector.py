@@ -55,9 +55,40 @@ def _plan() -> ProspectiveBurnInPlan:
 def _config(tmp_path: Path) -> Path:
     raw = json.loads(CONFIG.read_text(encoding="utf-8"))
     raw["evidence_output"] = "observations.json"
+    raw["runtime_lock"] = "runtime-lock.json"
+    (tmp_path / "runtime-lock.json").write_text(
+        json.dumps(_runtime_lock()),
+        encoding="utf-8",
+    )
     path = tmp_path / "collector.json"
     path.write_text(json.dumps(raw), encoding="utf-8")
     return path
+
+
+def _runtime_lock() -> dict[str, object]:
+    return {
+        "runtime_lock_version": "11E.1.0",
+        "mode": "CONTINUITY_LOCK_FROM_INITIAL_SESSION",
+        "plan_id": "plan-1",
+        "baseline": {
+            "session_id": "burn-1",
+            "code_version": "test",
+            "config_hash": HASH,
+            "data_revision": "fixture",
+            "calendar_version": "exchange-calendars-4",
+        },
+        "retrospective_baseline_disclosed": True,
+        "authority": {
+            "database_read_enabled": True,
+            "database_write_enabled": False,
+            "network_enabled": False,
+            "credential_loading_enabled": False,
+            "broker_writes_enabled": False,
+            "sandbox_execution_enabled": False,
+            "live_trading_enabled": False,
+            "automatic_promotion_enabled": False,
+        },
+    }
 
 
 def _insert(
@@ -320,6 +351,8 @@ def test_collects_metrics_atomically_and_is_idempotent(tmp_path: Path) -> None:
     assert first.observation.stale_data_events == 1
     assert first.observation.unresolved_recoveries == 1
     assert first.source_row_count > 1
+    assert first.runtime_validation_id.startswith("burn_in_runtime_validation_")
+    assert first.runtime_lock_hash.startswith("sha256:")
     assert not first.network_used
     assert not first.broker_write_performed
 
@@ -356,6 +389,17 @@ def test_rejects_session_without_operational_evidence(tmp_path: Path) -> None:
         _collect(tmp_path, database)
 
 
+def test_rejects_runtime_identity_drift(tmp_path: Path) -> None:
+    database = tmp_path / "paper.sqlite"
+    _database(database)
+    with sqlite3.connect(database) as connection:
+        connection.execute(
+            "UPDATE paper_sessions SET code_version='changed' WHERE session_id='burn-1'"
+        )
+    with pytest.raises(ValueError, match="runtime drift: code_version"):
+        _collect(tmp_path, database)
+
+
 def test_result_contract_rejects_authority(tmp_path: Path) -> None:
     database = tmp_path / "paper.sqlite"
     _database(database)
@@ -373,6 +417,15 @@ def test_cli_collects_without_network_or_broker_write(
     output = directory / "observations.json"
     raw = json.loads(CONFIG.read_text(encoding="utf-8"))
     raw["evidence_output"] = output.relative_to(ROOT).as_posix()
+    runtime_lock = directory / "runtime-lock.json"
+    runtime_lock.parent.mkdir(parents=True, exist_ok=True)
+    runtime_lock_payload = _runtime_lock()
+    runtime_lock_payload["plan_id"] = load_burn_in_collector_plan(
+        load_burn_in_collector_config(CONFIG),
+        project_root=ROOT,
+    ).plan_id
+    runtime_lock.write_text(json.dumps(runtime_lock_payload), encoding="utf-8")
+    raw["runtime_lock"] = runtime_lock.relative_to(ROOT).as_posix()
     collector_config = tmp_path / "collector.json"
     collector_config.write_text(json.dumps(raw), encoding="utf-8")
     try:

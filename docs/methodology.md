@@ -1433,3 +1433,14 @@ same-session reruns fail closed.
 4. Load the configured observations, or use an explicit empty set when the evidence file is absent.
 5. Evaluate causally at the supplied UTC time and bind the result to exact file-content hashes.
 6. Display the same assessment in the workstation, failing closed if evidence paths disagree.
+
+## Phase 11E burn-in runtime continuity methodology
+
+1. Load the strict lock artifact referenced by the Phase 11C collector configuration.
+2. Confirm that the lock and saved burn-in plan have the same immutable plan identifier.
+3. Read the requested session identity from SQLite through a query-only connection.
+4. Compare code version, configuration hash, data revision, and calendar version exactly.
+5. Fail before evidence materialization on a missing session or any sorted mismatch.
+6. Bind the lock hash and deterministic validation identifier into collected evidence.
+7. Disclose that the initial-session baseline was observed after the window began.
+8. Perform no network request, credential load, broker write, sandbox execution, or promotion.

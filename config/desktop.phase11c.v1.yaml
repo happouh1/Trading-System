@@ -3,6 +3,7 @@
   "mode": "LOCAL_SANDBOX_BURN_IN_EVIDENCE_COLLECTION",
   "plan": ".operator-home/phase9y/burn-in-plan-20260914.json",
   "evidence_output": ".operator-home/phase9y/burn-in-observations-20260914.json",
+  "runtime_lock": "config/desktop.phase11e.v1.yaml",
   "environment": "WEBULL_SANDBOX",
   "calendar": "XNYS",
   "authority": {

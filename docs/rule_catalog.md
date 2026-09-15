@@ -1550,3 +1550,16 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `BIS-004`: The workstation and collector evidence paths MUST match exactly.
 - `BIS-005`: Status inspection MUST NOT write, use credentials or network access, execute sandbox
   orders, promote a release, or enable live trading.
+
+## Phase 11E runtime continuity rules
+
+- `BIRL-001`: The collector MUST load one strict lock contained by the project root.
+- `BIRL-002`: The lock plan ID MUST equal the immutable collector plan ID.
+- `BIRL-003`: Code version, configuration hash, data revision, and calendar version MUST match
+  exactly for every collected session.
+- `BIRL-004`: A missing, future-known, or mismatched session MUST fail before evidence is written.
+- `BIRL-005`: Mismatch fields MUST be unique, sorted, and included in a deterministic validation ID.
+- `BIRL-006`: Collected evidence MUST bind the runtime-lock hash and validation ID.
+- `BIRL-007`: The v1 lock MUST disclose that its baseline was observed after the window opened.
+- `BIRL-008`: Validation MUST NOT write to SQLite, use network or credentials, contact a broker,
+  execute an order, promote a release, or enable live trading.
