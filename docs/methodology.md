@@ -1425,3 +1425,11 @@ derived from persisted lifecycle events through the observation timestamp. Non-d
 labels remain explicit operator inputs constrained by the preregistered Phase 9Y plan. Evidence is
 written with an atomic same-directory replacement; identical reruns are idempotent and conflicting
 same-session reruns fail closed.
+## Phase 11D immutable burn-in status methodology
+
+1. Load and validate the Phase 11C configuration.
+2. Resolve the saved plan and evidence paths inside the project root.
+3. Parse the immutable preregistered plan; never reconstruct it from current release state.
+4. Load the configured observations, or use an explicit empty set when the evidence file is absent.
+5. Evaluate causally at the supplied UTC time and bind the result to exact file-content hashes.
+6. Display the same assessment in the workstation, failing closed if evidence paths disagree.

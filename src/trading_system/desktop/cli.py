@@ -11,6 +11,7 @@ from trading_system.desktop.burn_in_collector import (
     load_burn_in_collector_config,
     load_burn_in_collector_plan,
 )
+from trading_system.desktop.burn_in_status import inspect_immutable_burn_in
 from trading_system.desktop.dashboard import (
     load_desktop_dashboard_config,
     render_desktop_dashboard,
@@ -97,6 +98,10 @@ def configure_desktop_parser(commands: argparse._SubParsersAction[argparse.Argum
     collect.add_argument("--timeframes", required=True)
     collect.add_argument("--strategies", required=True)
     collect.add_argument("--project-root", default=".")
+    burn_in_status = actions.add_parser("burn-in-status")
+    burn_in_status.add_argument("--config", required=True)
+    burn_in_status.add_argument("--as-of", required=True)
+    burn_in_status.add_argument("--project-root", default=".")
     final_status = actions.add_parser("final-decision-status")
     final_status.add_argument("--config", required=True)
     final_status.add_argument("--release-config", required=True)
@@ -114,6 +119,14 @@ def configure_desktop_parser(commands: argparse._SubParsersAction[argparse.Argum
 
 
 def handle_desktop(args: argparse.Namespace) -> int:
+    if args.desktop_command == "burn-in-status":
+        burn_in_status = inspect_immutable_burn_in(
+            load_burn_in_collector_config(args.config),
+            project_root=args.project_root,
+            evaluated_at=datetime.fromisoformat(str(args.as_of).replace("Z", "+00:00")),
+        )
+        print(canonical_json(burn_in_status))
+        return 0
     if args.desktop_command == "burn-in-collect":
         collector_config = load_burn_in_collector_config(args.config)
         collection_result = collect_burn_in_observation(

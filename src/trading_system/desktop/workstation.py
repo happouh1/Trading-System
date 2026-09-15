@@ -16,15 +16,13 @@ from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from types import MappingProxyType
 
+from trading_system.desktop.burn_in_collector import (
+    load_burn_in_collector_config,
+    load_burn_in_collector_plan,
+)
+from trading_system.desktop.burn_in_status import inspect_immutable_burn_in
 from trading_system.desktop.launcher import inspect_desktop_launcher, load_desktop_launch_config
 from trading_system.desktop.local_status import inspect_local_operations, load_local_status_config
-from trading_system.desktop.prospective_burn_in import (
-    build_prospective_burn_in_plan,
-    evaluate_prospective_burn_in,
-    load_operator_request,
-    load_prospective_burn_in_config,
-    load_prospective_burn_in_observations,
-)
 from trading_system.desktop.release_audit import audit_release_readiness, load_release_audit_config
 from trading_system.serialization import canonical_hash, canonical_json, deterministic_id
 
@@ -200,6 +198,7 @@ def load_workstation_config(path: str | Path) -> WorkstationConfig:
         "burn_in_config",
         "burn_in_request",
         "burn_in_evidence",
+        "burn_in_collector_config",
         "output",
         "display",
         "authority",
@@ -275,6 +274,7 @@ def inspect_workstation(
             "burn_in_config",
             "burn_in_request",
             "burn_in_evidence",
+            "burn_in_collector_config",
         )
     }
     launch = inspect_desktop_launcher(
@@ -296,20 +296,22 @@ def inspect_workstation(
     required_trades = 0
     rejection_fraction = Decimal(0)
     maximum_rejection_fraction = Decimal(0)
-    reasons: tuple[str, ...] = ("BURN_IN_REQUEST_MISSING",)
+    reasons: tuple[str, ...] = ("BURN_IN_PLAN_MISSING",)
     burn_state = "NOT_REGISTERED"
-    if paths["burn_in_request"].is_file():
-        plan = build_prospective_burn_in_plan(
-            load_prospective_burn_in_config(paths["burn_in_config"]),
-            release,
-            load_operator_request(paths["burn_in_request"]),
+    if paths["burn_in_collector_config"].is_file():
+        collector_config = load_burn_in_collector_config(paths["burn_in_collector_config"])
+        immutable_status = inspect_immutable_burn_in(
+            collector_config,
+            project_root=root,
+            evaluated_at=as_of,
         )
-        observations = (
-            load_prospective_burn_in_observations(paths["burn_in_evidence"])
-            if paths["burn_in_evidence"].is_file()
-            else ()
+        if Path(immutable_status.evidence_path) != paths["burn_in_evidence"]:
+            raise ValueError("Phase 11A and Phase 11D burn-in evidence paths differ")
+        plan = load_burn_in_collector_plan(
+            collector_config,
+            project_root=root,
         )
-        assessment = evaluate_prospective_burn_in(plan, observations, evaluated_at=as_of)
+        assessment = immutable_status.assessment
         plan_id = plan.plan_id
         window_start = plan.window_start.isoformat()
         window_end = plan.window_end.isoformat()

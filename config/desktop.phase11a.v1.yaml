@@ -7,6 +7,7 @@
   "burn_in_config": "config/desktop.phase9y.v1.yaml",
   "burn_in_request": ".operator-home/phase9y/burn-in-request-20260914.json",
   "burn_in_evidence": ".operator-home/phase9y/burn-in-observations-20260914.json",
+  "burn_in_collector_config": "config/desktop.phase11c.v1.yaml",
   "output": ".operator-home/trading-workstation.html",
   "display": {
     "title": "Trading System",

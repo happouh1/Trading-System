@@ -1400,3 +1400,13 @@ real Phase 9Y evidence and an independently reviewed request.
 
 Phase 11C leaves these governance choices unresolved. It therefore requires explicit classification,
 does not schedule itself, and rejects conflicting recollection instead of replacing evidence.
+
+## Added for Phase 11D immutable burn-in status
+
+546. Who independently verifies the saved plan file hash before reviewing final burn-in results?
+547. Should daily status snapshots be signed and retained, or regenerated from immutable evidence?
+548. Which operator-facing timezone should accompany the authoritative UTC timestamps?
+549. What visual warning should appear if the evidence file is absent versus present but empty?
+550. Which independent reviewer confirms that the workstation and final decision use the same plan?
+
+Phase 11D leaves these governance choices unresolved and grants no execution or promotion authority.

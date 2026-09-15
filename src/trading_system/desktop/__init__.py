@@ -96,6 +96,10 @@ from trading_system.desktop.burn_in_collector import (
     load_burn_in_collector_config,
     load_burn_in_collector_plan,
 )
+from trading_system.desktop.burn_in_status import (
+    ImmutableBurnInStatus,
+    inspect_immutable_burn_in,
+)
 from trading_system.desktop.dashboard import (
     DesktopDashboardArtifact,
     DesktopDashboardConfig,
@@ -213,6 +217,7 @@ __all__ = [
     "FinalDecisionRequest",
     "FinalDecisionState",
     "FinalDecisionTarget",
+    "ImmutableBurnInStatus",
     "LaunchReadinessConfig",
     "LocalLaunchReadiness",
     "LocalOperationsStatus",
@@ -285,6 +290,7 @@ __all__ = [
     "evaluate_production_backup_readiness_certification",
     "evaluate_prospective_burn_in",
     "inspect_desktop_launcher",
+    "inspect_immutable_burn_in",
     "inspect_local_operations",
     "issue_test_backup_capability",
     "load_backup_authorization_config",

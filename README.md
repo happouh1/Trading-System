@@ -1,5 +1,19 @@
 # Trading System
 
+Phase 11D makes burn-in progress read-only and identity-safe. The CLI and workstation now evaluate
+the immutable preregistered plan artifact instead of rebuilding a different plan from later
+repository state.
+
+```powershell
+$asOf = [DateTime]::UtcNow.ToString("o")
+python -m trading_system.cli desktop burn-in-status `
+  --config config/desktop.phase11c.v1.yaml `
+  --as-of $asOf `
+  --project-root .
+```
+
+See `docs/proposals/phase_11d_immutable_burn_in_status_v1.md` and `docs/phase_11d_review.md`.
+
 Phase 11C adds a deterministic post-close collector for the preregistered Webull sandbox burn-in.
 It opens SQLite read-only, requires same-session sandbox verification, hashes every causal source
 row, and atomically appends one Phase 9Y observation. The operator must explicitly declare the

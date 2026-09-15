@@ -1407,3 +1407,9 @@ by distinct role. `paper_certification_assessments` stores one `REVIEW_READY`, `
 count, evidence path, evidence-file hash, and collector configuration hash. The upstream
 `evidence_hash` covers the plan, explicit classifications, derived metrics, and sorted causal source
 row identities/payload hashes. No new database table is introduced.
+## Phase 11D immutable burn-in status
+
+`ImmutableBurnInStatus` binds a UTC evaluation time and Phase 9Y assessment to the exact saved plan
+ID, plan path and content hash, evidence path/presence/content hash, and Phase 11C configuration
+hash. Its authority flags prove that status inspection performed no file, network, credential,
+broker, sandbox-execution, promotion, or live-trading action.

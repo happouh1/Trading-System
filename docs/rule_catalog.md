@@ -1542,3 +1542,11 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `BURN-COLLECT-006`: identical collection is idempotent; conflicting same-session evidence fails.
 - `BURN-COLLECT-007`: collector authority excludes network, credentials, broker writes, sandbox order
   submission, promotion, and live trading.
+## Phase 11D immutable status rules
+
+- `BIS-001`: Status MUST use the saved preregistered plan artifact.
+- `BIS-002`: Evaluation time MUST be UTC and MUST NOT predate plan declaration.
+- `BIS-003`: Observations MUST be loaded only from the Phase 11C configured evidence path.
+- `BIS-004`: The workstation and collector evidence paths MUST match exactly.
+- `BIS-005`: Status inspection MUST NOT write, use credentials or network access, execute sandbox
+  orders, promote a release, or enable live trading.
