@@ -1451,8 +1451,9 @@ and no replacement cohort is preregistered or started.
 
 ## Added for Phase 11H local causal burn-in decisions
 
-566. May completed trades from a future internal shadow simulator count toward the prospective burn-in
-     requirement, or must all qualifying trades be observed in the Webull sandbox?
+566. Resolved by the operator on 2026-09-16: both actual Webull sandbox executions and future
+     internal simulated shadow trades are in scope for a replacement prospective burn-in. They must
+     retain distinct source provenance; the old Webull-only plan is not retroactively changed.
 567. What separately reviewed authorization, fill model, spread model, and slippage model would be
      required before simulated fills can be enabled for this cohort?
 568. How should an unexecuted shadow intent expire or be cancelled when its next eligible XNYS open
@@ -1462,5 +1463,23 @@ and no replacement cohort is preregistered or started.
 570. Who approves the locked strategy-threshold hash, and what change-control rule requires a new
      cohort if that hash changes?
 
-Phase 11H leaves these choices unresolved. It persists causal decisions and non-executable intents,
+Phase 11H leaves questions 567–570 unresolved. It persists causal decisions and non-executable intents,
 but it does not create fills, completed trades, broker activity, or promotion authority.
+
+## Added for dual-source prospective trade evidence
+
+571. Will the replacement plan require a minimum count for each source, or may its existing minimum
+     completed-trade threshold be met by a combined total? The operator has approved both sources,
+     but has not specified a source split or aggregation rule.
+572. What immutable identity and linkage prove that a simulated shadow trade and a Webull sandbox
+     trade represent the same decision without counting the same economic idea twice?
+573. What independently reviewed fill, spread, slippage, fees, market-hours, and exit model will
+     govern simulated trades before they can qualify as completed-trade evidence?
+574. Which broker order/fill/position records and reconciliation checks prove that a Webull sandbox
+     trade actually completed, rather than merely ending in an internal position state?
+575. Who approves the versioned dual-source evidence schema, source-specific thresholds, and new
+     prospective plan before a future window starts?
+
+The operator's source choice does not authorize broker orders or simulated fills. No trade from
+either path is added to the immutable 2026-09-14 plan, and no replacement cohort is started by this
+decision alone.
