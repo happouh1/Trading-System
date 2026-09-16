@@ -1477,3 +1477,21 @@ same-session reruns fail closed.
    request. The checked-in configuration is offline-only.
 8. Do not create decisions or trades, collect final Phase 9Y observations, promote a cohort, submit
    an order, enable production, or enable live trading.
+
+## Phase 11H local causal burn-in decision methodology
+
+1. Load the strict offline decision configuration and require its strategy hash to equal the
+   validated Phase 1 threshold configuration hash.
+2. Require an active `SHADOW` session, its exact Phase 11F plan binding, and a successful causal
+   Phase 11G cycle for the same session.
+3. Read only completed 1H Webull shadow bars known by the explicit UTC cycle timestamp. Reject
+   conflicting revisions for the same symbol, timeframe, and open time.
+4. Rebuild 4H and Daily candles only from complete XNYS sessions and Weekly candles only from every
+   expected XNYS session. Never forward-fill a missing bar.
+5. Normalize all completed candles deterministically, restore causal pipeline state through the
+   saved checkpoint, and evaluate only closes later than that checkpoint.
+6. Persist candles, features, levels, pattern events, and every decision, including `NO_TRADE`.
+7. Stage only fresh directional decisions on configured 1H/4H timeframes as non-executable shadow
+   intents before their next eligible XNYS open.
+8. Persist a content-addressed cycle receipt. Do not create fills, completed trades, outcomes,
+   network activity, credentials, broker writes, promotion, production release, or live trading.

@@ -1590,3 +1590,20 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `BIW-008`: Broker writes, order APIs, sandbox execution, automatic promotion, production, and
   live trading MUST remain disabled.
 - `BIW-009`: Worker evidence alone MUST NOT be represented as trades or a passing burn-in cohort.
+
+## Phase 11H local causal burn-in decision rules
+
+- `BIDW-001`: A decision cycle MUST require a `SHADOW` session bound to the configured plan and a
+  successful causal Phase 11G cycle for that session.
+- `BIDW-002`: Strategy configuration hash MUST match the locked Phase 1 threshold configuration.
+- `BIDW-003`: Only persisted completed 1H bars known by the cycle timestamp MAY be consumed.
+- `BIDW-004`: Conflicting source revisions MUST fail closed; missing bars MUST NOT be forward-filled.
+- `BIDW-005`: 4H, Daily, and Weekly values MUST remain unavailable until the complete aggregate
+  candle closes.
+- `BIDW-006`: Replay ordering, identifiers, checkpoints, and restart behavior MUST be deterministic.
+- `BIDW-007`: Every emitted decision, including `NO_TRADE`, MUST be persisted with causal evidence.
+- `BIDW-008`: Only fresh directional 1H/4H decisions MAY create non-executable `SHADOW` intents.
+- `BIDW-009`: Network, credentials, simulated fills, broker writes, sandbox execution, automatic
+  promotion, production release, and live trading MUST remain disabled.
+- `BIDW-010`: Phase 11H decisions and intents MUST NOT be represented as completed-trade or passing
+  burn-in evidence.

@@ -1512,3 +1512,31 @@ running worker and cannot meet its preregistered 20-market-day requirement witho
 backfilling. A later phase must preregister a replacement plan and a separate network-enabled,
 read-only worker configuration before `scripts/run-webull-burn-in-worker.ps1` may be used. Phase
 11G itself does not start the replacement cohort, use the network, load credentials, or trade.
+
+## Phase 11H local causal burn-in decisions
+
+Phase 11H consumes only the completed Webull sandbox 1H bars already persisted by Phase 11G. It
+reconstructs closed 4H, Daily, and Weekly candles without forward filling, runs the established causal
+feature-to-decision pipeline, persists all decisions (including `NO_TRADE`), and stages only fresh
+directional 1H/4H decisions as non-executable `SHADOW` intents. It never loads credentials, uses the
+network, simulates fills, contacts an order API, or enables sandbox/live execution.
+
+Validate the locked offline authority and strategy hash with:
+
+```powershell
+python -m trading_system.cli webull verify-burn-in-decisions `
+  --config config/webull.sandbox.v1.yaml `
+  --decision-config config/webull.phase11h.offline.v1.yaml `
+  --thresholds config/thresholds.phase1e.v1.yaml
+```
+
+After a successful Phase 11G cycle for the same locked session, run one local decision cycle with:
+
+```powershell
+& .\scripts\run-webull-burn-in-decisions.ps1 `
+  -Database webull-sandbox.sqlite `
+  -SessionId <locked-session-id>
+```
+
+This phase creates no fills or completed-trade evidence. Whether a separately authorized internal
+shadow execution model may count toward the burn-in criteria remains an explicit open question.

@@ -16,6 +16,10 @@ from trading_system.paper import InternalSimulatorAdapter, PaperMode, PaperRegis
 from trading_system.persistence import SQLiteRepository
 from trading_system.risk import normalized_units
 from trading_system.serialization import canonical_hash, canonical_json
+from trading_system.webull.burn_in_decision_worker import (
+    load_burn_in_decision_worker_config,
+    run_burn_in_decision_cycle,
+)
 from trading_system.webull.burn_in_worker import (
     load_burn_in_worker_config,
     run_burn_in_worker_cycle,
@@ -110,6 +114,17 @@ def configure_webull_parser(
     worker.add_argument("--worker-config", required=True)
     worker.add_argument("--observed-at")
     worker.add_argument("--allow-network-read", action="store_true")
+    verify_decisions = actions.add_parser("verify-burn-in-decisions")
+    verify_decisions.add_argument("--config", required=True)
+    verify_decisions.add_argument("--decision-config", required=True)
+    verify_decisions.add_argument("--thresholds", required=True)
+    decisions = actions.add_parser("burn-in-decision-tick")
+    decisions.add_argument("--database", required=True)
+    decisions.add_argument("--session-id", required=True)
+    decisions.add_argument("--config", required=True)
+    decisions.add_argument("--decision-config", required=True)
+    decisions.add_argument("--thresholds", required=True)
+    decisions.add_argument("--observed-at")
     preview = actions.add_parser("preview-stock")
     preview.add_argument("--database", required=True)
     preview.add_argument("--session-id", required=True)
@@ -326,6 +341,59 @@ def handle_webull(args: argparse.Namespace) -> int:
             "credentials_loaded": worker_result.credentials_loaded,
             "broker_write_performed": False,
             "order_api_available": False,
+        }
+    elif args.webull_command == "verify-burn-in-decisions":
+        decision_config = load_burn_in_decision_worker_config(args.decision_config)
+        thresholds = load_config(args.thresholds)
+        if thresholds.config_hash != decision_config.strategy_config_hash:
+            raise ValueError("Phase 11H strategy configuration hash mismatch")
+        result = {
+            "decision_worker_version": decision_config.decision_worker_version,
+            "plan_id": decision_config.plan_id,
+            "signal_timeframes": decision_config.signal_timeframes,
+            "config_hash": decision_config.config_hash,
+            "strategy_config_hash": decision_config.strategy_config_hash,
+            "network_used": False,
+            "credentials_loaded": False,
+            "simulated_fills_enabled": False,
+            "broker_write_performed": False,
+            "live_trading_enabled": False,
+            "automatic_promotion_enabled": False,
+        }
+    elif args.webull_command == "burn-in-decision-tick":
+        decision_config = load_burn_in_decision_worker_config(args.decision_config)
+        thresholds = load_config(args.thresholds)
+        observed_at = (
+            datetime.now(UTC)
+            if args.observed_at is None
+            else _utc_timestamp(str(args.observed_at))
+        )
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            decision_result = run_burn_in_decision_cycle(
+                repository,
+                decision_config,
+                thresholds,
+                session_id=args.session_id,
+                observed_at=observed_at,
+            )
+        result = {
+            "cycle_id": decision_result.cycle_id,
+            "session_id": decision_result.session_id,
+            "run_id": decision_result.run_id,
+            "observed_at": decision_result.observed_at,
+            "source_1h_candles": decision_result.source_1h_candles,
+            "derived_candles": decision_result.derived_candles,
+            "processed_candles": decision_result.processed_candles,
+            "emitted_decisions": decision_result.emitted_decisions,
+            "directional_decisions": decision_result.directional_decisions,
+            "staged_shadow_intents": decision_result.staged_shadow_intents,
+            "network_used": False,
+            "credentials_loaded": False,
+            "simulated_fills_enabled": False,
+            "broker_write_performed": False,
+            "live_trading_enabled": False,
+            "automatic_promotion_enabled": False,
         }
     elif args.webull_command == "smoke-plan":
         smoke_config = load_smoke_config(args.smoke_config)

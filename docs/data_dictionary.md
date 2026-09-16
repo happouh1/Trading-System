@@ -1456,3 +1456,22 @@ broker writes, simulated execution, release, promotion, and live trading remain 
 - `webull_burn_in_worker_cycles` stores the canonical receipt and payload hash with a unique
   `(session_id, observed_at, config_hash)` identity.
 - A result never represents a decision, order, fill, completed trade, or Phase 9Y observation.
+
+## Phase 11H local causal burn-in decisions
+
+### `BurnInDecisionWorkerConfig`
+
+- Binds one locked plan to the exact strategy-configuration hash and sorted 1H/4H signal
+  timeframes.
+- Local database reads/writes and shadow-intent staging are true. Network, credential loading,
+  simulated fills, broker writes, sandbox execution, live trading, and promotion are false.
+
+### `BurnInDecisionWorkerResult`
+
+- Content-addressed receipt for one local causal cycle: source 1H candle count, derived candle count,
+  newly processed candles, emitted decisions, directional decisions, and staged shadow intents.
+- `burn_in_shadow_decision_cycles` stores the canonical receipt and payload hash with unique
+  `(session_id, observed_at, config_hash)` identity and links it to the deterministic replay run.
+- `run_id` is stable for the locked session, plan, decision-worker configuration, and strategy hash,
+  allowing replay checkpoints to deduplicate restarts.
+- A receipt never represents a fill, completed trade, outcome, broker interaction, or promotion.

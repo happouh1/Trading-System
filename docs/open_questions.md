@@ -1448,3 +1448,19 @@ sessions and grants no market-data, broker, promotion, production, or live-tradi
 
 Phase 11G leaves these choices unresolved. The checked-in worker configuration remains offline-only,
 and no replacement cohort is preregistered or started.
+
+## Added for Phase 11H local causal burn-in decisions
+
+566. May completed trades from a future internal shadow simulator count toward the prospective burn-in
+     requirement, or must all qualifying trades be observed in the Webull sandbox?
+567. What separately reviewed authorization, fill model, spread model, and slippage model would be
+     required before simulated fills can be enabled for this cohort?
+568. How should an unexecuted shadow intent expire or be cancelled when its next eligible XNYS open
+     passes without an authorized execution component?
+569. What replacement-cohort start date and minimum forward window will be approved after Phase 11H
+     is independently reviewed?
+570. Who approves the locked strategy-threshold hash, and what change-control rule requires a new
+     cohort if that hash changes?
+
+Phase 11H leaves these choices unresolved. It persists causal decisions and non-executable intents,
+but it does not create fills, completed trades, broker activity, or promotion authority.

@@ -1,0 +1,19 @@
+{
+  "decision_worker_version": "11H.1.0",
+  "mode": "LOCAL_CAUSAL_SHADOW_DECISIONS",
+  "plan_id": "OFFLINE_VALIDATION_NO_COHORT",
+  "strategy_config_hash": "sha256:529159d61b9d419126efce16e16b5bbb08a82f3b5a86d9e82ec283df49a7564c",
+  "signal_timeframes": ["1h", "4h"],
+  "authority": {
+    "database_read_enabled": true,
+    "database_write_enabled": true,
+    "shadow_intent_staging_enabled": true,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "simulated_fills_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false,
+    "automatic_promotion_enabled": false
+  }
+}

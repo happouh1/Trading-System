@@ -1,5 +1,12 @@
 """Sandbox-only Webull Phase 3C integration."""
 
+from trading_system.webull.burn_in_decision_worker import (
+    BurnInDecisionWorkerConfig,
+    BurnInDecisionWorkerConfigError,
+    BurnInDecisionWorkerResult,
+    load_burn_in_decision_worker_config,
+    run_burn_in_decision_cycle,
+)
 from trading_system.webull.burn_in_worker import (
     BurnInWorkerConfig,
     BurnInWorkerConfigError,
@@ -144,6 +151,9 @@ __all__ = [
     "BrokerActionEvent",
     "BrokerActionEventType",
     "BrokerActionKind",
+    "BurnInDecisionWorkerConfig",
+    "BurnInDecisionWorkerConfigError",
+    "BurnInDecisionWorkerResult",
     "BurnInWorkerConfig",
     "BurnInWorkerConfigError",
     "BurnInWorkerResult",
@@ -235,6 +245,7 @@ __all__ = [
     "exact_case5_stop",
     "exact_case6_order",
     "exit_client_id",
+    "load_burn_in_decision_worker_config",
     "load_burn_in_worker_config",
     "load_credentials",
     "load_exit_capabilities",
@@ -247,6 +258,7 @@ __all__ = [
     "protective_client_id",
     "redact",
     "reducing_side",
+    "run_burn_in_decision_cycle",
     "run_burn_in_worker_cycle",
     "smoke_plan",
     "submission_enabled",
