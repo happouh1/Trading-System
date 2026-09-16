@@ -16,6 +16,10 @@ from trading_system.paper import InternalSimulatorAdapter, PaperMode, PaperRegis
 from trading_system.persistence import SQLiteRepository
 from trading_system.risk import normalized_units
 from trading_system.serialization import canonical_hash, canonical_json
+from trading_system.webull.burn_in_worker import (
+    load_burn_in_worker_config,
+    run_burn_in_worker_cycle,
+)
 from trading_system.webull.case1 import exact_case1_order
 from trading_system.webull.case2 import (
     INITIAL_STOP,
@@ -96,6 +100,16 @@ def configure_webull_parser(
     snapshot.add_argument("--config", required=True)
     snapshot.add_argument("--symbols", required=True)
     snapshot.add_argument("--allow-network-read", action="store_true")
+    verify_worker = actions.add_parser("verify-burn-in-worker")
+    verify_worker.add_argument("--config", required=True)
+    verify_worker.add_argument("--worker-config", required=True)
+    worker = actions.add_parser("burn-in-worker-tick")
+    worker.add_argument("--database", required=True)
+    worker.add_argument("--session-id", required=True)
+    worker.add_argument("--config", required=True)
+    worker.add_argument("--worker-config", required=True)
+    worker.add_argument("--observed-at")
+    worker.add_argument("--allow-network-read", action="store_true")
     preview = actions.add_parser("preview-stock")
     preview.add_argument("--database", required=True)
     preview.add_argument("--session-id", required=True)
@@ -255,6 +269,63 @@ def handle_webull(args: argparse.Namespace) -> int:
             "config_hash": config.config_hash,
             "environment": "SANDBOX",
             "network_used": False,
+        }
+    elif args.webull_command == "verify-burn-in-worker":
+        worker_config = load_burn_in_worker_config(args.worker_config)
+        result = {
+            "worker_version": worker_config.worker_version,
+            "plan_id": worker_config.plan_id,
+            "symbols": worker_config.symbols,
+            "timespan": worker_config.timespan,
+            "history_count": worker_config.history_count,
+            "config_hash": worker_config.config_hash,
+            "network_read_enabled": worker_config.network_read_enabled,
+            "credential_loading_enabled": worker_config.credential_loading_enabled,
+            "broker_writes_enabled": False,
+            "order_api_enabled": False,
+            "network_used": False,
+            "credentials_loaded": False,
+        }
+    elif args.webull_command == "burn-in-worker-tick":
+        worker_config = load_burn_in_worker_config(args.worker_config)
+        if not args.allow_network_read:
+            raise ValueError(
+                "Phase 11G worker requires explicit --allow-network-read"
+            )
+        if not worker_config.network_read_enabled:
+            raise ValueError("Phase 11G worker configuration does not authorize network reads")
+        observed_at = (
+            datetime.now(UTC)
+            if args.observed_at is None
+            else datetime.fromisoformat(str(args.observed_at).replace("Z", "+00:00"))
+        )
+        if observed_at.tzinfo is None or observed_at.utcoffset() is None:
+            raise ValueError("--observed-at must be timezone-aware")
+        credentials = load_credentials()
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            worker_result = run_burn_in_worker_cycle(
+                repository,
+                worker_config,
+                OfficialSdkWebullMarketDataSource(config, credentials),
+                session_id=args.session_id,
+                observed_at=observed_at.astimezone(UTC),
+                network_used=True,
+            )
+        result = {
+            "cycle_id": worker_result.cycle_id,
+            "session_id": worker_result.session_id,
+            "observed_at": worker_result.observed_at,
+            "symbols": worker_result.symbols,
+            "history_responses": worker_result.history_responses,
+            "completed_bars_seen": worker_result.completed_bars_seen,
+            "new_bars_persisted": worker_result.new_bars_persisted,
+            "heartbeat_inserted": worker_result.heartbeat_inserted,
+            "environment": worker_result.environment,
+            "network_used": worker_result.network_used,
+            "credentials_loaded": worker_result.credentials_loaded,
+            "broker_write_performed": False,
+            "order_api_available": False,
         }
     elif args.webull_command == "smoke-plan":
         smoke_config = load_smoke_config(args.smoke_config)

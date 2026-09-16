@@ -1490,3 +1490,25 @@ python -m trading_system.cli desktop final-decision-status `
 
 The current result is `BLOCKED` because the real Phase 9Y evidence and final reviewed request are
 missing. Engineering test fixtures cannot satisfy this operational gate.
+
+## Phase 11G standalone burn-in worker foundation
+
+Phase 11G adds the bounded worker cycle that was missing from the burn-in control plane. The cycle
+uses a market-data-only protocol, accepts completed XNYS regular-session M60 history, assigns stable
+per-bar source revisions, deduplicates after restart, records a paper heartbeat, and persists a
+content-addressed cycle receipt. It has no order API and cannot preview, submit, replace, or cancel
+an order.
+
+The checked-in configuration is deliberately offline-only and can be validated with:
+
+```powershell
+python -m trading_system.cli webull verify-burn-in-worker `
+  --config config/webull.sandbox.v1.yaml `
+  --worker-config config/webull.phase11g.offline.v1.yaml
+```
+
+The prior `burn-in-20260914-01` cohort remains immutable but is not viable: it started without a
+running worker and cannot meet its preregistered 20-market-day requirement without prohibited
+backfilling. A later phase must preregister a replacement plan and a separate network-enabled,
+read-only worker configuration before `scripts/run-webull-burn-in-worker.ps1` may be used. Phase
+11G itself does not start the replacement cohort, use the network, load credentials, or trade.

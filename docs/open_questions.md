@@ -1433,3 +1433,18 @@ does not convert the retrospective baseline into preregistered evidence.
 
 Phase 11F leaves these governance choices unresolved. It creates only local, lock-bound shadow
 sessions and grants no market-data, broker, promotion, production, or live-trading authority.
+
+## Added for Phase 11G standalone read-only burn-in worker
+
+561. What new prospective window can still meet every required XNYS market day after the worker is
+     independently verified?
+562. Who approves the replacement plan and formally records `burn-in-20260914-01` as a failed,
+     superseded cohort without deleting or rewriting it?
+563. What signed artifact authorizes read-only network and credential use for the replacement while
+     preserving the permanent prohibition on broker writes and order APIs?
+564. What scheduler cadence, workstation uptime policy, and missed-cycle escalation rule apply?
+565. Which separately reviewed component will generate causal decisions and completed shadow trades;
+     market-data acquisition and heartbeats alone cannot meet the trade or strategy criteria?
+
+Phase 11G leaves these choices unresolved. The checked-in worker configuration remains offline-only,
+and no replacement cohort is preregistered or started.

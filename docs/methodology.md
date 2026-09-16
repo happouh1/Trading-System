@@ -1458,3 +1458,22 @@ same-session reruns fail closed.
    lifecycle states.
 7. Perform no network request, credential load, broker write, simulated execution, promotion,
    production release, or live trading.
+
+## Phase 11G standalone read-only burn-in worker methodology
+
+1. Load a strict versioned worker configuration and require sorted, unique uppercase symbols, M60
+   RTH history, a bounded history count, and matching network/credential authority.
+2. Require a `SHADOW` session, an exact plan-bound Phase 11F session binding, and a causal
+   same-session Webull sandbox verification before contacting the market-data source.
+3. Reach Webull only through the narrow market-data protocol, which exposes snapshots and history
+   but no account-order, preview, submission, replacement, or cancellation method.
+4. Persist the raw redacted response envelope before normalization and reject failed responses,
+   malformed items, non-XNYS data, non-RTH data, and incomplete sessions.
+5. Derive a stable source revision from each provider bar excluding local receipt time; retain raw
+   and adjusted values and deduplicate exact bars after restart.
+6. Write one session heartbeat and one content-addressed worker-cycle receipt after every successful
+   bounded cycle.
+7. Require both an authority-bearing configuration and explicit CLI network consent for a real
+   request. The checked-in configuration is offline-only.
+8. Do not create decisions or trades, collect final Phase 9Y observations, promote a cohort, submit
+   an order, enable production, or enable live trading.

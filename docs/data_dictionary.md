@@ -1439,3 +1439,20 @@ plan, Phase 11E baseline and lock hash, exact runtime identity, and truthful UTC
 The append-only `paper_burn_in_session_bindings` table stores its canonical payload and hash.
 Authority permits only local SQLite writes and shadow-session creation; network, credentials,
 broker writes, simulated execution, release, promotion, and live trading remain false.
+
+## Phase 11G standalone burn-in worker
+
+### `BurnInWorkerConfig`
+
+- Binds one plan ID to sorted symbols, the fixed `M60` timespan, bounded history count, authority
+  flags, version, and canonical configuration hash.
+- Network reads and credential loading must be equal. Broker writes, order APIs, sandbox execution,
+  automatic promotion, and live trading must always be false.
+
+### `BurnInWorkerResult`
+
+- Content-addressed receipt for one bounded worker cycle: session, UTC observation time, symbols,
+  response/bar counts, new persisted bars, heartbeat result, configuration hash, and authority use.
+- `webull_burn_in_worker_cycles` stores the canonical receipt and payload hash with a unique
+  `(session_id, observed_at, config_hash)` identity.
+- A result never represents a decision, order, fill, completed trade, or Phase 9Y observation.

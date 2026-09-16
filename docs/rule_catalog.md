@@ -1575,3 +1575,18 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `BISS-006`: Recovery MAY converge only `CREATED` or `STARTING` to `SHADOW`.
 - `BISS-007`: Start MUST NOT use network or credentials, contact a broker, simulate or submit
   orders, promote a release, or enable production or live trading.
+
+## Phase 11G standalone read-only worker rules
+
+- `BIW-001`: A worker cycle MUST require a `SHADOW` session bound to the configured plan.
+- `BIW-002`: A causal same-session sandbox account verification MUST exist before acquisition.
+- `BIW-003`: Real network use MUST require both locked configuration authority and explicit CLI
+  consent; offline mode MUST reject network use.
+- `BIW-004`: The worker source boundary MUST expose only market snapshots and historical bars.
+- `BIW-005`: Only completed XNYS RTH M60 bars MAY enter the worker data path.
+- `BIW-006`: Per-bar source revision MUST exclude local receipt time and exact restart replays MUST
+  deduplicate without changing stored provenance.
+- `BIW-007`: Every successful cycle MUST persist a heartbeat and canonical cycle receipt.
+- `BIW-008`: Broker writes, order APIs, sandbox execution, automatic promotion, production, and
+  live trading MUST remain disabled.
+- `BIW-009`: Worker evidence alone MUST NOT be represented as trades or a passing burn-in cohort.

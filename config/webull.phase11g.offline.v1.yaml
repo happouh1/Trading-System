@@ -1,0 +1,21 @@
+{
+  "worker_version": "11G.1.0",
+  "mode": "OFFLINE_VALIDATION_ONLY",
+  "plan_id": "OFFLINE_VALIDATION_NO_COHORT",
+  "market_data": {
+    "symbols": ["AAPL", "MSFT", "SPY"],
+    "timespan": "M60",
+    "history_count": 200
+  },
+  "authority": {
+    "database_read_enabled": true,
+    "database_write_enabled": true,
+    "network_read_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "order_api_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false,
+    "automatic_promotion_enabled": false
+  }
+}
