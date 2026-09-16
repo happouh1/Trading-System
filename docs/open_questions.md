@@ -1422,3 +1422,14 @@ Phase 11D leaves these governance choices unresolved and grants no execution or 
 
 Phase 11E leaves these governance choices unresolved. It enforces continuity during collection but
 does not convert the retrospective baseline into preregistered evidence.
+
+## Added for Phase 11F locked burn-in session start
+
+556. Who independently reviews the first binding created by the new locked start path?
+557. Should a future scheduler supply an authenticated start timestamp and retain a signed receipt?
+558. What operator procedure governs a session stranded in `HALTED`, `DRAINING`, or `STOPPED`?
+559. Should emergency code fixes require a new preregistered cohort rather than replacing the lock?
+560. What retention period applies to session bindings after the burn-in decision is complete?
+
+Phase 11F leaves these governance choices unresolved. It creates only local, lock-bound shadow
+sessions and grants no market-data, broker, promotion, production, or live-trading authority.

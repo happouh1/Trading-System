@@ -1430,3 +1430,12 @@ broker, sandbox-execution, promotion, or live-trading action.
 - `matched` is true only when all four runtime identity fields match exactly.
 - Authority fields prove the validation used no database write, network, credentials, broker write,
   or live-trading action.
+
+## Phase 11F locked burn-in session start
+
+`LockedBurnInStartConfig` binds strict paths to the Phase 3B paper and Phase 11C collector
+configurations. `LockedBurnInSessionBinding` immutably binds one paper session to the saved Phase 9Y
+plan, Phase 11E baseline and lock hash, exact runtime identity, and truthful UTC start timestamp.
+The append-only `paper_burn_in_session_bindings` table stores its canonical payload and hash.
+Authority permits only local SQLite writes and shadow-session creation; network, credentials,
+broker writes, simulated execution, release, promotion, and live trading remain false.

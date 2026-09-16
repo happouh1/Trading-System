@@ -1,5 +1,19 @@
 # Trading System
 
+Phase 11F adds a fail-closed start command for subsequent prospective burn-in sessions. It validates
+the saved plan and Phase 11E runtime lock before creating a session, derives runtime identity from
+that lock, persists an immutable binding, and permits only the `SHADOW` state.
+
+```powershell
+& .\scripts\start-locked-burn-in-session.ps1 `
+  -SessionId burn-in-20260915-02 `
+  -StartedAt 2026-09-15T13:30:00Z
+```
+
+This local-only command does not load Webull credentials, use the network, simulate orders, submit
+broker orders, promote a release, or enable live trading. See
+`docs/proposals/phase_11f_locked_burn_in_session_start_v1.md` and `docs/phase_11f_review.md`.
+
 Phase 11E locks every collected burn-in session to the initial persisted runtime identity: code
 version, configuration hash, data revision, and calendar version. Runtime drift fails closed before
 evidence is written. Because the window had already opened, the baseline is truthfully disclosed as

@@ -30,6 +30,12 @@ def configure_paper_parser(
     start.add_argument("--data-revision", required=True)
     start.add_argument("--calendar-version", required=True)
     start.add_argument("--enable-simulated-paper", action="store_true")
+    burn_in = actions.add_parser("start-burn-in")
+    burn_in.add_argument("--database", required=True)
+    burn_in.add_argument("--session-id", required=True)
+    burn_in.add_argument("--config", required=True)
+    burn_in.add_argument("--started-at", required=True)
+    burn_in.add_argument("--project-root", default=".")
     resume = actions.add_parser("resume")
     resume.add_argument("--database", required=True)
     resume.add_argument("--session-id", required=True)
@@ -57,11 +63,24 @@ def configure_paper_parser(
 
 
 def handle_paper(args: argparse.Namespace) -> int:
+    command = str(args.paper_command)
+    if command == "start-burn-in":
+        from trading_system.paper.burn_in_start import start_locked_burn_in_session
+
+        started_at = datetime.fromisoformat(str(args.started_at).replace("Z", "+00:00"))
+        locked_result = start_locked_burn_in_session(
+            database=args.database,
+            config_path=args.config,
+            project_root=args.project_root,
+            session_id=args.session_id,
+            started_at=started_at,
+        )
+        print(canonical_json(locked_result))
+        return 0
     now = datetime.now(UTC)
     with SQLiteRepository(args.database) as repository:
         repository.migrate()
         registry = PaperRegistry(repository)
-        command = str(args.paper_command)
         if command == "start":
             config = load_paper_config(args.config)
             mode = (PaperMode.SIMULATED if args.enable_simulated_paper else PaperMode.SHADOW)

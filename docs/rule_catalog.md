@@ -1563,3 +1563,15 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `BIRL-007`: The v1 lock MUST disclose that its baseline was observed after the window opened.
 - `BIRL-008`: Validation MUST NOT write to SQLite, use network or credentials, contact a broker,
   execute an order, promote a release, or enable live trading.
+
+## Phase 11F locked burn-in session-start rules
+
+- `BISS-001`: Start MUST load the immutable plan and continuity lock before database writes.
+- `BISS-002`: The explicit start timestamp MUST be UTC and inside the preregistered window.
+- `BISS-003`: Plan, code, paper-config, data-revision, and calendar identity MUST match the lock;
+  locked data and calendar values MUST NOT be operator-overridable.
+- `BISS-004`: Every new session MUST have one immutable content-addressed lock binding.
+- `BISS-005`: Exact reruns MUST be idempotent; conflicting payloads or bindings MUST fail closed.
+- `BISS-006`: Recovery MAY converge only `CREATED` or `STARTING` to `SHADOW`.
+- `BISS-007`: Start MUST NOT use network or credentials, contact a broker, simulate or submit
+  orders, promote a release, or enable production or live trading.

@@ -1444,3 +1444,17 @@ same-session reruns fail closed.
 6. Bind the lock hash and deterministic validation identifier into collected evidence.
 7. Disclose that the initial-session baseline was observed after the window began.
 8. Perform no network request, credential load, broker write, sandbox execution, or promotion.
+
+## Phase 11F locked burn-in start methodology
+
+1. Accept an explicit session ID and UTC timestamp; never silently substitute the wall clock.
+2. Load the strict start, paper, collector, immutable-plan, and continuity-lock artifacts from paths
+   contained by the project root.
+3. Before opening SQLite for writing, require the timestamp inside the plan window and exact plan,
+   package, paper-config, data-revision, and calendar identity.
+4. Derive data revision and calendar version from the lock rather than operator input.
+5. Persist the shadow session and a canonical, content-addressed lock binding.
+6. Make exact reruns idempotent, recover only `CREATED` or `STARTING` to `SHADOW`, and reject other
+   lifecycle states.
+7. Perform no network request, credential load, broker write, simulated execution, promotion,
+   production release, or live trading.

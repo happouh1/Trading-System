@@ -1,0 +1,17 @@
+{
+  "start_version": "11F.1.0",
+  "mode": "LOCKED_PROSPECTIVE_BURN_IN_SHADOW",
+  "paper_config": "config/paper.phase3b.v1.yaml",
+  "collector_config": "config/desktop.phase11c.v1.yaml",
+  "authority": {
+    "database_write_enabled": true,
+    "local_shadow_session_start_enabled": true,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "simulated_order_execution_enabled": false,
+    "production_release_enabled": false,
+    "live_trading_enabled": false,
+    "automatic_promotion_enabled": false
+  }
+}
