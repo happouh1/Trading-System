@@ -1468,9 +1468,9 @@ but it does not create fills, completed trades, broker activity, or promotion au
 
 ## Added for dual-source prospective trade evidence
 
-571. Will the replacement plan require a minimum count for each source, or may its existing minimum
-     completed-trade threshold be met by a combined total? The operator has approved both sources,
-     but has not specified a source split or aggregation rule.
+571. Resolved by the operator on 2026-09-16: the replacement plan must require at least 10
+     qualifying completed Webull sandbox trades and at least 10 qualifying completed internal
+     simulated shadow trades. A combined total of 10 cannot satisfy either minimum.
 572. What immutable identity and linkage prove that a simulated shadow trade and a Webull sandbox
      trade represent the same decision without counting the same economic idea twice?
 573. What independently reviewed fill, spread, slippage, fees, market-hours, and exit model will
@@ -1480,6 +1480,6 @@ but it does not create fills, completed trades, broker activity, or promotion au
 575. Who approves the versioned dual-source evidence schema, source-specific thresholds, and new
      prospective plan before a future window starts?
 
-The operator's source choice does not authorize broker orders or simulated fills. No trade from
-either path is added to the immutable 2026-09-14 plan, and no replacement cohort is started by this
-decision alone.
+The operator's source choice and 10-per-source threshold do not authorize broker orders or simulated
+fills. No trade from either path is added to the immutable 2026-09-14 plan, and no replacement cohort
+is started by this decision alone.

@@ -4,6 +4,9 @@ Decision recorded 2026-09-16: the operator wants both actual Webull sandbox trad
 simulated shadow trades considered for a future burn-in. This is a scope decision, not a new
 preregistered plan or authority to execute orders or generate simulated fills.
 
+Threshold decision recorded 2026-09-16: a replacement plan must require at least **10 qualifying
+completed trades from each source**. Ten combined trades do not satisfy either source minimum.
+
 ## Current boundary
 
 - The immutable 2026-09-14 plan is Webull-sandbox-only, and the Phase 11C collector currently counts
@@ -22,10 +25,11 @@ source subtotals and any plan-approved qualifying total in the assessment. Rejec
 conflicting, future-known, or unverified records. Do not collapse simulated and broker records into
 one unlabelled `completed_trades` number.
 
-Only a newly approved, versioned prospective plan can define whether a combined total counts
-toward its minimum, whether each source has its own minimum, and which evidence checks qualify a
-trade. The simulation model and broker fill reconciliation must be reviewed before either source
-feeds that plan. Until then, report source counts for inspection only, with no PASS conclusion.
+Only a newly approved, versioned prospective plan can encode the two independent 10-trade minima
+and define which evidence checks qualify a trade. The simulation model and broker fill reconciliation
+must be reviewed before either source feeds that plan. Until then, report source counts for
+inspection only, with no PASS conclusion. These small minima test operational coverage, not strategy
+profitability or readiness for live trading.
 
 ## Next gated work
 
@@ -33,8 +37,9 @@ feeds that plan. Until then, report source counts for inspection only, with no P
    the old plan or enabling either trade path.
 2. Review the simulated fill/spread/slippage/fee and exit model, and the broker execution/fill/
    position reconciliation criteria.
-3. Approve the aggregation rule, source-specific thresholds, prospective window, strategy hash,
-   and replacement plan before any qualifying observations begin.
+3. Approve the source-specific evidence checks, prospective window, strategy hash, and replacement
+   plan before any qualifying observations begin. Keep source counts distinct; do not let a surplus
+   in one source compensate for a deficit in the other.
 4. Run each path under its own explicit authority and verify the resulting evidence independently.
 
 Open decisions are tracked in `docs/open_questions.md` (questions 567–575).
