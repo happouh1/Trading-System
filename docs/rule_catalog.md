@@ -1607,3 +1607,18 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   promotion, production release, and live trading MUST remain disabled.
 - `BIDW-010`: Phase 11H decisions and intents MUST NOT be represented as completed-trade or passing
   burn-in evidence.
+
+## Dual-source burn-in candidate evidence rules
+
+- `DSTE-001`: A future replacement plan MUST require at least 10 qualifying Webull sandbox trades
+  and 10 qualifying shadow-simulated trades separately; excess in one source MUST NOT offset the
+  other.
+- `DSTE-002`: Every candidate MUST carry an explicit source, plan/session/decision identities,
+  source trade identity, ordered UTC known-at timestamps, source/config hashes, and code version.
+- `DSTE-003`: A simulated candidate MUST carry a model hash; a Webull candidate MUST NOT.
+- `DSTE-004`: Exact candidate replays MUST be idempotent, while conflicting content for the same
+  source trade identity MUST fail closed.
+- `DSTE-005`: Candidate counts MUST be plan-scoped and as-of causal and MUST NOT be represented as
+  qualified completed-trade counts or a burn-in PASS.
+- `DSTE-006`: This registry MUST NOT call a broker, generate fills, alter the old plan, or start a
+  replacement cohort.

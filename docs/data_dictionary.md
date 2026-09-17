@@ -1475,3 +1475,23 @@ broker writes, simulated execution, release, promotion, and live trading remain 
 - `run_id` is stable for the locked session, plan, decision-worker configuration, and strategy hash,
   allowing replay checkpoints to deduplicate restarts.
 - A receipt never represents a fill, completed trade, outcome, broker interaction, or promotion.
+
+## Dual-source burn-in candidate evidence
+
+### `TradeEvidenceCandidate`
+
+- Immutable, versioned metadata for a putative completed trade, never proof that it qualifies.
+- `source` is exactly `WEBULL_SANDBOX` or `SHADOW_SIMULATED`; `source_trade_id` is unique per
+  `(plan_id, source)`, with a deterministic `candidate_id` also bound to `session_id`.
+- `entry_known_at < exit_known_at <= recorded_at` are UTC. `source_record_hash` and `config_hash`
+  are SHA-256 references; simulated candidates additionally require `simulation_model_hash`, while
+  Webull candidates forbid it. `decision_id`, `code_version`, and the paper session are retained.
+- `burn_in_trade_evidence_candidates` is append-only with canonical payload/hash, source checks,
+  causal timestamp checks, uniqueness, and a paper-session foreign key.
+
+### `CandidateSourceCounts`
+
+- As-of inspection counts for the two sources, scoped to one plan. The operator-selected future
+  minimums are 10 for each source.
+- `qualification_performed` is always false. These are candidate counts, not verified trade counts;
+  no existing prospective assessment consumes them.

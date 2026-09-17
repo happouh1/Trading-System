@@ -18,6 +18,10 @@ completed trades from each source**. Ten combined trades do not satisfy either s
 
 ## Proposed replacement evidence model
 
+The first offline foundation is now implemented as `TradeEvidenceCandidate` and the append-only
+`burn_in_trade_evidence_candidates` registry. It stores only unqualified source references and
+as-of candidate counts; it deliberately has no verification or assessment integration.
+
 Record every candidate completed trade with an explicit `WEBULL_SANDBOX` or `SHADOW_SIMULATED`
 source, immutable trade identity, session and decision linkage, entry/exit known-at times,
 source-specific evidence references, model/config/code hashes, and a content hash. Keep separate
@@ -33,8 +37,8 @@ profitability or readiness for live trading.
 
 ## Next gated work
 
-1. Define and test a versioned, append-only dual-source trade evidence contract without changing
-   the old plan or enabling either trade path.
+1. Independently verify each candidate against source-specific execution evidence; do not treat
+   the current candidate registry as proof of a completed trade.
 2. Review the simulated fill/spread/slippage/fee and exit model, and the broker execution/fill/
    position reconciliation criteria.
 3. Approve the source-specific evidence checks, prospective window, strategy hash, and replacement

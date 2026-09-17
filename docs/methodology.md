@@ -1495,3 +1495,18 @@ same-session reruns fail closed.
    intents before their next eligible XNYS open.
 8. Persist a content-addressed cycle receipt. Do not create fills, completed trades, outcomes,
    network activity, credentials, broker writes, promotion, production release, or live trading.
+
+## Dual-source burn-in trade candidate methodology
+
+1. Retain Webull sandbox and internal shadow-simulated candidates in distinct source lanes. The
+   future replacement-plan target is 10 qualifying completed trades in each lane, never 10 combined.
+2. Accept only UTC `entry_known_at < exit_known_at <= recorded_at`, a pre-existing causal paper
+   session, a decision reference, source-record/config hashes, and a simulation-model hash only for
+   the simulated lane. Generate a deterministic source-bound identity.
+3. Make exact restarts idempotent and reject conflicting content for the same plan/source trade ID.
+   Inspection counts exclude candidates recorded after the requested as-of time.
+4. Do not treat a candidate, a terminal internal position state, or a historical replay trade as a
+   verified prospective completed trade. A future source-specific verifier and approved replacement
+   plan must decide qualification before the burn-in assessment can use any count.
+5. This registry performs no order operation, simulated fill, cohort start, PASS decision, or live
+   trading action.

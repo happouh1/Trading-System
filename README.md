@@ -1538,5 +1538,20 @@ After a successful Phase 11G cycle for the same locked session, run one local de
   -SessionId <locked-session-id>
 ```
 
-This phase creates no fills or completed-trade evidence. Whether a separately authorized internal
-shadow execution model may count toward the burn-in criteria remains an explicit open question.
+This phase creates no fills or completed-trade evidence. The operator has subsequently selected a
+future replacement-plan gate of 10 qualifying Webull sandbox trades and 10 qualifying internal
+shadow-simulated trades, counted separately; neither trade path is enabled by Phase 11H.
+
+## Dual-source burn-in trade candidate foundation
+
+The append-only `burn_in_trade_evidence_candidates` registry can retain source-labelled references
+to a putative Webull sandbox or internal simulated trade. Candidate metadata includes the plan,
+session, decision, entry/exit/recorded timestamps, source-record hash, config/code version, and (for
+simulation) model hash. Duplicate inserts are idempotent; conflicting revisions fail closed.
+
+These records are explicitly **unqualified candidates**. Their source-specific counts are for
+inspection only, even when either count reaches 10. No collector or burn-in assessment consumes
+them; the current preregistered plan remains unchanged. Broker execution/fill reconciliation and a
+reviewed simulation fill model are prerequisites before a replacement plan can count either source.
+The design and remaining decisions are recorded in
+`docs/proposals/dual_source_burn_in_trade_evidence_v1.md`.
