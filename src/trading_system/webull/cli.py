@@ -61,6 +61,13 @@ from trading_system.webull.smoke import (
     smoke_plan,
 )
 from trading_system.webull.smoke_registry import WebullSmokeRegistry
+from trading_system.webull.trade_evidence_cli import (
+    COMMANDS as TRADE_EVIDENCE_COMMANDS,
+)
+from trading_system.webull.trade_evidence_cli import (
+    configure_trade_evidence_parser,
+    handle_trade_evidence,
+)
 from trading_system.webull.transport import (
     OfficialSdkWebullCase1Transport,
     OfficialSdkWebullCase2Transport,
@@ -75,6 +82,7 @@ def configure_webull_parser(
 ) -> None:
     webull = commands.add_parser("webull")
     actions = webull.add_subparsers(dest="webull_command", required=True)
+    configure_trade_evidence_parser(actions)
     verify_config = actions.add_parser("verify-config")
     verify_config.add_argument("--config", required=True)
     verify_account = actions.add_parser("verify-account")
@@ -279,6 +287,8 @@ def _exit_authorization_check(
 
 def handle_webull(args: argparse.Namespace) -> int:
     config = load_webull_config(args.config)
+    if args.webull_command in TRADE_EVIDENCE_COMMANDS:
+        return handle_trade_evidence(args)
     if args.webull_command == "verify-config":
         result: dict[str, object] = {
             "config_hash": config.config_hash,

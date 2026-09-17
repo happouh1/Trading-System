@@ -1522,3 +1522,12 @@ same-session reruns fail closed.
    this application and do not independently attest to Webull's order, fill, and position history.
 4. Keep `qualifying_completed_trade=false` and perform no network request, broker write, simulated
    fill, prospective cohort start, assessment update, or PASS decision.
+
+## Offline supplied broker evidence
+
+Import validates strict normalized captures and source-file byte hashes, atomically claims broker
+identities, and preserves first-import knowledge time. Read-only as-of reconciliation compares
+local audit, account verification, order identities, sides, quantities, entry value, incremental
+fills, and flat before/after position evidence. Unknown or conflicting evidence fails closed.
+A byte hash is neither source authentication nor proof of normalization fidelity. Matching
+captures remain `RECONCILED_PENDING_REVIEW`; no burn-in counts or existing plans change.

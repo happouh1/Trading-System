@@ -1561,3 +1561,9 @@ plan binding, decision intent, managed-position lifecycle, entry/exit executions
 reconciliation at a causal UTC cutoff. A clean audit establishes only internal consistency;
 it does **not** independently verify Webull history or turn a candidate into a qualifying trade.
 It makes no network request and cannot place an order or change a burn-in assessment.
+
+## Offline broker evidence reconciliation
+
+Separately supplied sandbox order, incremental-fill, and position evidence can now be imported
+and compared with local candidates. See [the runbook](docs/webull_trade_evidence_runbook.md).
+Matching results remain pending review and do not qualify burn-in trades.

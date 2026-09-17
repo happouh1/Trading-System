@@ -6,6 +6,7 @@ changes a prospective assessment, or enables any execution path.
 
 from __future__ import annotations
 
+import json
 import sqlite3
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -65,6 +66,7 @@ class TradeEvidenceCandidate:
             or not _sha(self.source_record_hash)
             or not _sha(self.config_hash)
             or (self.source == "SHADOW_SIMULATED") != _sha(self.simulation_model_hash)
+            or (self.source == "WEBULL_SANDBOX" and self.simulation_model_hash is not None)
             or self.schema_version != "DUAL_SOURCE_TRADE_CANDIDATE.1.0"
         ):
             raise ValueError("invalid unqualified dual-source trade candidate")
@@ -105,6 +107,30 @@ class TradeEvidenceCandidateRegistry:
 
     def __init__(self, repository: SQLiteRepository) -> None:
         self.repository = repository
+
+    def get(self, candidate_id: str) -> TradeEvidenceCandidate:
+        row = self.repository.connection.execute(
+            """SELECT plan_id, session_id, decision_id, source, source_trade_id,
+                      entry_known_at, exit_known_at, recorded_at, source_record_hash,
+                      config_hash, code_version, simulation_model_hash, schema_version,
+                      payload_json, payload_hash
+               FROM burn_in_trade_evidence_candidates WHERE candidate_id = ?""",
+            (candidate_id,),
+        ).fetchone()
+        if row is None:
+            raise ValueError("trade candidate not found")
+        candidate = TradeEvidenceCandidate(
+            row[0], row[1], row[2], row[3], row[4],
+            datetime.fromisoformat(row[5]), datetime.fromisoformat(row[6]),
+            datetime.fromisoformat(row[7]), row[8], row[9], row[10], row[11], row[12],
+        )
+        if (
+            candidate.candidate_id != candidate_id
+            or canonical_hash(candidate) != row[14]
+            or canonical_hash(json.loads(row[13])) != row[14]
+        ):
+            raise ValueError("stored trade candidate is inconsistent")
+        return candidate
 
     def insert(self, candidate: TradeEvidenceCandidate) -> bool:
         connection = self.repository.connection

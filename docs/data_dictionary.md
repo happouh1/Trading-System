@@ -1504,3 +1504,12 @@ broker writes, simulated execution, release, promotion, and live trading remain 
   executions, exit action, terminal event, and flat reconciliation agree. It is not broker proof.
 - `qualifying_completed_trade`, `network_used`, and `broker_write_performed` are always false.
   No audit records or verified-trade counts are persisted by this checker.
+
+## Webull trade evidence imports
+
+Migration 091 adds immutable `webull_trade_evidence_imports` receipts (candidate/capture/account
+identity, captured/imported UTC timestamps, exact source SHA-256, normalized payload and hash)
+and `webull_trade_evidence_claims` (account-scoped order/client-order/fill identities, candidate,
+content hash). The normalized schema is `config/schemas/webull_trade_evidence.v1.schema.json`.
+Fill quantities are incremental integer shares; price/fee values are decimal USD strings.
+Original source bytes remain external and must be retained. Reports never confer qualification.

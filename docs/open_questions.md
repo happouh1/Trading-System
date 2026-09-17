@@ -1496,3 +1496,12 @@ is started by this decision alone.
 
 The local checker addresses internal consistency only. Questions 574 and 576–578 remain open;
 simulation-model question 573 also remains open. No candidate currently qualifies for PASS.
+
+## Added for supplied broker evidence reconciliation
+
+579. Which authenticated broker export/capture procedure and independent field-by-field review
+     establish source authenticity and normalization fidelity? Migration 091 verifies supplied
+     byte hashes only; it does not resolve questions 576 or 578.
+580. What reviewed policy permits corrections, replacement chains, nonflat account baselines,
+     or revised known-at records? Current imports reject conflicting identity reuse; reconciliation
+     requires flat before/after account positions. No qualification policy is inferred.

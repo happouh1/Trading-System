@@ -1632,3 +1632,12 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   or a qualifying completed trade.
 - `DWCA-004`: The audit MUST NOT use the network, place orders, create fills, start a cohort, alter
   prospective assessments, or enable production or live trading.
+
+## Broker evidence import rules
+
+- BEI-01: Require an existing causal Webull candidate and exact normalized sandbox schema.
+- BEI-02: Verify supplied source bytes against SHA-256; do not claim authenticity.
+- BEI-03: Reject conflicting account-scoped order/client/fill identities atomically.
+- BEI-04: Preserve first-import time and exclude imports unavailable at the requested cutoff.
+- BEI-05: Compare incremental fills, local terminal orders and flat position evidence without inference.
+- BEI-06: Matching results remain pending review; qualification and broker-write flags stay false.
