@@ -1483,3 +1483,16 @@ but it does not create fills, completed trades, broker activity, or promotion au
 The operator's source choice and 10-per-source threshold do not authorize broker orders or simulated
 fills. No trade from either path is added to the immutable 2026-09-14 plan, and no replacement cohort
 is started by this decision alone.
+
+## Added for local Webull candidate consistency audit
+
+576. What independently obtained Webull order, fill, and position evidence, including provider IDs
+     and a signed or otherwise reviewable capture, will attest to a sandbox trade beyond the
+     application's local rows?
+577. How should partial fills, multiple exit orders, replacement chains, commissions, and
+     broker-side corrections be reconciled before a trade can qualify?
+578. Who independently approves the broker evidence and the future 10-per-source qualification
+     rules before a replacement cohort is preregistered?
+
+The local checker addresses internal consistency only. Questions 574 and 576–578 remain open;
+simulation-model question 573 also remains open. No candidate currently qualifies for PASS.

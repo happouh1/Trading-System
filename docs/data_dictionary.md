@@ -1495,3 +1495,12 @@ broker writes, simulated execution, release, promotion, and live trading remain 
   minimums are 10 for each source.
 - `qualification_performed` is always false. These are candidate counts, not verified trade counts;
   no existing prospective assessment consumes them.
+
+### `WebullCandidateAudit`
+
+- A deterministic, read-only as-of report for one registered Webull candidate. `audit_id` binds
+  candidate, UTC cutoff, reason codes, checked payload hashes, and audit version.
+- `locally_consistent` means the application's persisted plan binding, intent, managed position,
+  executions, exit action, terminal event, and flat reconciliation agree. It is not broker proof.
+- `qualifying_completed_trade`, `network_used`, and `broker_write_performed` are always false.
+  No audit records or verified-trade counts are persisted by this checker.

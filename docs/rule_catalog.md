@@ -1622,3 +1622,13 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   qualified completed-trade counts or a burn-in PASS.
 - `DSTE-006`: This registry MUST NOT call a broker, generate fills, alter the old plan, or start a
   replacement cohort.
+
+## Local Webull candidate audit rules
+
+- `DWCA-001`: The audit MUST require an exact registered Webull candidate and a causal UTC cutoff.
+- `DWCA-002`: It MUST fail local consistency on missing, corrupt, mismatched, or temporally invalid
+  plan, decision, position, execution, exit-action, terminal, or flat-reconciliation evidence.
+- `DWCA-003`: Local consistency MUST NOT be represented as independently verified broker history
+  or a qualifying completed trade.
+- `DWCA-004`: The audit MUST NOT use the network, place orders, create fills, start a cohort, alter
+  prospective assessments, or enable production or live trading.

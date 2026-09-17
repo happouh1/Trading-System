@@ -1510,3 +1510,15 @@ same-session reruns fail closed.
    plan must decide qualification before the burn-in assessment can use any count.
 5. This registry performs no order operation, simulated fill, cohort start, PASS decision, or live
    trading action.
+
+## Local Webull candidate consistency audit
+
+1. Audit a registered `WEBULL_SANDBOX` candidate only against local SQLite records available by
+   an explicit UTC cutoff. Verify stored canonical payload hashes and the candidate's exact fields.
+2. Link its locked plan/session, managed position, source decision intent, entry execution, exit
+   action and execution, terminal zero-quantity position event, and flat reconciliation. Reject
+   mismatched identities, quantities, sides, timestamps, or hashes with stable reason codes.
+3. Treat even a fully matching chain as **locally consistent only**. These records originate from
+   this application and do not independently attest to Webull's order, fill, and position history.
+4. Keep `qualifying_completed_trade=false` and perform no network request, broker write, simulated
+   fill, prospective cohort start, assessment update, or PASS decision.

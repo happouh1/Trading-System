@@ -1555,3 +1555,9 @@ them; the current preregistered plan remains unchanged. Broker execution/fill re
 reviewed simulation fill model are prerequisites before a replacement plan can count either source.
 The design and remaining decisions are recorded in
 `docs/proposals/dual_source_burn_in_trade_evidence_v1.md`.
+
+The read-only local Webull candidate audit can compare a registered candidate with persisted
+plan binding, decision intent, managed-position lifecycle, entry/exit executions, and flat
+reconciliation at a causal UTC cutoff. A clean audit establishes only internal consistency;
+it does **not** independently verify Webull history or turn a candidate into a qualifying trade.
+It makes no network request and cannot place an order or change a burn-in assessment.
