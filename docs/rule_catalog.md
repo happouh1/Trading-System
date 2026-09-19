@@ -1651,3 +1651,7 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   and terminal stop receipts cannot be revised.
 - PSE-06: A terminal stop receipt MUST NOT qualify a completed trade or imply contiguous bar
   coverage, portfolio approval, broker execution, or cohort activation.
+- PSE-07: Offline stop checks MUST consume the exact next completed XNYS 1H/4H session slot;
+  no-hit and hit checks MUST be immutable, ordered, receipt-time causal, and restart-safe.
+- PSE-08: A stop hit MUST append its bar check and terminal receipt atomically. Bar checks MUST
+  NOT imply full trade qualification or approval of trailing, fees, or portfolio rules.

@@ -56,9 +56,17 @@ than the stop's known-at. Both writes persist across connection restarts. The re
 retains the entry request, assessment, prices, timestamps, and content hash. The stop result
 remains nonqualifying and has no broker-write path.
 
-This is deliberately a narrow offline state machine, not a complete bar-by-bar exit runner.
-There is no persisted no-hit-bar cursor, no enforced contiguous calendar series, no trailing or
-structural exit queue, no max-hold close, no portfolio-capital gate, no locked prospective window,
-and no independently reviewed fees/spread model. Callers must not feed selected later bars to
-manufacture a stop result or use these rows as completed-trade evidence. Nothing operational
-imports the class; the replacement burn-in cohort remains inactive.
+Migration 094 adds immutable, ordinal bar-check receipts. `process_bar` requires the exact next
+session-aligned XNYS 1H/4H bar, including transitions after a partial 4H final bar. It checks
+the locked calendar name/version, symbol, timeframe, session date, source revision (once the
+first exit-side bar is recorded), receipt time and prior-known stop/ATR. A skipped, reordered,
+revised or unavailable bar fails closed. No-hit bars are retained across restarts; a hit records
+the bar check and terminal stop atomically. Repeating an identical bar is idempotent, while
+changed evidence is rejected.
+
+This remains a narrow initial-stop state machine, not a complete trade lifecycle. There is no
+trailing or structural exit queue, max-hold close, portfolio-capital gate, locked prospective
+window, or independently reviewed fees/spread model. The entry bar's source revision is not yet
+bound to the exit series; the registry checks revision consistency only across exit-side bars.
+These rows are not completed-trade evidence. Nothing operational imports the class; the
+replacement burn-in cohort remains inactive.

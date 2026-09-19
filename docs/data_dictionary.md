@@ -1528,3 +1528,8 @@ completed qualifying lifecycle. `prospective_shadow_positions` binds the stored 
 modelled one-share entry, initial stop, known-at, and canonical request/assessment hash; only
 one unclosed row per symbol is allowed. `prospective_shadow_exit_receipts` binds a terminal stop
 to that trade with known-at and canonical result/hash. Both tables are immutable.
+
+Migration 094 adds `prospective_shadow_bar_receipts`: one immutable, sequentially numbered
+check per exit-side 1H/4H candle, with trade/candle identities, open/close/known-at times,
+canonical input/result payload and hash. A `STOP_NOT_HIT` row preserves the no-hit cursor;
+the final `STOP_EXIT_MODELLED` row is written atomically with its terminal stop receipt.

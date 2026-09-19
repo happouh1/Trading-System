@@ -1518,3 +1518,6 @@ simulation-model question 573 also remains open. No candidate currently qualifie
      a terminal stop, not a complete no-hit-bar cursor or continuous lifecycle.
 584. Which reviewed trailing, structural-exit, max-hold, capital-allocation and fee rules will
      complete the offline lifecycle before any simulated trade can be considered qualifying?
+585. How will the entry bar's source revision be bound to the exit-side series, and what explicit
+     policy governs an unavailable bar or late receipt? Migration 094 enforces exact slot order
+     for supplied bars but does not validate a complete external feed or authorize a revised bar.

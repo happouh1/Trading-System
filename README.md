@@ -1572,3 +1572,5 @@ The [prospective entry boundary](docs/prospective_entry_boundary_review.md) is a
 modelling increment with immutable terminal entry receipts and optional one-share position/stop
 receipts. It does not activate a cohort, generate operational fills, or establish a complete
 sequential trade lifecycle.
+The optional offline stop-check ledger now requires every next XNYS bar and preserves no-hit
+checks across restarts; it still omits trailing, max-hold, capital, and fee gates.

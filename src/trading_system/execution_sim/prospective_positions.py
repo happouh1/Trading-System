@@ -4,12 +4,13 @@ from __future__ import annotations
 
 import json
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 
-from trading_system.domain import Candle, Direction
+from trading_system.domain import Candle, Direction, Timeframe
 from trading_system.execution_sim.prospective import EntryAssessment, ProspectiveEntry
 from trading_system.execution_sim.prospective_stop import StopAssessment, assess_stop
+from trading_system.market_data.calendar import SessionCalendar
 from trading_system.persistence import SQLiteRepository
 from trading_system.risk import PositionState
 from trading_system.serialization import canonical_hash, canonical_json, deterministic_id
@@ -18,6 +19,27 @@ from trading_system.serialization import canonical_hash, canonical_json, determi
 def _stored_integrity(payload: str, digest: str) -> None:
     if canonical_hash(json.loads(payload)) != digest:
         raise ValueError("stored shadow receipt integrity failure")
+
+
+def _time(value: str) -> datetime:
+    return datetime.fromisoformat(value.replace("Z", "+00:00"))
+
+
+def _next_slot(
+    calendar: SessionCalendar, timeframe: Timeframe, previous_close: datetime,
+) -> tuple[datetime, datetime]:
+    step = timedelta(hours=1 if timeframe is Timeframe.HOUR_1 else 4)
+    for offset in range(15):
+        day = previous_close.date() + timedelta(days=offset)
+        bounds = calendar.bounds(day)
+        if bounds is None:
+            continue
+        start, end = bounds
+        if previous_close <= start:
+            return start, min(start + step, end)
+        if start < previous_close < end:
+            return previous_close, min(previous_close + step, end)
+    raise ValueError("next XNYS bar unavailable in calendar")
 
 
 class OfflineShadowPositions:
@@ -89,10 +111,10 @@ class OfflineShadowPositions:
             raise ValueError("symbol already has an open shadow position") from exc
         return trade_id
 
-    def close_stop(
-        self, trade_id: str, *, candle: Candle, atr20: Decimal,
+    def process_bar(
+        self, trade_id: str, *, calendar: SessionCalendar, candle: Candle, atr20: Decimal,
         feature_known_at: datetime, received_at: datetime, as_of: datetime,
-    ) -> StopAssessment | None:
+    ) -> StopAssessment:
         row = self.connection.execute(
             "SELECT symbol, entry_price, initial_stop, known_at, payload_json, payload_hash "
             "FROM prospective_shadow_positions WHERE trade_id = ?", (trade_id,),
@@ -101,40 +123,97 @@ class OfflineShadowPositions:
             raise ValueError("unknown shadow trade")
         symbol, entry_text, stop_text, known_text, payload, digest = row
         _stored_integrity(payload, digest)
-        prior = self.connection.execute(
-            "SELECT known_at, payload_json, payload_hash FROM prospective_shadow_exit_receipts "
-            "WHERE trade_id = ?", (trade_id,),
+        data = json.loads(payload)
+        request, assessment = data
+        stored_calendar = self.connection.execute(
+            "SELECT json_extract(payload_json, '$[1]'), "
+            "json_extract(payload_json, '$[2]') FROM prospective_entry_requests "
+            "WHERE decision_id = ?", (request["decision_id"],),
         ).fetchone()
-        if prior is not None:
-            if datetime.fromisoformat(prior[0]) > as_of:
-                raise ValueError("exit receipt unavailable at cutoff")
-            _stored_integrity(prior[1], prior[2])
-            raise ValueError("shadow trade already closed; terminal receipt is immutable")
+        if stored_calendar is None or (calendar.name, calendar.version) != stored_calendar:
+            raise ValueError("entry calendar provenance mismatch")
+        if calendar.name != "XNYS":
+            raise ValueError("XNYS calendar required")
+        timeframe = Timeframe(request["plan"]["timeframe"])
+        if candle.symbol != symbol or candle.timeframe is not timeframe:
+            raise ValueError("shadow bar identity mismatch")
+        last = self.connection.execute(
+            "SELECT ordinal, open_time, close_time, known_at, payload_json, payload_hash, "
+            "candle_id FROM prospective_shadow_bar_receipts WHERE trade_id = ? "
+            "ORDER BY ordinal DESC LIMIT 1", (trade_id,),
+        ).fetchone()
+        duplicate = last is not None and last[6] == candle.candle_id
+        if last is not None:
+            _stored_integrity(last[4], last[5])
+            if _time(last[3]) > as_of:
+                raise ValueError("bar receipt unavailable at cutoff")
+            if json.loads(last[4])[0]["source_revision"] != candle.source_revision:
+                raise ValueError("shadow source revision changed")
+        if duplicate:
+            previous = self.connection.execute(
+                "SELECT known_at FROM prospective_shadow_bar_receipts "
+                "WHERE trade_id = ? AND ordinal = ?", (trade_id, last[0] - 1),
+            ).fetchone()
+            state_known_at = _time(previous[0]) if previous else _time(known_text)
+            ordinal = int(last[0])
+            expected = (_time(last[1]), _time(last[2]))
+        else:
+            if self.connection.execute(
+                "SELECT 1 FROM prospective_shadow_exit_receipts WHERE trade_id = ?", (trade_id,),
+            ).fetchone():
+                raise ValueError("shadow trade already closed; terminal receipt is immutable")
+            if last is None:
+                entry_open = _time(assessment["event_time"]["__datetime__"])
+                bounds = calendar.bounds(entry_open.date())
+                if bounds is None or not bounds[0] <= entry_open < bounds[1]:
+                    raise ValueError("entry slot unavailable in calendar")
+                step = timedelta(hours=1 if timeframe is Timeframe.HOUR_1 else 4)
+                previous_close = min(entry_open + step, bounds[1])
+                state_known_at = _time(known_text)
+                ordinal = 1
+            else:
+                previous_close = _time(last[2])
+                state_known_at = _time(last[3])
+                ordinal = int(last[0]) + 1
+            expected = _next_slot(calendar, timeframe, previous_close)
+        if (
+            (candle.open_time, candle.close_time) != expected
+            or candle.session_date != expected[0].date()
+        ):
+            raise ValueError("expected exact next XNYS bar; missing or shifted bar")
         entry, stop = Decimal(entry_text), Decimal(stop_text)
         state = PositionState(Direction.LONG, entry, stop, stop, entry - stop, entry)
-        request = payload
-        data = json.loads(request)
-        adjustment = Decimal(data[0]["adjustment_factor"]["__decimal__"])
+        adjustment = Decimal(request["adjustment_factor"]["__decimal__"])
         result = assess_stop(
             trade_id=trade_id, symbol=symbol, state=state,
-            state_known_at=datetime.fromisoformat(known_text), atr20=atr20,
+            state_known_at=state_known_at, atr20=atr20,
             feature_known_at=feature_known_at, adjustment_factor=adjustment,
             candle=candle, received_at=received_at, as_of=as_of,
         )
-        if result.status != "STOP_EXIT_MODELLED":
-            return None
-        self.connection.execute("SAVEPOINT prospective_shadow_close")
+        bar_payload = canonical_json((candle, atr20, feature_known_at, received_at, result))
+        if duplicate:
+            if (last[4], last[5]) != (bar_payload, canonical_hash(json.loads(bar_payload))):
+                raise ValueError("shadow bar receipt cannot be revised")
+            return result
+        self.connection.execute("SAVEPOINT prospective_shadow_bar")
         try:
             self.connection.execute(
-                "INSERT INTO prospective_shadow_exit_receipts VALUES (?, ?, ?, ?)",
+                "INSERT INTO prospective_shadow_bar_receipts VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 (
-                    trade_id, result.known_at.isoformat(), canonical_json(result),
-                    canonical_hash(result),
+                    trade_id, ordinal, candle.candle_id, candle.open_time.isoformat(),
+                    candle.close_time.isoformat(), result.known_at.isoformat(),
+                    bar_payload, canonical_hash(json.loads(bar_payload)),
                 ),
             )
-            self.connection.execute("RELEASE prospective_shadow_close")
+            if result.status == "STOP_EXIT_MODELLED":
+                self.connection.execute(
+                    "INSERT INTO prospective_shadow_exit_receipts VALUES (?, ?, ?, ?)",
+                    (trade_id, result.known_at.isoformat(), canonical_json(result),
+                     canonical_hash(result)),
+                )
+            self.connection.execute("RELEASE prospective_shadow_bar")
         except Exception:
-            self.connection.execute("ROLLBACK TO prospective_shadow_close")
-            self.connection.execute("RELEASE prospective_shadow_close")
+            self.connection.execute("ROLLBACK TO prospective_shadow_bar")
+            self.connection.execute("RELEASE prospective_shadow_bar")
             raise
         return result

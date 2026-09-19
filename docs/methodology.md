@@ -1540,6 +1540,7 @@ remaining calendar-series, exit, portfolio, and activation gates are implemented
 The offline receipt registry now makes the first terminal entry assessment final across restarts.
 Expiry cannot be backfilled and request revisions fail. The separate stop evaluator requires
 prior-known stop state and ATR, retaining receipt-based availability even for gap-at-open exits.
-The offline position registry enforces one open position per symbol and persists terminal stop
-receipts. It is not a sequential bar runner and cannot establish uninterrupted stop coverage.
-Portfolio allocation, queued exits, and activation gates remain unwired.
+The offline position registry enforces one open position per symbol. Its exit-side bar ledger
+requires the exact next XNYS slot, retains no-hit checks across restarts, and atomically records
+terminal stops. It models only a fixed initial stop, not full trade management. Portfolio
+allocation, trailing/queued exits, max-hold, and activation gates remain unwired.
