@@ -1513,3 +1513,18 @@ and `webull_trade_evidence_claims` (account-scoped order/client-order/fill ident
 content hash). The normalized schema is `config/schemas/webull_trade_evidence.v1.schema.json`.
 Fill quantities are incremental integer shares; price/fee values are decimal USD strings.
 Original source bytes remain external and must be retained. Reports never confer qualification.
+
+`EntryAssessment` is an in-memory offline record: deterministic assessment ID, decision ID,
+model hash, status, economic event_time, known_at receipt, source candle ID, optional modelled
+price and quantity. Source is SHADOW_SIMULATED; fees are NOT_MODELLED and qualification false.
+It is not a broker execution or persisted completed trade.
+
+Migration 092 adds `prospective_entry_requests` (decision ID, canonical request/hash) and
+`prospective_entry_outcomes` (one terminal assessment per decision, known-at, canonical
+payload/hash). Both tables reject updates and deletes. WAITING is not a terminal outcome.
+`StopAssessment` is an offline, nonqualifying protective-stop result. Migration 093 can persist
+it as a terminal receipt for an offline shadow-position claim, but it does not count as a
+completed qualifying lifecycle. `prospective_shadow_positions` binds the stored decision,
+modelled one-share entry, initial stop, known-at, and canonical request/assessment hash; only
+one unclosed row per symbol is allowed. `prospective_shadow_exit_receipts` binds a terminal stop
+to that trade with known-at and canonical result/hash. Both tables are immutable.

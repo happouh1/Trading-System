@@ -1567,3 +1567,8 @@ It makes no network request and cannot place an order or change a burn-in assess
 Separately supplied sandbox order, incremental-fill, and position evidence can now be imported
 and compared with local candidates. See [the runbook](docs/webull_trade_evidence_runbook.md).
 Matching results remain pending review and do not qualify burn-in trades.
+
+The [prospective entry boundary](docs/prospective_entry_boundary_review.md) is an offline
+modelling increment with immutable terminal entry receipts and optional one-share position/stop
+receipts. It does not activate a cohort, generate operational fills, or establish a complete
+sequential trade lifecycle.

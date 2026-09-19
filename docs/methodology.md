@@ -1531,3 +1531,15 @@ local audit, account verification, order identities, sides, quantities, entry va
 fills, and flat before/after position evidence. Unknown or conflicting evidence fails closed.
 A byte hash is neither source authentication nor proof of normalization fidelity. Matching
 captures remain `RECONCILED_PENDING_REVIEW`; no burn-in counts or existing plans change.
+
+Prospective entry assessments separate the modelled economic open from completed-bar receipt
+knowledge. The pure evaluator is stateless; optional offline registries persist first terminal
+outcomes and one-share position claims. They must not be wired into the runtime before the
+remaining calendar-series, exit, portfolio, and activation gates are implemented.
+
+The offline receipt registry now makes the first terminal entry assessment final across restarts.
+Expiry cannot be backfilled and request revisions fail. The separate stop evaluator requires
+prior-known stop state and ATR, retaining receipt-based availability even for gap-at-open exits.
+The offline position registry enforces one open position per symbol and persists terminal stop
+receipts. It is not a sequential bar runner and cannot establish uninterrupted stop coverage.
+Portfolio allocation, queued exits, and activation gates remain unwired.

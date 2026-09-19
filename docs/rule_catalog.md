@@ -1641,3 +1641,13 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - BEI-04: Preserve first-import time and exclude imports unavailable at the requested cutoff.
 - BEI-05: Compare incremental fills, local terminal orders and flat position evidence without inference.
 - BEI-06: Matching results remain pending review; qualification and broker-write flags stay false.
+
+- PSE-01: Require a recorded long decision, exclude AAPL, and use the immediate XNYS 1H/4H slot.
+- PSE-02: Never expose a completed-bar modelled fill before its receipt time.
+- PSE-03: Reject late decisions and changed adjustments; expire missing eligible bars.
+- PSE-04: One-share offline assessments never qualify trades or enable a cohort.
+- PSE-05: An offline shadow position MUST match an immutable modelled entry receipt; only one
+  unclosed position per symbol is allowed, a later entry MUST NOT predate the prior stop receipt,
+  and terminal stop receipts cannot be revised.
+- PSE-06: A terminal stop receipt MUST NOT qualify a completed trade or imply contiguous bar
+  coverage, portfolio approval, broker execution, or cohort activation.

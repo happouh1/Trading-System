@@ -1505,3 +1505,16 @@ simulation-model question 573 also remains open. No candidate currently qualifie
 580. What reviewed policy permits corrections, replacement chains, nonflat account baselines,
      or revised known-at records? Current imports reject conflicting identity reuse; reconciliation
      requires flat before/after account positions. No qualification policy is inferred.
+
+581. Before activating the proposed prospective wrapper, which immutable runtime receipt store
+     will enforce first-outcome finality (including expiry) across restarts, and which approved
+     source-latency policy determines when absence is final? The offline entry evaluator is
+     stateless and cannot enforce either runtime property itself.
+582. Which exact symbol universe, future dates, reviewer identity, and fee-model limitation will
+     be locked for the replacement cohort? Implementation approval on 2026-09-18 does not
+     supply those activation values or authorize sandbox orders.
+583. What reviewed sequential-candle policy will prove that no bars were skipped between entry
+     and exit, including missing sessions and higher-timeframe boundaries? Migration 093 records
+     a terminal stop, not a complete no-hit-bar cursor or continuous lifecycle.
+584. Which reviewed trailing, structural-exit, max-hold, capital-allocation and fee rules will
+     complete the offline lifecycle before any simulated trade can be considered qualifying?
