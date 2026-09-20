@@ -1572,5 +1572,11 @@ The [prospective entry boundary](docs/prospective_entry_boundary_review.md) is a
 modelling increment with immutable terminal entry receipts and optional one-share position/stop
 receipts. It does not activate a cohort, generate operational fills, or establish a complete
 sequential trade lifecycle.
-The optional offline stop-check ledger now requires every next XNYS bar and preserves no-hit
-checks across restarts; it still omits trailing, max-hold, capital, and fee gates.
+The optional offline shadow ledger now checks the entry candle itself, then every next XNYS
+bar. It preserves no-hit checks across restarts and queues the existing 40-bar maximum-hold
+exit for the next eligible open. The ledger can also opt into immutable, receipt-time causal
+trailing-stop state from the entry bar and a structural-damage next-open exit. This remains
+nonqualifying and offline-only. It also accepts a current-candle opposing short trap at
+confidence >=75 for a next-open modeled exit. Capital, fees, verified evidence and
+independent review remain open. No broker routing uses it; see the
+[prospective boundary review](docs/prospective_entry_boundary_review.md).

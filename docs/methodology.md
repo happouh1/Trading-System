@@ -1540,7 +1540,33 @@ remaining calendar-series, exit, portfolio, and activation gates are implemented
 The offline receipt registry now makes the first terminal entry assessment final across restarts.
 Expiry cannot be backfilled and request revisions fail. The separate stop evaluator requires
 prior-known stop state and ATR, retaining receipt-based availability even for gap-at-open exits.
-The offline position registry enforces one open position per symbol. Its exit-side bar ledger
+The offline position registry enforces one open position per symbol. Its bar ledger
 requires the exact next XNYS slot, retains no-hit checks across restarts, and atomically records
-terminal stops. It models only a fixed initial stop, not full trade management. Portfolio
-allocation, trailing/queued exits, max-hold, and activation gates remain unwired.
+terminal stops. The first check is now the same entry candle as the modelled entry receipt,
+so a stop hit there cannot be skipped. At the 40th checked bar, an unhit position queues a
+maximum-hold exit for the next eligible bar's open; the fill is known only at that bar's
+completed receipt. Stop at bar 40 has priority. Portfolio allocation, independently sourced
+trail evidence, opposing-trap exits, reviewed fees, and activation gates remain unwired.
+
+The separate pure prospective trail assessor evaluates the old stop against the current
+completed candle first. If that stop was hit, it refuses to compute a new trail for the bar.
+Otherwise it reuses the Phase 1C structural-damage weights and monotonic trail formula with
+explicit known-at timestamps. EMA20 and confirmed swings may only contribute when known by
+receipt; ADR20 and the prior-bar extreme must be known before the bar opens. A damage score
+of at least 70 produces a queued-exit *signal*, not an immediate fill. The next stop cannot
+act before this bar's receipt.
+
+The optional offline ledger now accepts this evidence from the entry bar onward and persists
+each surviving bar's trail state atomically with its bar check. After restart, only the
+hash-checked prior assessment can supply the stop for the next bar. Structural damage >=70
+queues a next-open exit; if bar 40 also reaches max-hold, structural damage wins after the
+stop check. The next eligible bar's open is the economic exit time, while its completed
+receipt is the known-at time. A stopped bar stores no new trail, and a surviving trade cannot
+turn trail processing on or off midway. Portfolio-capital approval, fees, independent source
+verification and operational activation remain outside this ledger.
+
+An optional completed-bar confirmed opposing short trap with confidence >=75 queues a
+next-eligible-open exit. It must match the long position's symbol, timeframe and signal
+candle and be known between close and receipt. Priority is stop, structural damage,
+opposing trap, then maximum hold. The modeled exit is known only at the following bar's
+completed receipt. Caller-supplied event authenticity is not independently established.

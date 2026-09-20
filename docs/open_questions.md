@@ -1516,8 +1516,20 @@ simulation-model question 573 also remains open. No candidate currently qualifie
 583. What reviewed sequential-candle policy will prove that no bars were skipped between entry
      and exit, including missing sessions and higher-timeframe boundaries? Migration 093 records
      a terminal stop, not a complete no-hit-bar cursor or continuous lifecycle.
-584. Which reviewed trailing, structural-exit, max-hold, capital-allocation and fee rules will
-     complete the offline lifecycle before any simulated trade can be considered qualifying?
-585. How will the entry bar's source revision be bound to the exit-side series, and what explicit
-     policy governs an unavailable bar or late receipt? Migration 094 enforces exact slot order
-     for supplied bars but does not validate a complete external feed or authorize a revised bar.
+584. Which reviewed capital-allocation and fee rules, independent data evidence, and
+     qualification policy will complete the offline lifecycle? The existing 40-bar max-hold,
+     trailing and structural-damage formulas now have offline models but not independent review.
+585. What explicit external-feed completeness and late-receipt policy will govern missing bars?
+     Migration 095 binds the entry candle to the sequential exit series and rejects a skipped
+     supplied slot, but cannot prove an external feed was complete or authorize a revised bar.
+586. What reviewed point-in-time source will supply EMA20, confirmed swing, prior-bar extreme,
+     and all five structural-damage components for every prospective checked bar? The pure
+     trail evaluator requires timestamps and an immutable ledger but not a verified feed.
+587. What reviewed priority and evidence contract will add opposing-trap queued exits to the
+     stop, trail, structural-damage, and max-hold ledger? Migration 097 now models the
+     specified priority offline but does not authenticate the supplied event or authorize
+     broker execution.
+588. Which independently auditable point-in-time pattern-event source and confidence
+     calculation will supply opposing traps for the proposed cohort? The offline queue
+     validates internal identity and timing but cannot prove external source authenticity
+     or the absence of other qualifying traps.

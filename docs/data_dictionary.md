@@ -1530,6 +1530,36 @@ one unclosed row per symbol is allowed. `prospective_shadow_exit_receipts` binds
 to that trade with known-at and canonical result/hash. Both tables are immutable.
 
 Migration 094 adds `prospective_shadow_bar_receipts`: one immutable, sequentially numbered
-check per exit-side 1H/4H candle, with trade/candle identities, open/close/known-at times,
+check per entry-and-exit 1H/4H candle, with trade/candle identities, open/close/known-at times,
 canonical input/result payload and hash. A `STOP_NOT_HIT` row preserves the no-hit cursor;
 the final `STOP_EXIT_MODELLED` row is written atomically with its terminal stop receipt.
+
+Migration 095 adds `prospective_shadow_queued_exits`: one immutable trade-scoped `MAX_HOLD`
+queue with signal ordinal 40, signal candle ID, known-at, and canonical payload/hash. The
+entry candle is ordinal 1 and is bound to the entry assessment's exact candle ID and receipt.
+`MaxHoldAssessment` is a nonqualifying offline result with signal and next-bar source candle
+IDs, economic event time at the 41st eligible bar open, receipt-based known-at, modelled sell
+price, and `fees_status=NOT_MODELLED`. The terminal `prospective_shadow_exit_receipts` table
+also stores this result; it remains distinct from any qualifying completed trade.
+
+`TrailEvidence` is an in-memory, non-persisted input contract: ADR20 and its prior-known
+timestamp; optional EMA20, confirmed swing, and prior-bar extreme with paired known-at times;
+five `DamageInputs` flags and their completed-bar known-at. `TrailAssessment` records a
+deterministic ID, source candle, event/known-at timestamps, prior/next stop state, damage
+score and status. It is nonqualifying and cannot write to a broker. No operational or shadow
+registry currently persists this assessment.
+
+Migration 096 adds `prospective_shadow_trail_receipts`, keyed by trade and bar ordinal with
+the source candle, known-at, canonical trail assessment and hash. Its composite foreign key
+requires the matching `prospective_shadow_bar_receipts` row. It also adds
+`prospective_shadow_structural_queues`, an immutable per-trade signal ordinal/candle/known-at
+and payload/hash. A `StructuralExitAssessment` records the queued signal candle, following
+execution candle, economic next-open time, completed-bar receipt time, adverse-slippage
+modelled price, and false qualification/broker-write flags. These are offline records only.
+
+Migration 097 adds `prospective_shadow_trap_queues`, keyed by trade ID. It stores the
+signal ordinal/candle ID, opposing pattern-event ID, Decimal confidence as text,
+receipt known-at, and canonical payload/hash. `OpposingTrapEvidence` is a supplied
+`PatternEvent` plus confidence; the complete event is retained in the signal bar payload.
+`OpposingTrapExitAssessment` records signal and source candle/event IDs, next-open economic
+time, receipt known-at, adverse-slippage fill, and false qualification/broker-write flags.

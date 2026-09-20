@@ -1655,3 +1655,37 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   no-hit and hit checks MUST be immutable, ordered, receipt-time causal, and restart-safe.
 - PSE-08: A stop hit MUST append its bar check and terminal receipt atomically. Bar checks MUST
   NOT imply full trade qualification or approval of trailing, fees, or portfolio rules.
+- PSE-09: The first checked bar MUST be the entry assessment's exact candle and receipt;
+  its stop MUST be evaluated before any later bar. Every later bar MUST retain the source revision.
+- PSE-10: If no stop fires through 40 completed checked bars, ordinal 40 MUST atomically queue
+  `MAX_HOLD`; a stop hit on bar 40 MUST take precedence and queue nothing.
+- PSE-11: The queued exit MUST use the immediately next eligible bar's open with adverse
+  1-basis-point-or-0.02-ATR20 slippage. It MUST remain unavailable until that bar's receipt.
+  Queue, bar, and terminal receipts MUST be immutable and restart-idempotent.
+- PSE-12: These offline maximum-hold results MUST remain nonqualifying, with unmodelled fees,
+  no broker writes, and no operational cohort activation.
+- PSE-13: Pure trail assessment MUST reject a bar that touched the prior stop; a new stop
+  MUST apply only after the completed bar is received and MUST never move downward for a long.
+- PSE-14: ADR20 and prior-bar extreme MUST predate the bar open; EMA20 and confirmed swings
+  MUST be known by receipt, and structural-damage inputs MUST be known no earlier than bar close.
+- PSE-15: Structural damage of at least 70 MAY produce only an offline queued-exit signal.
+  Pure trail assessment MUST NOT imply a persisted transition, next-open fill, qualification,
+  or broker authority.
+- PSE-16: A surviving shadow position MAY enter trailing mode only on its entry bar. Every
+  subsequent surviving bar MUST supply causal trail evidence; a mode change MUST fail closed.
+- PSE-17: A no-hit bar and its next-bar trail state MUST commit atomically, remain immutable,
+  and be linked by trade/ordinal/candle/known-at across restarts. A stopped bar MUST NOT
+  advance the trail.
+- PSE-18: Structural damage >=70 MUST queue a next-eligible-open modelled exit. On the signal
+  bar, a stop has priority; at bar 40, structural damage has priority over max-hold. The
+  queued exit remains unavailable until its following completed bar is received.
+- PSE-19: Trail and structural receipts MUST remain offline and nonqualifying, without
+  broker writes, fees claimed as zero, or cohort activation.
+- PSE-20: An opposing-trap signal MUST be a current completed-bar short
+  `TRAP_CONFIRMED` event with confidence >=75, matching symbol/timeframe and candle ID,
+  and known between bar close and receipt. Invalid evidence MUST fail closed.
+- PSE-21: On a signal bar, stop outranks structural damage, which outranks opposing trap,
+  which outranks max-hold. An opposing-trap queue MUST model its exit at the immediately
+  next eligible bar's open and remain unavailable until that completed bar is received.
+- PSE-22: The trap event, score, queue and exit MUST be immutable, offline,
+  nonqualifying and unable to route a broker order.
