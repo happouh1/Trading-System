@@ -1580,3 +1580,8 @@ nonqualifying and offline-only. It also accepts a current-candle opposing short 
 confidence >=75 for a next-open modeled exit. Capital, fees, verified evidence and
 independent review remain open. No broker routing uses it; see the
 [prospective boundary review](docs/prospective_entry_boundary_review.md).
+
+An additional offline `open_controlled` path requires an immutable post-fill Phase 4A portfolio
+approval and an explicit specification-default cost declaration. It does not authenticate portfolio
+inputs, reserve real capital, activate a cohort, qualify a trade, or place a broker order. See the
+[Phase 11I review](docs/phase_11i_review.md).

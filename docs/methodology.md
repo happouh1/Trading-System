@@ -1570,3 +1570,11 @@ next-eligible-open exit. It must match the long position's symbol, timeframe and
 candle and be known between close and receipt. Priority is stop, structural damage,
 opposing trap, then maximum hold. The modeled exit is known only at the following bar's
 completed receipt. Caller-supplied event authenticity is not independently established.
+
+After an entry is modelled, the optional controlled admission path uses the actual fill in a
+one-share `PortfolioCandidate` and requires a point-in-time `PortfolioState` at the same known-at.
+It reuses the versioned Phase 4A gates without changing thresholds. The immutable result must be
+accepted before `open_controlled` can claim the shadow position. Costs are explicitly declared as
+the specification default of zero fees with spread combined into adverse slippage; this is a model
+limitation rather than a real-cost estimate. Supplied portfolio and liquidity evidence still needs
+independent provenance review.

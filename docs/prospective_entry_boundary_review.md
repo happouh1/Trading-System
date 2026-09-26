@@ -141,3 +141,18 @@ unavailable until that bar's completed receipt. Queue, bar and terminal exit are
 hash-checked and restart-idempotent. This model neither authenticates the supplied pattern
 event nor places a broker order. Independent source review, fees/spread treatment, portfolio
 capital and activation remain open.
+
+## Offline portfolio and declared-cost control follow-up
+
+Phase 11I and migration 098 add an immutable post-fill control assessment. The supplied portfolio
+candidate must match the decision, plan, symbol, long direction, actual modelled fill, initial stop,
+one-share quantity and receipt timestamp exactly. The established Phase 4A engine then evaluates
+liquidity, duplicate symbol, position count, gross/net/position/sector exposure and strategy risk.
+`open_controlled` requires the exact stored `CONTROL_APPROVED` receipt; a rejection or missing receipt
+fails closed across restarts.
+
+The receipt declares the build specification's zero-fee default and binds spread treatment to the
+existing combined adverse-slippage proxy. It does not claim real costs are zero. Portfolio state,
+equity, sector, ADV and their source revision remain caller-supplied and unauthenticated. This new
+path is offline and nonqualifying, activates no cohort, and has no broker-write capability. The
+legacy `open` method remains only for prior fixture compatibility.

@@ -1563,3 +1563,13 @@ receipt known-at, and canonical payload/hash. `OpposingTrapEvidence` is a suppli
 `PatternEvent` plus confidence; the complete event is retained in the signal bar payload.
 `OpposingTrapExitAssessment` records signal and source candle/event IDs, next-open economic
 time, receipt known-at, adverse-slippage fill, and false qualification/broker-write flags.
+
+`ProspectiveControlAssessment` binds a modelled entry to a Phase 4A `PortfolioAssessment`, both
+configuration hashes, entry-receipt known-at, stable rejection reasons, zero declared fee per share
+per side, estimated zero round-trip fees, `SPEC_DEFAULT_ZERO_DECLARED`, and
+`COMBINED_IN_DECLARED_SLIPPAGE`. False qualification, broker-write and cohort-activation flags are
+fixed by the contract.
+
+Migration 098 adds `prospective_control_assessments`, one immutable row per decision with known-at,
+status, canonical payload and hash. Its foreign key requires the terminal prospective entry receipt.
+The row is an offline control record, not a capital reservation or broker/account attestation.

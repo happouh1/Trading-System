@@ -9,6 +9,7 @@ from decimal import Decimal
 
 from trading_system.domain import Candle, Direction, Timeframe
 from trading_system.execution_sim.prospective import EntryAssessment, ProspectiveEntry
+from trading_system.execution_sim.prospective_controls import ProspectiveControlAssessment
 from trading_system.execution_sim.prospective_max_hold import (
     MAX_HOLD_BARS,
     MaxHoldAssessment,
@@ -90,6 +91,38 @@ class OfflineShadowPositions:
 
     def __init__(self, repository: SQLiteRepository) -> None:
         self.connection = repository.connection
+
+    def open_controlled(
+        self, request: ProspectiveEntry, assessment: EntryAssessment,
+        controls: ProspectiveControlAssessment,
+    ) -> str:
+        if (
+            controls.decision_id != request.decision_id
+            or controls.known_at != assessment.known_at
+            or controls.status != "CONTROL_APPROVED"
+            or controls.reason_codes
+            or controls.portfolio_assessment.candidate_id != request.decision_id
+            or controls.portfolio_assessment.action.value != "ACCEPT"
+            or controls.fee_per_share_per_side != 0
+            or controls.estimated_round_trip_fees != 0
+            or controls.fees_status != "SPEC_DEFAULT_ZERO_DECLARED"
+            or controls.spread_status != "COMBINED_IN_DECLARED_SLIPPAGE"
+            or controls.qualifying_completed_trade or controls.broker_write_performed
+            or controls.cohort_activated
+        ):
+            raise ValueError("approved offline prospective controls are required")
+        stored = self.connection.execute(
+            "SELECT known_at, status, payload_json, payload_hash "
+            "FROM prospective_control_assessments WHERE decision_id = ?",
+            (request.decision_id,),
+        ).fetchone()
+        expected = (
+            controls.known_at.isoformat(), controls.status,
+            canonical_json(controls), canonical_hash(controls),
+        )
+        if stored != expected:
+            raise ValueError("prospective control receipt is unavailable or does not match")
+        return self.open(request, assessment)
 
     def open(self, request: ProspectiveEntry, assessment: EntryAssessment) -> str:
         if (

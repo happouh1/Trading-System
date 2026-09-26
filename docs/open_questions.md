@@ -1533,3 +1533,18 @@ simulation-model question 573 also remains open. No candidate currently qualifie
      calculation will supply opposing traps for the proposed cohort? The offline queue
      validates internal identity and timing but cannot prove external source authenticity
      or the absence of other qualifying traps.
+
+## Added for Phase 11I offline prospective capital and cost controls
+
+589. Which independently authenticated source supplies portfolio equity, open/pending positions,
+     sector, average daily dollar volume, and the point-in-time source revision at admission?
+590. Which reviewed rule supplies planned hold sessions for classifying each prospective candidate?
+591. Which empirical broker, exchange, regulatory-fee, quote-spread and capacity evidence may replace
+     the specification-default zero fee and combined-slippage proxy?
+592. Must a later runtime reserve capital atomically across simultaneous decisions, and what recovery
+     rule releases a reservation after an expired or rejected entry?
+593. Who independently approves the portfolio configuration and cost limitation for a replacement
+     prospective cohort?
+
+Phase 11I supplies no answers or authority for questions 589-593. Its caller-provided evidence and
+default costs cannot qualify a burn-in trade without separate review.

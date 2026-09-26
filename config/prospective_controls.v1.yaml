@@ -1,0 +1,15 @@
+{
+  "prospective_controls_version": "1.0.0",
+  "costs": {
+    "fee_per_share_per_side": 0,
+    "spread_model": "COMBINED_IN_DECLARED_SLIPPAGE",
+    "slippage_bps": 1,
+    "slippage_atr_fraction": 0.02
+  },
+  "authority": {
+    "offline_only": true,
+    "broker_writes_enabled": false,
+    "qualifying_trade_enabled": false,
+    "cohort_activation_enabled": false
+  }
+}

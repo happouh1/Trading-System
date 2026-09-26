@@ -1689,3 +1689,11 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   next eligible bar's open and remain unavailable until that completed bar is received.
 - PSE-22: The trap event, score, queue and exit MUST be immutable, offline,
   nonqualifying and unable to route a broker order.
+- PSE-23: A controlled shadow opening MUST have an immutable `CONTROL_APPROVED` receipt bound to
+  the exact decision, plan, actual fill, stop, one-share quantity and receipt known-at.
+- PSE-24: The controlled assessment MUST reuse the versioned Phase 4A portfolio and liquidity gates;
+  every rejection reason MUST be retained and a rejected or missing receipt MUST fail closed.
+- PSE-25: The specification-default zero fee and combined-spread/slippage treatment MUST be declared
+  explicitly and MUST NOT be presented as authenticated real execution-cost evidence.
+- PSE-26: Prospective control receipts MUST remain offline and nonqualifying and MUST NOT activate a
+  cohort, reserve capital, assert broker buying power, or authorize a broker write.
