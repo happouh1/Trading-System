@@ -1729,3 +1729,11 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   untrusted proof, supersession, revocation, or invalid time evidence are blocked.
 - PSE-42: Phase 11L MUST NOT bundle a trust provider, use the network, load/create private keys,
   qualify a trade, activate a cohort, or authorize broker/live writes.
+- PSE-43: Every Phase 11M verifier receipt MUST bind the exact subject hash, proof/token hash,
+  verifier identity/version, UTC verification time, outcome, and reason.
+- PSE-44: Receipt-bound governance MUST require exactly one receipt for every supplied issuance,
+  revocation, and timestamp subject; missing, extra, duplicate, or changed coverage MUST fail closed.
+- PSE-45: A receipt with `verified_at` after the evaluation cutoff MUST be unavailable.
+- PSE-46: A rejected verifier receipt MUST reproduce the corresponding blocked Phase 11L result.
+- PSE-47: Verifier receipts MUST NOT assert provider approval or grant broker-write, qualification,
+  cohort, or live authority.

@@ -1603,3 +1603,9 @@ trusted timestamp evidence accepted by caller-supplied external verifiers. Causa
 timestamp checks fail closed, and a governed control requires the exact stored 11J/11K/11L chain.
 No authority provider, network call, private-key operation, trade qualification, or broker/live
 write is bundled. See the [Phase 11L review](docs/phase_11l_review.md).
+
+Phase 11M makes those external-verifier outcomes reproducible. It stores the exact governance
+subject/proof hashes, verifier identity and version, causal verification time, result, and reason,
+then binds the complete receipt set to the Phase 11L assessment. Missing, extra, future, or changed
+receipts fail closed. The verifier remains caller supplied and no provider or execution authority is
+implied. See the [Phase 11M review](docs/phase_11m_review.md).

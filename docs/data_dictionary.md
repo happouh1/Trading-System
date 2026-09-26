@@ -1614,3 +1614,15 @@ Migration 100 stores each contract in a separate append-only table protected fro
 
 Migration 101 stores these records in four append-only tables with prerequisite foreign keys,
 canonical payload hashes, and update/delete rejection triggers.
+
+## Phase 11M external verifier receipts
+
+- `ExternalVerificationReceipt`: verification kind, exact subject ID/hash, opaque proof/token hash,
+  verifier identity/version, UTC verification time, accepted flag, stable reason, and false network
+  and broker-write flags.
+- `ReceiptBoundGovernanceAssessment`: exact Phase 11L assessment ID/hash, exact sorted verification
+  receipt IDs/hashes, review assessment ID, cutoff, state, configuration hash, and false provider,
+  broker-write, qualification, cohort, and live flags.
+
+Migration 102 adds append-only `prospective_external_verification_receipts` and
+`prospective_receipt_bound_governance_assessments`, with uniqueness and immutable triggers.

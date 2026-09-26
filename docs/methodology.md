@@ -1616,3 +1616,15 @@ causally ordered.
 Invalid external proof, duplicate identities, scope mismatch, supersession, revocation, or invalid
 timestamps block. Missing evidence is incomplete. The system does not implement any external
 provider or infer trust from a self-asserted token.
+
+## Phase 11M external verifier receipts
+
+Each Phase 11L callback is executed once against its exact governance subject. The resulting receipt
+retains the subject hash, opaque proof/token hash, verifier identity/version, causal verification
+time, acceptance result, and reason. Receipt-bound evaluation requires the receipt key set to equal
+the issuance, revocation, and timestamp subject key set exactly. Subject/proof changes, duplicates,
+missing/extra receipts, or future verification times fail closed.
+
+The receipt records callback behavior; it does not make the callback trustworthy. External provider
+selection, software provenance, proof semantics, custody, and independent approval remain outside
+the repository.

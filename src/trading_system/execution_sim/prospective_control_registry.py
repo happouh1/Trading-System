@@ -23,6 +23,12 @@ from trading_system.execution_sim.prospective_evidence_review import EvidenceRev
 from trading_system.execution_sim.prospective_evidence_review_registry import (
     ProspectiveEvidenceReviewRegistry,
 )
+from trading_system.execution_sim.prospective_verifier_receipt_registry import (
+    ProspectiveVerifierReceiptRegistry,
+)
+from trading_system.execution_sim.prospective_verifier_receipts import (
+    ReceiptBoundGovernanceAssessment,
+)
 from trading_system.persistence import SQLiteRepository
 from trading_system.portfolio import PortfolioCandidate, PortfolioConfig, PortfolioState
 from trading_system.serialization import canonical_hash, canonical_json
@@ -120,4 +126,21 @@ class ProspectiveControlRegistry:
         return self.assess_reviewed_evidence_bound(
             entry=entry, entry_assessment=entry_assessment, evidence=evidence, review=review,
             portfolio_config=portfolio_config, controls_config=controls_config, as_of=as_of,
+        )
+
+    def assess_receipt_bound_evidence(
+        self, *, entry: ProspectiveEntry, entry_assessment: EntryAssessment,
+        evidence: CorroboratedProspectiveInputs, review: EvidenceReviewAssessment,
+        governance: GovernedReviewAssessment, receipt_bound: ReceiptBoundGovernanceAssessment,
+        portfolio_config: PortfolioConfig, controls_config: ProspectiveControlsConfig,
+        as_of: datetime,
+    ) -> ProspectiveControlAssessment:
+        """Require immutable Phase 11M verifier outcomes before evaluating controls."""
+        ProspectiveVerifierReceiptRegistry(self.repository).require_verified(
+            receipt_bound, governance, as_of=as_of,
+        )
+        return self.assess_governed_evidence_bound(
+            entry=entry, entry_assessment=entry_assessment, evidence=evidence, review=review,
+            governance=governance, portfolio_config=portfolio_config,
+            controls_config=controls_config, as_of=as_of,
         )

@@ -1576,3 +1576,15 @@ default costs cannot qualify a burn-in trade without separate review.
 
 Phase 11L intentionally leaves 601-605 unresolved. Caller-injected test verifiers demonstrate the
 boundary but are not production trust services and add no execution or cohort authority.
+
+## Added for Phase 11M verifier receipts
+
+606. What signed software-build identity, deployment identity, and configuration attestation proves
+     that a recorded verifier ID/version corresponds to independently reviewed verifier code?
+607. Must verifier receipts themselves be externally signed or transparency-logged, and by whom?
+608. What retention and revalidation policy applies when a provider trust root, proof format, or
+     verifier implementation changes after a receipt was recorded?
+609. Which independent process approves a complete receipt bundle before any replacement cohort may
+     consume it?
+
+Phase 11M preserves supplied verifier outcomes but does not answer 606-609 or select a provider.
