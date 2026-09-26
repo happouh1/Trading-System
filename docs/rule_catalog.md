@@ -1749,3 +1749,13 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   revalidate the stored Phase 11J–11M dependency chain at the cutoff.
 - PSE-52: Phase 11N approval MUST NOT imply provider authentication, trade qualification, cohort
   activation, broker-write authority, or live-trading authority.
+- PSE-53: The Phase 11O genesis entry MUST have sequence one and no previous hash; every subsequent
+  entry MUST have the immediately next sequence and the current persisted head's entry hash.
+- PSE-54: Every ledger entry MUST bind the exact canonical Phase 11M assessment, Phase 11N request
+  and approved assessment, UTC record time, and configuration hash.
+- PSE-55: Ledger record time MUST NOT precede approval or the preceding entry; sequence gaps, forks,
+  reordering, dependency changes, and future-at-cutoff entries MUST fail closed.
+- PSE-56: The transparency-gated control path MUST require the exact stored append-only Phase 11O
+  entry and MUST revalidate the complete Phase 11J–11N chain.
+- PSE-57: A local Phase 11O hash chain MUST NOT be described as externally anchored and MUST NOT
+  grant provider approval, qualification, cohort activation, broker-write, or live authority.

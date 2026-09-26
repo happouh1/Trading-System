@@ -6,6 +6,12 @@ import json
 from datetime import datetime
 
 from trading_system.execution_sim.prospective import EntryAssessment, ProspectiveEntry
+from trading_system.execution_sim.prospective_approval_transparency import (
+    ApprovalTransparencyEntry,
+)
+from trading_system.execution_sim.prospective_approval_transparency_registry import (
+    ProspectiveApprovalTransparencyRegistry,
+)
 from trading_system.execution_sim.prospective_controls import (
     ProspectiveControlAssessment,
     ProspectiveControlsConfig,
@@ -165,5 +171,23 @@ class ProspectiveControlRegistry:
         return self.assess_receipt_bound_evidence(
             entry=entry, entry_assessment=entry_assessment, evidence=evidence, review=review,
             governance=governance, receipt_bound=receipt_bound,
+            portfolio_config=portfolio_config, controls_config=controls_config, as_of=as_of,
+        )
+
+    def assess_transparency_logged_evidence(
+        self, *, entry: ProspectiveEntry, entry_assessment: EntryAssessment,
+        evidence: CorroboratedProspectiveInputs, review: EvidenceReviewAssessment,
+        governance: GovernedReviewAssessment, receipt_bound: ReceiptBoundGovernanceAssessment,
+        approval: VerifierApprovalAssessment, transparency: ApprovalTransparencyEntry,
+        portfolio_config: PortfolioConfig, controls_config: ProspectiveControlsConfig,
+        as_of: datetime,
+    ) -> ProspectiveControlAssessment:
+        """Require the exact Phase 11O ledger entry before evaluating controls."""
+        ProspectiveApprovalTransparencyRegistry(self.repository).require_logged(
+            transparency, approval, as_of=as_of,
+        )
+        return self.assess_approved_receipt_bound_evidence(
+            entry=entry, entry_assessment=entry_assessment, evidence=evidence, review=review,
+            governance=governance, receipt_bound=receipt_bound, approval=approval,
             portfolio_config=portfolio_config, controls_config=controls_config, as_of=as_of,
         )

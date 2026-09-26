@@ -1,0 +1,19 @@
+{
+  "transparency_version": "11O.1.0",
+  "mode": "OFFLINE_HASH_CHAIN",
+  "policy": {
+    "exact_bundle_scope": true,
+    "strict_sequence": true,
+    "previous_entry_hash_required_after_genesis": true,
+    "utc_record_time": true
+  },
+  "authority": {
+    "external_anchor_enabled": false,
+    "network_enabled": false,
+    "provider_approval_enabled": false,
+    "broker_writes_enabled": false,
+    "qualifying_trade_enabled": false,
+    "cohort_activation_enabled": false,
+    "live_trading_enabled": false
+  }
+}

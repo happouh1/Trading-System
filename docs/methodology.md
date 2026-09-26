@@ -1641,3 +1641,16 @@ future signing, or an evaluation outside the request window yield `BLOCKED`. Onl
 enter the additional offline control gate, which still rechecks the complete 11J–11M chain.
 Approval records do not authenticate providers or grant execution, qualification, cohort, or live
 authority.
+
+## Phase 11O offline approval transparency ledger
+
+Each ledger entry commits to the exact approved Phase 11N assessment, its request, the Phase 11M
+receipt-bound assessment, their canonical hashes, a strict sequence, the preceding entry hash, UTC
+record time, and configuration hash. Sequence one is the only genesis form; every later entry must
+reference the current persisted head. Record time cannot precede approval or the prior ledger entry.
+
+The append-only registry validates every dependency before committing atomically, rejects gaps and
+forks, and rechecks canonical payload hashes after restart. The final offline control path requires
+the exact stored ledger entry and then revalidates Phase 11N and the complete earlier chain. Because
+the chain is stored locally and has no independent anchor, it is tamper-evident only relative to a
+retained trusted copy; it cannot prove external publication or authorize execution.

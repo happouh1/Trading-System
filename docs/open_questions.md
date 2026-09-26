@@ -1602,3 +1602,17 @@ Phase 11M preserves supplied verifier outcomes but does not answer 606-609 or se
 
 Phase 11N records a deterministic approval mechanism but does not resolve questions 606-613,
 approve a provider, or authorize cohort activation or execution.
+
+## Added for Phase 11O offline approval transparency ledger
+
+614. Which independent transparency service, trusted timestamp, or immutable external medium will
+     anchor Phase 11O head hashes, at what cadence, and with what outage behavior?
+615. What retention, replication, audit, and disaster-recovery policy ensures an operator cannot
+     replace the entire local database and chain with a rewritten copy?
+616. Which inclusion/consistency proof format and independent verifier will be required if Phase
+     11O entries are published externally?
+617. Who reviews a chain discontinuity or external-anchor mismatch, and what fail-safe operational
+     response is required before any cohort could proceed?
+
+Phase 11O supplies a strict local chain only. It does not resolve 606-617, provide an external
+anchor, authenticate providers, or authorize cohort activation or execution.

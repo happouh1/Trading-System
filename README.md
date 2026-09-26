@@ -1616,3 +1616,9 @@ Ed25519. Missing quorum remains incomplete; invalid signatures, reused principal
 windows block. Approval is evidence for the existing offline control path only—it does not select
 a trust provider, qualify a trade, activate a cohort, or authorize broker/live writes. See the
 [Phase 11N review](docs/phase_11n_review.md).
+
+Phase 11O can append each exact approved bundle to a strict offline hash chain. Sequence, prior-entry
+hash, Phase 11M/11N identities and hashes, UTC record time, and configuration are immutable and
+restart-validated. This exposes local deletion, reordering, and substitution when the retained chain
+is audited; it is not an external timestamp or transparency-log anchor and adds no trading authority.
+See the [Phase 11O review](docs/phase_11o_review.md).

@@ -1640,3 +1640,14 @@ Migration 102 adds append-only `prospective_external_verification_receipts` and
 
 Migration 103 stores these records in four append-only tables with prerequisite foreign keys,
 canonical payload hashes, uniqueness constraints, and update/delete rejection triggers.
+
+## Phase 11O approval transparency ledger
+
+`ApprovalTransparencyEntry` retains a strict positive sequence, nullable genesis-only previous hash,
+exact Phase 11N assessment ID/hash, exact approval request ID/hash, exact Phase 11M assessment
+ID/hash, UTC record time, deterministic entry hash, configuration hash, and false external-anchor,
+provider, execution, qualification, cohort, and live-authority flags.
+
+Migration 104 adds `prospective_approval_transparency_entries`. Unique sequence, prior hash, entry
+hash, and approval assessment constraints prevent local forks or duplicate inclusion. Foreign keys,
+canonical payload hashes, and update/delete rejection triggers make the retained ledger append-only.
