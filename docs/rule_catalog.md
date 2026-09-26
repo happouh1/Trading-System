@@ -1719,3 +1719,13 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   the cutoff.
 - PSE-37: Signature verification MUST NOT assert upstream source authenticity or grant control
   override, broker write, qualification, cohort, or live authority.
+- PSE-38: A governed review MUST bind every Phase 11K attestation to an externally verified,
+  append-only credential issuance that predates signing.
+- PSE-39: A trusted successor or verified revocation known by the evaluation cutoff MUST block the
+  affected credential; invalid revocation evidence MUST fail closed.
+- PSE-40: Every governed attestation MUST have externally verified timestamp evidence ordered as
+  signed-at <= timestamped-at <= received-at <= evaluated-at.
+- PSE-41: Missing governance evidence is incomplete; duplicate identities, role-scope mismatch,
+  untrusted proof, supersession, revocation, or invalid time evidence are blocked.
+- PSE-42: Phase 11L MUST NOT bundle a trust provider, use the network, load/create private keys,
+  qualify a trade, activate a cohort, or authorize broker/live writes.

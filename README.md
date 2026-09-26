@@ -1597,3 +1597,9 @@ Phase 11K can attach bounded Ed25519 reviews by distinct operator-specified role
 corroboration receipt. Missing reviews are incomplete; invalid signatures or reviewer reuse block.
 Even `SIGNATURES_VERIFIED` is review evidence only: it does not authenticate upstream providers or
 enable execution. See the [Phase 11K review](docs/phase_11k_review.md).
+
+Phase 11L can additionally require append-only credential issuance, supersession/revocation, and
+trusted timestamp evidence accepted by caller-supplied external verifiers. Causal revocation and
+timestamp checks fail closed, and a governed control requires the exact stored 11J/11K/11L chain.
+No authority provider, network call, private-key operation, trade qualification, or broker/live
+write is bundled. See the [Phase 11L review](docs/phase_11l_review.md).

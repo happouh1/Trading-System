@@ -1561,3 +1561,18 @@ default costs cannot qualify a burn-in trade without separate review.
 599. Which trusted timestamp service, if any, independently establishes signing time?
 600. Which exact reviewer roles and quorum are required for a real prospective cohort? Phase 11K
      keeps them operator supplied and grants no cohort authority.
+
+## Added for Phase 11L credential governance
+
+601. Which independently administered credential issuer and proof format will implement the Phase
+     11L issuer-verifier interface?
+602. Which revocation publication, compromise response, audit-retention, and maximum-status-age
+     policy applies operationally?
+603. Which trusted timestamp provider and token-validation policy will implement the timestamp
+     verifier, including outage and renewal handling?
+604. Who controls reviewer-role assignment, hardware-backed key custody, rotation, and recovery?
+605. Which independent approver may accept the provider implementations and exact reviewer quorum
+     before any replacement cohort is activated?
+
+Phase 11L intentionally leaves 601-605 unresolved. Caller-injected test verifiers demonstrate the
+boundary but are not production trust services and add no execution or cohort authority.

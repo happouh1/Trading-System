@@ -1603,3 +1603,16 @@ roles, and yields `SIGNATURES_VERIFIED`, `INCOMPLETE`, or `BLOCKED`.
 Signature verification establishes review evidence only. It neither authenticates upstream market
 facts nor grants a control override, broker write, qualification, cohort, or live authority. The
 reviewed control path requires both the stored Phase 11J receipt and exact stored Phase 11K result.
+
+## Phase 11L externally governed review evidence
+
+Credential governance evaluates the exact Phase 11K attestations at an explicit UTC cutoff. Each
+credential must have a matching issuance record accepted by an injected external verifier and must
+have been issued before signing. A trusted successor supersedes its predecessor; a verified
+revocation blocks the credential immediately at and after its recorded cutoff. Each signature must
+also have one accepted timestamp whose signing, timestamping, receipt, and evaluation times are
+causally ordered.
+
+Invalid external proof, duplicate identities, scope mismatch, supersession, revocation, or invalid
+timestamps block. Missing evidence is incomplete. The system does not implement any external
+provider or infer trust from a self-asserted token.

@@ -1599,3 +1599,18 @@ append-only and protected by update/delete triggers.
   receipt hashes, and false authenticity/execution/qualification/cohort/live flags.
 
 Migration 100 stores each contract in a separate append-only table protected from update/delete.
+
+## Phase 11L credential governance
+
+- `CredentialIssuance`: external issuer identity, exact Phase 11K credential/hash, UTC issuance,
+  optional predecessor credential, external proof, and deterministic issuance ID.
+- `CredentialRevocation`: issuer, exact credential/hash, UTC revocation, reason, external proof,
+  and deterministic revocation ID.
+- `TrustedTimestampEvidence`: provider, exact attestation/hash, UTC timestamp/receipt times, opaque
+  token, and deterministic timestamp ID.
+- `GovernedReviewAssessment`: exact Phase 11K assessment, evaluation cutoff, governance state,
+  verified credential/timestamp identities, stable reasons, configuration hash, and false
+  execution/qualification/cohort/live flags.
+
+Migration 101 stores these records in four append-only tables with prerequisite foreign keys,
+canonical payload hashes, and update/delete rejection triggers.

@@ -11,6 +11,12 @@ from trading_system.execution_sim.prospective_controls import (
     ProspectiveControlsConfig,
     assess_prospective_controls,
 )
+from trading_system.execution_sim.prospective_credential_governance import (
+    GovernedReviewAssessment,
+)
+from trading_system.execution_sim.prospective_credential_governance_registry import (
+    ProspectiveCredentialGovernanceRegistry,
+)
 from trading_system.execution_sim.prospective_evidence import CorroboratedProspectiveInputs
 from trading_system.execution_sim.prospective_evidence_registry import ProspectiveEvidenceRegistry
 from trading_system.execution_sim.prospective_evidence_review import EvidenceReviewAssessment
@@ -99,4 +105,19 @@ class ProspectiveControlRegistry:
             entry=entry, entry_assessment=entry_assessment, evidence=evidence,
             portfolio_config=portfolio_config, controls_config=controls_config,
             as_of=as_of,
+        )
+
+    def assess_governed_evidence_bound(
+        self, *, entry: ProspectiveEntry, entry_assessment: EntryAssessment,
+        evidence: CorroboratedProspectiveInputs, review: EvidenceReviewAssessment,
+        governance: GovernedReviewAssessment, portfolio_config: PortfolioConfig,
+        controls_config: ProspectiveControlsConfig, as_of: datetime,
+    ) -> ProspectiveControlAssessment:
+        """Require exact stored Phase 11L governance before evaluating controls."""
+        ProspectiveCredentialGovernanceRegistry(self.repository).require_verified(
+            governance, review, as_of=as_of,
+        )
+        return self.assess_reviewed_evidence_bound(
+            entry=entry, entry_assessment=entry_assessment, evidence=evidence, review=review,
+            portfolio_config=portfolio_config, controls_config=controls_config, as_of=as_of,
         )
