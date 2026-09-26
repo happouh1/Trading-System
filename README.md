@@ -1609,3 +1609,10 @@ subject/proof hashes, verifier identity and version, causal verification time, r
 then binds the complete receipt set to the Phase 11L assessment. Missing, extra, future, or changed
 receipts fail closed. The verifier remains caller supplied and no provider or execution authority is
 implied. See the [Phase 11M review](docs/phase_11m_review.md).
+
+Phase 11N adds an offline approval envelope for that exact Phase 11M bundle. Distinct
+operator-supplied roles sign the bundle, validity window, and complete receipt identity set with
+Ed25519. Missing quorum remains incomplete; invalid signatures, reused principals, or expired
+windows block. Approval is evidence for the existing offline control path only—it does not select
+a trust provider, qualify a trade, activate a cohort, or authorize broker/live writes. See the
+[Phase 11N review](docs/phase_11n_review.md).

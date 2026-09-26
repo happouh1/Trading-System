@@ -1626,3 +1626,17 @@ canonical payload hashes, and update/delete rejection triggers.
 
 Migration 102 adds append-only `prospective_external_verification_receipts` and
 `prospective_receipt_bound_governance_assessments`, with uniqueness and immutable triggers.
+
+## Phase 11N verifier-bundle approval
+
+- `VerifierApprovalCredential`: operator-supplied principal, role, Ed25519 public key, and bounded
+  validity interval.
+- `VerifierApprovalRequest`: exact Phase 11M assessment/hash, Phase 11L identity, ordered verifier
+  receipt IDs/hashes, required roles, request window, configuration hash, and false authorities.
+- `VerifierApprovalAttestation`: signature binding the exact request/bundle, credential, principal,
+  role, and signing time.
+- `VerifierApprovalAssessment`: deterministic `APPROVED`, `INCOMPLETE`, or `BLOCKED` result with
+  verified roles, stable reasons, request hash, and false provider/execution authorities.
+
+Migration 103 stores these records in four append-only tables with prerequisite foreign keys,
+canonical payload hashes, uniqueness constraints, and update/delete rejection triggers.

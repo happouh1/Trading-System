@@ -1737,3 +1737,15 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - PSE-46: A rejected verifier receipt MUST reproduce the corresponding blocked Phase 11L result.
 - PSE-47: Verifier receipts MUST NOT assert provider approval or grant broker-write, qualification,
   cohort, or live authority.
+- PSE-48: A Phase 11N approval request MUST bind the exact Phase 11M assessment/hash, governance
+  identity, complete ordered verifier-receipt IDs/hashes, required roles, configuration, and UTC
+  validity interval.
+- PSE-49: Every approval signature MUST bind the request, exact receipt bundle, credential,
+  principal, role, and signing time and MUST verify within both credential and request windows.
+- PSE-50: Required approval roles MUST be explicit and operator supplied, with distinct principals;
+  missing roles are incomplete while invalid signatures, scope mismatch, reused principals, or
+  invalid time evidence are blocked.
+- PSE-51: The approved control path MUST require the exact append-only Phase 11N result and MUST
+  revalidate the stored Phase 11J–11M dependency chain at the cutoff.
+- PSE-52: Phase 11N approval MUST NOT imply provider authentication, trade qualification, cohort
+  activation, broker-write authority, or live-trading authority.

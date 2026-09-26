@@ -1628,3 +1628,16 @@ missing/extra receipts, or future verification times fail closed.
 The receipt records callback behavior; it does not make the callback trustworthy. External provider
 selection, software provenance, proof semantics, custody, and independent approval remain outside
 the repository.
+
+## Phase 11N signed verifier-bundle approval
+
+An approval request hashes the complete Phase 11M assessment, governance identity, ordered verifier
+receipt IDs/hashes, required roles, configuration, and bounded UTC window. Each Ed25519 attestation
+also binds its credential, principal, role, and signing time. Evaluation is deterministic and
+requires every operator-supplied role to be signed by a distinct principal inside both windows.
+
+Missing roles yield `INCOMPLETE`. Invalid signatures, mismatched scope, duplicate role/principal,
+future signing, or an evaluation outside the request window yield `BLOCKED`. Only `APPROVED` can
+enter the additional offline control gate, which still rechecks the complete 11J–11M chain.
+Approval records do not authenticate providers or grant execution, qualification, cohort, or live
+authority.

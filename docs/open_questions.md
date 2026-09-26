@@ -1588,3 +1588,17 @@ boundary but are not production trust services and add no execution or cohort au
      consume it?
 
 Phase 11M preserves supplied verifier outcomes but does not answer 606-609 or select a provider.
+
+## Added for Phase 11N signed verifier-bundle approval
+
+610. Which exact approval roles and quorum may approve a production verifier bundle? Phase 11N
+     requires explicit operator input and defines no production defaults.
+611. Which independent issuer, revocation source, and custody policy governs Phase 11N approval
+     credentials, including compromise and rotation?
+612. Must approval attestations be hardware-backed or transparency-logged, and what retention and
+     reapproval policy applies after verifier/provider changes?
+613. Which external change-control process may convert an approved evidence bundle into cohort
+     activation, and which separation-of-duty rules apply?
+
+Phase 11N records a deterministic approval mechanism but does not resolve questions 606-613,
+approve a provider, or authorize cohort activation or execution.

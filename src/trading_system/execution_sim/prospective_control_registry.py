@@ -23,6 +23,12 @@ from trading_system.execution_sim.prospective_evidence_review import EvidenceRev
 from trading_system.execution_sim.prospective_evidence_review_registry import (
     ProspectiveEvidenceReviewRegistry,
 )
+from trading_system.execution_sim.prospective_verifier_approval import (
+    VerifierApprovalAssessment,
+)
+from trading_system.execution_sim.prospective_verifier_approval_registry import (
+    ProspectiveVerifierApprovalRegistry,
+)
 from trading_system.execution_sim.prospective_verifier_receipt_registry import (
     ProspectiveVerifierReceiptRegistry,
 )
@@ -143,4 +149,21 @@ class ProspectiveControlRegistry:
             entry=entry, entry_assessment=entry_assessment, evidence=evidence, review=review,
             governance=governance, portfolio_config=portfolio_config,
             controls_config=controls_config, as_of=as_of,
+        )
+
+    def assess_approved_receipt_bound_evidence(
+        self, *, entry: ProspectiveEntry, entry_assessment: EntryAssessment,
+        evidence: CorroboratedProspectiveInputs, review: EvidenceReviewAssessment,
+        governance: GovernedReviewAssessment, receipt_bound: ReceiptBoundGovernanceAssessment,
+        approval: VerifierApprovalAssessment, portfolio_config: PortfolioConfig,
+        controls_config: ProspectiveControlsConfig, as_of: datetime,
+    ) -> ProspectiveControlAssessment:
+        """Require an exact approved Phase 11N bundle before evaluating controls."""
+        ProspectiveVerifierApprovalRegistry(self.repository).require_approved(
+            approval, receipt_bound, as_of=as_of,
+        )
+        return self.assess_receipt_bound_evidence(
+            entry=entry, entry_assessment=entry_assessment, evidence=evidence, review=review,
+            governance=governance, receipt_bound=receipt_bound,
+            portfolio_config=portfolio_config, controls_config=controls_config, as_of=as_of,
         )
