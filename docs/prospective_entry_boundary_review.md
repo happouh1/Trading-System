@@ -168,3 +168,14 @@ unstored or changed receipt.
 This closes the unrecorded caller-input boundary but not external authenticity: matching files can
 share a common upstream error. Planned hold duration remains explicit operator input, and no
 tolerance policy is inferred. The path stays offline, nonqualifying, and unable to write a broker.
+
+## Signed evidence-review follow-up
+
+Phase 11K and migration 100 add bounded Ed25519 review requests, credentials, attestations, and
+terminal assessments over the exact Phase 11J receipt. Required roles remain operator supplied;
+distinct principals are mandatory. The strict reviewed-control path refuses missing, incomplete,
+blocked, changed, future, or unstored review evidence.
+
+Valid signatures prove only that credential holders signed the exact local request. They do not
+prove upstream data correctness, reserve capital, qualify a trade, activate a cohort, or authorize
+broker/live execution.

@@ -1587,3 +1587,15 @@ Authenticity-verified, broker-write, and qualifying-trade flags are false.
 
 Migration 099 adds `prospective_point_in_time_evidence` and `prospective_evidence_receipts`. Both are
 append-only and protected by update/delete triggers.
+
+## Phase 11K signed prospective evidence review
+
+- `EvidenceReviewCredential`: principal, operator-supplied role, Ed25519 public key, and validity
+  interval.
+- `EvidenceReviewRequest`: exact decision, Phase 11J receipt/hash, four evidence IDs and byte hashes,
+  bounded review window, sorted required roles, configuration hash, and explicit false authorities.
+- `EvidenceReviewAttestation`: signature over the exact request/credential/principal/role/time scope.
+- `EvidenceReviewAssessment`: deterministic state, verified roles, stable reason codes, request and
+  receipt hashes, and false authenticity/execution/qualification/cohort/live flags.
+
+Migration 100 stores each contract in a separate append-only table protected from update/delete.

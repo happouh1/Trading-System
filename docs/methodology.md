@@ -1591,3 +1591,15 @@ Matching evidence materializes the existing Phase 4A portfolio state and candida
 with an immutable receipt. The evidence-bound Phase 11I path requires that exact stored receipt.
 Cross-source agreement is not source authentication; no network, signature, capital reservation,
 broker write, qualification, cohort activation, or live authority is added.
+
+## Phase 11K signed evidence review
+
+The operator supplies a bounded review window and sorted required roles. Ed25519 credentials have
+their own validity windows. Each attestation signs the exact Phase 11J receipt hash, decision,
+evidence IDs, source-byte hashes, request window, credential, principal, role, and signing time.
+Evaluation sorts attestations, verifies signatures and windows, requires distinct principals and
+roles, and yields `SIGNATURES_VERIFIED`, `INCOMPLETE`, or `BLOCKED`.
+
+Signature verification establishes review evidence only. It neither authenticates upstream market
+facts nor grants a control override, broker write, qualification, cohort, or live authority. The
+reviewed control path requires both the stored Phase 11J receipt and exact stored Phase 11K result.

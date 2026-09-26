@@ -13,6 +13,10 @@ from trading_system.execution_sim.prospective_controls import (
 )
 from trading_system.execution_sim.prospective_evidence import CorroboratedProspectiveInputs
 from trading_system.execution_sim.prospective_evidence_registry import ProspectiveEvidenceRegistry
+from trading_system.execution_sim.prospective_evidence_review import EvidenceReviewAssessment
+from trading_system.execution_sim.prospective_evidence_review_registry import (
+    ProspectiveEvidenceReviewRegistry,
+)
 from trading_system.persistence import SQLiteRepository
 from trading_system.portfolio import PortfolioCandidate, PortfolioConfig, PortfolioState
 from trading_system.serialization import canonical_hash, canonical_json
@@ -77,6 +81,22 @@ class ProspectiveControlRegistry:
         return self.assess(
             entry=entry, entry_assessment=entry_assessment,
             portfolio_state=evidence.portfolio_state, candidate=evidence.candidate,
+            portfolio_config=portfolio_config, controls_config=controls_config,
+            as_of=as_of,
+        )
+
+    def assess_reviewed_evidence_bound(
+        self, *, entry: ProspectiveEntry, entry_assessment: EntryAssessment,
+        evidence: CorroboratedProspectiveInputs, review: EvidenceReviewAssessment,
+        portfolio_config: PortfolioConfig, controls_config: ProspectiveControlsConfig,
+        as_of: datetime,
+    ) -> ProspectiveControlAssessment:
+        """Require stored, signed independent review before the evidence-bound control."""
+        ProspectiveEvidenceReviewRegistry(self.repository).require_verified(
+            review, evidence, as_of=as_of,
+        )
+        return self.assess_evidence_bound(
+            entry=entry, entry_assessment=entry_assessment, evidence=evidence,
             portfolio_config=portfolio_config, controls_config=controls_config,
             as_of=as_of,
         )

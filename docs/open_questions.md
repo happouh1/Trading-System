@@ -1555,3 +1555,9 @@ default costs cannot qualify a burn-in trade without separate review.
      uses exact normalized agreement because no tolerance is specified.
 596. Which controlled source supplies `planned_hold_sessions` for evidence-bound entries? Phase 11J
      retains the explicit positive operator value and does not infer it.
+
+597. Which authority issues Phase 11K reviewer credentials, assigns roles, and maintains revocation?
+598. Must Phase 11K signing keys be hardware backed, and what rotation/key-compromise process applies?
+599. Which trusted timestamp service, if any, independently establishes signing time?
+600. Which exact reviewer roles and quorum are required for a real prospective cohort? Phase 11K
+     keeps them operator supplied and grants no cohort authority.

@@ -1707,3 +1707,15 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   immutable receipts with deterministic input ordering.
 - PSE-31: Corroboration MUST NOT be described as authentication and MUST NOT qualify a trade,
   reserve capital, activate a cohort, authorize a broker write, or enable live trading.
+- PSE-32: Review roles MUST be explicit and operator supplied; no default role or quorum may be
+  inferred.
+- PSE-33: Every Ed25519 signature MUST bind the exact receipt, evidence IDs and byte hashes, request
+  window, credential, principal, role, and signing time.
+- PSE-34: Credentials and requests MUST have bounded UTC validity; future, expired, malformed, or
+  invalid attestations MUST fail closed.
+- PSE-35: Verified roles MUST have distinct principals; missing roles are incomplete and duplicate
+  roles/principals are blocked.
+- PSE-36: A reviewed control MUST require exact stored Phase 11J and Phase 11K receipts available at
+  the cutoff.
+- PSE-37: Signature verification MUST NOT assert upstream source authenticity or grant control
+  override, broker write, qualification, cohort, or live authority.

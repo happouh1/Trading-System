@@ -1592,3 +1592,8 @@ Exact normalized agreement and exact entry-receipt timestamps are required. Sour
 revisions are stored immutably before the existing control assessment can run. This is corroboration,
 not external authentication, and adds no broker or live-trading authority. See the
 [Phase 11J review](docs/phase_11j_review.md).
+
+Phase 11K can attach bounded Ed25519 reviews by distinct operator-specified roles to that exact
+corroboration receipt. Missing reviews are incomplete; invalid signatures or reviewer reuse block.
+Even `SIGNATURES_VERIFIED` is review evidence only: it does not authenticate upstream providers or
+enable execution. See the [Phase 11K review](docs/phase_11k_review.md).
