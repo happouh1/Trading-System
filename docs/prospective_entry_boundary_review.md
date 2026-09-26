@@ -156,3 +156,15 @@ existing combined adverse-slippage proxy. It does not claim real costs are zero.
 equity, sector, ADV and their source revision remain caller-supplied and unauthenticated. This new
 path is offline and nonqualifying, activates no cohort, and has no broker-write capability. The
 legacy `open` method remains only for prior fixture compatibility.
+
+## Corroborated point-in-time evidence follow-up
+
+Phase 11J and migration 099 add a stricter optional input path for Phase 11I. Two portfolio sources
+and two market sources must come from distinct named authorities, retain exact source-byte hashes,
+share the entry receipt's known-at, and agree exactly after deterministic normalization. The four
+records and combined receipt are immutable and restart-idempotent. The control registry refuses an
+unstored or changed receipt.
+
+This closes the unrecorded caller-input boundary but not external authenticity: matching files can
+share a common upstream error. Planned hold duration remains explicit operator input, and no
+tolerance policy is inferred. The path stays offline, nonqualifying, and unable to write a broker.

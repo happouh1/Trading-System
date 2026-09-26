@@ -1697,3 +1697,13 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   explicitly and MUST NOT be presented as authenticated real execution-cost evidence.
 - PSE-26: Prospective control receipts MUST remain offline and nonqualifying and MUST NOT activate a
   cohort, reserve capital, assert broker buying power, or authorize a broker write.
+- PSE-27: Evidence-bound controls MUST require two distinct source IDs and authorities for
+  portfolio evidence and again for market evidence.
+- PSE-28: Evidence MUST share the modelled-entry receipt known-at; future, stale, aliased,
+  malformed, changed, or unstored evidence MUST fail closed.
+- PSE-29: V1 corroboration MUST require exact normalized economic agreement; no unstated tolerance
+  or missing value MAY be inferred.
+- PSE-30: Exact bytes, revisions, normalized hashes, and evidence identities MUST be retained in
+  immutable receipts with deterministic input ordering.
+- PSE-31: Corroboration MUST NOT be described as authentication and MUST NOT qualify a trade,
+  reserve capital, activate a cohort, authorize a broker write, or enable live trading.

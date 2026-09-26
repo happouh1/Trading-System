@@ -1578,3 +1578,16 @@ accepted before `open_controlled` can claim the shadow position. Costs are expli
 the specification default of zero fees with spread combined into adverse slippage; this is a model
 limitation rather than a real-cost estimate. Supplied portfolio and liquidity evidence still needs
 independent provenance review.
+
+## Phase 11J corroborated prospective inputs
+
+Phase 11J parses four strict point-in-time JSON envelopes: two portfolio snapshots and two market
+snapshots. Exact source bytes are SHA-256 hashed; economic fields are normalized without float
+arithmetic. Each pair must have distinct source identities and authorities, identical normalized
+economic payloads, and the modelled entry receipt's exact UTC `known_at`. Input ordering is reduced
+to evidence-ID order. Disagreement is rejected because no tolerance is specified.
+
+Matching evidence materializes the existing Phase 4A portfolio state and candidate and is retained
+with an immutable receipt. The evidence-bound Phase 11I path requires that exact stored receipt.
+Cross-source agreement is not source authentication; no network, signature, capital reservation,
+broker write, qualification, cohort activation, or live authority is added.

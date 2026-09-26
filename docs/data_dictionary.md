@@ -1573,3 +1573,17 @@ fixed by the contract.
 Migration 098 adds `prospective_control_assessments`, one immutable row per decision with known-at,
 status, canonical payload and hash. Its foreign key requires the terminal prospective entry receipt.
 The row is an offline control record, not a capital reservation or broker/account attestation.
+
+## Phase 11J point-in-time evidence
+
+`PointInTimeEvidence` retains evidence kind, source ID, authority label, source revision, exact UTC
+known-at, exact source-byte SHA-256, normalized economic payload hash, schema version, and immutable
+evidence ID. Portfolio payloads contain equity, sorted positions, and sorted pending symbols. Market
+payloads contain symbol, sector, and average daily dollar volume.
+
+`CorroboratedProspectiveInputs` binds four evidence IDs and byte hashes to one decision, known-at,
+materialized `PortfolioState`, materialized `PortfolioCandidate`, and two normalized hashes.
+Authenticity-verified, broker-write, and qualifying-trade flags are false.
+
+Migration 099 adds `prospective_point_in_time_evidence` and `prospective_evidence_receipts`. Both are
+append-only and protected by update/delete triggers.

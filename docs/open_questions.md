@@ -1548,3 +1548,10 @@ simulation-model question 573 also remains open. No candidate currently qualifie
 
 Phase 11I supplies no answers or authority for questions 589-593. Its caller-provided evidence and
 default costs cannot qualify a burn-in trade without separate review.
+
+594. Which externally verifiable signatures or provider attestations establish authenticity for
+     Phase 11J portfolio and market evidence? Exact two-source agreement is only corroboration.
+595. Should later reconciliation allow a numerical tolerance for equity, marks, or ADV? Phase 11J
+     uses exact normalized agreement because no tolerance is specified.
+596. Which controlled source supplies `planned_hold_sessions` for evidence-bound entries? Phase 11J
+     retains the explicit positive operator value and does not infer it.

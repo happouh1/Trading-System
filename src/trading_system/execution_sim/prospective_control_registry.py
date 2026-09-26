@@ -11,6 +11,8 @@ from trading_system.execution_sim.prospective_controls import (
     ProspectiveControlsConfig,
     assess_prospective_controls,
 )
+from trading_system.execution_sim.prospective_evidence import CorroboratedProspectiveInputs
+from trading_system.execution_sim.prospective_evidence_registry import ProspectiveEvidenceRegistry
 from trading_system.persistence import SQLiteRepository
 from trading_system.portfolio import PortfolioCandidate, PortfolioConfig, PortfolioState
 from trading_system.serialization import canonical_hash, canonical_json
@@ -61,3 +63,20 @@ class ProspectiveControlRegistry:
             connection.execute("ROLLBACK TO prospective_control")
             connection.execute("RELEASE prospective_control")
             raise
+
+    def assess_evidence_bound(
+        self, *, entry: ProspectiveEntry, entry_assessment: EntryAssessment,
+        evidence: CorroboratedProspectiveInputs,
+        portfolio_config: PortfolioConfig, controls_config: ProspectiveControlsConfig,
+        as_of: datetime,
+    ) -> ProspectiveControlAssessment:
+        """Assess only after the exact corroborated evidence receipt is persisted."""
+        if evidence.decision_id != entry.decision_id:
+            raise ValueError("prospective evidence decision does not match entry")
+        ProspectiveEvidenceRegistry(self.repository).require_stored(evidence, as_of=as_of)
+        return self.assess(
+            entry=entry, entry_assessment=entry_assessment,
+            portfolio_state=evidence.portfolio_state, candidate=evidence.candidate,
+            portfolio_config=portfolio_config, controls_config=controls_config,
+            as_of=as_of,
+        )

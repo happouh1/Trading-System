@@ -1585,3 +1585,10 @@ An additional offline `open_controlled` path requires an immutable post-fill Pha
 approval and an explicit specification-default cost declaration. It does not authenticate portfolio
 inputs, reserve real capital, activate a cohort, qualify a trade, or place a broker order. See the
 [Phase 11I review](docs/phase_11i_review.md).
+
+The optional Phase 11J path replaces those unrecorded assertions with four strict point-in-time
+evidence envelopes: two distinct portfolio authorities and two distinct market-data authorities.
+Exact normalized agreement and exact entry-receipt timestamps are required. Source bytes and
+revisions are stored immutably before the existing control assessment can run. This is corroboration,
+not external authentication, and adds no broker or live-trading authority. See the
+[Phase 11J review](docs/phase_11j_review.md).
