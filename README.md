@@ -1622,3 +1622,11 @@ hash, Phase 11M/11N identities and hashes, UTC record time, and configuration ar
 restart-validated. This exposes local deletion, reordering, and substitution when the retained chain
 is audited; it is not an external timestamp or transparency-log anchor and adds no trading authority.
 See the [Phase 11O review](docs/phase_11o_review.md).
+
+Phase 11P can export one verified Phase 11O ledger head as canonical JSON using an atomic local-file
+replacement. Its immutable receipt binds the exact ledger identity, sequence, entry hash, approval
+assessment, resolved path, byte count, content hash, export time, and configuration. Restart checks
+recreate the expected bytes and reject a missing or changed file. The artifact is only a portable
+candidate for later independent anchoring: it is not published, externally timestamped, or granted
+provider, qualification, cohort, broker-write, or live-trading authority. See the
+[Phase 11P review](docs/phase_11p_review.md).

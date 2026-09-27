@@ -1651,3 +1651,17 @@ provider, execution, qualification, cohort, and live-authority flags.
 Migration 104 adds `prospective_approval_transparency_entries`. Unique sequence, prior hash, entry
 hash, and approval assessment constraints prevent local forks or duplicate inclusion. Foreign keys,
 canonical payload hashes, and update/delete rejection triggers make the retained ledger append-only.
+
+## Phase 11P transparency checkpoint exports
+
+`TransparencyCheckpointExport` is an immutable receipt for a canonical local export. It retains the
+exact Phase 11O transparency entry ID, sequence, entry hash, Phase 11N approval assessment ID,
+resolved absolute output path, SHA-256 content hash, byte count, UTC export time, export configuration
+hash, and schema version. Network-used, externally-published, externally-anchored, broker-write,
+qualifying-trade, cohort-activation, and live-trading flags are fixed false.
+
+Migration 105 adds `prospective_transparency_checkpoint_exports`. Each row has a prerequisite Phase
+11O foreign key, unique entry/path binding, canonical receipt payload and hash, and update/delete
+rejection triggers. The file itself is canonical JSON encoded as UTF-8 with exactly one trailing LF;
+the database stores its exact path, size, and digest rather than treating filesystem presence as an
+external anchor.

@@ -1,0 +1,17 @@
+{
+  "export_version": "11P.1.0",
+  "source": "PHASE11O_VERIFIED_LEDGER_HEAD",
+  "format": "CANONICAL_JSON_UTF8_LF",
+  "write_policy": "ATOMIC_REPLACE",
+  "path_policy": "ABSOLUTE_RESOLVED_PATH",
+  "authority": {
+    "external_publication_enabled": false,
+    "network_enabled": false,
+    "external_anchor_claim_enabled": false,
+    "provider_approval_enabled": false,
+    "broker_writes_enabled": false,
+    "qualifying_trade_enabled": false,
+    "cohort_activation_enabled": false,
+    "live_trading_enabled": false
+  }
+}

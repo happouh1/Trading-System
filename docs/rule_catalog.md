@@ -1759,3 +1759,14 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   entry and MUST revalidate the complete Phase 11J–11N chain.
 - PSE-57: A local Phase 11O hash chain MUST NOT be described as externally anchored and MUST NOT
   grant provider approval, qualification, cohort activation, broker-write, or live authority.
+- PSE-58: A Phase 11P export MUST require the exact stored and cutoff-valid Phase 11O ledger entry
+  and MUST revalidate its Phase 11M/11N approval dependencies before writing any artifact.
+- PSE-59: The checkpoint MUST use canonical JSON, UTF-8, exactly one trailing LF, a resolved absolute
+  path, a same-directory temporary file, and atomic replacement.
+- PSE-60: The immutable export receipt MUST bind the exact ledger entry ID, sequence, entry hash,
+  approval assessment ID, path, content hash, byte count, UTC export time, and configuration hash.
+- PSE-61: Restart verification MUST regenerate and compare the expected bytes exactly; missing,
+  altered, future, differently bound, or hash-inconsistent files or receipts MUST fail closed.
+- PSE-62: A local checkpoint export MUST NOT be described as external publication, a trusted
+  timestamp, or an independent anchor and MUST NOT grant provider approval, trade qualification,
+  cohort activation, broker-write authority, or live-trading authority.

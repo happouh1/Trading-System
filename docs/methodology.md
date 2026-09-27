@@ -1654,3 +1654,17 @@ forks, and rechecks canonical payload hashes after restart. The final offline co
 the exact stored ledger entry and then revalidates Phase 11N and the complete earlier chain. Because
 the chain is stored locally and has no independent anchor, it is tamper-evident only relative to a
 retained trusted copy; it cannot prove external publication or authorize execution.
+
+## Phase 11P local transparency checkpoint export
+
+Phase 11P first revalidates the exact stored Phase 11O entry and its complete Phase 11M/11N approval
+dependencies at an explicit UTC cutoff. It renders that entry as canonical JSON encoded as UTF-8
+with exactly one trailing line feed. The output path is resolved to an absolute path and committed
+with a same-directory temporary file plus atomic replacement. No network operation occurs.
+
+The immutable receipt binds the ledger entry ID, sequence, entry hash, approval assessment ID,
+resolved output path, exact content SHA-256, byte count, export time, and export configuration hash.
+Restart verification reloads the receipt, regenerates the expected bytes, and compares path, bytes,
+size, and hash exactly. A missing, altered, differently bound, future, or unverified artifact fails
+closed. Local export does not establish independent publication, trusted time, provider approval,
+trade qualification, cohort activation, broker-write authority, or live-trading authority.

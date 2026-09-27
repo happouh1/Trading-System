@@ -1616,3 +1616,20 @@ approve a provider, or authorize cohort activation or execution.
 
 Phase 11O supplies a strict local chain only. It does not resolve 606-617, provide an external
 anchor, authenticate providers, or authorize cohort activation or execution.
+
+## Added for Phase 11P local transparency checkpoint export
+
+618. Which independent transparency service, trusted timestamp provider, or immutable external
+     medium will receive Phase 11P checkpoint bytes, and what authentication and transport apply?
+619. What externally signed publication receipt, inclusion proof, or consistency proof must bind
+     the exact Phase 11P content hash, ledger sequence, publication time, and provider identity?
+620. What checkpoint cadence, retention period, geographic replication, and outage/retry policy is
+     required, including whether every ledger entry or only selected heads must be published?
+621. Is one independent anchor sufficient, or must multiple providers or media satisfy a quorum
+     before a later cohort gate may proceed?
+622. Who investigates a missing publication, changed checkpoint, stale anchor, provider conflict,
+     or consistency-proof failure, and what operational halt/recovery procedure applies?
+
+Phase 11P creates an exact portable local artifact and immutable receipt but does not resolve
+606-622, publish externally, establish trusted time, approve a provider, qualify a trade, activate
+a cohort, or authorize broker/live execution.
