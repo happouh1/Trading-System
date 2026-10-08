@@ -1,5 +1,69 @@
 # Trading System
 
+Phase 12E preserves the failed October 7 evidence and preregisters a separate twenty-session
+replacement SHADOW cohort from October 8 through November 4, 2026. A 09:25 America/New_York
+preflight validates every frozen identity before the 09:30 start. Wake-to-run and battery-safe
+settings apply to preflight, start, close, and audit; superseded Phase 12C/12D tasks are disabled.
+
+Verify the entire replacement path offline, without credentials, network access, or broker writes:
+
+```powershell
+& .\scripts\verify-phase12e-shadow-launch.ps1
+```
+
+Install the four replacement tasks once from the repository root:
+
+```powershell
+& .\scripts\install-phase12e-shadow-tasks.ps1
+```
+
+Phase 12D adds a final daily health audit for the unattended Phase 12C shadow cohort. At 19:10
+America/New_York, after the post-close grace period, a limited local task checks that the expected
+start and post-close receipts exist and are safe. It writes one immutable result per scheduled day
+and never retries, backfills, loads Webull credentials, uses the network, or submits an order.
+
+Install the audit task once from the repository root:
+
+```powershell
+& .\scripts\install-phase12d-shadow-audit-task.ps1
+```
+
+Verify the audit path offline without touching the production evidence database:
+
+```powershell
+& .\scripts\run-phase12d-shadow-audit.ps1 -OfflineVerify
+```
+
+Phase 12C prepares an unattended replacement prospective shadow cohort for the twenty XNYS sessions
+from October 7 through November 3, 2026. Two limited Windows tasks start a unique daily `SHADOW`
+session at 09:30 America/New_York and run bounded MSFT/SPY read-only collection plus causal decisions
+at 16:05. The tasks run locally without Codex and cannot access an order API or perform broker writes.
+
+Install the tasks once from the repository root:
+
+```powershell
+& .\scripts\install-phase12c-shadow-tasks.ps1
+```
+
+Verify both paths offline without credentials or network access:
+
+```powershell
+& .\scripts\run-phase12c-shadow-start.ps1 -OfflineVerify
+& .\scripts\run-phase12c-shadow-close.ps1 -OfflineVerify
+```
+
+Phase 12B prepared the locked September 28 prospective shadow cohort. It freezes the exact plan,
+runtime, MSFT/SPY universe, read-only acquisition worker, and offline decision worker, then supplies
+one start-of-day and one post-close script. Local verification performs no network access or broker
+writes:
+
+```powershell
+& .\scripts\start-prospective-shadow-day.ps1 -OfflineVerify
+```
+
+The real first-day session starts at the XNYS open; see `docs/phase_12b_review.md`. This path remains
+`SHADOW` and cannot submit Webull orders.
+
 Phase 11F adds a fail-closed start command for subsequent prospective burn-in sessions. It validates
 the saved plan and Phase 11E runtime lock before creating a session, derives runtime identity from
 that lock, persists an immutable binding, and permits only the `SHADOW` state.
@@ -1630,3 +1694,14 @@ recreate the expected bytes and reject a missing or changed file. The artifact i
 candidate for later independent anchoring: it is not published, externally timestamped, or granted
 provider, qualification, cohort, broker-write, or live-trading authority. See the
 [Phase 11P review](docs/phase_11p_review.md).
+
+## Automatic Webull sandbox submission
+
+Phase 12A adds a local, sandbox-only automatic submission edge for the replacement dual-source
+burn-in window. It is limited to one-share long MSFT/SPY orders at the XNYS open, blocks AAPL,
+requires preview, causal opening-price/ADR evidence, reconciliation, independent environment and
+CLI gates, and current approved exit authority. A Windows Task Scheduler installer runs locally
+without Codex tokens. See [the Phase 12A review](docs/phase_12a_review.md).
+
+The task is intentionally `ARMED_BLOCKED` while the checked-in Phase 3D capability manifest remains
+unapproved. Production endpoints and live trading remain disabled.

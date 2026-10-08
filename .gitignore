@@ -51,6 +51,7 @@ tests/.tmp-phase3d-*/
 .tmp-phase11a-*/
 .tmp-phase11b-*/
 .tmp-phase11c-*/
+.tmp-phase12c-*/
 .test-artifacts/
 /shorta/
 /shortb/

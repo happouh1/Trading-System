@@ -1,0 +1,21 @@
+{
+  "worker_version": "11G.1.0",
+  "mode": "PROSPECTIVE_WEBULL_SANDBOX_READ_ONLY",
+  "plan_id": "prospective_burn_in_plan_d06259bcd015c6bc17d4bc73477060d0",
+  "market_data": {
+    "symbols": ["MSFT", "SPY"],
+    "timespan": "M60",
+    "history_count": 200
+  },
+  "authority": {
+    "database_read_enabled": true,
+    "database_write_enabled": true,
+    "network_read_enabled": true,
+    "credential_loading_enabled": true,
+    "broker_writes_enabled": false,
+    "order_api_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false,
+    "automatic_promotion_enabled": false
+  }
+}

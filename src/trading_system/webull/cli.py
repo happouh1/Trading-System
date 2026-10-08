@@ -16,6 +16,10 @@ from trading_system.paper import InternalSimulatorAdapter, PaperMode, PaperRegis
 from trading_system.persistence import SQLiteRepository
 from trading_system.risk import normalized_units
 from trading_system.serialization import canonical_hash, canonical_json
+from trading_system.webull.automatic_submission import (
+    load_automatic_submission_config,
+    run_automatic_submission_cycle,
+)
 from trading_system.webull.burn_in_decision_worker import (
     load_burn_in_decision_worker_config,
     run_burn_in_decision_cycle,
@@ -171,6 +175,17 @@ def configure_webull_parser(
         "--account-class", choices=("INDIVIDUAL_MARGIN", "INDIVIDUAL_CASH")
     )
     submit.add_argument("--enable-sandbox-submission", action="store_true")
+    auto_submit = actions.add_parser("automatic-submit-tick")
+    auto_submit.add_argument("--database", required=True)
+    auto_submit.add_argument("--session-id", required=True)
+    auto_submit.add_argument("--config", required=True)
+    auto_submit.add_argument("--automatic-config", required=True)
+    auto_submit.add_argument("--exit-config", required=True)
+    auto_submit.add_argument("--exit-capabilities", required=True)
+    auto_submit.add_argument(
+        "--account-class", choices=("INDIVIDUAL_MARGIN", "INDIVIDUAL_CASH")
+    )
+    auto_submit.add_argument("--enable-automatic-sandbox-submission", action="store_true")
     order_report = actions.add_parser("order-report")
     order_report.add_argument("--database", required=True)
     order_report.add_argument("--session-id", required=True)
@@ -829,6 +844,68 @@ def handle_webull(args: argparse.Namespace) -> int:
                 "production_enabled": False,
                 "network_used": False,
             }
+    elif args.webull_command == "automatic-submit-tick":
+        automatic = load_automatic_submission_config(args.automatic_config)
+        if not args.enable_automatic_sandbox_submission:
+            raise ValueError("automatic sandbox submission requires explicit CLI enablement")
+        credentials = load_credentials()
+        observed_at = datetime.now(UTC)
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            paper = PaperRegistry(repository)
+            auto_registry = WebullRegistry(repository)
+            transport = OfficialSdkWebullTransport(config, credentials)
+            service = WebullSandboxService(
+                args.session_id,
+                credentials,
+                transport,
+                auto_registry,
+                paper,
+                reconciliation_max_age_seconds=60,
+                max_gap_adr=Decimal("0.25"),
+                max_release_lateness_seconds=automatic.max_release_lateness_seconds,
+                exit_authorization_check=_exit_authorization_check(
+                    repository,
+                    args.session_id,
+                    args.exit_config,
+                    args.exit_capabilities,
+                ),
+            )
+            service.verify_account(observed_at, account_class=args.account_class)
+            source = OfficialSdkWebullMarketDataSource(config, credentials)
+            snapshot = source.market_snapshot(automatic.symbols)
+            auto_registry.insert_envelope(
+                args.session_id,
+                "AUTOMATIC_ENTRY_SNAPSHOT",
+                observed_at,
+                snapshot,
+                {"symbols": automatic.symbols},
+            )
+            automatic_result = run_automatic_submission_cycle(
+                repository,
+                service,
+                automatic,
+                session_id=args.session_id,
+                observed_at=observed_at,
+                snapshot=snapshot,
+                environment_enabled=submission_enabled(
+                    str(config.values["submission_environment_flag"])
+                ),
+                cli_enabled=True,
+            )
+        result = {
+            "cycle_id": automatic_result.cycle_id,
+            "session_id": automatic_result.session_id,
+            "status": automatic_result.status,
+            "reason": automatic_result.reason,
+            "intent_id": automatic_result.intent_id,
+            "client_order_id": automatic_result.client_order_id,
+            "quantity": automatic_result.quantity,
+            "environment": automatic_result.environment,
+            "network_used": automatic_result.network_used,
+            "broker_write_performed": automatic_result.broker_write_performed,
+            "live_trading_enabled": False,
+        }
     elif args.webull_command == "preview-candidates":
         as_of = _utc_timestamp(args.as_of)
         risk_budget = _risk_budget(args.thresholds)

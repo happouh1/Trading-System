@@ -1,0 +1,23 @@
+{
+  "runtime_lock_version": "11E.1.0",
+  "mode": "PROSPECTIVE_IDENTITY_LOCK",
+  "plan_id": "prospective_burn_in_plan_d06259bcd015c6bc17d4bc73477060d0",
+  "baseline": {
+    "session_id": "burn-in-shadow-20261007-01",
+    "code_version": "0.2.0",
+    "config_hash": "sha256:e707870227ebeb06c60dd94d6283dc8a63160685ebb15447b0dbf89480f8ff7c",
+    "data_revision": "WEBULL_SANDBOX_BURNIN_20261007",
+    "calendar_version": "exchange-calendars-4"
+  },
+  "retrospective_baseline_disclosed": false,
+  "authority": {
+    "database_read_enabled": true,
+    "database_write_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false,
+    "automatic_promotion_enabled": false
+  }
+}

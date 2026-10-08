@@ -1,6 +1,7 @@
 # Dual-source burn-in execution plan — proposal v1
 
-Status: DRAFT FOR APPROVAL. Not an executable configuration or authorization to trade.
+Status: APPROVED FOR WEBULL SANDBOX IMPLEMENTATION on 2026-09-27. This approval does not
+authorize production/live trading and does not waive the recorded exit-evidence or runtime gates.
 Prepared 2026-09-18 against code commit 87e1cf2beb226a475d282561e24b3194e9dbcc28.
 
 ## Objective and already approved scope

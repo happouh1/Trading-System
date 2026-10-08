@@ -1,0 +1,36 @@
+{
+  "automatic_submission_version": "12A.1.0",
+  "mode": "AUTOMATIC_WEBULL_SANDBOX_ONLY",
+  "plan_id": "prospective_burn_in_plan_8e448c6fc0c1dfef54ccfb5d90f52a00",
+  "schedule": {
+    "timezone": "America/New_York",
+    "weekdays": [1, 2, 3, 4, 5],
+    "start": "04:00",
+    "stop": "20:00",
+    "tick_seconds": 30
+  },
+  "universe": {
+    "symbols": ["MSFT", "SPY"],
+    "blocked_symbols": ["AAPL"]
+  },
+  "order_policy": {
+    "direction": "LONG_ONLY",
+    "quantity": 1,
+    "whole_shares_only": true,
+    "session": "CORE",
+    "max_new_orders_per_market_day": 1,
+    "max_active_trades_per_symbol": 1,
+    "preview_required": true,
+    "reconciliation_required": true,
+    "max_release_lateness_seconds": 120
+  },
+  "authority": {
+    "network_read_enabled": true,
+    "credential_loading_enabled": true,
+    "sandbox_preview_enabled": true,
+    "sandbox_order_submission_enabled": true,
+    "production_endpoint_enabled": false,
+    "live_trading_enabled": false,
+    "automatic_promotion_enabled": false
+  }
+}

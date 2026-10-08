@@ -1668,3 +1668,49 @@ Restart verification reloads the receipt, regenerates the expected bytes, and co
 size, and hash exactly. A missing, altered, differently bound, future, or unverified artifact fails
 closed. Local export does not establish independent publication, trusted time, provider approval,
 trade qualification, cohort activation, broker-write authority, or live-trading authority.
+
+## Phase 12A automatic sandbox entry methodology
+
+The automatic lane evaluates only intents known before their preregistered next XNYS open. During
+the 120-second release window it verifies the sandbox account, rejects existing same-symbol
+inventory or orders, captures the provider daily-open snapshot, computes ADR20 from twenty distinct
+prior completed daily sessions, previews the exact one-share request, records the gap decision,
+reconciles, and submits through the existing deterministic client-ID service. Every failure is
+terminal for that cycle. No write retry, backfill, forward fill, or later-open substitution occurs.
+# Phase 12C unattended SHADOW methodology
+
+The replacement cohort is preregistered before its first XNYS open. A checked-in manifest enumerates
+all twenty regular sessions and exact exchange-calendared timestamps. Each daily start is accepted
+only during its narrow start window. Post-close sealing requires a same-session sandbox verification,
+a successful bounded read-only market-data cycle, and a causal decision cycle at or after that data
+cycle. Missing or late stages fail closed and cannot be retroactively reconstructed as prospective
+evidence. Regime labeling remains a separate human review and never changes prior decisions.
+
+## Phase 12D final daily health audit
+
+The audit becomes eligible five minutes after the Phase 12C post-close completion grace period.
+It compares the frozen schedule identity with immutable `START` and `POST_CLOSE` receipts, verifies
+their plan/configuration bindings, and rejects any receipt that does not explicitly assert zero
+broker writes. One terminal result is inserted atomically and repeated execution returns that exact
+stored result.
+
+A missing start or close is evidence of an incomplete day, not permission to rerun the trading day.
+The audit performs no acquisition, decision generation, retry, backfill, regime inference, Webull
+request, notification delivery, promotion, or order action. Aggregate status is a read-only view of
+the frozen twenty-session schedule and recorded audit rows.
+
+## Phase 12E replacement and scheduler hardening
+
+The October 7 incomplete audit remains unchanged and cannot count toward the replacement cohort.
+Phase 12E declares a new plan before the October 8 open and freezes exactly twenty later XNYS
+sessions through November 4. Shared strategy, symbol, timeframe, risk, and zero-incident criteria
+remain unchanged; only cohort identity and operating dates differ.
+
+At 09:25 America/New_York, an offline preflight revalidates plan bytes, launch identity, runtime
+lock, worker and decision configuration, calendar schedule, and zero-write authority. It cannot
+start a session. The 09:30 start, 16:05 close, and 19:10 audit retain their existing causal and
+fail-closed behavior. Windows tasks are configured to wake a sleeping machine and continue on
+battery, while the interactive principal still requires the user to remain signed in.
+
+Installing Phase 12E registers all four new tasks before disabling the superseded Phase 12C/12D
+tasks. This prevents two frozen plans from acting on the same future session identifier.

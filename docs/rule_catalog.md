@@ -1770,3 +1770,62 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - PSE-62: A local checkpoint export MUST NOT be described as external publication, a trusted
   timestamp, or an independent anchor and MUST NOT grant provider approval, trade qualification,
   cohort activation, broker-write authority, or live-trading authority.
+- WSA-01: Automatic orders MUST use only the official Webull sandbox hosts and MUST never enable a
+  production endpoint or live trading.
+- WSA-02: Automatic entry MUST be long-only, exactly one whole share, CORE session, and limited to
+  one new order per XNYS market day and one active trade per symbol.
+- WSA-03: AAPL MUST remain blocked while the legacy sandbox position is outside the new cohort.
+- WSA-04: The entry MUST have an identical accepted preview, a fresh opening snapshot, causal
+  prior-session ADR20, an approved gap check, and a current matched reconciliation.
+- WSA-05: Both submission gates and current approved exit authorization MUST exist; otherwise the
+  automatic lane MUST remain blocked without a broker write.
+- WSA-06: Ambiguous submission MUST query the same client ID and halt; it MUST NOT issue a new
+  client ID or retry the write automatically.
+# Phase 12B prospective shadow launch
+
+- The September 28 cohort must match the exact frozen plan bytes, plan ID, paper and strategy
+  configuration hashes, code version, data revision, calendar version, and MSFT/SPY universe.
+- Each daily session must start in `SHADOW`, remain inside the preregistered window, and carry one
+  immutable plan binding. Repeating the same identity is idempotent; conflicting reuse is rejected.
+- Acquisition may use read-only Webull sandbox market data only. Decision generation is local and
+  causal. Neither path has an order API, simulated-fill, live-trading, or promotion authority.
+- Post-close evidence requires an explicit observed regime and cannot be collected before the XNYS
+  close.
+# Phase 12C automatic SHADOW orchestration
+
+- `P12C-SCHEDULE-001`: only an exact session in the frozen twenty-day XNYS manifest may run.
+- `P12C-START-001`: daily sessions are unique, idempotent, `SHADOW`, and bound to the replacement plan.
+- `P12C-CLOSE-001`: completion requires same-session account verification, read-only market data, and
+  a causal decision cycle whose known-at timestamp is not earlier than the data cycle.
+- `P12C-AUTH-001`: order APIs, broker writes, sandbox execution, simulated fills, live trading, and
+  automatic promotion remain disabled.
+- `P12C-REGIME-001`: unattended orchestration does not infer or record a market regime.
+
+# Phase 12D final daily health audit
+
+- `P12D-DUE-001`: an audit MUST NOT finalize before its exchange-calendared audit due time.
+- `P12D-IDEMPOTENCE-001`: exactly one immutable audit may exist per frozen Phase 12C session;
+  repeated execution MUST return the same canonical record.
+- `P12D-COMPLETE-001`: `COMPLETE` requires both exact Phase 12C receipts with matching plan and
+  configuration identity and explicit zero-broker-write assertions.
+- `P12D-MISS-001`: missing start or post-close evidence MUST be recorded as incomplete and MUST NOT
+  trigger a retry, reconstruction, substitution, or backfill.
+- `P12D-AUTH-001`: the audit MUST NOT load credentials, use the network, call Webull, create a paper
+  session, generate decisions, submit orders, infer regimes, promote a release, or enable trading.
+- `P12D-STATUS-001`: aggregate status MUST be read-only and MUST distinguish pending, missing,
+  incomplete, unsafe, and complete days.
+
+# Phase 12E replacement cohort and scheduler hardening
+
+- `P12E-PRESERVE-001`: the October 7 Phase 12C audit and all supporting evidence MUST remain
+  immutable and MUST NOT count toward the Phase 12E cohort.
+- `P12E-PLAN-001`: Phase 12E MUST use its distinct preregistered plan and exactly twenty XNYS
+  sessions from 2026-10-08 through 2026-11-04.
+- `P12E-PREFLIGHT-001`: preflight MAY validate frozen local identities only and MUST NOT start a
+  session, load credentials, use the network, access an order API, or write to the broker.
+- `P12E-TASK-001`: replacement tasks MUST enable wake-to-run and battery-safe execution and MUST
+  disable the superseded Phase 12C/12D tasks only after all Phase 12E tasks register successfully.
+- `P12E-CAUSAL-001`: start, post-close, and final audit eligibility windows remain exchange-timed,
+  bounded, deterministic, and unavailable outside their frozen windows.
+- `P12E-AUTH-001`: Phase 12E MUST NOT enable order submission, simulated fills, automatic retries,
+  backfill, regime inference, automatic promotion, or live trading.

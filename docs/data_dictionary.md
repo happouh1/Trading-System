@@ -1665,3 +1665,39 @@ Migration 105 adds `prospective_transparency_checkpoint_exports`. Each row has a
 rejection triggers. The file itself is canonical JSON encoded as UTF-8 with exactly one trailing LF;
 the database stores its exact path, size, and digest rather than treating filesystem presence as an
 external anchor.
+
+## Phase 12A automatic Webull sandbox submission
+
+`webull_automatic_submission_cycles` stores one immutable receipt per automatic tick: cycle and
+session identity, UTC observation time, terminal status/reason, optional intent and client-order
+identity, exact quantity, configuration hash, network-use flag, broker-write flag, canonical JSON,
+and payload hash. `NO_ACTION` and `BLOCKED` cycles are retained as well as `SUBMITTED` cycles.
+# Phase 12C orchestration records
+
+`paper_shadow_orchestration_receipts` stores one immutable `START` and one immutable `POST_CLOSE`
+receipt per scheduled SHADOW session. Each row binds the replacement plan, market day, exact schedule,
+actual observation timestamp, worker/decision cycle IDs when applicable, configuration hash, network
+read disclosure, and an explicit zero-broker-write assertion. The session/action pair is unique.
+
+## Phase 12D daily audit records
+
+`paper_shadow_daily_audits` stores at most one final audit per frozen Phase 12C session. Each row
+binds the schedule and plan identity, market day, exact audit due time, observation time, terminal
+status, ordered missing-component list, configuration hash, explicit false broker-write flag, and
+canonical payload/hash. A session may be absent from `paper_sessions`; this is intentional so a
+missed start can still be recorded rather than hidden by a foreign-key requirement.
+
+Terminal statuses are `COMPLETE`, `INCOMPLETE_START`, `INCOMPLETE_POST_CLOSE`, and
+`UNSAFE_EVIDENCE`. Read-only status output can additionally show `PENDING` or `MISSING_AUDIT`
+without inserting a row.
+
+## Phase 12E replacement-cohort records
+
+Phase 12E introduces no new database table. Its new plan, runtime lock, worker, decision, schedule,
+and audit configurations bind a distinct plan ID to twenty XNYS sessions from 2026-10-08 through
+2026-11-04. Runtime receipts continue to use `paper_shadow_orchestration_receipts` and
+`paper_shadow_daily_audits`, distinguished by the new plan and schedule configuration hashes.
+
+The preflight result is deliberately ephemeral local JSON/log evidence. It contains the plan and
+session identity, check time, schedule-byte hash, eligibility reason, and explicit false network,
+credential, broker-write, order-API, and session-start flags. It does not create a database record.

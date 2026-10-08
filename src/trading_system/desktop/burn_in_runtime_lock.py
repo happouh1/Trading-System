@@ -41,7 +41,7 @@ class BurnInRuntimeLock:
                 )
             )
             or not _sha(self.config_hash)
-            or not self.retrospective_baseline_disclosed
+            or not isinstance(self.retrospective_baseline_disclosed, bool)
             or not _sha(self.lock_hash)
             or self.runtime_lock_version != "11E.1.0"
         ):
@@ -120,10 +120,18 @@ def load_burn_in_runtime_lock(path: str | Path) -> BurnInRuntimeLock:
         not isinstance(raw, dict)
         or set(raw) != expected
         or raw["runtime_lock_version"] != "11E.1.0"
-        or raw["mode"] != "CONTINUITY_LOCK_FROM_INITIAL_SESSION"
+        or raw["mode"]
+        not in {"CONTINUITY_LOCK_FROM_INITIAL_SESSION", "PROSPECTIVE_IDENTITY_LOCK"}
         or not isinstance(baseline, dict)
         or set(baseline) != baseline_keys
-        or raw["retrospective_baseline_disclosed"] is not True
+        or (
+            raw["mode"] == "CONTINUITY_LOCK_FROM_INITIAL_SESSION"
+            and raw["retrospective_baseline_disclosed"] is not True
+        )
+        or (
+            raw["mode"] == "PROSPECTIVE_IDENTITY_LOCK"
+            and raw["retrospective_baseline_disclosed"] is not False
+        )
         or raw["authority"] != authority_expected
     ):
         raise BurnInRuntimeLockConfigError("Phase 11E runtime lock is invalid or unsafe")

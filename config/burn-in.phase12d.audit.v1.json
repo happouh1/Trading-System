@@ -1,0 +1,22 @@
+{
+  "audit_version": "12D.1.0",
+  "mode": "FINAL_DAILY_SHADOW_HEALTH_AUDIT",
+  "schedule": "config/burn-in.phase12c.schedule.v1.json",
+  "schedule_file_sha256": "sha256:16a2e7ef5aaa816937d1e2610f641686c03408758f5cc3eef3a785b6192db20a",
+  "database": "webull-sandbox.sqlite",
+  "audit_delay_minutes": 5,
+  "audit_grace_minutes": 180,
+  "authority": {
+    "database_read_enabled": true,
+    "database_write_enabled": true,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "order_api_enabled": false,
+    "session_retry_enabled": false,
+    "backfill_enabled": false,
+    "regime_classification_enabled": false,
+    "live_trading_enabled": false,
+    "automatic_promotion_enabled": false
+  }
+}

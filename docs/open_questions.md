@@ -1633,3 +1633,51 @@ anchor, authenticate providers, or authorize cohort activation or execution.
 Phase 11P creates an exact portable local artifact and immutable receipt but does not resolve
 606-622, publish externally, establish trusted time, approve a provider, qualify a trade, activate
 a cohort, or authorize broker/live execution.
+
+## Added for Phase 12A automatic Webull sandbox submission
+
+623. The checked-in Phase 3D capability manifest remains unapproved. Which independently reviewed
+     evidence will satisfy all seven required exit lifecycle cases before it may be replaced?
+624. The replacement plan requires separate Webull and simulated lanes. What final session IDs and
+     immutable cross-lane decision-link contract will bind them without pooling trade counts?
+625. If the workstation is off or the user is logged out during the two-minute release window,
+     should the intent expire (current fail-closed behavior) or should an independently approved
+     always-on host be introduced?
+
+Phase 12A does not invent answers. The installed schedule remains armed but blocked until 623 and
+the exact replacement session bindings are resolved; missed releases expire.
+# Phase 12B open questions
+
+626. Decide whether later burn-in days should use one session per XNYS day or a formally approved
+     multi-day session. Phase 12B defaults to unique daily sessions so the ten-session requirement
+     remains observable.
+627. The operator must classify each completed session as BULLISH, BEARISH, or RANGE from the
+     actually observed evidence; no automatic regime classifier is authorized for this cohort.
+
+# Phase 12C open questions
+
+628. Should a later reviewed phase add a deterministic operator workflow for regime annotation, or
+     should regime remain an external signed review artifact? Phase 12C records it as unclassified.
+629. The scheduled tasks use an interactive limited Windows principal. Should a separately approved
+     always-on host and credential-custody design replace the logged-in-workstation requirement?
+630. How should a missed session be dispositioned after the zero-incident cohort is frozen? Phase 12C
+     records the miss and does not retry outside the scheduled grace window or backfill evidence.
+
+# Phase 12D open questions
+
+631. Which local or external notification channel should report an incomplete or unsafe daily audit,
+     and what credential custody and delivery guarantees apply? Phase 12D records locally only.
+632. Who may authorize a new preregistered replacement cohort after an incomplete day? Phase 12D
+     does not extend, repair, or silently replace the frozen cohort.
+633. Should an independently reviewed always-on host replace the interactive workstation before any
+     later operational stage? Phase 12D preserves the Phase 12C logged-in-host constraint.
+
+# Phase 12E open questions
+
+634. Wake-to-run can resume sleep but cannot power on a shut-down computer or authenticate a logged-
+     out user. Which approved always-on host and credential-custody model should eventually remove
+     the interactive-login dependency?
+635. Which signed review process will formally close the failed Phase 12C cohort after preserving its
+     October 7 incomplete result? Phase 12E does not delete or reinterpret that evidence.
+636. Should a later phase deliver local preflight failures through a reviewed notification channel?
+     Phase 12E records local logs only and does not load notification credentials or use a network.

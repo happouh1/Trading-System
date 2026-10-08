@@ -1,0 +1,29 @@
+{
+  "launch_version": "12C.1.0",
+  "mode": "LOCKED_PROSPECTIVE_SHADOW_ONLY",
+  "plan": "config/burn-in.phase12c.plan.v1.json",
+  "plan_id": "prospective_burn_in_plan_d06259bcd015c6bc17d4bc73477060d0",
+  "plan_file_sha256": "sha256:143a48c0ee3c38b2cebcd2e7e6fc1fb9f5e86374824fe1adce6f5ca99777e165",
+  "window_start": "2026-10-07T13:30:00Z",
+  "window_end": "2026-11-03T21:30:00Z",
+  "paper_config": "config/paper.phase3b.v1.yaml",
+  "paper_config_hash": "sha256:e707870227ebeb06c60dd94d6283dc8a63160685ebb15447b0dbf89480f8ff7c",
+  "thresholds_config": "config/thresholds.phase1e.v1.yaml",
+  "strategy_config_hash": "sha256:529159d61b9d419126efce16e16b5bbb08a82f3b5a86d9e82ec283df49a7564c",
+  "worker_config": "config/webull.phase12c.readonly.v1.json",
+  "decision_config": "config/webull.phase12c.decisions.v1.json",
+  "data_revision": "WEBULL_SANDBOX_BURNIN_20261007",
+  "calendar_version": "exchange-calendars-4",
+  "symbols": ["MSFT", "SPY"],
+  "authority": {
+    "database_write_enabled": true,
+    "local_shadow_session_start_enabled": true,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "sandbox_order_submission_enabled": false,
+    "simulated_fills_enabled": false,
+    "live_trading_enabled": false,
+    "automatic_promotion_enabled": false
+  }
+}

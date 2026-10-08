@@ -36,6 +36,43 @@ def configure_paper_parser(
     burn_in.add_argument("--config", required=True)
     burn_in.add_argument("--started-at", required=True)
     burn_in.add_argument("--project-root", default=".")
+    prospective = actions.add_parser("start-prospective-shadow")
+    prospective.add_argument("--database", required=True)
+    prospective.add_argument("--session-id", required=True)
+    prospective.add_argument("--config", required=True)
+    prospective.add_argument("--runtime-lock", required=True)
+    prospective.add_argument("--started-at", required=True)
+    prospective.add_argument("--project-root", default=".")
+    scheduled_target = actions.add_parser("scheduled-shadow-target")
+    scheduled_target.add_argument("--schedule", required=True)
+    scheduled_target.add_argument("--action", choices=("START", "POST_CLOSE"), required=True)
+    scheduled_target.add_argument("--as-of", required=True)
+    scheduled_target.add_argument("--project-root", default=".")
+    scheduled_preflight = actions.add_parser("scheduled-shadow-preflight")
+    scheduled_preflight.add_argument("--schedule", required=True)
+    scheduled_preflight.add_argument("--as-of", required=True)
+    scheduled_preflight.add_argument("--project-root", default=".")
+    scheduled_start = actions.add_parser("scheduled-shadow-start")
+    scheduled_start.add_argument("--schedule", required=True)
+    scheduled_start.add_argument("--as-of", required=True)
+    scheduled_start.add_argument("--project-root", default=".")
+    scheduled_start.add_argument("--database-override")
+    scheduled_complete = actions.add_parser("scheduled-shadow-complete")
+    scheduled_complete.add_argument("--schedule", required=True)
+    scheduled_complete.add_argument("--as-of", required=True)
+    scheduled_complete.add_argument("--project-root", default=".")
+    scheduled_complete.add_argument("--database-override")
+    for name in (
+        "scheduled-shadow-audit-target",
+        "scheduled-shadow-audit",
+        "scheduled-shadow-audit-status",
+    ):
+        audit_parser = actions.add_parser(name)
+        audit_parser.add_argument("--audit-config", required=True)
+        audit_parser.add_argument("--as-of", required=True)
+        audit_parser.add_argument("--project-root", default=".")
+        if name != "scheduled-shadow-audit-target":
+            audit_parser.add_argument("--database-override")
     resume = actions.add_parser("resume")
     resume.add_argument("--database", required=True)
     resume.add_argument("--session-id", required=True)
@@ -64,6 +101,107 @@ def configure_paper_parser(
 
 def handle_paper(args: argparse.Namespace) -> int:
     command = str(args.paper_command)
+    if command in {
+        "scheduled-shadow-audit-target",
+        "scheduled-shadow-audit",
+        "scheduled-shadow-audit-status",
+    }:
+        from trading_system.paper.prospective_shadow_audit import (
+            audit_scheduled_shadow_day,
+            inspect_shadow_audit_target,
+            load_prospective_shadow_audit_config,
+            shadow_audit_status,
+        )
+        from trading_system.paper.prospective_shadow_orchestrator import (
+            load_prospective_shadow_schedule,
+        )
+
+        root = Path(args.project_root).resolve()
+        audit_config = load_prospective_shadow_audit_config(args.audit_config)
+        schedule = load_prospective_shadow_schedule(root / audit_config.schedule)
+        as_of = datetime.fromisoformat(str(args.as_of).replace("Z", "+00:00"))
+        if command == "scheduled-shadow-audit-target":
+            audit_result = inspect_shadow_audit_target(
+                schedule, audit_config, as_of=as_of
+            )
+        elif command == "scheduled-shadow-audit":
+            audit_result = audit_scheduled_shadow_day(
+                schedule,
+                audit_config,
+                project_root=root,
+                as_of=as_of,
+                database_override=args.database_override,
+            )
+        else:
+            audit_result = shadow_audit_status(
+                schedule,
+                audit_config,
+                project_root=root,
+                as_of=as_of,
+                database_override=args.database_override,
+            )
+        print(canonical_json(audit_result))
+        return 0
+    if command in {
+        "scheduled-shadow-preflight",
+        "scheduled-shadow-target",
+        "scheduled-shadow-start",
+        "scheduled-shadow-complete",
+    }:
+        from trading_system.paper.prospective_shadow_orchestrator import (
+            complete_scheduled_shadow_day,
+            inspect_scheduled_shadow_preflight,
+            inspect_scheduled_shadow_target,
+            load_prospective_shadow_schedule,
+            start_scheduled_shadow_day,
+        )
+
+        schedule = load_prospective_shadow_schedule(args.schedule)
+        as_of = datetime.fromisoformat(str(args.as_of).replace("Z", "+00:00"))
+        if command == "scheduled-shadow-preflight":
+            scheduled_result = inspect_scheduled_shadow_preflight(
+                schedule,
+                schedule_path=args.schedule,
+                project_root=args.project_root,
+                as_of=as_of,
+            )
+        elif command == "scheduled-shadow-target":
+            scheduled_result = inspect_scheduled_shadow_target(
+                schedule, as_of=as_of, action=str(args.action)
+            )
+        elif command == "scheduled-shadow-start":
+            scheduled_result = start_scheduled_shadow_day(
+                schedule,
+                schedule_path=args.schedule,
+                project_root=args.project_root,
+                as_of=as_of,
+                database_override=args.database_override,
+            )
+        else:
+            scheduled_result = complete_scheduled_shadow_day(
+                schedule,
+                project_root=args.project_root,
+                as_of=as_of,
+                database_override=args.database_override,
+            )
+        print(canonical_json(scheduled_result))
+        return 0
+    if command == "start-prospective-shadow":
+        from trading_system.paper.prospective_shadow_launch import (
+            start_prospective_shadow_session,
+        )
+
+        started_at = datetime.fromisoformat(str(args.started_at).replace("Z", "+00:00"))
+        prospective_result = start_prospective_shadow_session(
+            database=args.database,
+            config_path=args.config,
+            runtime_lock_path=args.runtime_lock,
+            project_root=args.project_root,
+            session_id=args.session_id,
+            started_at=started_at,
+        )
+        print(canonical_json(prospective_result))
+        return 0
     if command == "start-burn-in":
         from trading_system.paper.burn_in_start import start_locked_burn_in_session
 
