@@ -32,12 +32,17 @@ def _project(tmp_path: Path) -> Path:
         "config/thresholds.phase1e.v1.yaml",
         "config/webull.phase12b.readonly.v1.json",
         "config/webull.phase12b.decisions.v1.json",
-        ".operator-home/phase12a/burn-in-plan-20260928.json",
     ):
         source = ROOT / relative
         target = tmp_path / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source, target)
+    plan_target = tmp_path / ".operator-home/phase12a/burn-in-plan-20260928.json"
+    plan_target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(
+        ROOT / "tests/fixtures/phase12b/burn-in-plan-20260928.json",
+        plan_target,
+    )
     return tmp_path
 
 
