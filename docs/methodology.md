@@ -1729,3 +1729,14 @@ The renderer writes only a temporary HTML file followed by same-directory atomic
 page has no JavaScript or remote resources. It cannot start, close, retry, repair, or backfill a
 session; modify the task scheduler; load credentials; contact Webull; route an order; promote a
 release; or enable live trading.
+
+## Phase 12G one-click operator access
+
+The launcher first runs a machine-readable prerequisite inspection against the checked-in Phase 12G
+configuration. If Python, the Phase 12F configuration, or its renderer is absent, launch stops before
+opening any process. A successful invocation then renders one current Phase 12F snapshot and verifies
+the exact output exists before opening it. Self-test follows the same path but suppresses the browser.
+
+Shortcut installation is intentionally separate from launch and reuses the existing desktop name.
+No refresh schedule is inferred: freshness is tied to an explicit click. Phase 12E scheduler state,
+runtime identity, database evidence, and all trading authority remain unchanged.

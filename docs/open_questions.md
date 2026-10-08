@@ -1693,3 +1693,12 @@ the exact replacement session bindings are resolved; missed releases expire.
 
 Phase 12F does not infer answers. It renders one read-only snapshot and grants no notification,
 task-control, session-retry, broker-write, promotion, or live-trading authority.
+
+# Phase 12G open questions
+
+640. Should a later reviewed UI combine the general Phase 9 operator page and Phase 12F cohort page
+     into one navigation surface, or should burn-in remain the primary page during the frozen cohort?
+641. After the cohort ends, should `Trading System.lnk` return to a general operator page, remain on
+     the immutable final cohort report, or require an explicit versioned operator choice?
+
+Phase 12G makes no automatic post-cohort switch and installs no background refresh task.

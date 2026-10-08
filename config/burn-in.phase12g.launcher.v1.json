@@ -1,0 +1,25 @@
+{
+  "launcher_version": "12G.1.0",
+  "mode": "READ_ONLY_BURN_IN_OPERATOR_LAUNCH",
+  "python": ".venv/Scripts/python.exe",
+  "dashboard_config": "config/burn-in.phase12f.dashboard.v1.json",
+  "render_script": "scripts/render-phase12f-dashboard.ps1",
+  "output": ".operator-home/phase12f/burn-in-operations.html",
+  "shortcut_name": "Trading System.lnk",
+  "authority": {
+    "local_process_launch_enabled": true,
+    "browser_open_enabled": true,
+    "artifact_write_enabled": true,
+    "database_read_enabled": true,
+    "scheduler_read_enabled": true,
+    "scheduler_write_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "database_write_enabled": false,
+    "broker_writes_enabled": false,
+    "order_api_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false,
+    "automatic_promotion_enabled": false
+  }
+}

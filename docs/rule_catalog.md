@@ -1844,3 +1844,16 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   network call, credential access, order API, retry, backfill, or automatic promotion authority.
 - `P12F-STATUS-001`: dashboard color is operational evidence only and MUST NOT authorize release,
   qualify a trade, claim profitability, or enable sandbox/live execution.
+
+# Phase 12G one-click burn-in operator launch
+
+- `P12G-CONFIG-001`: launcher paths and authority MUST be versioned, relative, project-contained,
+  and validated before a render or browser process is started.
+- `P12G-REFRESH-001`: each invocation MUST render one fresh Phase 12F snapshot before opening its
+  exact local output; a stale pre-existing output MUST NOT substitute for a failed render.
+- `P12G-SHORTCUT-001`: installation MUST target the existing `Trading System.lnk` by default and
+  MUST remain a separate, explicit operator action.
+- `P12G-AUTH-001`: launch and installation MUST NOT modify scheduled tasks, use the network, load
+  credentials, write SQLite, call an order API, route a broker order, enable sandbox/live execution,
+  or promote a release.
+- `P12G-SELFTEST-001`: self-test MUST validate and render the dashboard without opening a browser.

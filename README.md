@@ -1724,3 +1724,23 @@ powershell -NoProfile -ExecutionPolicy Bypass -File `
 The generated page is `.operator-home/phase12f/burn-in-operations.html`. `GREEN` means the local
 observation controls and retained evidence are currently healthy; it is not release authorization,
 a profitability result, or permission to trade.
+
+## Phase 12G one-click desktop access
+
+Phase 12G adds a safe replacement target for the existing `Trading System.lnk`. Each click validates
+local prerequisites, refreshes Phase 12F from current task and read-only database evidence, and opens
+the local page. It does not install a background refresher or change the Phase 12E schedule.
+
+Install or update the desktop shortcut once with:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File `
+  .\scripts\install-phase12g-burn-in-shortcut.ps1
+```
+
+To verify the full launch path without opening a browser:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File `
+  .\scripts\start-phase12g-burn-in.ps1 -SelfTest
+```

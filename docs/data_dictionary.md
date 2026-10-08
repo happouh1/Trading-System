@@ -1713,3 +1713,11 @@ snapshot and SQLite opened in read-only URI mode. Its immutable command result r
 snapshot IDs, output path, content hash, overall status, plan ID, completed/scheduled counts, and
 explicit false database-write, scheduler-mutation, network, credential, broker-write, order-API,
 live-trading, and automatic-promotion flags. Neither local file is qualifying trade evidence.
+
+## Phase 12G launcher status
+
+`ProspectiveShadowLauncherStatus` records the deterministic status ID, launcher readiness, output
+existence, exact required local paths, missing path names, shortcut name, resolved output path,
+configuration hash, and fixed-false scheduler-mutation, network, credential, database-write,
+broker-write, order-API, sandbox-execution, live-trading, and promotion flags. It is an ephemeral
+inspection result and creates no database record.

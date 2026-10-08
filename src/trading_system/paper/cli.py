@@ -78,6 +78,9 @@ def configure_paper_parser(
     dashboard.add_argument("--as-of", required=True)
     dashboard.add_argument("--project-root", default=".")
     dashboard.add_argument("--task-snapshot-override")
+    launcher_status = actions.add_parser("scheduled-shadow-launcher-status")
+    launcher_status.add_argument("--config", required=True)
+    launcher_status.add_argument("--project-root", default=".")
     resume = actions.add_parser("resume")
     resume.add_argument("--database", required=True)
     resume.add_argument("--session-id", required=True)
@@ -106,6 +109,18 @@ def configure_paper_parser(
 
 def handle_paper(args: argparse.Namespace) -> int:
     command = str(args.paper_command)
+    if command == "scheduled-shadow-launcher-status":
+        from trading_system.paper.prospective_shadow_launcher import (
+            inspect_prospective_shadow_launcher,
+            load_prospective_shadow_launcher_config,
+        )
+
+        launcher_config = load_prospective_shadow_launcher_config(args.config)
+        launcher_status = inspect_prospective_shadow_launcher(
+            launcher_config, project_root=args.project_root
+        )
+        print(canonical_json(launcher_status))
+        return 0
     if command == "scheduled-shadow-dashboard":
         from trading_system.paper.prospective_shadow_dashboard import (
             load_prospective_shadow_dashboard_config,
