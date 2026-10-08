@@ -1,0 +1,28 @@
+{
+  "dashboard_version": "12F.1.0",
+  "mode": "READ_ONLY_BURN_IN_OPERATIONS",
+  "audit_config": "config/burn-in.phase12e.audit.v1.json",
+  "task_snapshot": ".operator-home/phase12f/task-snapshot.json",
+  "log_root": ".operator-home/phase12e/logs",
+  "output": ".operator-home/phase12f/burn-in-operations.html",
+  "expected_tasks": [
+    "Trading System - Phase 12E Shadow Preflight",
+    "Trading System - Phase 12E Shadow Start",
+    "Trading System - Phase 12E Shadow Close",
+    "Trading System - Phase 12E Shadow Audit"
+  ],
+  "authority": {
+    "database_read_enabled": true,
+    "artifact_write_enabled": true,
+    "scheduler_read_enabled": true,
+    "scheduler_write_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "order_api_enabled": false,
+    "session_retry_enabled": false,
+    "backfill_enabled": false,
+    "live_trading_enabled": false,
+    "automatic_promotion_enabled": false
+  }
+}

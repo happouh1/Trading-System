@@ -1701,3 +1701,15 @@ and audit configurations bind a distinct plan ID to twenty XNYS sessions from 20
 The preflight result is deliberately ephemeral local JSON/log evidence. It contains the plan and
 session identity, check time, schedule-byte hash, eligibility reason, and explicit false network,
 credential, broker-write, order-API, and session-start flags. It does not create a database record.
+
+## Phase 12F dashboard artifacts
+
+Phase 12F introduces no database table. `task-snapshot.json` is an ephemeral local capture of the
+four expected Phase 12E Windows task names, states, next/last run timestamps, and last result codes.
+It contains no task action, credential, or broker payload.
+
+`burn-in-operations.html` is an atomically replaced static local artifact derived from that task
+snapshot and SQLite opened in read-only URI mode. Its immutable command result records artifact and
+snapshot IDs, output path, content hash, overall status, plan ID, completed/scheduled counts, and
+explicit false database-write, scheduler-mutation, network, credential, broker-write, order-API,
+live-trading, and automatic-promotion flags. Neither local file is qualifying trade evidence.

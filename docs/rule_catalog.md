@@ -1829,3 +1829,18 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   bounded, deterministic, and unavailable outside their frozen windows.
 - `P12E-AUTH-001`: Phase 12E MUST NOT enable order submission, simulated fills, automatic retries,
   backfill, regime inference, automatic promotion, or live trading.
+
+# Phase 12F read-only burn-in dashboard
+
+- `P12F-IDENTITY-001`: the dashboard MUST validate the exact frozen Phase 12E audit, schedule, plan,
+  worker, session, and symbol identities before presenting cohort evidence.
+- `P12F-READ-001`: SQLite evidence MUST be opened read-only and the renderer MUST NOT mutate the
+  database, scheduled tasks, source evidence, or runtime configuration.
+- `P12F-SAFETY-001`: any retained paper order/fill evidence, explicit broker-write evidence, missing
+  task, disabled task, or failed task result MUST produce a red status.
+- `P12F-GAP-001`: a due missing or incomplete daily audit MUST produce an amber status unless a red
+  safety or task condition takes precedence.
+- `P12F-STATIC-001`: output MUST be a local static HTML artifact with no script, remote resource,
+  network call, credential access, order API, retry, backfill, or automatic promotion authority.
+- `P12F-STATUS-001`: dashboard color is operational evidence only and MUST NOT authorize release,
+  qualify a trade, claim profitability, or enable sandbox/live execution.

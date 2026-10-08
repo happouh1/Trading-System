@@ -73,6 +73,11 @@ def configure_paper_parser(
         audit_parser.add_argument("--project-root", default=".")
         if name != "scheduled-shadow-audit-target":
             audit_parser.add_argument("--database-override")
+    dashboard = actions.add_parser("scheduled-shadow-dashboard")
+    dashboard.add_argument("--config", required=True)
+    dashboard.add_argument("--as-of", required=True)
+    dashboard.add_argument("--project-root", default=".")
+    dashboard.add_argument("--task-snapshot-override")
     resume = actions.add_parser("resume")
     resume.add_argument("--database", required=True)
     resume.add_argument("--session-id", required=True)
@@ -101,6 +106,22 @@ def configure_paper_parser(
 
 def handle_paper(args: argparse.Namespace) -> int:
     command = str(args.paper_command)
+    if command == "scheduled-shadow-dashboard":
+        from trading_system.paper.prospective_shadow_dashboard import (
+            load_prospective_shadow_dashboard_config,
+            render_prospective_shadow_dashboard,
+        )
+
+        dashboard_config = load_prospective_shadow_dashboard_config(args.config)
+        as_of = datetime.fromisoformat(str(args.as_of).replace("Z", "+00:00"))
+        artifact, snapshot = render_prospective_shadow_dashboard(
+            dashboard_config,
+            project_root=args.project_root,
+            as_of=as_of,
+            task_snapshot_override=args.task_snapshot_override,
+        )
+        print(canonical_json({"artifact": artifact, "snapshot": snapshot}))
+        return 0
     if command in {
         "scheduled-shadow-audit-target",
         "scheduled-shadow-audit",

@@ -1714,3 +1714,18 @@ battery, while the interactive principal still requires the user to remain signe
 
 Installing Phase 12E registers all four new tasks before disabling the superseded Phase 12C/12D
 tasks. This prevents two frozen plans from acting on the same future session identifier.
+
+## Phase 12F read-only operations view
+
+The dashboard first validates the Phase 12E audit-to-schedule byte binding and the worker-to-plan
+identity. It then captures the four expected Windows task states and reads only the scheduled cohort's
+rows from SQLite in read-only URI mode. Pending future sessions remain neutral. A due missing or
+incomplete audit is amber. Unsafe order/fill or broker-write evidence, or a missing, disabled, or
+failed task, is red. Green therefore describes current operational evidence, not expected returns.
+Windows result `267011` is accepted only for a ready task that has not yet had its first scheduled
+run; result `267009` is accepted only while the task state is running. Other nonzero results fail.
+
+The renderer writes only a temporary HTML file followed by same-directory atomic replacement. The
+page has no JavaScript or remote resources. It cannot start, close, retry, repair, or backfill a
+session; modify the task scheduler; load credentials; contact Webull; route an order; promote a
+release; or enable live trading.

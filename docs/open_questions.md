@@ -1681,3 +1681,15 @@ the exact replacement session bindings are resolved; missed releases expire.
      October 7 incomplete result? Phase 12E does not delete or reinterpret that evidence.
 636. Should a later phase deliver local preflight failures through a reviewed notification channel?
      Phase 12E records local logs only and does not load notification credentials or use a network.
+
+# Phase 12F open questions
+
+637. Should a later reviewed phase refresh the local dashboard on a fixed cadence, or should it
+     remain explicitly operator-rendered to minimize background process complexity?
+638. Which approved local or external notification channel, credential-custody model, delivery
+     guarantee, and escalation policy may report an amber or red dashboard result?
+639. Should Windows task result `267009` be treated as healthy only while a task is observably
+     running, and what maximum run duration should turn that state into an incident?
+
+Phase 12F does not infer answers. It renders one read-only snapshot and grants no notification,
+task-control, session-retry, broker-write, promotion, or live-trading authority.

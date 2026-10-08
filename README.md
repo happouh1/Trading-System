@@ -1705,3 +1705,22 @@ without Codex tokens. See [the Phase 12A review](docs/phase_12a_review.md).
 
 The task is intentionally `ARMED_BLOCKED` while the checked-in Phase 3D capability manifest remains
 unapproved. Production endpoints and live trading remain disabled.
+
+## Phase 12F burn-in operations dashboard
+
+Phase 12F provides a static, local status page for the frozen Phase 12E shadow cohort. It combines
+the four Windows task states with read-only SQLite evidence for session start, post-close collection,
+daily audit, MSFT/SPY market-data cycles, decision cycles, staged shadow intents, and safety events.
+It never loads broker credentials, uses the network, changes a scheduled task, retries a session, or
+submits an order.
+
+Render and open the page from the repository with:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File `
+  .\scripts\render-phase12f-dashboard.ps1 -Open
+```
+
+The generated page is `.operator-home/phase12f/burn-in-operations.html`. `GREEN` means the local
+observation controls and retained evidence are currently healthy; it is not release authorization,
+a profitability result, or permission to trade.
