@@ -1,0 +1,23 @@
+{
+  "watchdog_version": "12H.1.0",
+  "mode": "LOCAL_READ_ONLY_SCHEDULE_WATCHDOG",
+  "audit_config": "config/burn-in.phase12h.audit.v1.json",
+  "audit_config_file_sha256": "sha256:eb4e7547086e94714862cdb9ccf01ceb3f500087e22365d0e6d26a15bfde9791",
+  "database": "webull-sandbox.sqlite",
+  "start_check_delay_minutes": 20,
+  "post_close_check_delay_minutes": 15,
+  "audit_check_delay_minutes": 15,
+  "authority": {
+    "database_read_enabled": true,
+    "local_alert_write_enabled": true,
+    "scheduler_write_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "order_api_enabled": false,
+    "session_retry_enabled": false,
+    "backfill_enabled": false,
+    "live_trading_enabled": false,
+    "automatic_promotion_enabled": false
+  }
+}

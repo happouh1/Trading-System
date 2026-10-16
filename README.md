@@ -17,6 +17,22 @@ Install the four replacement tasks once from the repository root:
 & .\scripts\install-phase12e-shadow-tasks.ps1
 ```
 
+Phase 12H replaces the interactive-only Phase 12E schedule with a separately preregistered cohort.
+The five tasks use Windows S4U logon, wake timers, and a read-only local watchdog, so the user may
+lock or sign out of Windows while the computer remains powered on or asleep:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\install-phase12h-shadow-tasks.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\install-phase12h-burn-in-shortcut.ps1
+```
+
+The scheduler installer self-elevates when necessary. Approve the Windows UAC prompt so it can
+register S4U tasks and configure wake timers; canceling that prompt leaves the schedule unchanged.
+
+The Phase 12H watchdog checks start evidence at 09:50, post-close evidence at 16:20, and the final
+audit at 19:25 America/New_York. Alerts are local under `.operator-home/phase12h/alerts`; no external
+notification credentials are loaded. The host may be locked or signed out but must not be shut down.
+
 Phase 12D adds a final daily health audit for the unattended Phase 12C shadow cohort. At 19:10
 America/New_York, after the post-close grace period, a limited local task checks that the expected
 start and post-close receipts exist and are safe. It writes one immutable result per scheduled day

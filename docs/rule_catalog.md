@@ -1857,3 +1857,12 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   credentials, write SQLite, call an order API, route a broker order, enable sandbox/live execution,
   or promote a release.
 - `P12G-SELFTEST-001`: self-test MUST validate and render the dashboard without opening a browser.
+# Phase 12H scheduler rules
+
+- `P12H-S4U-001`: Every replacement task must use S4U and limited run level.
+- `P12H-WAKE-001`: Every replacement task must enable wake-to-run and battery-safe execution.
+- `P12H-WATCH-001`: Missing start evidence after 20 minutes creates a local alert.
+- `P12H-WATCH-002`: Missing post-close evidence after 15 minutes creates a local alert.
+- `P12H-WATCH-003`: Missing or incomplete audit evidence after 15 minutes creates a local alert.
+- `P12H-SAFE-001`: The watchdog is SQLite read-only and cannot retry or backfill a session.
+- `P12H-COHORT-001`: Phase 12E evidence cannot satisfy the separately identified Phase 12H cohort.

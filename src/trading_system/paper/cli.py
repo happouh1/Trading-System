@@ -81,6 +81,11 @@ def configure_paper_parser(
     launcher_status = actions.add_parser("scheduled-shadow-launcher-status")
     launcher_status.add_argument("--config", required=True)
     launcher_status.add_argument("--project-root", default=".")
+    watchdog = actions.add_parser("scheduled-shadow-watchdog-status")
+    watchdog.add_argument("--config", required=True)
+    watchdog.add_argument("--as-of", required=True)
+    watchdog.add_argument("--project-root", default=".")
+    watchdog.add_argument("--database-override")
     resume = actions.add_parser("resume")
     resume.add_argument("--database", required=True)
     resume.add_argument("--session-id", required=True)
@@ -109,6 +114,22 @@ def configure_paper_parser(
 
 def handle_paper(args: argparse.Namespace) -> int:
     command = str(args.paper_command)
+    if command == "scheduled-shadow-watchdog-status":
+        from trading_system.paper.prospective_shadow_watchdog import (
+            inspect_prospective_shadow_watchdog,
+            load_prospective_shadow_watchdog_config,
+        )
+
+        watchdog_config = load_prospective_shadow_watchdog_config(args.config)
+        as_of = datetime.fromisoformat(str(args.as_of).replace("Z", "+00:00"))
+        watchdog_status = inspect_prospective_shadow_watchdog(
+            watchdog_config,
+            project_root=args.project_root,
+            as_of=as_of,
+            database_override=args.database_override,
+        )
+        print(canonical_json(watchdog_status))
+        return 2 if watchdog_status["alert_required"] else 0
     if command == "scheduled-shadow-launcher-status":
         from trading_system.paper.prospective_shadow_launcher import (
             inspect_prospective_shadow_launcher,

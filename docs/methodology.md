@@ -1740,3 +1740,11 @@ the exact output exists before opening it. Self-test follows the same path but s
 Shortcut installation is intentionally separate from launch and reuses the existing desktop name.
 No refresh schedule is inferred: freshness is tied to an explicit click. Phase 12E scheduler state,
 runtime identity, database evidence, and all trading authority remain unchanged.
+# Phase 12H unattended-host methodology
+
+Phase 12H treats scheduler availability as operational evidence, not strategy evidence. Windows
+S4U tasks remove the interactive-login dependency without storing the user's password. The host
+must remain powered on or sleeping with wake timers enabled. Three read-only watchdog checkpoints
+inspect immutable start, post-close, and audit receipts and create local alerts when evidence is
+missing. A late task cannot retry, repair, or backfill a missed session; the corresponding day is
+failed and remains excluded from a zero-incident cohort.

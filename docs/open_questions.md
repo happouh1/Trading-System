@@ -1702,3 +1702,15 @@ task-control, session-retry, broker-write, promotion, or live-trading authority.
      the immutable final cohort report, or require an explicit versioned operator choice?
 
 Phase 12G makes no automatic post-cohort switch and installs no background refresh task.
+
+# Phase 12H open questions
+
+642. S4U removes the interactive-login dependency but cannot power on a shut-down workstation.
+     Should a later reviewed phase move observation to an independently administered always-on
+     host after this local cohort demonstrates the runtime behavior?
+643. Which reviewed external notification service, credential-custody model, and delivery guarantee
+     may supplement the local watchdog artifacts and nonzero Windows task result?
+644. Who formally closes the failed Phase 12E cohort and reviews Phase 12H local alert artifacts?
+
+Phase 12H answers neither external hosting nor external notification governance. It remains local,
+fail-closed, read-only monitoring with no session retry or evidence backfill.

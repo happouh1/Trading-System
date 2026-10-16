@@ -1721,3 +1721,13 @@ existence, exact required local paths, missing path names, shortcut name, resolv
 configuration hash, and fixed-false scheduler-mutation, network, credential, database-write,
 broker-write, order-API, sandbox-execution, live-trading, and promotion flags. It is an ephemeral
 inspection result and creates no database record.
+# Phase 12H local watchdog fields
+
+- `status`: current checkpoint state, including `PENDING_START_CHECK`, `HEALTHY_START`,
+  `HEALTHY_POST_CLOSE`, `HEALTHY_COMPLETE`, and fail-closed `ALERT_*` states.
+- `alert_required`: true only when required immutable evidence is absent or incomplete after grace.
+- `alert_code`: stable missing/incomplete evidence reason; null for pending or healthy status.
+- `expected_checkpoint`: `START`, `POST_CLOSE`, `AUDIT`, or `COMPLETE`.
+- `next_checkpoint_at`: next frozen UTC watchdog boundary, or null after the terminal check.
+- `start_receipt_present` / `post_close_receipt_present`: read-only receipt existence flags.
+- `audit_status`: immutable daily audit status when present.
