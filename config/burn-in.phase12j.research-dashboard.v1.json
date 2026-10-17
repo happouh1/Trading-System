@@ -1,0 +1,18 @@
+{
+  "dashboard_version": "12J.1.0",
+  "mode": "READ_ONLY_SHADOW_RESEARCH",
+  "database": "webull-sandbox.sqlite",
+  "stage_a_config": "config/trend_stage_a.v1.yaml",
+  "short_config": "config/webull.phase12i.short-opportunities.v1.json",
+  "output": ".operator-home/phase12j/shadow-research.html",
+  "freshness_minutes": 4320,
+  "authority": {
+    "database_read_enabled": true,
+    "artifact_write_enabled": true,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false,
+    "automatic_promotion_enabled": false
+  }
+}

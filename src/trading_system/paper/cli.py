@@ -78,6 +78,11 @@ def configure_paper_parser(
     dashboard.add_argument("--as-of", required=True)
     dashboard.add_argument("--project-root", default=".")
     dashboard.add_argument("--task-snapshot-override")
+    research_dashboard = actions.add_parser("scheduled-shadow-research-dashboard")
+    research_dashboard.add_argument("--config", required=True)
+    research_dashboard.add_argument("--as-of", required=True)
+    research_dashboard.add_argument("--project-root", default=".")
+    research_dashboard.add_argument("--database-override")
     launcher_status = actions.add_parser("scheduled-shadow-launcher-status")
     launcher_status.add_argument("--config", required=True)
     launcher_status.add_argument("--project-root", default=".")
@@ -114,6 +119,26 @@ def configure_paper_parser(
 
 def handle_paper(args: argparse.Namespace) -> int:
     command = str(args.paper_command)
+    if command == "scheduled-shadow-research-dashboard":
+        from trading_system.paper.prospective_shadow_research_dashboard import (
+            load_shadow_research_dashboard_config,
+            render_shadow_research_dashboard,
+        )
+
+        research_dashboard_config = load_shadow_research_dashboard_config(args.config)
+        as_of = datetime.fromisoformat(str(args.as_of).replace("Z", "+00:00"))
+        research_artifact, research_snapshot = render_shadow_research_dashboard(
+            research_dashboard_config,
+            project_root=args.project_root,
+            as_of=as_of,
+            database_override=args.database_override,
+        )
+        print(
+            canonical_json(
+                {"artifact": research_artifact, "snapshot": research_snapshot}
+            )
+        )
+        return 0
     if command == "scheduled-shadow-watchdog-status":
         from trading_system.paper.prospective_shadow_watchdog import (
             inspect_prospective_shadow_watchdog,

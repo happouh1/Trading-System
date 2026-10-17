@@ -1769,3 +1769,15 @@ context from deeper hourly history, and records developing short setups as `WATC
 The overlay is shadow research only: it cannot load credentials, use broker order APIs, write to a
 broker, enable live trading, or promote its thresholds. See the
 [Phase 12I review](docs/phase_12i_review.md).
+
+## Phase 12J research dashboard
+
+Render the local, read-only Stage A and short-opportunity evaluation view with:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File `
+  .\scripts\render-phase12j-research-dashboard.ps1 -Open
+```
+
+The dashboard reads the shadow database without modifying it and does not load credentials,
+contact Webull, or enable order submission.
