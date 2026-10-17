@@ -13,7 +13,7 @@ from types import MappingProxyType
 
 from trading_system.config import ThresholdConfig
 from trading_system.domain import Candle, DecisionAction, Timeframe
-from trading_system.market_data import XNYSCalendar
+from trading_system.market_data import IngestionError, XNYSCalendar
 from trading_system.market_data.aggregation import (
     aggregate_4h,
     aggregate_daily,
@@ -165,10 +165,14 @@ def run_burn_in_decision_cycle(
     if thresholds.config_hash != config.strategy_config_hash:
         raise ValueError("Phase 11H strategy configuration hash mismatch")
     session = _validate_session(repository, config, session_id, observed_at)
-    source = _load_source_candles(repository, session_id, observed_at)
-    if not source:
+    persisted_source = _load_source_candles(repository, session_id, observed_at)
+    if not persisted_source:
         raise ValueError("Phase 11H session has no persisted completed 1H bars")
-    derived = _derived_candles(source, XNYSCalendar())
+    calendar = XNYSCalendar()
+    source = _complete_session_source(persisted_source, calendar)
+    if not source:
+        raise ValueError("Phase 11H session has no complete XNYS source sessions")
+    derived = _derived_candles(source, calendar)
     candles = ReplayEngine.normalize((*source, *derived))
     run_id = deterministic_id(
         "burn_in_shadow_decision_run",
@@ -348,6 +352,39 @@ def _candle(row: tuple[object, ...]) -> Candle:
         raw_low=Decimal(str(row[17])),
         raw_close=Decimal(str(row[18])),
         raw_volume=Decimal(str(row[19])),
+    )
+
+
+def _complete_session_source(
+    source: Iterable[Candle], calendar: XNYSCalendar
+) -> tuple[Candle, ...]:
+    items = tuple(source)
+    by_symbol_session: dict[tuple[str, date], list[Candle]] = defaultdict(list)
+    for candle in items:
+        by_symbol_session[(candle.symbol, candle.session_date)].append(candle)
+    dates_by_symbol: dict[str, list[date]] = defaultdict(list)
+    for symbol, session_date in by_symbol_session:
+        dates_by_symbol[symbol].append(session_date)
+    boundary_keys: set[tuple[str, date]] = set()
+    for symbol, session_dates in dates_by_symbol.items():
+        ordered = sorted(session_dates)
+        boundary_keys.add((symbol, ordered[0]))
+        boundary_keys.add((symbol, ordered[-1]))
+    excluded: set[tuple[str, date]] = set()
+    for key in sorted(by_symbol_session):
+        group = sorted(by_symbol_session[key], key=lambda item: item.open_time)
+        bounds = calendar.bounds(key[1])
+        if bounds is None:
+            raise IngestionError(f"source candle is outside XNYS session {key[1]}")
+        if group[0].open_time == bounds[0] and group[-1].close_time == bounds[1]:
+            continue
+        if key not in boundary_keys:
+            raise IngestionError(f"source data does not cover full session {key[1]}")
+        excluded.add(key)
+    return tuple(
+        candle
+        for candle in items
+        if (candle.symbol, candle.session_date) not in excluded
     )
 
 

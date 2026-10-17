@@ -1485,7 +1485,9 @@ same-session reruns fail closed.
 2. Require an active `SHADOW` session, its exact Phase 11F plan binding, and a successful causal
    Phase 11G cycle for the same session.
 3. Read only completed 1H Webull shadow bars known by the explicit UTC cycle timestamp. Reject
-   conflicting revisions for the same symbol, timeframe, and open time.
+   conflicting revisions for the same symbol, timeframe, and open time. Exclude an incomplete
+   oldest or newest per-symbol session caused by the finite history boundary before replay; an
+   incomplete interior session remains a fail-closed data gap.
 4. Rebuild 4H and Daily candles only from complete XNYS sessions and Weekly candles only from every
    expected XNYS session. Never forward-fill a missing bar.
 5. Normalize all completed candles deterministically, restore causal pipeline state through the
@@ -1748,3 +1750,17 @@ must remain powered on or sleeping with wake timers enabled. Three read-only wat
 inspect immutable start, post-close, and audit receipts and create local alerts when evidence is
 missing. A late task cannot retry, repair, or backfill a missed session; the corresponding day is
 failed and remains excluded from a zero-incident cohort.
+
+# Phase 12I short-opportunity methodology
+
+Phase 12I runs only after the standard causal decision cycle. It does not recalculate or override a
+decision. The latest immutable 1H and 4H short candidates are joined to a versioned bearish-regime
+snapshot built from evaluated benchmark direction and universe breadth. Classification is
+deterministic and preserves blockers: an extended entry is always `TOO_LATE`, an unchanged engine
+`SHORT` is `TRIGGER`, and `ARMED` requires confirmed regime plus both quality floors.
+
+Outcome labels are unavailable until the complete future horizon is present. For a short, forward
+return is `(entry - close) / entry`, favorable excursion is `(entry - lowest low) / entry`, and
+adverse excursion is `(highest high - entry) / entry`. Each label is immutable and version-bound.
+Research evaluation must retain rejected states, account for coverage and costs, and proceed
+chronologically; it must not tune on the evaluation interval or infer profit from a small sample.

@@ -1474,6 +1474,8 @@ broker writes, simulated execution, release, promotion, and live trading remain 
   `(session_id, observed_at, config_hash)` identity and links it to the deterministic replay run.
 - `run_id` is stable for the locked session, plan, decision-worker configuration, and strategy hash,
   allowing replay checkpoints to deduplicate restarts.
+- `source_1h_candles` counts only complete-session source bars admitted to replay. Bars from an
+  incomplete oldest or newest per-symbol history-boundary session are deterministically excluded.
 - A receipt never represents a fill, completed trade, outcome, broker interaction, or promotion.
 
 ## Dual-source burn-in candidate evidence
@@ -1731,3 +1733,13 @@ inspection result and creates no database record.
 - `next_checkpoint_at`: next frozen UTC watchdog boundary, or null after the terminal check.
 - `start_receipt_present` / `post_close_receipt_present`: read-only receipt existence flags.
 - `audit_status`: immutable daily audit status when present.
+
+# Phase 12I short-opportunity records
+
+- `short_regime_snapshots`: one immutable benchmark/breadth regime observation per decision run and
+  overlay configuration. Stores evaluated coverage, bearish membership, and regime state.
+- `short_opportunity_alerts`: one immutable short-candidate lifecycle record linked to its decision,
+  observation, regime snapshot, timeframe states, qualities, reference price, and reason codes.
+- `short_opportunity_outcomes`: future-only label for one alert and horizon, including entry price,
+  short forward return, maximum favorable excursion, maximum adverse excursion, and the timestamp at
+  which the full label first became available.

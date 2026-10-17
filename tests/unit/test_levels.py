@@ -52,6 +52,18 @@ def test_confluence_uses_distinct_timeframe_flags_and_padding() -> None:
     assert level.known_at == inputs[1].known_at
 
 
+def test_level_identity_versions_adr_based_padding() -> None:
+    inputs = [source("a", "100", 0), source("b", "100.20", 1)]
+
+    narrow = LevelEngine().build("run-1", inputs, D("2"))[0]
+    wide = LevelEngine().build("run-1", inputs, D("4"))[0]
+
+    assert narrow.level_id != wide.level_id
+    assert narrow.evidence_candle_ids == wide.evidence_candle_ids
+    assert narrow.lower_price == D("99.90")
+    assert wide.lower_price == D("99.80")
+
+
 def test_runway_uses_nearest_opposing_zone_boundary() -> None:
     zones = LevelEngine().build(
         "run-1", [source("near", "103", 0), source("far", "108", 1)], D("2")

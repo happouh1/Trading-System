@@ -143,6 +143,7 @@ class LevelEngine:
             oldest.symbol,
             oldest.timeframe,
             tuple(sorted(source.source_id for source in cluster.sources)),
+            padding,
         )
         return Level(
             level_id=deterministic_id("level", identity),

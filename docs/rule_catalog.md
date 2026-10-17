@@ -1607,6 +1607,11 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   promotion, production release, and live trading MUST remain disabled.
 - `BIDW-010`: Phase 11H decisions and intents MUST NOT be represented as completed-trade or passing
   burn-in evidence.
+- `BIDW-011`: An incomplete oldest or newest per-symbol session at the finite Webull history
+  boundary MUST be excluded before replay. Any incomplete interior session MUST fail closed.
+- `LVL-005`: A level identifier MUST include its ADR-derived padding. A changed ADR with an
+  unchanged evidence cluster creates a new immutable level revision instead of changing the
+  payload stored under an existing identifier.
 
 ## Dual-source burn-in candidate evidence rules
 
@@ -1866,3 +1871,17 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
 - `P12H-WATCH-003`: Missing or incomplete audit evidence after 15 minutes creates a local alert.
 - `P12H-SAFE-001`: The watchdog is SQLite read-only and cannot retry or backfill a session.
 - `P12H-COHORT-001`: Phase 12E evidence cannot satisfy the separately identified Phase 12H cohort.
+
+# Phase 12I short-opportunity research rules
+
+- `P12I-ORDER-001`: the overlay MUST run only after a completed immutable decision cycle.
+- `P12I-CAUSAL-001`: regime inputs, candidate states, and labels MUST be available at or before their
+  recorded causal timestamps; a label MUST wait for its complete future-bar horizon.
+- `P12I-STATE-001`: `ENTRY_EXTENDED` MUST classify as `TOO_LATE`; `ARMED` MUST NOT override the
+  underlying decision action or qualify an order.
+- `P12I-COVERAGE-001`: regime evidence MUST store evaluated benchmark and universe membership so
+  missing coverage cannot be mistaken for neutral breadth.
+- `P12I-SAFE-001`: network use, credential loading, broker writes, order APIs, live trading, and
+  automatic promotion MUST remain disabled.
+- `P12I-SCHEDULE-001`: scheduler activation MUST update the existing task identities in place and
+  MUST NOT create a competing post-close task.

@@ -10,7 +10,7 @@ import pytest
 from trading_system.cli.main import main
 from trading_system.config import load_config
 from trading_system.domain import Candle, Timeframe
-from trading_system.market_data import XNYSCalendar
+from trading_system.market_data import IngestionError, XNYSCalendar
 from trading_system.paper import (
     PaperMode,
     PaperRegistry,
@@ -180,6 +180,59 @@ def _bars(repository: SQLiteRepository) -> None:
             index += 1
 
 
+def _partial_session(
+    repository: SQLiteRepository,
+    session_date: datetime,
+    *,
+    start_offset_hours: int,
+    candle_count: int,
+    known_at: datetime,
+) -> None:
+    calendar = XNYSCalendar()
+    bounds = calendar.bounds(session_date.date())
+    assert bounds is not None
+    registry = WebullRegistry(repository)
+    opened = bounds[0] + timedelta(hours=start_offset_hours)
+    for index in range(candle_count):
+        if opened >= bounds[1]:
+            break
+        closed = min(opened + timedelta(hours=1), bounds[1])
+        price = Decimal(80 + index)
+        candle = Candle(
+            "AAPL",
+            Timeframe.HOUR_1,
+            opened,
+            closed,
+            session_date.date(),
+            price,
+            price + Decimal("1"),
+            price - Decimal("1"),
+            price + Decimal("0.5"),
+            Decimal(900 + index),
+            True,
+            Decimal("1"),
+            "WEBULL_SANDBOX",
+            f"partial-{session_date.date().isoformat()}-{index}",
+            raw_open=price,
+            raw_high=price + Decimal("1"),
+            raw_low=price - Decimal("1"),
+            raw_close=price + Decimal("0.5"),
+            raw_volume=Decimal(900 + index),
+        )
+        registry.insert_shadow_bar(
+            "worker-11h",
+            ShadowBar(
+                candle,
+                closed,
+                known_at,
+                known_at,
+                canonical_hash(candle),
+                MarketDataKind.HISTORICAL,
+            ),
+        )
+        opened = closed
+
+
 def test_phase11h_config_is_strict_and_checked_in_hash_matches() -> None:
     config = load_burn_in_decision_worker_config(
         ROOT / "config/webull.phase11h.offline.v1.yaml"
@@ -269,6 +322,71 @@ def test_phase11h_persists_causal_decisions_and_restart_deduplicates(
         assert repository.connection.execute(
             "SELECT COUNT(*) FROM paper_adapter_events"
         ).fetchone() == (0,)
+
+
+def test_phase11h_excludes_only_partial_history_boundary_sessions(
+    tmp_path: Path,
+) -> None:
+    config = load_burn_in_decision_worker_config(_config(tmp_path))
+    thresholds = load_config(ROOT / "config/thresholds.phase1e.v1.yaml")
+    later = OBSERVED + timedelta(days=3)
+    with SQLiteRepository(tmp_path / "phase11h.sqlite") as repository:
+        repository.migrate()
+        _session(repository)
+        _bars(repository)
+        _partial_session(
+            repository,
+            datetime(2026, 9, 11, tzinfo=UTC),
+            start_offset_hours=2,
+            candle_count=5,
+            known_at=OBSERVED,
+        )
+        _partial_session(
+            repository,
+            datetime(2026, 9, 21, tzinfo=UTC),
+            start_offset_hours=0,
+            candle_count=2,
+            known_at=later,
+        )
+        result = run_burn_in_decision_cycle(
+            repository,
+            config,
+            thresholds,
+            session_id="worker-11h",
+            observed_at=later,
+        )
+        assert result.source_1h_candles == 35
+        assert result.derived_candles == 16
+        assert result.processed_candles == 51
+
+
+def test_phase11h_still_rejects_partial_interior_session(tmp_path: Path) -> None:
+    config = load_burn_in_decision_worker_config(_config(tmp_path))
+    thresholds = load_config(ROOT / "config/thresholds.phase1e.v1.yaml")
+    with SQLiteRepository(tmp_path / "phase11h.sqlite") as repository:
+        repository.migrate()
+        _session(repository)
+        _bars(repository)
+        repository.connection.execute(
+            """DELETE FROM webull_shadow_bars WHERE candle_id=(
+                   SELECT w.candle_id FROM webull_shadow_bars w
+                   JOIN candles c ON c.candle_id=w.candle_id
+                   WHERE w.session_id='worker-11h' AND c.session_date='2026-09-16'
+                   ORDER BY c.open_time LIMIT 1
+               )"""
+        )
+        repository.connection.commit()
+        with pytest.raises(
+            IngestionError,
+            match="source data does not cover full session 2026-09-16",
+        ):
+            run_burn_in_decision_cycle(
+                repository,
+                config,
+                thresholds,
+                session_id="worker-11h",
+                observed_at=OBSERVED,
+            )
 
 
 def test_phase11h_requires_a_successful_phase11g_cycle(tmp_path: Path) -> None:

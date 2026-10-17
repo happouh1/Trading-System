@@ -57,6 +57,11 @@ from trading_system.webull.registry import WebullRegistry
 from trading_system.webull.security import load_credentials, submission_enabled
 from trading_system.webull.service import WebullSandboxService
 from trading_system.webull.session import core_session_status
+from trading_system.webull.short_opportunities import (
+    label_short_opportunity_outcomes,
+    load_short_opportunity_config,
+    materialize_short_opportunities,
+)
 from trading_system.webull.smoke import (
     SmokeCase,
     load_smoke_capture,
@@ -137,6 +142,17 @@ def configure_webull_parser(
     decisions.add_argument("--decision-config", required=True)
     decisions.add_argument("--thresholds", required=True)
     decisions.add_argument("--observed-at")
+    short_tick = actions.add_parser("short-opportunity-tick")
+    short_tick.add_argument("--database", required=True)
+    short_tick.add_argument("--session-id", required=True)
+    short_tick.add_argument("--config", required=True)
+    short_tick.add_argument("--short-config", required=True)
+    short_tick.add_argument("--observed-at")
+    short_outcomes = actions.add_parser("short-opportunity-outcomes")
+    short_outcomes.add_argument("--database", required=True)
+    short_outcomes.add_argument("--config", required=True)
+    short_outcomes.add_argument("--short-config", required=True)
+    short_outcomes.add_argument("--as-of", required=True)
     preview = actions.add_parser("preview-stock")
     preview.add_argument("--database", required=True)
     preview.add_argument("--session-id", required=True)
@@ -416,6 +432,60 @@ def handle_webull(args: argparse.Namespace) -> int:
             "network_used": False,
             "credentials_loaded": False,
             "simulated_fills_enabled": False,
+            "broker_write_performed": False,
+            "live_trading_enabled": False,
+            "automatic_promotion_enabled": False,
+        }
+    elif args.webull_command == "short-opportunity-tick":
+        short_config = load_short_opportunity_config(args.short_config)
+        observed_at = (
+            datetime.now(UTC)
+            if args.observed_at is None
+            else _utc_timestamp(str(args.observed_at))
+        )
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            short_result = materialize_short_opportunities(
+                repository,
+                short_config,
+                session_id=args.session_id,
+                observed_at=observed_at,
+            )
+        result = {
+            "snapshot_id": short_result.snapshot.snapshot_id,
+            "session_id": short_result.snapshot.session_id,
+            "run_id": short_result.snapshot.run_id,
+            "observed_at": short_result.snapshot.observed_at,
+            "regime_state": short_result.snapshot.regime_state,
+            "bearish_benchmarks": short_result.snapshot.bearish_benchmarks,
+            "evaluated_benchmarks": short_result.snapshot.evaluated_benchmarks,
+            "bearish_breadth": short_result.snapshot.bearish_breadth,
+            "alerts": len(short_result.alerts),
+            "inserted_alerts": short_result.inserted_alerts,
+            "watch": short_result.watch,
+            "armed": short_result.armed,
+            "trigger": short_result.trigger,
+            "too_late": short_result.too_late,
+            "network_used": False,
+            "credentials_loaded": False,
+            "broker_write_performed": False,
+            "live_trading_enabled": False,
+            "automatic_promotion_enabled": False,
+        }
+    elif args.webull_command == "short-opportunity-outcomes":
+        short_config = load_short_opportunity_config(args.short_config)
+        with SQLiteRepository(args.database) as repository:
+            repository.migrate()
+            inserted_outcomes = label_short_opportunity_outcomes(
+                repository,
+                short_config,
+                as_of=_utc_timestamp(str(args.as_of)),
+            )
+        result = {
+            "inserted_outcomes": inserted_outcomes,
+            "label_version": short_config.overlay_version,
+            "network_used": False,
+            "credentials_loaded": False,
             "broker_write_performed": False,
             "live_trading_enabled": False,
             "automatic_promotion_enabled": False,

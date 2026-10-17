@@ -122,6 +122,18 @@ from trading_system.webull.registry import WebullRegistry
 from trading_system.webull.security import load_credentials, redact, submission_enabled
 from trading_system.webull.service import WebullSandboxService
 from trading_system.webull.session import CoreSessionStatus, core_session_status
+from trading_system.webull.short_opportunities import (
+    BearishRegimeState,
+    ShortOpportunityAlert,
+    ShortOpportunityConfig,
+    ShortOpportunityConfigError,
+    ShortOpportunityResult,
+    ShortOpportunityState,
+    ShortRegimeSnapshot,
+    label_short_opportunity_outcomes,
+    load_short_opportunity_config,
+    materialize_short_opportunities,
+)
 from trading_system.webull.smoke import (
     SmokeCapture,
     SmokeCase,
@@ -148,6 +160,7 @@ from trading_system.webull.transport import (
 
 __all__ = [
     "AccountVerification",
+    "BearishRegimeState",
     "BrokerActionEvent",
     "BrokerActionEventType",
     "BrokerActionKind",
@@ -190,6 +203,12 @@ __all__ = [
     "PositionReconciliation",
     "ProtectiveStopVersion",
     "ShadowBar",
+    "ShortOpportunityAlert",
+    "ShortOpportunityConfig",
+    "ShortOpportunityConfigError",
+    "ShortOpportunityResult",
+    "ShortOpportunityState",
+    "ShortRegimeSnapshot",
     "SmokeCapture",
     "SmokeCase",
     "SmokeConfig",
@@ -245,16 +264,19 @@ __all__ = [
     "exact_case5_stop",
     "exact_case6_order",
     "exit_client_id",
+    "label_short_opportunity_outcomes",
     "load_burn_in_decision_worker_config",
     "load_burn_in_worker_config",
     "load_credentials",
     "load_exit_capabilities",
     "load_exit_config",
+    "load_short_opportunity_config",
     "load_smoke_capture",
     "load_smoke_config",
     "load_smoke_review",
     "load_webull_config",
     "map_stock_order",
+    "materialize_short_opportunities",
     "protective_client_id",
     "redact",
     "reducing_side",

@@ -1,0 +1,29 @@
+{
+  "stage_a_version": "1.0.0",
+  "setup": {
+    "minimum_price": "5",
+    "minimum_adr20_pct": "3.5",
+    "minimum_recent_volume_surge": "2",
+    "minimum_off_20d_high_pct": "-3"
+  },
+  "entry_quality": {
+    "extended_watch_vs_ema8_pct": "6",
+    "maximum_vs_ema8_pct": "8",
+    "gap_chase_warning_pct": "3",
+    "supporting_volume_surge": "2.5",
+    "exceptional_volume_surge": "4"
+  },
+  "evaluation": {
+    "forward_sessions": 8,
+    "dedupe_scope": "SYMBOL_SESSION",
+    "record_mfe": true,
+    "record_mae": true,
+    "record_time_to_peak": true
+  },
+  "authority": {
+    "research_only": true,
+    "decision_authority": false,
+    "broker_writes_enabled": false,
+    "automatic_promotion_enabled": false
+  }
+}

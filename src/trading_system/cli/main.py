@@ -23,6 +23,10 @@ from trading_system.portfolio.cli import configure_portfolio_parser, handle_port
 from trading_system.replay import ReplayOrchestrator
 from trading_system.reporting import markdown_report
 from trading_system.research.cli import configure_research_parser, handle_research
+from trading_system.research.trend_stage_a_cli import (
+    configure_stage_a_parser,
+    handle_stage_a,
+)
 from trading_system.serialization import canonical_hash, canonical_json
 from trading_system.webull.cli import configure_webull_parser, handle_webull
 
@@ -49,6 +53,7 @@ def _parser() -> argparse.ArgumentParser:
     explain.add_argument("--database", required=True)
     explain.add_argument("--decision-id", required=True)
     configure_research_parser(commands)
+    configure_stage_a_parser(commands)
     configure_model_parser(commands)
     configure_paper_parser(commands)
     configure_webull_parser(commands)
@@ -156,6 +161,7 @@ def main(argv: list[str] | None = None) -> int:
         "report": _report,
         "explain": _explain,
         "research": handle_research,
+        "stage-a": handle_stage_a,
         "model": handle_model,
         "paper": handle_paper,
         "webull": handle_webull,

@@ -1760,3 +1760,12 @@ To verify the full launch path without opening a browser:
 powershell -NoProfile -ExecutionPolicy Bypass -File `
   .\scripts\start-phase12g-burn-in.ps1 -SelfTest
 ```
+
+## Phase 12I short-opportunity research overlay
+
+Phase 12I expands post-close read-only capture beyond MSFT/SPY, hydrates causal 4H/Daily/Weekly
+context from deeper hourly history, and records developing short setups as `WATCH`, `ARMED`,
+`TRIGGER`, or `TOO_LATE`. It also appends causal forward performance labels once future bars exist.
+The overlay is shadow research only: it cannot load credentials, use broker order APIs, write to a
+broker, enable live trading, or promote its thresholds. See the
+[Phase 12I review](docs/phase_12i_review.md).

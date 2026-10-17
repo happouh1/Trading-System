@@ -1,0 +1,29 @@
+{
+  "overlay_version": "12I.1.0",
+  "mode": "SHADOW_RESEARCH_ONLY",
+  "plan_id": "prospective_burn_in_plan_b00243d37eb9f829649a65b0f8c508de",
+  "universe": ["AAPL", "AMD", "AMZN", "AVGO", "DIA", "IWM", "META", "MSFT", "NVDA", "QQQ", "SMH", "SPY", "TSLA", "XLE", "XLF", "XLI", "XLK", "XLY"],
+  "benchmark_symbols": ["DIA", "IWM", "QQQ", "SPY"],
+  "signal_timeframes": ["1h", "4h"],
+  "regime": {
+    "minimum_bearish_benchmarks": 2,
+    "minimum_bearish_breadth": "0.50"
+  },
+  "classification": {
+    "armed_min_setup_quality": "40",
+    "armed_min_entry_quality": "50"
+  },
+  "outcomes": {
+    "horizon_bars": [1, 3, 6, 12, 24, 48]
+  },
+  "authority": {
+    "database_read_enabled": true,
+    "database_write_enabled": true,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "shadow_only": true,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false,
+    "automatic_promotion_enabled": false
+  }
+}

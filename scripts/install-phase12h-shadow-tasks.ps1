@@ -4,6 +4,11 @@ param(
     [string]$CloseTaskName = "Trading System - Phase 12H Shadow Close",
     [string]$AuditTaskName = "Trading System - Phase 12H Shadow Audit",
     [string]$WatchdogTaskName = "Trading System - Phase 12H Shadow Watchdog",
+    [string]$CloseRunnerFile = "run-phase12c-shadow-close.ps1",
+    [string]$WorkerConfig = "config/webull.phase12h.readonly.v1.json",
+    [string]$DecisionConfig = "config/webull.phase12h.decisions.v1.json",
+    [string]$ShortOpportunityConfig = "",
+    [string]$LogNamespace = "phase12h",
     [bool]$ConfigureWakeTimers = $true
 )
 
@@ -64,7 +69,7 @@ trap {
 
 $PreflightRunner = Join-Path $PSScriptRoot "run-phase12e-shadow-preflight.ps1"
 $StartRunner = Join-Path $PSScriptRoot "run-phase12c-shadow-start.ps1"
-$CloseRunner = Join-Path $PSScriptRoot "run-phase12c-shadow-close.ps1"
+$CloseRunner = Join-Path $PSScriptRoot $CloseRunnerFile
 $AuditRunner = Join-Path $PSScriptRoot "run-phase12d-shadow-audit.ps1"
 $WatchdogRunner = Join-Path $PSScriptRoot "run-phase12h-shadow-watchdog.ps1"
 $TaskSnapshotWriter = Join-Path $PSScriptRoot "write-phase12h-task-snapshot.ps1"
@@ -144,10 +149,14 @@ function Install-Phase12HTask {
 
 $schedule = '-Schedule "config/burn-in.phase12h.schedule.v1.json"'
 $shared = $schedule + ' -WebullConfig "config/webull.sandbox.v1.yaml"' +
-    ' -WorkerConfig "config/webull.phase12h.readonly.v1.json"' +
-    ' -DecisionConfig "config/webull.phase12h.decisions.v1.json"' +
+    ' -WorkerConfig "' + $WorkerConfig + '"' +
+    ' -DecisionConfig "' + $DecisionConfig + '"' +
     ' -ThresholdsConfig "config/thresholds.phase1e.v1.yaml"' +
-    ' -LogNamespace "phase12h"'
+    ' -LogNamespace "' + $LogNamespace + '"'
+$closeShared = $shared
+if (-not [string]::IsNullOrWhiteSpace($ShortOpportunityConfig)) {
+    $closeShared += ' -ShortOpportunityConfig "' + $ShortOpportunityConfig + '"'
+}
 $audit = '-AuditConfig "config/burn-in.phase12h.audit.v1.json" -LogNamespace "phase12h"'
 $watchdog = '-Config "config/burn-in.phase12h.watchdog.v1.json"'
 
@@ -157,7 +166,7 @@ try {
     Install-Phase12HTask -TaskName $StartTaskName -Runner $StartRunner `
         -At @("09:30") -RunnerArguments $shared
     Install-Phase12HTask -TaskName $CloseTaskName -Runner $CloseRunner `
-        -At @("16:05") -RunnerArguments $shared
+        -At @("16:05") -RunnerArguments $closeShared
     Install-Phase12HTask -TaskName $AuditTaskName -Runner $AuditRunner `
         -At @("19:10") -RunnerArguments $audit
     Install-Phase12HTask -TaskName $WatchdogTaskName -Runner $WatchdogRunner `

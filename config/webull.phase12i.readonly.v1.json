@@ -1,0 +1,21 @@
+{
+  "worker_version": "11G.1.0",
+  "mode": "PROSPECTIVE_WEBULL_SANDBOX_READ_ONLY",
+  "plan_id": "prospective_burn_in_plan_b00243d37eb9f829649a65b0f8c508de",
+  "market_data": {
+    "symbols": ["AAPL", "AMD", "AMZN", "AVGO", "DIA", "IWM", "META", "MSFT", "NVDA", "QQQ", "SMH", "SPY", "TSLA", "XLE", "XLF", "XLI", "XLK", "XLY"],
+    "timespan": "M60",
+    "history_count": 1200
+  },
+  "authority": {
+    "database_read_enabled": true,
+    "database_write_enabled": true,
+    "network_read_enabled": true,
+    "credential_loading_enabled": true,
+    "broker_writes_enabled": false,
+    "order_api_enabled": false,
+    "sandbox_execution_enabled": false,
+    "live_trading_enabled": false,
+    "automatic_promotion_enabled": false
+  }
+}

@@ -1714,3 +1714,16 @@ Phase 12G makes no automatic post-cohort switch and installs no background refre
 
 Phase 12H answers neither external hosting nor external notification governance. It remains local,
 fail-closed, read-only monitoring with no session retry or evidence backfill.
+
+# Phase 12I open questions
+
+645. What point-in-time universe-membership source should replace the static research universe to
+     control delisting and survivorship bias?
+646. What minimum alert count, regime diversity, cost model, and chronological holdout result are
+     required before any Phase 12I threshold may be proposed for promotion?
+647. Should breadth eventually use a separately licensed broad-market feed, and how will missing
+     symbols and corporate-action corrections be versioned?
+648. Which reviewed notification channel may surface an `ARMED` shadow alert without being mistaken
+     for an order recommendation or creating execution authority?
+
+Phase 12I does not answer these questions and cannot promote itself.
