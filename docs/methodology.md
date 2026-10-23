@@ -1773,3 +1773,11 @@ number of current-size database files that fit in reported free space; it is a c
 operational indicator, not proof that a valid backup exists. Status thresholds are versioned,
 tunable operational assumptions. RED fails closed but grants no authority to delete, vacuum,
 archive, retry, backfill, submit, or promote anything.
+
+# Phase 12L lifecycle methodology
+
+Operation events use actual UTC observation times and never replace receipts. The watchdog may
+classify a missing receipt as healthy only while an append-only `STARTED` or `PROGRESS` event remains
+inside the versioned maximum duration. A `FAILED`, timed-out, or completed-without-receipt operation
+alerts fail-closed. Late audit closure reads existing receipts once, preserves lateness, performs no
+backfill or retry, and cannot qualify an otherwise imperfect zero-incident cohort.

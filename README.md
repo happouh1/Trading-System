@@ -1797,3 +1797,11 @@ and full-copy headroom remain within the versioned operational limits. AMBER req
 planning; RED requires the operator to stop and review storage before relying on the next scheduled
 collection. The monitor never deletes or compacts evidence and has no network, credential, broker,
 live-trading, or promotion authority.
+
+## Phase 12L operation lifecycle
+
+Phase 12L records append-only start, completion, and failure evidence around the long post-close
+collector and daily audit. Its watchdog recognizes bounded in-progress work instead of issuing a
+premature missing-receipt alert. Historical audit gaps may be closed only as explicitly late,
+nonqualifying audits from immutable receipts. Install the lifecycle-aware task actions with
+`scripts/install-phase12l-shadow-tasks.ps1` after validation and administrator approval.

@@ -73,6 +73,24 @@ def configure_paper_parser(
         audit_parser.add_argument("--project-root", default=".")
         if name != "scheduled-shadow-audit-target":
             audit_parser.add_argument("--database-override")
+    late_audit = actions.add_parser("scheduled-shadow-late-audit")
+    late_audit.add_argument("--audit-config", required=True)
+    late_audit.add_argument("--session-id", required=True)
+    late_audit.add_argument("--as-of", required=True)
+    late_audit.add_argument("--project-root", default=".")
+    late_audit.add_argument("--database-override")
+    lifecycle = actions.add_parser("scheduled-shadow-operation-event")
+    lifecycle.add_argument("--config", required=True)
+    lifecycle.add_argument("--session-id", required=True)
+    lifecycle.add_argument("--operation", choices=("POST_CLOSE", "AUDIT"), required=True)
+    lifecycle.add_argument(
+        "--state", choices=("STARTED", "PROGRESS", "COMPLETED", "FAILED"), required=True
+    )
+    lifecycle.add_argument("--stage", required=True)
+    lifecycle.add_argument("--observed-at", required=True)
+    lifecycle.add_argument("--details-json", default="{}")
+    lifecycle.add_argument("--project-root", default=".")
+    lifecycle.add_argument("--database-override")
     dashboard = actions.add_parser("scheduled-shadow-dashboard")
     dashboard.add_argument("--config", required=True)
     dashboard.add_argument("--as-of", required=True)
@@ -124,6 +142,57 @@ def configure_paper_parser(
 
 def handle_paper(args: argparse.Namespace) -> int:
     command = str(args.paper_command)
+    if command == "scheduled-shadow-operation-event":
+        import json
+
+        from trading_system.paper.prospective_shadow_lifecycle import (
+            load_shadow_lifecycle_config,
+            record_shadow_operation_event,
+        )
+
+        lifecycle_config = load_shadow_lifecycle_config(args.config)
+        observed_at = datetime.fromisoformat(
+            str(args.observed_at).replace("Z", "+00:00")
+        )
+        details = json.loads(str(args.details_json))
+        if not isinstance(details, dict):
+            raise ValueError("--details-json must contain a JSON object")
+        lifecycle_result = record_shadow_operation_event(
+            lifecycle_config,
+            project_root=args.project_root,
+            session_id=str(args.session_id),
+            operation=str(args.operation),
+            state=str(args.state),
+            stage=str(args.stage),
+            observed_at=observed_at,
+            details=details,
+            database_override=args.database_override,
+        )
+        print(canonical_json(lifecycle_result))
+        return 0
+    if command == "scheduled-shadow-late-audit":
+        from trading_system.paper.prospective_shadow_audit import (
+            audit_late_scheduled_shadow_day,
+            load_prospective_shadow_audit_config,
+        )
+        from trading_system.paper.prospective_shadow_orchestrator import (
+            load_prospective_shadow_schedule,
+        )
+
+        root = Path(args.project_root).resolve()
+        audit_config = load_prospective_shadow_audit_config(args.audit_config)
+        schedule = load_prospective_shadow_schedule(root / audit_config.schedule)
+        as_of = datetime.fromisoformat(str(args.as_of).replace("Z", "+00:00"))
+        late_result = audit_late_scheduled_shadow_day(
+            schedule,
+            audit_config,
+            project_root=root,
+            session_id=str(args.session_id),
+            as_of=as_of,
+            database_override=args.database_override,
+        )
+        print(canonical_json(late_result))
+        return 0
     if command == "scheduled-shadow-storage-capacity":
         from trading_system.paper.prospective_shadow_storage_capacity import (
             inspect_shadow_storage_capacity,

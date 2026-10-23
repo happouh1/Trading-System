@@ -5,6 +5,8 @@ param(
     [string]$AuditTaskName = "Trading System - Phase 12H Shadow Audit",
     [string]$WatchdogTaskName = "Trading System - Phase 12H Shadow Watchdog",
     [string]$CloseRunnerFile = "run-phase12c-shadow-close.ps1",
+    [string]$AuditRunnerFile = "run-phase12d-shadow-audit.ps1",
+    [string]$WatchdogConfig = "config/burn-in.phase12h.watchdog.v1.json",
     [string]$WorkerConfig = "config/webull.phase12h.readonly.v1.json",
     [string]$DecisionConfig = "config/webull.phase12h.decisions.v1.json",
     [string]$ShortOpportunityConfig = "",
@@ -70,7 +72,7 @@ trap {
 $PreflightRunner = Join-Path $PSScriptRoot "run-phase12e-shadow-preflight.ps1"
 $StartRunner = Join-Path $PSScriptRoot "run-phase12c-shadow-start.ps1"
 $CloseRunner = Join-Path $PSScriptRoot $CloseRunnerFile
-$AuditRunner = Join-Path $PSScriptRoot "run-phase12d-shadow-audit.ps1"
+$AuditRunner = Join-Path $PSScriptRoot $AuditRunnerFile
 $WatchdogRunner = Join-Path $PSScriptRoot "run-phase12h-shadow-watchdog.ps1"
 $TaskSnapshotWriter = Join-Path $PSScriptRoot "write-phase12h-task-snapshot.ps1"
 foreach ($runner in @(
@@ -158,7 +160,7 @@ if (-not [string]::IsNullOrWhiteSpace($ShortOpportunityConfig)) {
     $closeShared += ' -ShortOpportunityConfig "' + $ShortOpportunityConfig + '"'
 }
 $audit = '-AuditConfig "config/burn-in.phase12h.audit.v1.json" -LogNamespace "phase12h"'
-$watchdog = '-Config "config/burn-in.phase12h.watchdog.v1.json"'
+$watchdog = '-Config "' + $WatchdogConfig + '"'
 
 try {
     Install-Phase12HTask -TaskName $PreflightTaskName -Runner $PreflightRunner `

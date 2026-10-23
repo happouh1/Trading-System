@@ -1752,3 +1752,13 @@ counts; SQLite page allocation and freelist counts; filesystem total/used/free b
 copy headroom; thresholds; stable status/reason codes; and explicit false evidence-deletion,
 database-write, network, credential, broker-write, live-trading, and promotion flags. It is not
 strategy evidence and creates no database row.
+
+# Phase 12L operation lifecycle
+
+- `paper_shadow_operation_events`: append-only local events for `POST_CLOSE` and `AUDIT` operations.
+  `operation` identifies the bounded job; `state` is `STARTED`, `PROGRESS`, `COMPLETED`, or `FAILED`;
+  `stage` describes its current step; `observed_at` is the real UTC observation time; hashes bind the
+  event to its Phase 12L configuration and canonical payload.
+- `COMPLETE_LATE_AUDIT`: immutable source receipts were complete and safe, but the audit observation
+  occurred after its original window. It is research-usable and explicitly nonqualifying for a
+  zero-incident cohort.

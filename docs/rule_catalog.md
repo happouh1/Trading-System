@@ -1898,3 +1898,14 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   SQLite.
 - `P12K-AUTH-001`: evidence deletion, compaction, database writes, network use, credential loading,
   broker writes, live trading, and automatic promotion MUST remain disabled.
+
+# Phase 12L lifecycle rules
+
+- `P12L-EVENT-001`: operation events MUST be append-only, UTC-observed, configuration-bound, and
+  restricted to frozen scheduled sessions.
+- `P12L-WATCH-001`: an active operation MAY suppress a missing-receipt alert only until its bounded
+  maximum duration; failure, timeout, or receipt inconsistency MUST alert.
+- `P12L-LATE-001`: a late audit MUST retain its real observation time, use a `_LATE_AUDIT` status,
+  perform no backfill or retry, and remain ineligible for a zero-incident cohort.
+- `P12L-AUTH-001`: lifecycle and late-audit operations MUST NOT load credentials, use the network,
+  submit broker orders, enable live trading, or promote configuration.

@@ -1739,3 +1739,12 @@ Phase 12I does not answer these questions and cannot promote itself.
 
 Phase 12K observes capacity only. It does not delete, vacuum, compact, archive, replicate, notify,
 or alter scheduled collection behavior.
+
+# Phase 12L open questions
+
+652. Should post-close stages emit periodic progress events, and what interval best distinguishes a
+     healthy large collection from a stalled provider request?
+653. What reviewed policy determines whether a `COMPLETE_LATE_AUDIT` day can be used in exploratory
+     research while remaining excluded from operational certification?
+
+Phase 12L does not change strategy logic, broker authority, or promotion criteria.

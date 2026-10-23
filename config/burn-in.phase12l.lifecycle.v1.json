@@ -1,0 +1,22 @@
+{
+  "lifecycle_version": "12L.1.0",
+  "mode": "APPEND_ONLY_SHADOW_OPERATION_LIFECYCLE",
+  "audit_config": "config/burn-in.phase12h.audit.v1.json",
+  "audit_config_file_sha256": "sha256:eb4e7547086e94714862cdb9ccf01ceb3f500087e22365d0e6d26a15bfde9791",
+  "database": "webull-sandbox.sqlite",
+  "collection_max_minutes": 90,
+  "progress_stale_minutes": 20,
+  "audit_max_minutes": 15,
+  "authority": {
+    "database_read_enabled": true,
+    "lifecycle_append_enabled": true,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "order_api_enabled": false,
+    "session_retry_enabled": false,
+    "backfill_enabled": false,
+    "live_trading_enabled": false,
+    "automatic_promotion_enabled": false
+  }
+}

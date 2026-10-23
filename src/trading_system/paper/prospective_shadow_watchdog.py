@@ -15,6 +15,10 @@ from zoneinfo import ZoneInfo
 from trading_system.paper.prospective_shadow_audit import (
     load_prospective_shadow_audit_config,
 )
+from trading_system.paper.prospective_shadow_lifecycle import (
+    latest_shadow_operation_event,
+    load_shadow_lifecycle_config,
+)
 from trading_system.paper.prospective_shadow_orchestrator import (
     load_prospective_shadow_schedule,
 )
@@ -34,6 +38,8 @@ class ProspectiveShadowWatchdogConfig:
     post_close_check_delay_minutes: int
     audit_check_delay_minutes: int
     config_hash: str
+    lifecycle_config: str | None = None
+    lifecycle_config_file_sha256: str | None = None
     watchdog_version: str = "12H.1.0"
 
 
@@ -41,7 +47,7 @@ def load_prospective_shadow_watchdog_config(
     path: str | Path,
 ) -> ProspectiveShadowWatchdogConfig:
     raw = json.loads(Path(path).read_text(encoding="utf-8"))
-    expected = {
+    expected_12h = {
         "watchdog_version",
         "mode",
         "audit_config",
@@ -51,6 +57,10 @@ def load_prospective_shadow_watchdog_config(
         "post_close_check_delay_minutes",
         "audit_check_delay_minutes",
         "authority",
+    }
+    expected_12l = expected_12h | {
+        "lifecycle_config",
+        "lifecycle_config_file_sha256",
     }
     authority = {
         "database_read_enabled": True,
@@ -67,8 +77,10 @@ def load_prospective_shadow_watchdog_config(
     }
     if (
         not isinstance(raw, dict)
-        or set(raw) != expected
-        or raw["watchdog_version"] != "12H.1.0"
+        or set(raw) not in (expected_12h, expected_12l)
+        or raw["watchdog_version"] not in ("12H.1.0", "12L.1.0")
+        or (raw["watchdog_version"] == "12H.1.0" and set(raw) != expected_12h)
+        or (raw["watchdog_version"] == "12L.1.0" and set(raw) != expected_12l)
         or raw["mode"] != "LOCAL_READ_ONLY_SCHEDULE_WATCHDOG"
         or raw["authority"] != authority
         or not _relative(raw.get("audit_config"))
@@ -77,6 +89,13 @@ def load_prospective_shadow_watchdog_config(
         or not _minutes(raw.get("start_check_delay_minutes"), maximum=60)
         or not _minutes(raw.get("post_close_check_delay_minutes"), maximum=60)
         or not _minutes(raw.get("audit_check_delay_minutes"), maximum=60)
+        or (
+            raw["watchdog_version"] == "12L.1.0"
+            and (
+                not _relative(raw.get("lifecycle_config"))
+                or not _sha(raw.get("lifecycle_config_file_sha256"))
+            )
+        )
     ):
         raise ProspectiveShadowWatchdogConfigError(
             "Phase 12H watchdog configuration is invalid or unsafe"
@@ -89,6 +108,11 @@ def load_prospective_shadow_watchdog_config(
         int(raw["post_close_check_delay_minutes"]),
         int(raw["audit_check_delay_minutes"]),
         canonical_hash(_freeze(raw)),
+        None if raw["watchdog_version"] == "12H.1.0" else str(raw["lifecycle_config"]),
+        None
+        if raw["watchdog_version"] == "12H.1.0"
+        else str(raw["lifecycle_config_file_sha256"]),
+        str(raw["watchdog_version"]),
     )
 
 
@@ -112,6 +136,17 @@ def inspect_prospective_shadow_watchdog(
     if schedule_digest != audit.schedule_file_sha256:
         raise ValueError("Phase 12H watchdog schedule bytes drifted")
     schedule = load_prospective_shadow_schedule(schedule_path)
+    lifecycle = None
+    if config.lifecycle_config is not None:
+        lifecycle_path = _contained(root, config.lifecycle_config)
+        lifecycle_digest = (
+            "sha256:" + hashlib.sha256(lifecycle_path.read_bytes()).hexdigest()
+        )
+        if lifecycle_digest != config.lifecycle_config_file_sha256:
+            raise ValueError("Phase 12L watchdog lifecycle configuration bytes drifted")
+        lifecycle = load_shadow_lifecycle_config(lifecycle_path)
+        if lifecycle.database != config.database:
+            raise ValueError("Phase 12L watchdog lifecycle database drifted")
     market_day = as_of.astimezone(ZoneInfo("America/New_York")).date()
     session = next(
         (item for item in schedule.sessions if item.market_day == market_day), None
@@ -164,7 +199,13 @@ def inspect_prospective_shadow_watchdog(
     start_present, post_close_present, audit_status = _evidence(
         database, session.session_id
     )
+    post_event = latest_shadow_operation_event(database, session.session_id, "POST_CLOSE")
+    audit_event = latest_shadow_operation_event(database, session.session_id, "AUDIT")
 
+    status: str
+    alert_code: str | None
+    expected: str
+    next_at: datetime | None
     if as_of < start_due:
         status = "PENDING_START_CHECK"
         alert_code = None
@@ -181,20 +222,34 @@ def inspect_prospective_shadow_watchdog(
         expected = "POST_CLOSE"
         next_at = post_close_due
     elif not post_close_present:
-        status = "ALERT_MISSING_POST_CLOSE"
-        alert_code = "MISSING_POST_CLOSE_RECEIPT"
+        status, alert_code, next_at = _missing_operation_status(
+            operation="POST_CLOSE",
+            event=post_event,
+            as_of=as_of,
+            default_next=audit_due,
+            maximum_minutes=None if lifecycle is None else lifecycle.collection_max_minutes,
+            progress_stale_minutes=None
+            if lifecycle is None
+            else lifecycle.progress_stale_minutes,
+        )
         expected = "POST_CLOSE"
-        next_at = audit_due
     elif as_of < audit_due:
         status = "HEALTHY_POST_CLOSE"
         alert_code = None
         expected = "AUDIT"
         next_at = audit_due
     elif audit_status is None:
-        status = "ALERT_MISSING_AUDIT"
-        alert_code = "MISSING_DAILY_AUDIT"
+        status, alert_code, next_at = _missing_operation_status(
+            operation="AUDIT",
+            event=audit_event,
+            as_of=as_of,
+            default_next=None,
+            maximum_minutes=None if lifecycle is None else lifecycle.audit_max_minutes,
+            progress_stale_minutes=None
+            if lifecycle is None
+            else lifecycle.progress_stale_minutes,
+        )
         expected = "AUDIT"
-        next_at = None
     elif audit_status != "COMPLETE":
         status = "ALERT_INCOMPLETE_AUDIT"
         alert_code = audit_status
@@ -218,8 +273,56 @@ def inspect_prospective_shadow_watchdog(
             "start_receipt_present": start_present,
             "post_close_receipt_present": post_close_present,
             "audit_status": audit_status,
+            "post_close_lifecycle_state": _event_value(post_event, "state"),
+            "audit_lifecycle_state": _event_value(audit_event, "state"),
         }
     )
+
+
+def _missing_operation_status(
+    *,
+    operation: str,
+    event: Mapping[str, object] | None,
+    as_of: datetime,
+    default_next: datetime | None,
+    maximum_minutes: int | None,
+    progress_stale_minutes: int | None,
+) -> tuple[str, str | None, datetime | None]:
+    missing_status = f"ALERT_MISSING_{operation}"
+    missing_code = "MISSING_DAILY_AUDIT" if operation == "AUDIT" else "MISSING_POST_CLOSE_RECEIPT"
+    if event is None or maximum_minutes is None or progress_stale_minutes is None:
+        return missing_status, missing_code, default_next
+    state = str(event.get("state"))
+    if state == "FAILED":
+        return f"ALERT_{operation}_FAILED", f"{operation}_FAILED", None
+    if state == "COMPLETED":
+        return f"ALERT_{operation}_RECEIPT_MISSING", f"{operation}_RECEIPT_MISSING", None
+    if state not in {"STARTED", "PROGRESS"}:
+        return missing_status, missing_code, default_next
+    observed = _event_time(event.get("observed_at"))
+    allowed_minutes = (
+        min(maximum_minutes, progress_stale_minutes)
+        if state == "PROGRESS"
+        else maximum_minutes
+    )
+    deadline = observed + timedelta(minutes=allowed_minutes)
+    if as_of <= deadline:
+        return f"HEALTHY_{operation}_RUNNING", None, deadline
+    return f"ALERT_{operation}_TIMEOUT", f"{operation}_TIMEOUT", None
+
+
+def _event_value(event: Mapping[str, object] | None, key: str) -> object:
+    return None if event is None else event.get(key)
+
+
+def _event_time(value: object) -> datetime:
+    if isinstance(value, dict):
+        value = value.get("__datetime__")
+    if not isinstance(value, str):
+        raise ValueError("Phase 12L lifecycle event timestamp is invalid")
+    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    _require_utc(parsed)
+    return parsed
 
 
 def _evidence(database: Path, session_id: str) -> tuple[bool, bool, str | None]:

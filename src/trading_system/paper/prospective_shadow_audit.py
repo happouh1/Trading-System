@@ -201,6 +201,96 @@ def audit_scheduled_shadow_day(
         return _insert_audit(repository, payload)
 
 
+def audit_late_scheduled_shadow_day(
+    schedule: ProspectiveShadowScheduleConfig,
+    audit: ProspectiveShadowAuditConfig,
+    *,
+    project_root: str | Path,
+    session_id: str,
+    as_of: datetime,
+    database_override: str | Path | None = None,
+) -> Mapping[str, object]:
+    """Close a missed audit honestly, using current time and immutable evidence.
+
+    A late audit is never promoted to an on-time COMPLETE result and therefore
+    cannot silently repair a zero-incident burn-in cohort.
+    """
+    _require_utc(as_of)
+    root = Path(project_root).resolve()
+    _validate_inputs(root, schedule, audit)
+    scheduled = next(
+        (item for item in schedule.sessions if item.session_id == session_id), None
+    )
+    if scheduled is None:
+        raise ValueError("Phase 12L late audit session is not in the frozen schedule")
+    earliest, latest = _audit_window(schedule, audit, scheduled)
+    if as_of <= latest:
+        raise ValueError("Phase 12L late audit requires an expired original audit window")
+    database = _contained(
+        root, audit.database if database_override is None else database_override
+    )
+    with SQLiteRepository(database) as repository:
+        repository.migrate()
+        existing = _stored_audit(repository, session_id)
+        if existing is not None:
+            return existing
+        rows = repository.connection.execute(
+            """SELECT action,plan_id,config_hash,broker_write_performed,payload_json
+               FROM paper_shadow_orchestration_receipts WHERE session_id=?""",
+            (session_id,),
+        ).fetchall()
+        receipts = {str(row[0]): row for row in rows}
+        missing: list[str] = []
+        if "START" not in receipts:
+            missing.append("START_RECEIPT")
+        if "POST_CLOSE" not in receipts:
+            missing.append("POST_CLOSE_RECEIPT")
+        unsafe = any(
+            str(row[1]) != schedule.plan_id
+            or str(row[2]) != schedule.config_hash
+            or int(row[3]) != 0
+            or _payload(row[4]).get("broker_write_performed") is not False
+            for row in rows
+        )
+        if unsafe:
+            status = "UNSAFE_EVIDENCE_LATE_AUDIT"
+        elif not missing:
+            status = "COMPLETE_LATE_AUDIT"
+        elif "START_RECEIPT" in missing:
+            status = "INCOMPLETE_START_LATE_AUDIT"
+        else:
+            status = "INCOMPLETE_POST_CLOSE_LATE_AUDIT"
+        payload = {
+            "status": status,
+            "session_id": session_id,
+            "plan_id": schedule.plan_id,
+            "market_day": scheduled.market_day,
+            "scheduled_at": earliest,
+            "observed_at": as_of,
+            "original_window_earliest": earliest,
+            "original_window_latest": latest,
+            "lateness_seconds": int((as_of - latest).total_seconds()),
+            "late_audit": True,
+            "qualifies_zero_incident_cohort": False,
+            "start_receipt_id": _receipt_id(receipts.get("START")),
+            "post_close_receipt_id": _receipt_id(receipts.get("POST_CLOSE")),
+            "missing_components": tuple(missing),
+            "schedule_config_hash": schedule.config_hash,
+            "audit_config_hash": audit.config_hash,
+            "network_used": False,
+            "credentials_loaded": False,
+            "broker_write_detected": unsafe,
+            "broker_write_performed": False,
+            "order_api_available": False,
+            "session_retry_performed": False,
+            "backfill_performed": False,
+            "regime_annotation_recorded": False,
+            "live_trading_enabled": False,
+            "automatic_promotion_enabled": False,
+        }
+        return _insert_audit(repository, payload)
+
+
 def shadow_audit_status(
     schedule: ProspectiveShadowScheduleConfig,
     audit: ProspectiveShadowAuditConfig,
@@ -248,9 +338,13 @@ def shadow_audit_status(
         name: sum(1 for item in sessions if item["status"] == name)
         for name in (
             "COMPLETE",
+            "COMPLETE_LATE_AUDIT",
             "INCOMPLETE_START",
             "INCOMPLETE_POST_CLOSE",
+            "INCOMPLETE_START_LATE_AUDIT",
+            "INCOMPLETE_POST_CLOSE_LATE_AUDIT",
             "UNSAFE_EVIDENCE",
+            "UNSAFE_EVIDENCE_LATE_AUDIT",
             "MISSING_AUDIT",
             "PENDING",
         )
