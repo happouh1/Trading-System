@@ -1781,3 +1781,19 @@ powershell -NoProfile -ExecutionPolicy Bypass -File `
 
 The dashboard reads the shadow database without modifying it and does not load credentials,
 contact Webull, or enable order submission.
+
+## Phase 12K storage-capacity guard
+
+Inspect the growing shadow-evidence database and local backup headroom with:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File `
+  .\scripts\inspect-phase12k-storage-capacity.ps1
+```
+
+The command opens SQLite read-only and atomically writes
+`.operator-home/phase12k/storage-capacity.json`. GREEN means the current database size, free disk,
+and full-copy headroom remain within the versioned operational limits. AMBER requires capacity
+planning; RED requires the operator to stop and review storage before relying on the next scheduled
+collection. The monitor never deletes or compacts evidence and has no network, credential, broker,
+live-trading, or promotion authority.

@@ -1885,3 +1885,16 @@ meeting a minimum pattern threshold may yield a zero strength score at that boun
   automatic promotion MUST remain disabled.
 - `P12I-SCHEDULE-001`: scheduler activation MUST update the existing task identities in place and
   MUST NOT create a competing post-close task.
+
+# Phase 12K storage-capacity rules
+
+- `P12K-READ-001`: SQLite MUST be opened read-only and source database size and modification time
+  MUST remain unchanged throughout inspection.
+- `P12K-CAPACITY-001`: database bytes, sidecar bytes, SQLite allocation, filesystem free bytes, and
+  whole-database copy headroom MUST be reported against a versioned threshold set.
+- `P12K-STATUS-001`: critical conditions MUST produce RED; warning conditions MUST produce AMBER;
+  reason ordering MUST be deterministic.
+- `P12K-ARTIFACT-001`: output MUST use same-directory atomic replacement and MUST remain outside
+  SQLite.
+- `P12K-AUTH-001`: evidence deletion, compaction, database writes, network use, credential loading,
+  broker writes, live trading, and automatic promotion MUST remain disabled.

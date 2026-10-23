@@ -1743,3 +1743,12 @@ inspection result and creates no database record.
 - `short_opportunity_outcomes`: future-only label for one alert and horizon, including entry price,
   short forward return, maximum favorable excursion, maximum adverse excursion, and the timestamp at
   which the full label first became available.
+
+# Phase 12K storage-capacity artifact
+
+`storage-capacity.json` is an ephemeral, atomically replaced local operational artifact. It records
+the exact inspection time and configuration hash; database, WAL, shared-memory, and journal byte
+counts; SQLite page allocation and freelist counts; filesystem total/used/free bytes; whole-database
+copy headroom; thresholds; stable status/reason codes; and explicit false evidence-deletion,
+database-write, network, credential, broker-write, live-trading, and promotion flags. It is not
+strategy evidence and creates no database row.

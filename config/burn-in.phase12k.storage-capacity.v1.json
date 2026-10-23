@@ -1,0 +1,24 @@
+{
+  "monitor_version": "12K.1.0",
+  "mode": "READ_ONLY_STORAGE_CAPACITY",
+  "database": "webull-sandbox.sqlite",
+  "output": ".operator-home/phase12k/storage-capacity.json",
+  "thresholds": {
+    "warning_database_bytes": 8589934592,
+    "critical_database_bytes": 17179869184,
+    "warning_free_bytes": 53687091200,
+    "critical_free_bytes": 21474836480,
+    "warning_backup_copies": 5,
+    "critical_backup_copies": 3
+  },
+  "authority": {
+    "database_read_enabled": true,
+    "artifact_write_enabled": true,
+    "evidence_deletion_enabled": false,
+    "network_enabled": false,
+    "credential_loading_enabled": false,
+    "broker_writes_enabled": false,
+    "live_trading_enabled": false,
+    "automatic_promotion_enabled": false
+  }
+}

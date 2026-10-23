@@ -83,6 +83,11 @@ def configure_paper_parser(
     research_dashboard.add_argument("--as-of", required=True)
     research_dashboard.add_argument("--project-root", default=".")
     research_dashboard.add_argument("--database-override")
+    storage_capacity = actions.add_parser("scheduled-shadow-storage-capacity")
+    storage_capacity.add_argument("--config", required=True)
+    storage_capacity.add_argument("--as-of", required=True)
+    storage_capacity.add_argument("--project-root", default=".")
+    storage_capacity.add_argument("--database-override")
     launcher_status = actions.add_parser("scheduled-shadow-launcher-status")
     launcher_status.add_argument("--config", required=True)
     launcher_status.add_argument("--project-root", default=".")
@@ -119,6 +124,26 @@ def configure_paper_parser(
 
 def handle_paper(args: argparse.Namespace) -> int:
     command = str(args.paper_command)
+    if command == "scheduled-shadow-storage-capacity":
+        from trading_system.paper.prospective_shadow_storage_capacity import (
+            inspect_shadow_storage_capacity,
+            load_shadow_storage_capacity_config,
+        )
+
+        storage_config = load_shadow_storage_capacity_config(args.config)
+        as_of = datetime.fromisoformat(str(args.as_of).replace("Z", "+00:00"))
+        capacity_artifact, capacity_snapshot = inspect_shadow_storage_capacity(
+            storage_config,
+            project_root=args.project_root,
+            as_of=as_of,
+            database_override=args.database_override,
+        )
+        print(
+            canonical_json(
+                {"artifact": capacity_artifact, "snapshot": capacity_snapshot}
+            )
+        )
+        return {"GREEN": 0, "AMBER": 1, "RED": 2}[capacity_artifact.status]
     if command == "scheduled-shadow-research-dashboard":
         from trading_system.paper.prospective_shadow_research_dashboard import (
             load_shadow_research_dashboard_config,

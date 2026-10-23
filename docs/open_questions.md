@@ -1727,3 +1727,15 @@ fail-closed, read-only monitoring with no session retry or evidence backfill.
      for an order recommendation or creating execution authority?
 
 Phase 12I does not answer these questions and cannot promote itself.
+
+# Phase 12K open questions
+
+649. What reviewed retention and archival policy can control long-term database growth without
+     violating immutable prediction, outcome, audit, and replay requirements?
+650. Which separate storage device or off-host destination will hold independently verified copies,
+     and what encryption, access, retention, and restore-test policy applies?
+651. Should a later phase add a scheduled local notification for AMBER/RED capacity status, and how
+     will it avoid creating competing tasks or hiding a failed inspection?
+
+Phase 12K observes capacity only. It does not delete, vacuum, compact, archive, replicate, notify,
+or alter scheduled collection behavior.

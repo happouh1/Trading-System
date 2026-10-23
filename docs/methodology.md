@@ -1764,3 +1764,12 @@ return is `(entry - close) / entry`, favorable excursion is `(entry - lowest low
 adverse excursion is `(highest high - entry) / entry`. Each label is immutable and version-bound.
 Research evaluation must retain rejected states, account for coverage and costs, and proceed
 chronologically; it must not tune on the evaluation interval or infer profit from a small sample.
+
+# Phase 12K storage-capacity methodology
+
+Capacity is inspected from filesystem metadata and SQLite read-only PRAGMAs. The monitor does not
+scan table payloads, hash the full database, or mutate SQLite. Backup-copy headroom is the integer
+number of current-size database files that fit in reported free space; it is a conservative local
+operational indicator, not proof that a valid backup exists. Status thresholds are versioned,
+tunable operational assumptions. RED fails closed but grants no authority to delete, vacuum,
+archive, retry, backfill, submit, or promote anything.
