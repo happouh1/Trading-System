@@ -155,7 +155,7 @@ def render_shadow_research_dashboard(
             "release_authorized": False,
         },
         "config_hash": config.config_hash,
-        "database_sha256": "sha256:" + hashlib.sha256(database.read_bytes()).hexdigest(),
+        "database_sha256": _sha256_file(database),
     }
     snapshot_id = deterministic_id("shadow_research_dashboard_snapshot", body)
     snapshot: Mapping[str, object] = MappingProxyType({**body, "snapshot_id": snapshot_id})
@@ -176,6 +176,15 @@ def render_shadow_research_dashboard(
         status,
     )
     return artifact, snapshot
+
+
+def _sha256_file(path: Path, *, chunk_size: int = 8 * 1024 * 1024) -> str:
+    """Hash a potentially large file without loading it into memory."""
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        while chunk := handle.read(chunk_size):
+            digest.update(chunk)
+    return "sha256:" + digest.hexdigest()
 
 
 def _freshness(

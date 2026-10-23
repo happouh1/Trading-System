@@ -10,6 +10,7 @@ import pytest
 
 from trading_system.paper.prospective_shadow_research_dashboard import (
     ShadowResearchDashboardConfigError,
+    _sha256_file,
     load_shadow_research_dashboard_config,
     render_shadow_research_dashboard,
 )
@@ -238,3 +239,32 @@ def test_phase12j_is_deterministic_for_same_evidence(tmp_path: Path) -> None:
 
     assert first.snapshot_id == second.snapshot_id
     assert first.content_hash == second.content_hash
+
+
+def test_phase12j_hashes_database_in_chunks(tmp_path: Path) -> None:
+    database = tmp_path / "large.sqlite"
+    payload = (b"0123456789abcdef" * 1024) + b"tail"
+    database.write_bytes(payload)
+
+    assert _sha256_file(database, chunk_size=1024) == (
+        "sha256:" + hashlib.sha256(payload).hexdigest()
+    )
+
+
+def test_phase12j_render_does_not_load_database_with_read_bytes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _stage_config(tmp_path)
+    _short_config(tmp_path)
+    _database(tmp_path)
+    config = load_shadow_research_dashboard_config(_dashboard_config(tmp_path))
+
+    def reject_read_bytes(_path: Path) -> bytes:
+        raise AssertionError("dashboard must stream the database hash")
+
+    monkeypatch.setattr(Path, "read_bytes", reject_read_bytes)
+    artifact, _ = render_shadow_research_dashboard(
+        config, project_root=tmp_path, as_of=NOW
+    )
+
+    assert artifact.status == "GREEN"
