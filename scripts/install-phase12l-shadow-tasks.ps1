@@ -11,7 +11,6 @@ $installer = Join-Path $PSScriptRoot "install-phase12h-shadow-tasks.ps1"
     -ShortOpportunityConfig "config/webull.phase12i.short-opportunities.v1.json" `
     -LogNamespace "phase12l" `
     -ConfigureWakeTimers:(-not $SkipWakeTimerConfiguration)
-if ($LASTEXITCODE -ne 0) { throw "Phase 12L scheduled-task upgrade failed" }
 
 $close = [string](Get-ScheduledTask -TaskName "Trading System - Phase 12H Shadow Close").Actions[0].Arguments
 $audit = [string](Get-ScheduledTask -TaskName "Trading System - Phase 12H Shadow Audit").Actions[0].Arguments

@@ -169,6 +169,7 @@ def test_phase12l_scripts_keep_broker_authority_disabled() -> None:
     assert "scheduled-shadow-operation-event" in audit
     assert "run-phase12l-shadow-close.ps1" in installer
     assert "run-phase12l-shadow-audit.ps1" in installer
+    assert "$LASTEXITCODE" not in installer
     authority = json.loads(
         (ROOT / "config/burn-in.phase12l.lifecycle.v1.json").read_text()
     )["authority"]
